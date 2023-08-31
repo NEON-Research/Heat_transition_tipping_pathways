@@ -2,9 +2,9 @@
 
 # -- Project information
 
-project = 'Lumache'
-copyright = '2021, Graziella'
-author = 'Graziella'
+project = 'Tipping pathways'
+copyright = '2023, Naud Loomans'
+author = 'Naud Loomans'
 
 release = '0.1'
 version = '0.1.0'
