@@ -4,11 +4,11 @@ Introduction
 This GitHub directory includes the energy tranistion pathway tipping points model.
 
 - Go to the `tool <https://zenmo.com/brabant-serious-game-energietransitie/>`_
-- Read the `tutorial on read the docs <https://docs.readthedocs.io/en/stable/tutorial//>`_
+- Read the `documentation <https://tipping-pathways.readthedocs.io/en/latest//>`_
 
 Documentation
 ---------------
-The full documentation can be found here.
+The full documentation can be found `here <https://tipping-pathways.readthedocs.io/en/latest/>`_.
 
 
 Installation
