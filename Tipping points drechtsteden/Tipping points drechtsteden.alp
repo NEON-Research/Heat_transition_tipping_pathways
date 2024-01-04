@@ -37,16 +37,17 @@ import java.io.InputStreamReader;
 import java.io.IOException;
 import org.json.JSONObject; // for JSON parsing
 import org.json.JSONArray;]]></Import>
-			<StartupCode><![CDATA[v_timer = System.currentTimeMillis();
+			<StartupCode><![CDATA[
+v_timer = System.currentTimeMillis();
 f_initalizeSettings();
-//f_generateHouseholdsFromAPI();
+//f_generateHouseholdsTest();
 //f_generateNeighborhoodsFromAPI();
 //f_readObjectsFromExcel();
 traceln(roundToDecimal((System.currentTimeMillis() - v_timer)/1000,3) + " seconds to generate households");
 
 //Generate neighborhoods
 v_timer = System.currentTimeMillis();
-f_generateNeighborhoods();
+//f_generateNeighborhoods();
 traceln(roundToDecimal((System.currentTimeMillis() - v_timer)/1000,3) + " seconds to generate neighborhoods");]]></StartupCode>
 			<Generic>false</Generic>
 			<GenericParameter>
@@ -510,11 +511,12 @@ traceln(roundToDecimal((System.currentTimeMillis() - v_timer)/1000,3) + " second
 						</RecurrenceCode>
 						<Condition><![CDATA[false]]></Condition>
 					</Properties>
-					<Action><![CDATA[v_PVUtilityCapex = 1.5 - p_pvCostStartYear * pow((1-p_pvCostDecline),time(YEAR));
+					<Action><![CDATA[pauseSimulation();
+v_PVUtilityCapex = 1.5 - p_pvCostStartYear * pow((1-p_pvCostDecline),time(YEAR));
 v_PVUtilityRevenue = limit(0,1 - 0.01 * exp(0.0005 * v_adopters),1);//limit(0,1 - 0.01 * exp(0.2*time(YEAR)),1);
 
 inputPatternPlot.updateData();
-f_setColorHasPV();]]></Action>
+//f_setColorHasPV();]]></Action>
 				</Event>
 			</Events>
 			<Functions>
@@ -1264,6 +1266,64 @@ else {
 		}
 	}
 }
+]]></Body>
+				</Function>
+				<Function AccessType="default" StaticFunction="false">
+					<ReturnModificator>VOID</ReturnModificator>
+					<ReturnType><![CDATA[double]]></ReturnType>
+					<Id>1702032403030</Id>
+					<Name><![CDATA[f_generateHouseholdsTest]]></Name>
+					<X>-460</X><Y>240</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Body><![CDATA[for (int i = 0; i < 80000; i++) {
+	// Create agents and set their properties based on JSON data
+	EA_Household household = add_pop_EA_Households(); // Replace YourAgentType with your agent type
+	household.set_p_numid(i);
+	household.set_p_pid("pid");
+	//household.set_p_vid(jsonObject.getDouble("vid"));
+	//household.set_p_neighborhoodCode(jsonObject.getString("buurtcode"));
+	//household.set_p_neighborhoodName(jsonObject.getString("buurtnaam"));
+	//household.set_p_districtCode(jsonObject.getString("wijkcode"));
+	//household.set_p_districtName(jsonObject.getString("wijknaam"));
+	//household.set_p_municipalityCode(jsonObject.getString("gemeentecode"));
+	//household.set_p_municipalityName(jsonObject.getString("gemeentenaam"));
+	//household.set_p_provinceCode(jsonObject.getString("provincienaam"));
+	//household.set_p_provinceName(jsonObject.getString("provinciecode"));
+	household.set_p_postalCode("postcode");
+	household.set_p_street("straat");
+	household.set_p_number(10);
+	/*
+				household.set_p_surfaceArea(jsonObject.getDouble("oppervlakte"));
+				household.set_p_householdEquivalent(jsonObject.getDouble("woningequivalent"));
+				household.set_p_buildingYear(jsonObject.getDouble("pand_bouwjaar"));
+				household.set_p_averageWOZValueHouse(jsonObject.getDouble("gemiddelde_woz_waarde_woning"));
+				household.set_p_averageWOZValueMunicipality(jsonObject.getDouble("gemiddelde_gemeente_woz"));
+				household.set_p_energyLabelLetter(jsonObject.getString("energieklasse"));
+				household.set_p_buildingTypeLabel(jsonObject.getString("woning_type"));
+				household.set_p_SBICode(jsonObject.getString("sbicode"));
+				household.set_p_EANCount(jsonObject.getDouble("eancount"));
+				household.set_p_groupID2022(jsonObject.getString("group_id_2022"));
+				household.set_p_point(jsonObject.getString("point"));
+				//household.set_p_longitude(jsonObject.getDouble("numid"));
+				//household.set_p_latitude(jsonObject.getDouble("numid"));
+				household.set_p_p6GasM3_2022(jsonObject.getDouble("p6_gasm3_2022"));
+				household.set_p_p6KWh_2022(jsonObject.getDouble("p6_kwh_2022"));
+				household.set_p_p6KWhDirection_2022(jsonObject.getDouble("kwh_leveringsrichting_2022"));
+				household.set_p_p6LandSeizure_M2(jsonObject.getDouble("p6_grondbeslag_m2"));
+				household.set_p_p6GasConnections_2022(jsonObject.getDouble("p6_gas_aansluitingen_2022"));
+				
+				//household.setLatLon
+				//setProperty1(jsonObject.getString("numid"));
+				//agent.setProperty2(jsonObject.getInt("property2"));
+	    		// Set other properties as needed
+				f_setHouseholdLocation();
+*/
+}		
+
+
 ]]></Body>
 				</Function>
 			</Functions>
@@ -2115,6 +2175,30 @@ else {
 					<Latitude>51.82395463185527</Latitude>
 					<Longitude>4.651345520385885</Longitude>
 				</EmbeddedObjectPresentation>
+				<Control Type="Button">
+				 	<EmbeddedIcon>false</EmbeddedIcon>				
+					<Id>1702033438719</Id>
+					<Name><![CDATA[button]]></Name>
+					<X>60</X><Y>30</Y>
+					<Label><X>0</X><Y>-10</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
+					<BasicProperties Width="210" Height="30">
+                        <EmbeddedIcon>false</EmbeddedIcon>	
+						<TextColor/>
+						<Enabled>true</Enabled>
+						<ActionCode><![CDATA[v_timer = System.currentTimeMillis();
+f_generateHouseholdsTest();
+traceln(roundToDecimal((System.currentTimeMillis() - v_timer)/1000,3) + " seconds to generate " + pop_EA_Households.size() + " households");
+traceln(sum(pop_EA_Households, x->x.p_numid) + " summed numid");]]></ActionCode>
+					</BasicProperties>
+					<ExtendedProperties>
+						<Font Name="Dialog" Size="11" Style="0"/>
+						<LabelText><![CDATA[generate households]]></LabelText>
+					</ExtendedProperties>
+				</Control>
 			</Presentation>
 
 				</Level>
