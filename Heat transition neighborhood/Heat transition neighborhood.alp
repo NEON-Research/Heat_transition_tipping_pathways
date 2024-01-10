@@ -776,6 +776,126 @@ traceln(roundToDecimal((System.currentTimeMillis() - v_timer)/1000,3) + " second
 						</ParameterEditor>
 					</Properties>                 
 				</Variable>
+				<Variable Class="Parameter">
+					<Id>1704794216031</Id>
+					<Name><![CDATA[p_PmaxPerHousehold]]></Name>
+					<X>-500</X><Y>480</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[double]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<DefaultValue Class="CodeValue">
+							<Code><![CDATA[2.5 //kW https://phasetophase.nl/boek/boek_3_13.html 13.1]]></Code>
+						</DefaultValue>
+						<ParameterEditor>
+							<Id>1704794216029</Id>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1704794443447</Id>
+					<Name><![CDATA[p_PmaxPerHeatPump]]></Name>
+					<X>-500</X><Y>500</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[double]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<DefaultValue Class="CodeValue">
+							<Code><![CDATA[5 //kW https://phasetophase.nl/boek/boek_3_13.html 13.1]]></Code>
+						</DefaultValue>
+						<ParameterEditor>
+							<Id>1704794443445</Id>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1704794471579</Id>
+					<Name><![CDATA[p_PmaxPerEV]]></Name>
+					<X>-500</X><Y>540</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[double]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<DefaultValue Class="CodeValue">
+							<Code><![CDATA[3.7 //kW]]></Code>
+						</DefaultValue>
+						<ParameterEditor>
+							<Id>1704794471577</Id>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1704794478355</Id>
+					<Name><![CDATA[p_simultaneityEV]]></Name>
+					<X>-500</X><Y>560</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[double]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<DefaultValue Class="CodeValue">
+							<Code><![CDATA[0.2 //]]></Code>
+						</DefaultValue>
+						<ParameterEditor>
+							<Id>1704794478353</Id>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1704794561362</Id>
+					<Name><![CDATA[p_simultaneityHeatPump]]></Name>
+					<X>-500</X><Y>520</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[double]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<DefaultValue Class="CodeValue">
+							<Code><![CDATA[0.9 //https://phasetophase.nl/boek/boek_3_13.html 13.1]]></Code>
+						</DefaultValue>
+						<ParameterEditor>
+							<Id>1704794561360</Id>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
 			</Variables>
 			<Events>
 				<Event>
@@ -810,6 +930,10 @@ traceln(roundToDecimal((System.currentTimeMillis() - v_timer)/1000,3) + " second
 					<Action><![CDATA[v_PVUtilityCapex = 1.5 - p_pvCostStartYear * pow((1-p_pvCostDecline),time(YEAR));
 v_PVUtilityRevenue = limit(0,1 - 0.01 * exp(0.0005 * v_adopters),1);//limit(0,1 - 0.01 * exp(0.2*time(YEAR)),1);
 
+for(GZ_Neighborhood n : pop_GZ_Neighborhoods){
+	n.f_getHouseholdHeatingMethods();
+	n.f_energyCalculations();
+}
 f_buildDistrictHeating(p_districtHeatingShortTermYear, p_districtHeatingMediumTermYear, p_districtHeatingLongTermYear, p_districtHeatingThreshold);
 
 
@@ -1302,12 +1426,13 @@ for (GZ_Neighborhood x : pop_GZ_Neighborhoods){
 	x.p_heatingStrategy = selectFrom(neighborhood_warmtevisie).where(neighborhood_warmtevisie.buurtcode.eq(x.p_neighborhoodCode))
 			.firstResult(neighborhood_warmtevisie.transitiekaart_stedin);
 	x.v_heatingStrategy = x.f_setDefaultHeatingStrategy(x.p_heatingStrategy);
-	traceln("Heating strategy at neighborhood " + x.getIndex() + " is " + x.p_heatingStrategy);
+	//traceln("Heating strategy at neighborhood " + x.getIndex() + " is " + x.p_heatingStrategy);
 
 
 	//SET GRID CAPACITY
-	x.p_gridCapacity_kW = x.f_setGridCapacity(PmaxPerHousehold, simultaneityBaseload, households, PmaxPerHeatPump, simultaneityHeatPump, householdsWithHeatPump, PmaxPerEV, simultaneityEV, EVs);
-
+	double householdsWithHeatPump = x.p_households * x.p_electricHeating_perc;
+	x.p_gridCapacity_kW = x.f_setGridCapacity(p_PmaxPerHousehold, tf_simultaneityBaseload(x.p_households), x.p_households, p_PmaxPerHeatPump, p_simultaneityHeatPump, householdsWithHeatPump, p_PmaxPerEV, p_simultaneityEV, x.p_electricCars2025);
+	//traceln(x.p_gridCapacity_kW + " at neigbhorhood " + x.getIndex() + " average " + x.p_gridCapacity_kW/x.p_households + " kW per household");
 }
 	
 
@@ -1491,15 +1616,15 @@ if (getYear() == yearDistrictHeatingShortTerm || getYear() == yearDistrictHeatin
 	for( GZ_Neighborhood x : pop_GZ_Neighborhoods){
 		if( getYear() == yearDistrictHeatingShortTerm && x.v_heatingStrategy == DISTRICTHEATING_SHORTTERM){
 			x.p_hasDistrictHeating = true;
-			x.f_connectHouseholdsToDistrictHeating(districtHeatingThreshold);
+			x.f_setHouseholdsToDistrictHeating(districtHeatingThreshold);
 		}
 		else if( getYear() == yearDistrictHeatingMediumTerm && x.v_heatingStrategy == DISTRICTHEATING_MEDIUMTERM){
 			x.p_hasDistrictHeating = true;
-			x.f_connectHouseholdsToDistrictHeating(districtHeatingThreshold);
+			x.f_setHouseholdsToDistrictHeating(districtHeatingThreshold);
 		}
 		else if( getYear() == yearDistrictHeatingLongTerm && x.v_heatingStrategy == DISTRICTHEATING_LONGTERM){
 			x.p_hasDistrictHeating = true;
-			x.f_connectHouseholdsToDistrictHeating(districtHeatingThreshold);
+			x.f_setHouseholdsToDistrictHeating(districtHeatingThreshold);
 		}
 	}
 }]]></Body>
@@ -1540,6 +1665,41 @@ data_hybridHeatPumps_nb.add(count(pop_EA_Households, x->x.v_heatingMethod == HYB
 ]]></Body>
 				</Function>
 			</Functions>
+			<TableFunctions>
+				<TableFunction AccessType="public" StaticFunction="false">
+					<Id>1704793488815</Id>
+					<Name><![CDATA[tf_simultaneityBaseload]]></Name>
+					<X>-500</X><Y>460</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<InterpolationMethod>SPLINE</InterpolationMethod>
+					<OutOfRangeBehaviour>CUSTOM</OutOfRangeBehaviour>
+					<OutOfRangeCustomValue><![CDATA[0.46]]></OutOfRangeCustomValue>
+					<ApproximationOrder><![CDATA[1]]></ApproximationOrder>
+					<LoadFromDatabase><![CDATA[false]]></LoadFromDatabase>
+					<ValuesQuery>
+						<TableReference>
+						</TableReference>
+							<ArgumentColumnReference>
+							</ArgumentColumnReference>
+							<ValueColumnReference>
+							</ValueColumnReference>
+					</ValuesQuery>
+// arguments and values
+					<Argument><![CDATA[1.0]]></Argument>
+					<Argument><![CDATA[10.0]]></Argument>
+					<Argument><![CDATA[50.0]]></Argument>
+					<Argument><![CDATA[100.0]]></Argument>
+					<Argument><![CDATA[150.0]]></Argument>
+					<Value><![CDATA[0.65]]></Value>
+					<Value><![CDATA[0.59]]></Value>
+					<Value><![CDATA[0.49]]></Value>
+					<Value><![CDATA[0.46]]></Value>
+					<Value><![CDATA[0.46]]></Value>
+				</TableFunction>
+			</TableFunctions>
 			<AnalysisData>
     			<DataSet>
 					<Id>1704723280525</Id>
@@ -3512,7 +3672,7 @@ data_hybridHeatPumps_nb.add(count(pop_EA_Households, x->x.v_heatingMethod == HYB
 //v_utilityThreshold = uniform(0,1);
 v_utility = main.v_PVUtilityCapex + main.v_PVUtilityRevenue;
 
-if (v_utility > v_utilityThreshold && v_heatingMethod == NATURAL_GAS_BOILER){
+if (v_utility > v_utilityThreshold && v_heatingMethod == NATURAL_GAS_BOILER && p_neighborhood.v_gridCongestion == false){
 	send("Adopt", this);
 }
 else {
@@ -4289,7 +4449,7 @@ else{
 					<Id>1700132370890</Id>
 					<Name><![CDATA[v_baseloadElectricityHouseholds_kW]]></Name>
 					<ExcludeFromBuild>true</ExcludeFromBuild>
-					<X>380</X><Y>660</Y>
+					<X>380</X><Y>700</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -4315,7 +4475,7 @@ else{
 					<Id>1700132370894</Id>
 					<Name><![CDATA[totalEnergyDemand]]></Name>
 					<ExcludeFromBuild>true</ExcludeFromBuild>
-					<X>380</X><Y>950</Y>
+					<X>380</X><Y>990</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -4328,7 +4488,7 @@ else{
 					<Id>1700132370896</Id>
 					<Name><![CDATA[totalEnergySupply]]></Name>
 					<ExcludeFromBuild>true</ExcludeFromBuild>
-					<X>380</X><Y>970</Y>
+					<X>380</X><Y>1010</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -4393,7 +4553,7 @@ else{
 					<Id>1700132370906</Id>
 					<Name><![CDATA[totalHeatDemand]]></Name>
 					<ExcludeFromBuild>true</ExcludeFromBuild>
-					<X>380</X><Y>930</Y>
+					<X>380</X><Y>970</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -4523,7 +4683,7 @@ else{
 					<Id>1700132370926</Id>
 					<Name><![CDATA[spaceHeatingDemand]]></Name>
 					<ExcludeFromBuild>true</ExcludeFromBuild>
-					<X>380</X><Y>780</Y>
+					<X>380</X><Y>820</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -4678,7 +4838,7 @@ else{
 					<Id>1700132370948</Id>
 					<Name><![CDATA[DHWDemand]]></Name>
 					<ExcludeFromBuild>true</ExcludeFromBuild>
-					<X>380</X><Y>800</Y>
+					<X>380</X><Y>840</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -4691,7 +4851,7 @@ else{
 					<Id>1700132370950</Id>
 					<Name><![CDATA[v_electricCarsElectricityDemand_kW]]></Name>
 					<ExcludeFromBuild>true</ExcludeFromBuild>
-					<X>380</X><Y>710</Y>
+					<X>380</X><Y>750</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -4720,7 +4880,7 @@ else{
 					<Id>1700132370954</Id>
 					<Name><![CDATA[v_baseloadUtility_kW]]></Name>
 					<ExcludeFromBuild>true</ExcludeFromBuild>
-					<X>380</X><Y>680</Y>
+					<X>380</X><Y>720</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -4745,8 +4905,7 @@ else{
 				<Variable Class="PlainVariable">
 					<Id>1700132370958</Id>
 					<Name><![CDATA[v_electricCars]]></Name>
-					<ExcludeFromBuild>true</ExcludeFromBuild>
-					<X>380</X><Y>480</Y>
+					<X>380</X><Y>520</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -4784,7 +4943,7 @@ else{
 					<Id>1700132370970</Id>
 					<Name><![CDATA[v_lengthGasGrid_m]]></Name>
 					<ExcludeFromBuild>true</ExcludeFromBuild>
-					<X>370</X><Y>122</Y>
+					<X>370</X><Y>162</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -4797,7 +4956,7 @@ else{
 					<Id>1700132370972</Id>
 					<Name><![CDATA[v_trafoCapcityNeighborhood_kVA]]></Name>
 					<ExcludeFromBuild>true</ExcludeFromBuild>
-					<X>370</X><Y>142</Y>
+					<X>370</X><Y>182</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -4810,7 +4969,7 @@ else{
 					<Id>1700132370974</Id>
 					<Name><![CDATA[v_lengthLVElectricityGrid_m]]></Name>
 					<ExcludeFromBuild>true</ExcludeFromBuild>
-					<X>370</X><Y>162</Y>
+					<X>370</X><Y>202</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -4823,7 +4982,7 @@ else{
 					<Id>1700132370976</Id>
 					<Name><![CDATA[v_districtHeatingConnections]]></Name>
 					<ExcludeFromBuild>true</ExcludeFromBuild>
-					<X>370</X><Y>192</Y>
+					<X>370</X><Y>232</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -4836,7 +4995,7 @@ else{
 					<Id>1700132370978</Id>
 					<Name><![CDATA[v_districtHeatingConnectionPipesLength_m]]></Name>
 					<ExcludeFromBuild>true</ExcludeFromBuild>
-					<X>370</X><Y>212</Y>
+					<X>370</X><Y>252</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -4849,7 +5008,7 @@ else{
 					<Id>1700132370980</Id>
 					<Name><![CDATA[v_districtHeatingMainPipesLength_m]]></Name>
 					<ExcludeFromBuild>true</ExcludeFromBuild>
-					<X>370</X><Y>232</Y>
+					<X>370</X><Y>272</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -4969,7 +5128,7 @@ else{
 					<Id>1700132370998</Id>
 					<Name><![CDATA[v_industryElectricityDemand_kW]]></Name>
 					<ExcludeFromBuild>true</ExcludeFromBuild>
-					<X>380</X><Y>830</Y>
+					<X>380</X><Y>870</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -4982,7 +5141,7 @@ else{
 					<Id>1700132371000</Id>
 					<Name><![CDATA[v_industryGasDemand_kW]]></Name>
 					<ExcludeFromBuild>true</ExcludeFromBuild>
-					<X>380</X><Y>850</Y>
+					<X>380</X><Y>890</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -4994,8 +5153,7 @@ else{
 				<Variable Class="PlainVariable">
 					<Id>1700132371002</Id>
 					<Name><![CDATA[v_electricTrucks]]></Name>
-					<ExcludeFromBuild>true</ExcludeFromBuild>
-					<X>380</X><Y>500</Y>
+					<X>380</X><Y>540</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -5008,7 +5166,7 @@ else{
 					<Id>1700132371004</Id>
 					<Name><![CDATA[v_electricTrucksElectricityDemand_kW]]></Name>
 					<ExcludeFromBuild>true</ExcludeFromBuild>
-					<X>380</X><Y>730</Y>
+					<X>380</X><Y>770</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -5024,7 +5182,7 @@ else{
 					<Id>1700132371006</Id>
 					<Name><![CDATA[v_electricVehicleElectricityDemand_kW]]></Name>
 					<ExcludeFromBuild>true</ExcludeFromBuild>
-					<X>380</X><Y>750</Y>
+					<X>380</X><Y>790</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -5039,8 +5197,7 @@ else{
 				<Variable Class="PlainVariable">
 					<Id>1700132371008</Id>
 					<Name><![CDATA[v_electricVans]]></Name>
-					<ExcludeFromBuild>true</ExcludeFromBuild>
-					<X>380</X><Y>520</Y>
+					<X>380</X><Y>560</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -5226,7 +5383,7 @@ else{
 					<Id>1700132371038</Id>
 					<Name><![CDATA[v_agricultureElectricityDemand_kW]]></Name>
 					<ExcludeFromBuild>true</ExcludeFromBuild>
-					<X>380</X><Y>880</Y>
+					<X>380</X><Y>920</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -5239,7 +5396,7 @@ else{
 					<Id>1700132371040</Id>
 					<Name><![CDATA[v_agricultureGasDemand_kW]]></Name>
 					<ExcludeFromBuild>true</ExcludeFromBuild>
-					<X>380</X><Y>900</Y>
+					<X>380</X><Y>940</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -5258,6 +5415,93 @@ else{
 					<ShowLabel>true</ShowLabel>
 					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
 						<Type><![CDATA[String]]></Type>        
+					</Properties>
+				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1704798336087</Id>
+					<Name><![CDATA[v_gridCongestion]]></Name>
+					<X>370</X><Y>110</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[boolean]]></Type>        
+						<InitialValue Class="CodeValue">
+							<Code><![CDATA[false]]></Code>
+						</InitialValue>
+					</Properties>
+				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1704798373748</Id>
+					<Name><![CDATA[v_maxGridLoad_kW]]></Name>
+					<X>370</X><Y>90</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[double]]></Type>        
+					</Properties>
+				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1704798980833</Id>
+					<Name><![CDATA[v_electricHeatPumps_nb]]></Name>
+					<X>2040</X><Y>600</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[double]]></Type>        
+					</Properties>
+				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1704798980835</Id>
+					<Name><![CDATA[v_hybridHeatPumps_nb]]></Name>
+					<X>2040</X><Y>620</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[double]]></Type>        
+					</Properties>
+				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1704798980837</Id>
+					<Name><![CDATA[v_districtHeating_nb]]></Name>
+					<X>2040</X><Y>640</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[double]]></Type>        
+					</Properties>
+				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1704798980839</Id>
+					<Name><![CDATA[v_gasBoilers_nb]]></Name>
+					<X>2040</X><Y>660</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[double]]></Type>        
+					</Properties>
+				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1704798980841</Id>
+					<Name><![CDATA[v_gasBlockHeating_nb]]></Name>
+					<X>2040</X><Y>680</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[double]]></Type>        
 					</Properties>
 				</Variable>
 				<Variable Class="Parameter">
@@ -5513,7 +5757,7 @@ else{
 				<Variable Class="Parameter">
 					<Id>1700132371120</Id>
 					<Name><![CDATA[p_cars]]></Name>
-					<X>380</X><Y>290</Y>
+					<X>380</X><Y>330</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -5534,7 +5778,7 @@ else{
 				<Variable Class="Parameter">
 					<Id>1700132371123</Id>
 					<Name><![CDATA[p_vans]]></Name>
-					<X>380</X><Y>330</Y>
+					<X>380</X><Y>370</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -5555,7 +5799,7 @@ else{
 				<Variable Class="Parameter">
 					<Id>1700132371126</Id>
 					<Name><![CDATA[p_trucks]]></Name>
-					<X>380</X><Y>310</Y>
+					<X>380</X><Y>350</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -5892,7 +6136,7 @@ else{
 					<Id>1700132371204</Id>
 					<Name><![CDATA[p_myHSMSTrafo]]></Name>
 					<ExcludeFromBuild>true</ExcludeFromBuild>
-					<X>370</X><Y>92</Y>
+					<X>370</X><Y>132</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -5913,7 +6157,7 @@ else{
 				<Variable Class="Parameter">
 					<Id>1700132371207</Id>
 					<Name><![CDATA[p_electricCars2025]]></Name>
-					<X>380</X><Y>410</Y>
+					<X>380</X><Y>450</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -5934,7 +6178,7 @@ else{
 				<Variable Class="Parameter">
 					<Id>1700132371210</Id>
 					<Name><![CDATA[p_electricVans2025]]></Name>
-					<X>380</X><Y>450</Y>
+					<X>380</X><Y>490</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -5955,7 +6199,7 @@ else{
 				<Variable Class="Parameter">
 					<Id>1700132371213</Id>
 					<Name><![CDATA[p_electricTrucks2025]]></Name>
-					<X>380</X><Y>430</Y>
+					<X>380</X><Y>470</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -6333,7 +6577,7 @@ else{
 				<Variable Class="Parameter">
 					<Id>1700132371267</Id>
 					<Name><![CDATA[p_averageElectricityConsumptionTotal]]></Name>
-					<X>380</X><Y>580</Y>
+					<X>380</X><Y>620</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -6354,7 +6598,7 @@ else{
 				<Variable Class="Parameter">
 					<Id>1700132371270</Id>
 					<Name><![CDATA[p_averageGasConsumptionTotal]]></Name>
-					<X>380</X><Y>600</Y>
+					<X>380</X><Y>640</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -6375,7 +6619,7 @@ else{
 				<Variable Class="Parameter">
 					<Id>1700132371273</Id>
 					<Name><![CDATA[p_percHouseholdsWithDistrictHeating]]></Name>
-					<X>380</X><Y>620</Y>
+					<X>380</X><Y>660</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -6543,7 +6787,7 @@ else{
 				<Variable Class="Parameter">
 					<Id>1700132371297</Id>
 					<Name><![CDATA[p_motorBikes]]></Name>
-					<X>380</X><Y>350</Y>
+					<X>380</X><Y>390</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -6564,7 +6808,7 @@ else{
 				<Variable Class="Parameter">
 					<Id>1700132371300</Id>
 					<Name><![CDATA[p_carsBenzine]]></Name>
-					<X>380</X><Y>370</Y>
+					<X>380</X><Y>410</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -6585,7 +6829,7 @@ else{
 				<Variable Class="Parameter">
 					<Id>1700132371303</Id>
 					<Name><![CDATA[p_carsOther]]></Name>
-					<X>380</X><Y>390</Y>
+					<X>380</X><Y>430</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -7036,28 +7280,6 @@ else{
 				<Function AccessType="default" StaticFunction="false">
 					<ReturnModificator>VOID</ReturnModificator>
 					<ReturnType><![CDATA[double]]></ReturnType>
-					<Id>1700132370856</Id>
-					<Name><![CDATA[f_hybridGasCalculation]]></Name>
-					<ExcludeFromBuild>true</ExcludeFromBuild>
-					<X>-217</X><Y>575</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<Body><![CDATA[v_totalHeatPumpElectricityDemand += hybridHeatPumpElectricityDemand;
-v_totalHybridHeatPumpNaturalGasDemand += hybridHeatPumpNaturalGasDemand;
-
-if (hybridHeatPumpElectricityDemand > 0){
-	v_averageHybridCOP = (v_averageHybridCOP * indexHybrid + main.COPSpaceHeating)/(indexHybrid+1);
-	indexHybrid++;
-} 
-v_totalHybridHeatPumpInputDemand = v_totalHybridHeatPumpNaturalGasDemand + v_totalHeatPumpElectricityDemand; 
-v_hybridGasFraction = v_totalHybridHeatPumpNaturalGasDemand / v_totalHybridHeatPumpInputDemand;
-v_hybridElectricityFraction = v_totalHeatPumpElectricityDemand / v_totalHybridHeatPumpInputDemand;]]></Body>
-				</Function>
-				<Function AccessType="default" StaticFunction="false">
-					<ReturnModificator>VOID</ReturnModificator>
-					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1700132370858</Id>
 					<Name><![CDATA[f_getMaxElectricityDemandMW]]></Name>
 					<ExcludeFromBuild>true</ExcludeFromBuild>
@@ -7077,208 +7299,17 @@ maxElectricityDemand_MW = maxElectricityDemand_MW;
 					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1700132370860</Id>
 					<Name><![CDATA[f_energyCalculations]]></Name>
-					<ExcludeFromBuild>true</ExcludeFromBuild>
-					<X>-220</X><Y>450</Y>
+					<X>-220</X><Y>470</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
-					<Body><![CDATA[if (isBuurtUitgeslotenStartAnalyse == false){
-	f_getElectricityDemand();
-	f_getHeatDemand();
-	f_getGasDemand();
-	f_getElectricitySupply();
-	f_getHeatSupply();
-	
-	totalHeatDemand = spaceHeatingDemand + DHWDemand;
-	totalEnergyDemand = v_baseloadElectricityHouseholds_kW + v_baseloadUtility_kW + v_electricVehicleElectricityDemand_kW;
-	
-	/*
-	if (main.v_isRapidRun == false){
-		//Update chart
-		//energyDemandChart.updateData();
-	}
-	*/
-}
-]]></Body>
-				</Function>
-				<Function AccessType="default" StaticFunction="false">
-					<ReturnModificator>VOID</ReturnModificator>
-					<ReturnType><![CDATA[double]]></ReturnType>
-					<Id>1700132370862</Id>
-					<Name><![CDATA[f_getElectricityDemand]]></Name>
-					<ExcludeFromBuild>true</ExcludeFromBuild>
-					<X>-210</X><Y>470</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<Body><![CDATA[
-//baseloadElectricityDemand = energievraagApparatenEnLicht * aantalWoningEquivalenten * main.e1aFraction / 3.6; 
-//TODO:Why does startanalyse not match with CBS data 
-//divide by 3.6 to get from GJ to MWh
-v_baseloadElectricityHouseholds_kW = energievraagApparatenEnLicht * p_households * main.v_e1aFraction / 3.6 * 1000;
-
-
-//MOBILITY
-//Cars
-if (v_electricCars != 0){
-	v_electricCarsElectricityDemand_kW = v_electricCars * main.v_avgEVChargingDemand_kW;
-}
-else {
-	v_electricCarsElectricityDemand_kW = 0;
-}
-//Trucks
-if (v_electricTrucks != 0){
-	v_electricTrucksElectricityDemand_kW = v_electricTrucks * main.v_avgElectricTruckChargingDemand_kW;
-}
-else {
-	v_electricTrucksElectricityDemand_kW = 0;
-}
-v_electricVehicleElectricityDemand_kW = v_electricCarsElectricityDemand_kW + v_electricTrucksElectricityDemand_kW;
-
-
-//GROOTVERBRUIKERS / COMPANIES
-v_industryElectricityDemand_kW = v_companiesAnnualElectricityConsumption_kWh * main.v_e3aFraction;
-	
-]]></Body>
-				</Function>
-				<Function AccessType="default" StaticFunction="false">
-					<ReturnModificator>VOID</ReturnModificator>
-					<ReturnType><![CDATA[double]]></ReturnType>
-					<Id>1700132370864</Id>
-					<Name><![CDATA[f_getHeatDemand]]></Name>
-					<ExcludeFromBuild>true</ExcludeFromBuild>
-					<X>-210</X><Y>490</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<Body><![CDATA[spaceHeatingDemand = energievraagRuimteverwarming * p_households * main.G1ADemandFraction / 3.6 * 1000;
-DHWDemand = energievraagWarmTapwater * p_households * main.G1ADemandFraction / 3.6 * 1000; 
-
-
-//GROOTVERBRUIKERS / COMPANIES
-v_industryGasDemand_kW = v_companiesAnnualGasConsumption_kWh * main.G2ADemandFraction;
-	
-
-
-/*
-householdSpaceHeatingDemand = householdSpaceHeatingDemand2019 *  main.G1ADemandFraction;
-utilityBuildingSpaceHeatingDemand = utilityBuildingSpaceHeatingDemand2019 * main.G1ADemandFraction; //veranderd
-spaceHeatingDemand = householdSpaceHeatingDemand + utilityBuildingSpaceHeatingDemand;
-totalHeatDemand += householdSpaceHeatingDemand + utilityBuildingSpaceHeatingDemand + householdDHWDemand + utilityBuildingDHWDemand;
-*/
-//To do - DHW profiles
-//householdDHWDemand = householdDHWDemand2019 * profileFactor;
-//utilityBuildingDHWDemand = utilityBuildingDHWDemand2019 * profileFactor;
-
-]]></Body>
-				</Function>
-				<Function AccessType="default" StaticFunction="false">
-					<ReturnModificator>VOID</ReturnModificator>
-					<ReturnType><![CDATA[double]]></ReturnType>
-					<Id>1700132370866</Id>
-					<Name><![CDATA[f_getElectricitySupply]]></Name>
-					<ExcludeFromBuild>true</ExcludeFromBuild>
-					<X>-210</X><Y>530</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<Body><![CDATA[v_householdRooftopSolarSupply_kW = v_rooftopSolarInstalledCapacity_kW * main.p_PVCapacityFactor * (main.p_PVPanelSurfaceArea_m2 / main.p_PVRatedPower_kWpPanel) * main.v_irradiance_kWperM;
-
-
-/*
-if (main.v_isRapidSimulation == false){
-	energySupplyChart.updateData();
-}*/]]></Body>
-				</Function>
-				<Function AccessType="default" StaticFunction="false">
-					<ReturnModificator>VOID</ReturnModificator>
-					<ReturnType><![CDATA[double]]></ReturnType>
-					<Id>1700132370868</Id>
-					<Name><![CDATA[f_getHeatSupply]]></Name>
-					<ExcludeFromBuild>true</ExcludeFromBuild>
-					<X>-210</X><Y>550</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<Body><![CDATA[
-/*
-//Aardgas heat supply
-
-naturalGasHeatSupply = aantalAansluitingenAardgas / totaalAantalAansluitingen * spaceHeatingDemand;
-naturalGasDemand = uniform(0.6, 1.4) * naturalGasHeatSupply / HRBoilerEfficiency;
-if (naturalGasDemand < 0){
-	traceln("--ERROR Natural gas demand is below 0");
-}
-
-//Low-temperature district heating heat supply
-LTDistrictHeatingHeatSupply = main.shareOfHeatSupplyFromLT * aantalAansluitingenLTNet / totaalAantalAansluitingen * spaceHeatingDemand;
-LTDistrictHeatingHeatDemand = LTDistrictHeatingHeatSupply / ((1 - LTDistrictHeatingGridEfficiency) * 100) * 100;
-if(main.v_isRapidRun == true){
-	annualLTDistrictHeatingHeatDemand += LTDistrictHeatingHeatDemand;
-}
-//Medium-temperature district heating heat supply
-MTDistrictHeatingHeatSupply = main.shareOfHeatSupplyFromMT * aantalAansluitingenMTNet / totaalAantalAansluitingen * spaceHeatingDemand;
-MTDistrictHeatingHeatDemand = MTDistrictHeatingHeatSupply / ((1 - MTDistrictHeatingGridEfficiency) * 100) * 100;
-if(main.v_isRapidRun == true){
-	annualMTDistrictHeatingHeatDemand += MTDistrictHeatingHeatDemand;
-}
-
-//Electric heat pump heat supply
-double auxiliarySupplyMT = (1-main.shareOfHeatSupplyFromMT) * aantalAansluitingenMTNet / totaalAantalAansluitingen * spaceHeatingDemand;
-double auxiliarySupplyLT = (1-main.shareOfHeatSupplyFromLT) * aantalAansluitingenLTNet / totaalAantalAansluitingen * spaceHeatingDemand;
-
-double primaryHeatPumpSupply = aantalElektrischeWarmtePompen / totaalAantalAansluitingen * spaceHeatingDemand;
-
-heatPumpHeatSupply = primaryHeatPumpSupply + auxiliarySupplyMT + auxiliarySupplyLT;
-heatPumpElectricityDemand = heatPumpHeatSupply / main.COPSpaceHeating;
-
-
-//Hybrid heat pump heat supply
-hybridHeatPumpHeatSupply = aantalHybrideWarmtePompen / totaalAantalAansluitingen * spaceHeatingDemand;
-
-//To do -? Hybrid heatpump COP on different output temp
-if (main.COPSpaceHeating < hybridHeatPumpCOPThreshold){
-	hybridHeatPumpElectricityDemand = 0;
-	hybridHeatPumpNaturalGasDemand = hybridHeatPumpHeatSupply / HRBoilerEfficiency;
-}
-else {
-	hybridHeatPumpElectricityDemand = hybridHeatPumpHeatSupply / main.COPSpaceHeating;
-	hybridHeatPumpNaturalGasDemand = 0;
-}
-
-if (v_hybridCheckboxboolean){
-	if (v_hybridHPAansluitingVerschil > 0){
-		f_hybridGasCalculation();
-	}
-}
-else {
-	v_hybridGasFraction = 0.077;
-	v_hybridElectricityFraction = 0.923;
-	v_averageHybridCOP = 3.96;
-}
-
-//HR boiler green gas heat supply
-greenGasHeatSupply = aantalHRKetelsGroenGas / totaalAantalAansluitingen * spaceHeatingDemand;
-greenGasDemand = greenGasHeatSupply / HRBoilerEfficiency;
-if(main.v_isRapidRun == true){
-	annualGreenGasDemand += greenGasDemand;
-}
-
-if (Double.isNaN(naturalGasDemand) == true || Double.isNaN(heatPumpElectricityDemand ) == true || Double.isNaN(MTDistrictHeatingHeatDemand ) == true || Double.isNaN(LTDistrictHeatingHeatDemand ) == true || Double.isNaN(hybridHeatPumpNaturalGasDemand ) == true || Double.isNaN(hybridHeatPumpElectricityDemand ) == true || Double.isNaN(greenGasDemand ) == true)  {
-	traceln(this);
-}
-
-*/
-
-
-
-
-]]></Body>
+					<Body><![CDATA[//Check if within grid limits
+v_maxGridLoad_kW = f_getGridImpact();
+if( v_maxGridLoad_kW > p_gridCapacity_kW ){
+	v_gridCongestion = true;
+	traceln("Grid congestion at neighborhood " + this.getIndex() + " in year " + getYear());
+}]]></Body>
 				</Function>
 				<Function AccessType="default" StaticFunction="false">
 					<ReturnModificator>VOID</ReturnModificator>
@@ -7449,21 +7480,6 @@ v_rooftopPVPotential_kW = v_rooftopPVPotential_nOfPanels * main.p_PVRatedPower_k
 				<Function AccessType="default" StaticFunction="false">
 					<ReturnModificator>VOID</ReturnModificator>
 					<ReturnType><![CDATA[double]]></ReturnType>
-					<Id>1700132370884</Id>
-					<Name><![CDATA[f_getGasDemand]]></Name>
-					<ExcludeFromBuild>true</ExcludeFromBuild>
-					<X>-210</X><Y>510</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<Body><![CDATA[//GROOTVERBRUIKERS / COMPANIES
-v_industryGasDemand_kW = v_companiesAnnualGasConsumption_kWh * main.G2ADemandFraction;
-]]></Body>
-				</Function>
-				<Function AccessType="default" StaticFunction="false">
-					<ReturnModificator>VOID</ReturnModificator>
-					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1700132370886</Id>
 					<Name><![CDATA[f_setTotalEnergyDemandDetailedCompanies]]></Name>
 					<ExcludeFromBuild>true</ExcludeFromBuild>
@@ -7620,8 +7636,8 @@ else{
 					<ReturnModificator>VOID</ReturnModificator>
 					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1704719272120</Id>
-					<Name><![CDATA[f_connectHouseholdsToDistrictHeating]]></Name>
-					<X>-220</X><Y>600</Y>
+					<Name><![CDATA[f_setHouseholdsToDistrictHeating]]></Name>
+					<X>-420</X><Y>790</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -7654,7 +7670,7 @@ else{
 					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1704731793322</Id>
 					<Name><![CDATA[f_setGridCapacity]]></Name>
-					<X>-180</X><Y>220</Y>
+					<X>-420</X><Y>770</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -7705,9 +7721,62 @@ double PmaxHouseholds = PmaxPerHousehold * households * simultaneityBaseload * p
 double PmaxHeatPumps = PmaxPerHeatPump * householdsWithHeatPump * simultaneityHeatPump;
 double PmaxEVs = PmaxPerEV * EVs * simultaneityEV;
 
-return ( PmaxHouseholds + PmaxHeatPumps + PmaxEVs ) * ( 1 + safetyMargin) / cosPhi;
+//traceln(PmaxHouseholds + "Pmax Households " + PmaxHeatPumps  + "Pmax Heat pumps " + PmaxEVs + "Pmax EVs" );
 
+return roundToInt(( PmaxHouseholds + PmaxHeatPumps + PmaxEVs ) * ( 1 + safetyMargin) / cosPhi);
 
+//TODO: Check if we need steps for first Eerstvolgende normtransformator: Snom = 250 kVA
+
+]]></Body>
+				</Function>
+				<Function AccessType="default" StaticFunction="false">
+					<ReturnModificator>RETURNS_VALUE</ReturnModificator>
+					<ReturnType><![CDATA[double]]></ReturnType>
+					<Id>1704796709641</Id>
+					<Name><![CDATA[f_getGridImpact]]></Name>
+					<X>-215</X><Y>490</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Body><![CDATA[//BASELOAD
+//Basislast, formule van Velander (Velander, 1952; Strand-Axelsson, 1975 en EnergieNed, 1996): 
+double alfa = 0.23 * pow(10,-3);
+double beta = 0.016;
+double JaarverbruikAansluitingen = p_households * p_averageElectricityConsumptionTotal;
+double PmaxHouseholds = alfa * JaarverbruikAansluitingen + beta * sqrt(JaarverbruikAansluitingen);
+
+//HEAT PUMPS
+double PmaxHeatPumps = p_households * v_electricHeatPumps_perc * main.p_simultaneityHeatPump * main.p_PmaxPerHeatPump;
+
+//ELECTRIC TRANSPORT
+double PmaxEVs = v_electricCars * main.p_PmaxPerEV * main.p_simultaneityEV;
+//v_electricVans * impactPerCar
+//v_electricTrucks * impactPerTruck
+
+return (PmaxHouseholds + PmaxHeatPumps + PmaxEVs);]]></Body>
+				</Function>
+				<Function AccessType="default" StaticFunction="false">
+					<ReturnModificator>VOID</ReturnModificator>
+					<ReturnType><![CDATA[double]]></ReturnType>
+					<Id>1704798636372</Id>
+					<Name><![CDATA[f_getHouseholdHeatingMethods]]></Name>
+					<X>-220</X><Y>450</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Body><![CDATA[//Get total households with heating m ethod in neighborhood.
+v_gasBoilers_nb = count(c_households, x->x.v_heatingMethod == NATURAL_GAS_BOILER);
+v_districtHeating_nb = count(c_households, x->x.v_heatingMethod == DISTRICT_HEATING);
+v_electricHeatPumps_nb = count(c_households, x->x.v_heatingMethod == ELECTRIC_HEAT_PUMP);
+v_hybridHeatPumps_nb = count(c_households, x->x.v_heatingMethod == HYBRID_HEAT_PUMP);
+
+double households = c_households.size();
+v_gasBoilers_perc = v_gasBoilers_nb / households;
+v_districtHeating_perc = v_districtHeating_nb / households;
+v_electricHeatPumps_perc = v_electricHeatPumps_nb / households;
+v_hybridHeatPumps_perc = v_hybridHeatPumps_nb / households;
 
 ]]></Body>
 				</Function>
@@ -8319,7 +8388,7 @@ return ( PmaxHouseholds + PmaxHeatPumps + PmaxEVs ) * ( 1 + safetyMargin) / cosP
 				<Text>
 					<Id>1700132371068</Id>
 					<Name><![CDATA[Btext17]]></Name>
-					<X>400</X><Y>250</Y>
+					<X>400</X><Y>290</Y>
 					<Label><X>0</X><Y>-10</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -8363,7 +8432,7 @@ return ( PmaxHouseholds + PmaxHeatPumps + PmaxEVs ) * ( 1 + safetyMargin) / cosP
 					<Id>1700132371072</Id>
 					<Name><![CDATA[Btext19]]></Name>
 					<ExcludeFromBuild>true</ExcludeFromBuild>
-					<X>430</X><Y>550</Y>
+					<X>430</X><Y>590</Y>
 					<Label><X>0</X><Y>-10</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -8621,6 +8690,21 @@ return ( PmaxHouseholds + PmaxHeatPumps + PmaxEVs ) * ( 1 + safetyMargin) / cosP
 				</Parameter>
 				<Parameter>
 					<ParameterName><![CDATA[p_standardConnectionCapacity]]></ParameterName>
+				</Parameter>
+				<Parameter>
+					<ParameterName><![CDATA[p_PmaxPerHousehold]]></ParameterName>
+				</Parameter>
+				<Parameter>
+					<ParameterName><![CDATA[p_PmaxPerHeatPump]]></ParameterName>
+				</Parameter>
+				<Parameter>
+					<ParameterName><![CDATA[p_PmaxPerEV]]></ParameterName>
+				</Parameter>
+				<Parameter>
+					<ParameterName><![CDATA[p_simultaneityEV]]></ParameterName>
+				</Parameter>
+				<Parameter>
+					<ParameterName><![CDATA[p_simultaneityHeatPump]]></ParameterName>
 				</Parameter>
 			</Parameters>			
 			<PresentationProperties>
@@ -9043,6 +9127,21 @@ chart1.addDataSet( , format( root.p_innovationCoefficient ), color, true, Chart.
 			<FreeformParamValue>	
 				<Id>1704731682576</Id>
 			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1704794216031</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1704794443447</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1704794471579</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1704794478355</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1704794561362</Id>
+			</FreeformParamValue>
 			<RangeVariationParamValue>	
 				<Id>1694513336932</Id>
 				<Type>FIXED</Type>
@@ -9090,6 +9189,26 @@ chart1.addDataSet( , format( root.p_innovationCoefficient ), color, true, Chart.
 			</RangeVariationParamValue>
 			<RangeVariationParamValue>	
 				<Id>1704731682576</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1704794216031</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1704794443447</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1704794471579</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1704794478355</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1704794561362</Id>
 				<Type>FIXED</Type>
 			</RangeVariationParamValue>
 			<ModelTimeProperties>
