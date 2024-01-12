@@ -68,6 +68,10 @@
 				<Name><![CDATA[NATURAL_GAS_BOILER]]></Name>
 			</Option>
 			<Option>
+				<Id>1704898200143</Id>
+				<Name><![CDATA[NATURAL_GAS_BLOCK]]></Name>
+			</Option>
+			<Option>
 				<Id>1704719597954</Id>
 				<Name><![CDATA[DISTRICT_HEATING]]></Name>
 			</Option>
@@ -96,7 +100,8 @@ import org.json.JSONArray;]]></Import>
 			<StartupCode><![CDATA[v_timer = System.currentTimeMillis();
 f_initalizeSettings();
 traceln(roundToDecimal((System.currentTimeMillis() - v_timer)/1000,3) + " seconds to initialize model");
-]]></StartupCode>
+
+//f_generateTestAgentPopulation();]]></StartupCode>
 			<Generic>false</Generic>
 			<GenericParameter>
 				<Id>1693907397599</Id>
@@ -415,7 +420,7 @@ traceln(roundToDecimal((System.currentTimeMillis() - v_timer)/1000,3) + " second
 				</Variable>
 				<Variable Class="PlainVariable">
 					<Id>1704723492508</Id>
-					<Name><![CDATA[v_naturalGasColor]]></Name>
+					<Name><![CDATA[v_naturalGasBoilerColor]]></Name>
 					<X>400</X><Y>1025</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -424,14 +429,14 @@ traceln(roundToDecimal((System.currentTimeMillis() - v_timer)/1000,3) + " second
 					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
 						<Type><![CDATA[Color]]></Type>        
 						<InitialValue Class="CodeValue">
-							<Code><![CDATA[silver]]></Code>
+							<Code><![CDATA[darkGray]]></Code>
 						</InitialValue>
 					</Properties>
 				</Variable>
 				<Variable Class="PlainVariable">
 					<Id>1704723492523</Id>
 					<Name><![CDATA[v_districtHeatingColor]]></Name>
-					<X>400</X><Y>1045</Y>
+					<X>400</X><Y>1065</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -446,7 +451,7 @@ traceln(roundToDecimal((System.currentTimeMillis() - v_timer)/1000,3) + " second
 				<Variable Class="PlainVariable">
 					<Id>1704723492525</Id>
 					<Name><![CDATA[v_hybridHeatPumpColor]]></Name>
-					<X>400</X><Y>1085</Y>
+					<X>400</X><Y>1105</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -461,7 +466,7 @@ traceln(roundToDecimal((System.currentTimeMillis() - v_timer)/1000,3) + " second
 				<Variable Class="PlainVariable">
 					<Id>1704723492527</Id>
 					<Name><![CDATA[v_electricHeatPumpColor]]></Name>
-					<X>400</X><Y>1065</Y>
+					<X>400</X><Y>1085</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -475,8 +480,8 @@ traceln(roundToDecimal((System.currentTimeMillis() - v_timer)/1000,3) + " second
 				</Variable>
 				<Variable Class="PlainVariable">
 					<Id>1704723492529</Id>
-					<Name><![CDATA[v_naturalGasText]]></Name>
-					<X>400</X><Y>1120</Y>
+					<Name><![CDATA[v_naturalGasBoilerText]]></Name>
+					<X>400</X><Y>1140</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -491,7 +496,7 @@ traceln(roundToDecimal((System.currentTimeMillis() - v_timer)/1000,3) + " second
 				<Variable Class="PlainVariable">
 					<Id>1704723492531</Id>
 					<Name><![CDATA[v_districtHeatText]]></Name>
-					<X>400</X><Y>1140</Y>
+					<X>400</X><Y>1180</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -506,7 +511,7 @@ traceln(roundToDecimal((System.currentTimeMillis() - v_timer)/1000,3) + " second
 				<Variable Class="PlainVariable">
 					<Id>1704723492533</Id>
 					<Name><![CDATA[v_hybridHeatPumpText]]></Name>
-					<X>400</X><Y>1180</Y>
+					<X>400</X><Y>1220</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -521,7 +526,7 @@ traceln(roundToDecimal((System.currentTimeMillis() - v_timer)/1000,3) + " second
 				<Variable Class="PlainVariable">
 					<Id>1704723492535</Id>
 					<Name><![CDATA[v_electricHeatPumpText]]></Name>
-					<X>400</X><Y>1160</Y>
+					<X>400</X><Y>1200</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -530,6 +535,81 @@ traceln(roundToDecimal((System.currentTimeMillis() - v_timer)/1000,3) + " second
 						<Type><![CDATA[String]]></Type>        
 						<InitialValue Class="CodeValue">
 							<Code><![CDATA["Electric heat pump"]]></Code>
+						</InitialValue>
+					</Properties>
+				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1704898494221</Id>
+					<Name><![CDATA[v_naturalGasBlockText]]></Name>
+					<X>400</X><Y>1160</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[String]]></Type>        
+						<InitialValue Class="CodeValue">
+							<Code><![CDATA["Natural gas block heating"]]></Code>
+						</InitialValue>
+					</Properties>
+				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1704898558811</Id>
+					<Name><![CDATA[v_naturalGasBlockColor]]></Name>
+					<X>400</X><Y>1045</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[Color]]></Type>        
+						<InitialValue Class="CodeValue">
+							<Code><![CDATA[silver]]></Code>
+						</InitialValue>
+					</Properties>
+				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1704905115197</Id>
+					<Name><![CDATA[v_industryColor]]></Name>
+					<X>100</X><Y>1200</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[Color]]></Type>        
+						<InitialValue Class="CodeValue">
+							<Code><![CDATA[blue]]></Code>
+						</InitialValue>
+					</Properties>
+				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1704905115212</Id>
+					<Name><![CDATA[v_utilityColor]]></Name>
+					<X>100</X><Y>1240</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[Color]]></Type>        
+						<InitialValue Class="CodeValue">
+							<Code><![CDATA[lightSeaGreen]]></Code>
+						</InitialValue>
+					</Properties>
+				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1704905115214</Id>
+					<Name><![CDATA[v_shopColor]]></Name>
+					<X>100</X><Y>1220</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[Color]]></Type>        
+						<InitialValue Class="CodeValue">
+							<Code><![CDATA[yellowGreen]]></Code>
 						</InitialValue>
 					</Properties>
 				</Variable>
@@ -896,6 +976,31 @@ traceln(roundToDecimal((System.currentTimeMillis() - v_timer)/1000,3) + " second
 						</ParameterEditor>
 					</Properties>                 
 				</Variable>
+				<Variable Class="Parameter">
+					<Id>1704896138407</Id>
+					<Name><![CDATA[p_testPopulationSize]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
+					<X>-850</X><Y>-260</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[double]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<DefaultValue Class="CodeValue">
+							<Code><![CDATA[8 * pow(10,6)]]></Code>
+						</DefaultValue>
+						<ParameterEditor>
+							<Id>1704896138405</Id>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
 			</Variables>
 			<Events>
 				<Event>
@@ -1013,7 +1118,7 @@ p_p6GasConnections_2022
 					<ReturnModificator>VOID</ReturnModificator>
 					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1693909271524</Id>
-					<Name><![CDATA[f_generateHouseholdsFromAPI]]></Name>
+					<Name><![CDATA[f_generateObjectsFromAPI]]></Name>
 					<X>-460</X><Y>80</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -1057,61 +1162,20 @@ for (GZ_Neighborhood x : pop_GZ_Neighborhoods) {
 	        // Loop through the JSON array and create agents
 			for (int i = 0; i < jsonArray.length(); i++) {
 	    		JSONObject jsonObject = jsonArray.getJSONObject(i);
-	
-	   			// Create agents and set their properties based on JSON data
-				EA_Household household = add_pop_EA_Households(); // Replace YourAgentType with your agent type
-				household.set_p_numid(jsonObject.getDouble("numid"));
-				household.set_p_pid(jsonObject.getString("pid"));
-				household.set_p_vid(jsonObject.getDouble("vid"));
-				household.set_p_neighborhoodCode(jsonObject.getString("buurtcode"));
-				household.set_p_neighborhoodName(jsonObject.getString("buurtnaam"));
-				household.set_p_districtCode(jsonObject.getString("wijkcode"));
-				household.set_p_districtName(jsonObject.getString("wijknaam"));
-				household.set_p_municipalityCode(jsonObject.getString("gemeentecode"));
-				household.set_p_municipalityName(jsonObject.getString("gemeentenaam"));
-				household.set_p_provinceCode(jsonObject.getString("provincienaam"));
-				household.set_p_provinceName(jsonObject.getString("provinciecode"));
-				household.set_p_postalCode(jsonObject.getString("postcode"));
-				household.set_p_street(jsonObject.getString("straat"));
-				household.set_p_number(jsonObject.getDouble("huisnummer"));
-				household.set_p_surfaceArea(jsonObject.getDouble("oppervlakte"));
-				household.set_p_householdEquivalent(jsonObject.getDouble("woningequivalent"));
-				household.set_p_buildingYear(jsonObject.getDouble("pand_bouwjaar"));
-				household.set_p_point(jsonObject.getString("point"));
 				
-				//Postal code stats
-				household.set_p_averageWOZValueHouse(jsonObject.getDouble("pc6_gemiddelde_woz_waarde_woning"));
-				household.set_p_averageWOZValueMunicipality(jsonObject.getDouble("gemiddelde_gemeente_woz"));
-				household.set_p_averageHomeOwnerPerc(jsonObject.getDouble("pc6_eigendomssituatie_perc_koop"));
-				household.set_p_averageHomeRentPerc(jsonObject.getDouble("pc6_eigendomssituatie_perc_huur"));
-				household.set_p_numberHousesHousingCooperations(jsonObject.getDouble("pc6_eigendomssituatie_aantal_woningen_corporaties"));
-				household.set_p_groupID2022(jsonObject.getString("pc6_group_id_2022"));
-				
-				//Energy stats
-				household.set_p_energyLabelLetter(jsonObject.getString("energieklasse"));
-				household.set_p_buildingTypeLabel(jsonObject.getString("woning_type"));
-				household.set_p_SBICode(jsonObject.getString("sbicode"));
-				household.set_p_EANCount(jsonObject.getDouble("gas_ean_count"));
-				household.set_p_p6GasM3_2022(jsonObject.getDouble("pc6_gasm3_2022"));
-				household.set_p_p6KWh_2022(jsonObject.getDouble("pc6_kwh_2022"));
-				household.set_p_p6KWhDirection_2022(jsonObject.getDouble("kwh_leveringsrichting_2022"));
-				household.set_p_p6LandSeizure_M2(jsonObject.getDouble("pc6_grondbeslag_m2"));
-				household.set_p_p6GasConnections_2022(jsonObject.getDouble("pc6_gas_aansluitingen_2022"));
-				
-				//household.setLatLon
-				//setProperty1(jsonObject.getString("numid"));
-				//agent.setProperty2(jsonObject.getInt("property2"));
-	    		// Set other properties as needed
-				household.f_setHouseholdLocation();
-				household.p_neighborhood = x;
-				x.c_households.add(household);
-				
-				//TODO: set heating methods based on input data
-				household.v_heatingMethod = NATURAL_GAS_BOILER;
-				household.f_setColor(household.v_heatingMethod);
-
-			}			
-			
+				//Make households just for gebruiksdoel woonfuctie				
+				if(jsonObject.getString("gebruiksdoelen").contains("woonfunctie")){
+		   			// Create agents and set their properties based on JSON data
+					f_getHouseholds(jsonObject, x);
+				}
+				//for industry
+				else if (jsonObject.getString("gebruiksdoelen").contains("industriefunctie")){
+					f_getIndustrySites(jsonObject, x);
+				}
+				else {
+					f_getUtilityObjects(jsonObject, x);
+				}			
+			}
 			
 		} 
 		else {
@@ -1122,6 +1186,12 @@ for (GZ_Neighborhood x : pop_GZ_Neighborhoods) {
 	}
 }
 
+//Check if multiple households in building
+for(EA_Household x : pop_EA_Households){
+	x.p_numberOfHouseholdsInBuilding = count(pop_EA_Households, y->y.p_pid.equals(x.p_pid));
+	x.f_setDefaultEnergyLabel();
+}
+//traceln(count(pop_EA_Households, x->x.p_numberOfHouseholdsInBuilding > 1) + " households with multiple households in building " + average(pop_EA_Households, x->x.p_numberOfHouseholdsInBuilding) + " average households in building");
 
 ]]></Body>
 				</Function>
@@ -1191,7 +1261,8 @@ try {
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
 					<Body><![CDATA[f_generateNeighborhoods();
-f_generateHouseholdsFromAPI();
+f_generateObjectsFromAPI();
+f_setHouseholdHeatingMethods();
 
 
 double averageLatitude = average(pop_EA_Households, x->x.p_latitude);
@@ -1200,7 +1271,7 @@ map.setProjectionCenter(averageLatitude, averageLongitude);
 double mapScale = 0.000030;
 map.setMapScale(mapScale);
 
-]]></Body>
+f_setText();]]></Body>
 				</Function>
 				<Function AccessType="default" StaticFunction="false">
 					<ReturnModificator>VOID</ReturnModificator>
@@ -1413,8 +1484,10 @@ for (Tuple row_heatingMethod : rows_heatingMethods){
 			x.p_electricHeatingNoGas_perc = f_returnZeroIfDoubleIsSmallerThanZero(x.p_electricHeatingNoGas_perc);
 			x.p_heatingUnkown_perc = f_returnZeroIfDoubleIsSmallerThanZero(x.p_heatingUnkown_perc);	
 			
-			x.f_setDefaultHeatSupply();
+			x.p_electricHeatPump_perc = x.p_electricHeatingNoGas_perc + x.p_electricHeatingLowGas_perc;
+			x.p_hybridHeatPump_perc = x.p_electricHeatingHighGas_perc;
 			x.f_checkDefaultDistrictHeating();
+			//traceln((x.p_gasCV_perc + x.p_gasBlockHeating_perc + x.p_electricHeating_perc + x.p_districtHeating_perc) + " total heating methods, should be 1");
 			break;
 		}
 	}
@@ -1641,7 +1714,8 @@ if (getYear() == yearDistrictHeatingShortTerm || getYear() == yearDistrictHeatin
 					<ShowLabel>true</ShowLabel>
 					<Body><![CDATA[
 ch_eatingMethodStackChart.removeAll();
-ch_eatingMethodStackChart.addDataSet(data_naturalGasBoilers_nb, v_naturalGasText, v_naturalGasColor);
+ch_eatingMethodStackChart.addDataSet(data_naturalGasBoilers_nb, v_naturalGasBoilerText, v_naturalGasBoilerColor);
+ch_eatingMethodStackChart.addDataSet(data_naturalGasBlockHeatingConnections_nb, v_naturalGasBlockText, v_naturalGasBlockColor);
 ch_eatingMethodStackChart.addDataSet(data_districtHeatingConnections_nb, v_districtHeatText, v_districtHeatingColor);
 ch_eatingMethodStackChart.addDataSet(data_electricHeatPumps_nb, v_electricHeatPumpText, v_electricHeatPumpColor);
 ch_eatingMethodStackChart.addDataSet(data_hybridHeatPumps_nb, v_hybridHeatPumpText, v_hybridHeatPumpColor);
@@ -1659,10 +1733,277 @@ ch_eatingMethodStackChart.addDataSet(data_hybridHeatPumps_nb, v_hybridHeatPumpTe
 					<ShowLabel>true</ShowLabel>
 					<Body><![CDATA[
 data_naturalGasBoilers_nb.add(count(pop_EA_Households, x->x.v_heatingMethod == NATURAL_GAS_BOILER));
+data_naturalGasBlockHeatingConnections_nb.add(count(pop_EA_Households, x->x.v_heatingMethod == NATURAL_GAS_BLOCK));
 data_districtHeatingConnections_nb.add(count(pop_EA_Households, x->x.v_heatingMethod == DISTRICT_HEATING));
 data_electricHeatPumps_nb.add(count(pop_EA_Households, x->x.v_heatingMethod == ELECTRIC_HEAT_PUMP));
 data_hybridHeatPumps_nb.add(count(pop_EA_Households, x->x.v_heatingMethod == HYBRID_HEAT_PUMP));
 ]]></Body>
+				</Function>
+				<Function AccessType="default" StaticFunction="false">
+					<ReturnModificator>VOID</ReturnModificator>
+					<ReturnType><![CDATA[double]]></ReturnType>
+					<Id>1704896042683</Id>
+					<Name><![CDATA[f_generateTestAgentPopulation]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
+					<X>-850</X><Y>-310</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Body><![CDATA[v_timer = System.currentTimeMillis();
+for(int i = 0; i < p_testPopulationSize; i++){
+	add_tests();
+}
+traceln(roundToDecimal((System.currentTimeMillis() - v_timer)/1000,3) + " seconds to generate " + p_testPopulationSize + " agents in test population");]]></Body>
+				</Function>
+				<Function AccessType="default" StaticFunction="false">
+					<ReturnModificator>VOID</ReturnModificator>
+					<ReturnType><![CDATA[double]]></ReturnType>
+					<Id>1704902769588</Id>
+					<Name><![CDATA[f_getUtilityObjects]]></Name>
+					<X>-450</X><Y>120</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Parameter>
+						<Name><![CDATA[jsonObject]]></Name>
+						<Type><![CDATA[JSONObject]]></Type>
+					</Parameter>
+					<Parameter>
+						<Name><![CDATA[neighborhood]]></Name>
+						<Type><![CDATA[GZ_Neighborhood]]></Type>
+					</Parameter>
+					<Body><![CDATA[// Create agents and set their properties based on JSON data
+EA_UtilityObject utilityObject = add_pop_EA_UtilityObjects(); // Replace YourAgentType with your agent type
+utilityObject.set_p_numid(jsonObject.getDouble("numid"));
+utilityObject.set_p_pid(jsonObject.getString("pid"));
+utilityObject.set_p_vid(jsonObject.getDouble("vid"));
+utilityObject.set_p_neighborhoodCode(jsonObject.getString("buurtcode"));
+utilityObject.set_p_neighborhoodName(jsonObject.getString("buurtnaam"));
+utilityObject.set_p_districtCode(jsonObject.getString("wijkcode"));
+utilityObject.set_p_districtName(jsonObject.getString("wijknaam"));
+utilityObject.set_p_municipalityCode(jsonObject.getString("gemeentecode"));
+utilityObject.set_p_municipalityName(jsonObject.getString("gemeentenaam"));
+utilityObject.set_p_provinceCode(jsonObject.getString("provincienaam"));
+utilityObject.set_p_provinceName(jsonObject.getString("provinciecode"));
+utilityObject.set_p_postalCode(jsonObject.getString("postcode"));
+utilityObject.set_p_street(jsonObject.getString("straat"));
+utilityObject.set_p_number(jsonObject.getDouble("huisnummer"));
+utilityObject.set_p_surfaceArea(jsonObject.getDouble("oppervlakte"));
+utilityObject.set_p_householdEquivalent(jsonObject.getDouble("woningequivalent"));
+utilityObject.set_p_buildingYear(jsonObject.getDouble("pand_bouwjaar"));
+utilityObject.set_p_usage(jsonObject.getString("gebruiksdoelen"));
+utilityObject.set_p_point(jsonObject.getString("point"));
+				
+//Postal code stats
+/*
+utilityObject.set_p_averageWOZValueHouse(jsonObject.getDouble("pc6_gemiddelde_woz_waarde_woning"));
+utilityObject.set_p_averageWOZValueMunicipality(jsonObject.getDouble("gemiddelde_gemeente_woz"));
+utilityObject.set_p_averageHomeOwnerPerc(jsonObject.getDouble("pc6_eigendomssituatie_perc_koop"));
+utilityObject.set_p_averageHomeRentPerc(jsonObject.getDouble("pc6_eigendomssituatie_perc_huur"));
+utilityObject.set_p_numberHousesHousingCooperations(jsonObject.getDouble("pc6_eigendomssituatie_aantal_woningen_corporaties"));
+utilityObject.set_p_groupID2022(jsonObject.getString("pc6_group_id_2022"));
+*/
+//Energy stats
+utilityObject.set_p_energyLabelLetter(jsonObject.getString("energieklasse"));
+utilityObject.set_p_buildingTypeLabel(jsonObject.getString("woning_type"));
+utilityObject.set_p_SBICode(jsonObject.getString("sbicode"));
+utilityObject.set_p_EANCount(jsonObject.getDouble("gas_ean_count"));
+utilityObject.set_p_p6GasM3_2022(jsonObject.getDouble("pc6_gasm3_2022"));
+utilityObject.set_p_p6KWh_2022(jsonObject.getDouble("pc6_kwh_2022"));
+utilityObject.set_p_p6KWhDirection_2022(jsonObject.getDouble("kwh_leveringsrichting_2022"));
+utilityObject.set_p_p6LandSeizure_M2(jsonObject.getDouble("pc6_grondbeslag_m2"));
+utilityObject.set_p_p6GasConnections_2022(jsonObject.getDouble("pc6_gas_aansluitingen_2022"));
+					
+//household.setLatLon
+//setProperty1(jsonObject.getString("numid"));
+//agent.setProperty2(jsonObject.getInt("property2"));
+// Set other properties as needed
+utilityObject.f_setLocation();
+utilityObject.p_neighborhood = neighborhood;
+neighborhood.c_utilityObjects.add(utilityObject);
+
+if( utilityObject.p_usage.equals("winkelfunctie")){
+	utilityObject.oval.setFillColor(v_shopColor);
+}
+else {
+	utilityObject.oval.setFillColor(v_utilityColor);
+}]]></Body>
+				</Function>
+				<Function AccessType="default" StaticFunction="false">
+					<ReturnModificator>VOID</ReturnModificator>
+					<ReturnType><![CDATA[double]]></ReturnType>
+					<Id>1704903345615</Id>
+					<Name><![CDATA[f_getHouseholds]]></Name>
+					<X>-450</X><Y>100</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Parameter>
+						<Name><![CDATA[jsonObject]]></Name>
+						<Type><![CDATA[JSONObject]]></Type>
+					</Parameter>
+					<Parameter>
+						<Name><![CDATA[neighborhood]]></Name>
+						<Type><![CDATA[GZ_Neighborhood]]></Type>
+					</Parameter>
+					<Body><![CDATA[// Create agents and set their properties based on JSON data
+EA_Household household = add_pop_EA_Households(); // Replace YourAgentType with your agent type
+household.set_p_numid(jsonObject.getDouble("numid"));
+household.set_p_pid(jsonObject.getString("pid"));
+household.set_p_vid(jsonObject.getDouble("vid"));
+household.set_p_neighborhoodCode(jsonObject.getString("buurtcode"));
+household.set_p_neighborhoodName(jsonObject.getString("buurtnaam"));
+household.set_p_districtCode(jsonObject.getString("wijkcode"));
+household.set_p_districtName(jsonObject.getString("wijknaam"));
+household.set_p_municipalityCode(jsonObject.getString("gemeentecode"));
+household.set_p_municipalityName(jsonObject.getString("gemeentenaam"));
+household.set_p_provinceCode(jsonObject.getString("provincienaam"));
+household.set_p_provinceName(jsonObject.getString("provinciecode"));
+household.set_p_postalCode(jsonObject.getString("postcode"));
+household.set_p_street(jsonObject.getString("straat"));
+household.set_p_number(jsonObject.getDouble("huisnummer"));
+household.set_p_surfaceArea(jsonObject.getDouble("oppervlakte"));
+household.set_p_householdEquivalent(jsonObject.getDouble("woningequivalent"));
+household.set_p_buildingYear(jsonObject.getDouble("pand_bouwjaar"));
+household.set_p_usage(jsonObject.getString("gebruiksdoelen"));
+household.set_p_point(jsonObject.getString("point"));
+				
+//Postal code stats
+household.set_p_averageWOZValueHouse(jsonObject.getDouble("pc6_gemiddelde_woz_waarde_woning"));
+household.set_p_averageWOZValueMunicipality(jsonObject.getDouble("gemiddelde_gemeente_woz"));
+household.set_p_averageHomeOwnerPerc(jsonObject.getDouble("pc6_eigendomssituatie_perc_koop"));
+household.set_p_averageHomeRentPerc(jsonObject.getDouble("pc6_eigendomssituatie_perc_huur"));
+household.set_p_numberHousesHousingCooperations(jsonObject.getDouble("pc6_eigendomssituatie_aantal_woningen_corporaties"));
+household.set_p_groupID2022(jsonObject.getString("pc6_group_id_2022"));
+
+//Energy stats
+household.set_p_energyLabelLetter(jsonObject.getString("energieklasse"));
+household.set_p_buildingTypeLabel(jsonObject.getString("woning_type"));
+household.set_p_SBICode(jsonObject.getString("sbicode"));
+household.set_p_EANCount(jsonObject.getDouble("gas_ean_count"));
+household.set_p_p6GasM3_2022(jsonObject.getDouble("pc6_gasm3_2022"));
+household.set_p_p6KWh_2022(jsonObject.getDouble("pc6_kwh_2022"));
+household.set_p_p6KWhDirection_2022(jsonObject.getDouble("kwh_leveringsrichting_2022"));
+household.set_p_p6LandSeizure_M2(jsonObject.getDouble("pc6_grondbeslag_m2"));
+household.set_p_p6GasConnections_2022(jsonObject.getDouble("pc6_gas_aansluitingen_2022"));
+					
+//household.setLatLon
+//setProperty1(jsonObject.getString("numid"));
+//agent.setProperty2(jsonObject.getInt("property2"));
+// Set other properties as needed
+household.f_setLocation();
+household.p_neighborhood = neighborhood;
+neighborhood.c_households.add(household);
+]]></Body>
+				</Function>
+				<Function AccessType="default" StaticFunction="false">
+					<ReturnModificator>VOID</ReturnModificator>
+					<ReturnType><![CDATA[double]]></ReturnType>
+					<Id>1704903351337</Id>
+					<Name><![CDATA[f_getIndustrySites]]></Name>
+					<X>-450</X><Y>140</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Parameter>
+						<Name><![CDATA[jsonObject]]></Name>
+						<Type><![CDATA[JSONObject]]></Type>
+					</Parameter>
+					<Parameter>
+						<Name><![CDATA[neighborhood]]></Name>
+						<Type><![CDATA[GZ_Neighborhood]]></Type>
+					</Parameter>
+					<Body><![CDATA[// Create agents and set their properties based on JSON data
+EA_IndustrySite industrySite = add_pop_EA_IndustrySites(); // Replace YourAgentType with your agent type
+industrySite.set_p_numid(jsonObject.getDouble("numid"));
+industrySite.set_p_pid(jsonObject.getString("pid"));
+industrySite.set_p_vid(jsonObject.getDouble("vid"));
+industrySite.set_p_neighborhoodCode(jsonObject.getString("buurtcode"));
+industrySite.set_p_neighborhoodName(jsonObject.getString("buurtnaam"));
+industrySite.set_p_districtCode(jsonObject.getString("wijkcode"));
+industrySite.set_p_districtName(jsonObject.getString("wijknaam"));
+industrySite.set_p_municipalityCode(jsonObject.getString("gemeentecode"));
+industrySite.set_p_municipalityName(jsonObject.getString("gemeentenaam"));
+industrySite.set_p_provinceCode(jsonObject.getString("provincienaam"));
+industrySite.set_p_provinceName(jsonObject.getString("provinciecode"));
+industrySite.set_p_postalCode(jsonObject.getString("postcode"));
+industrySite.set_p_street(jsonObject.getString("straat"));
+industrySite.set_p_number(jsonObject.getDouble("huisnummer"));
+industrySite.set_p_surfaceArea(jsonObject.getDouble("oppervlakte"));
+industrySite.set_p_householdEquivalent(jsonObject.getDouble("woningequivalent"));
+industrySite.set_p_buildingYear(jsonObject.getDouble("pand_bouwjaar"));
+industrySite.set_p_usage(jsonObject.getString("gebruiksdoelen"));
+industrySite.set_p_point(jsonObject.getString("point"));
+				
+//Postal code stats
+/*
+EA_IndustrySite.set_p_averageWOZValueHouse(jsonObject.getDouble("pc6_gemiddelde_woz_waarde_woning"));
+EA_IndustrySite.set_p_averageWOZValueMunicipality(jsonObject.getDouble("gemiddelde_gemeente_woz"));
+EA_IndustrySite.set_p_averageHomeOwnerPerc(jsonObject.getDouble("pc6_eigendomssituatie_perc_koop"));
+EA_IndustrySite.set_p_averageHomeRentPerc(jsonObject.getDouble("pc6_eigendomssituatie_perc_huur"));
+EA_IndustrySite.set_p_numberHousesHousingCooperations(jsonObject.getDouble("pc6_eigendomssituatie_aantal_woningen_corporaties"));
+EA_IndustrySite.set_p_groupID2022(jsonObject.getString("pc6_group_id_2022"));
+*/
+//Energy stats
+industrySite.set_p_energyLabelLetter(jsonObject.getString("energieklasse"));
+industrySite.set_p_buildingTypeLabel(jsonObject.getString("woning_type"));
+industrySite.set_p_SBICode(jsonObject.getString("sbicode"));
+industrySite.set_p_EANCount(jsonObject.getDouble("gas_ean_count"));
+industrySite.set_p_p6GasM3_2022(jsonObject.getDouble("pc6_gasm3_2022"));
+industrySite.set_p_p6KWh_2022(jsonObject.getDouble("pc6_kwh_2022"));
+industrySite.set_p_p6KWhDirection_2022(jsonObject.getDouble("kwh_leveringsrichting_2022"));
+industrySite.set_p_p6LandSeizure_M2(jsonObject.getDouble("pc6_grondbeslag_m2"));
+industrySite.set_p_p6GasConnections_2022(jsonObject.getDouble("pc6_gas_aansluitingen_2022"));
+					
+//household.setLatLon
+//setProperty1(jsonObject.getString("numid"));
+//agent.setProperty2(jsonObject.getInt("property2"));
+// Set other properties as needed
+industrySite.f_setLocation();
+industrySite.p_neighborhood = neighborhood;
+neighborhood.c_industrySites.add(industrySite);
+
+industrySite.oval.setFillColor(v_industryColor);]]></Body>
+				</Function>
+				<Function AccessType="default" StaticFunction="false">
+					<ReturnModificator>VOID</ReturnModificator>
+					<ReturnType><![CDATA[double]]></ReturnType>
+					<Id>1704917508592</Id>
+					<Name><![CDATA[f_setText]]></Name>
+					<X>400</X><Y>910</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>false</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Body><![CDATA[t_naturalGasBoiler.setText(v_naturalGasBoilerText);
+t_naturalGasBlock.setText(v_naturalGasBlockText);
+t_districtHeating.setText(v_districtHeatText);
+t_electricHeatPump.setText(v_electricHeatPumpText);
+t_hybridHeatPump.setText(v_hybridHeatPumpText);
+]]></Body>
+				</Function>
+				<Function AccessType="default" StaticFunction="false">
+					<ReturnModificator>VOID</ReturnModificator>
+					<ReturnType><![CDATA[double]]></ReturnType>
+					<Id>1704919977774</Id>
+					<Name><![CDATA[f_setHouseholdHeatingMethods]]></Name>
+					<X>-460</X><Y>160</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Body><![CDATA[//Set heating methods based on input data
+for( GZ_Neighborhood neighborhood : pop_GZ_Neighborhoods){
+	neighborhood.f_setDefaultHeatingMethod(neighborhood.p_gasCV_perc, neighborhood.p_gasBlockHeating_perc, neighborhood.p_electricHeatPump_perc, neighborhood.p_hybridHeatPump_perc, neighborhood.p_districtHeating_perc); //Sets heating method based on neighborhood data of heating methods
+	neighborhood.f_getHouseholdHeatingMethods();
+}
+for( EA_Household household : pop_EA_Households){
+	household.f_setColor(household.v_heatingMethod);
+}]]></Body>
 				</Function>
 			</Functions>
 			<TableFunctions>
@@ -1704,7 +2045,7 @@ data_hybridHeatPumps_nb.add(count(pop_EA_Households, x->x.v_heatingMethod == HYB
     			<DataSet>
 					<Id>1704723280525</Id>
 					<Name><![CDATA[data_naturalGasBoilers_nb]]></Name>
-					<X>400</X><Y>1220</Y>
+					<X>400</X><Y>1260</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -1726,7 +2067,7 @@ data_hybridHeatPumps_nb.add(count(pop_EA_Households, x->x.v_heatingMethod == HYB
     			<DataSet>
 					<Id>1704723351057</Id>
 					<Name><![CDATA[data_districtHeatingConnections_nb]]></Name>
-					<X>400</X><Y>1240</Y>
+					<X>400</X><Y>1300</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -1748,7 +2089,7 @@ data_hybridHeatPumps_nb.add(count(pop_EA_Households, x->x.v_heatingMethod == HYB
     			<DataSet>
 					<Id>1704723375249</Id>
 					<Name><![CDATA[data_electricHeatPumps_nb]]></Name>
-					<X>400</X><Y>1260</Y>
+					<X>400</X><Y>1320</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -1770,6 +2111,28 @@ data_hybridHeatPumps_nb.add(count(pop_EA_Households, x->x.v_heatingMethod == HYB
     			<DataSet>
 					<Id>1704723391035</Id>
 					<Name><![CDATA[data_hybridHeatPumps_nb]]></Name>
+					<X>400</X><Y>1340</Y>
+					<Label><X>15</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<AutoUpdate>false</AutoUpdate>
+					<OccurrenceAtTime>true</OccurrenceAtTime>
+					<OccurrenceDate>1704787200000</OccurrenceDate>
+					<OccurrenceTime Class="CodeUnitValue">
+						<Code><![CDATA[0]]></Code>
+						<Unit Class="TimeUnits"><![CDATA[YEAR]]></Unit>
+					</OccurrenceTime>
+					<RecurrenceCode Class="CodeUnitValue">
+						<Code><![CDATA[1]]></Code>
+						<Unit Class="TimeUnits"><![CDATA[YEAR]]></Unit>
+					</RecurrenceCode>
+					<FreezeXAxis>true</FreezeXAxis>
+					<SamplesToKeep>40</SamplesToKeep>
+				</DataSet>
+    			<DataSet>
+					<Id>1704898582469</Id>
+					<Name><![CDATA[data_naturalGasBlockHeatingConnections_nb]]></Name>
 					<X>400</X><Y>1280</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -1835,7 +2198,7 @@ data_hybridHeatPumps_nb.add(count(pop_EA_Households, x->x.v_heatingMethod == HYB
 				<EmbeddedObject>
 					<Id>1693908816311</Id>
 					<Name><![CDATA[pop_EA_Households]]></Name>
-					<X>-210</X><Y>50</Y>
+					<X>-200</X><Y>80</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -1853,6 +2216,12 @@ data_hybridHeatPumps_nb.add(count(pop_EA_Households, x->x.v_heatingMethod == HYB
 						</GenericParameterSubstituteReference>
 					</GenericParameterSubstitute>
 					<Parameters>
+						<Parameter>
+							<Name><![CDATA[p_numberOfHouseholdsInBuilding]]></Name>
+						</Parameter>
+						<Parameter>
+							<Name><![CDATA[p_usage]]></Name>
+						</Parameter>
 						<Parameter>
 							<Name><![CDATA[p_numid]]></Name>
 						</Parameter>
@@ -1961,6 +2330,12 @@ data_hybridHeatPumps_nb.add(count(pop_EA_Households, x->x.v_heatingMethod == HYB
 						<Parameter>
 							<Name><![CDATA[p_neighborhood]]></Name>
 						</Parameter>
+						<Parameter>
+							<Name><![CDATA[p_rankedEnergyLabel]]></Name>
+						</Parameter>
+						<Parameter>
+							<Name><![CDATA[p_mostLikelyDistrictHeating]]></Name>
+						</Parameter>
 					</Parameters>
 					<ReplicationFlag>true</ReplicationFlag>
 					<Replication Class="CodeValue">
@@ -2005,7 +2380,7 @@ data_hybridHeatPumps_nb.add(count(pop_EA_Households, x->x.v_heatingMethod == HYB
 				<EmbeddedObject>
 					<Id>1700133527402</Id>
 					<Name><![CDATA[pop_GZ_Neighborhoods]]></Name>
-					<X>-210</X><Y>70</Y>
+					<X>-200</X><Y>60</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -2265,6 +2640,426 @@ data_hybridHeatPumps_nb.add(count(pop_EA_Households, x->x.v_heatingMethod == HYB
 						</Parameter>
 						<Parameter>
 							<Name><![CDATA[p_gridCapacity_kW]]></Name>
+						</Parameter>
+						<Parameter>
+							<Name><![CDATA[p_electricHeatPump_perc]]></Name>
+						</Parameter>
+						<Parameter>
+							<Name><![CDATA[p_hybridHeatPump_perc]]></Name>
+						</Parameter>
+					</Parameters>
+					<ReplicationFlag>true</ReplicationFlag>
+					<Replication Class="CodeValue">
+						<Code><![CDATA[100]]></Code>
+					</Replication>
+					<CollectionType>ARRAY_LIST_BASED</CollectionType>
+					<InEnvironment>true</InEnvironment>	
+					<InitialLocationType>AT_ANIMATION_POSITION</InitialLocationType>
+					<XCode Class="CodeValue">
+						<Code><![CDATA[0]]></Code>
+					</XCode>
+					<YCode Class="CodeValue">
+						<Code><![CDATA[0]]></Code>
+					</YCode>
+					<ZCode Class="CodeValue">
+						<Code><![CDATA[0]]></Code>
+					</ZCode>
+					<ColumnCode Class="CodeValue">
+						<Code><![CDATA[0]]></Code>
+					</ColumnCode>
+					<RowCode Class="CodeValue">
+						<Code><![CDATA[0]]></Code>
+					</RowCode>
+					<LatitudeCode Class="CodeValue">
+						<Code><![CDATA[0]]></Code>
+					</LatitudeCode>
+					<LongitudeCode Class="CodeValue">
+						<Code><![CDATA[0]]></Code>
+					</LongitudeCode>
+					<LocationNameCode Class="CodeValue">
+						<Code><![CDATA[""]]></Code>
+					</LocationNameCode>
+					<InitializationType>EMPTY</InitializationType>
+					<InitializationDatabaseTableQuery>
+						<TableReference>
+						</TableReference>
+					</InitializationDatabaseTableQuery>
+					<InitializationDatabaseType>ONE_AGENT_PER_DATABASE_RECORD</InitializationDatabaseType>
+					<QuantityColumn>
+					</QuantityColumn>
+				</EmbeddedObject>
+				<EmbeddedObject>
+					<Id>1704896037038</Id>
+					<Name><![CDATA[tests]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
+					<X>-850</X><Y>-280</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<ActiveObjectClass>
+						<PackageName><![CDATA[heat_transition_neighborhood]]></PackageName>
+						<ClassName><![CDATA[Test]]></ClassName>
+					</ActiveObjectClass>
+					<GenericParameterSubstitute>
+						<GenericParameterSubstituteReference>
+							<PackageName><![CDATA[heat_transition_neighborhood]]></PackageName>
+							<ClassName><![CDATA[Test]]></ClassName>
+							<ItemName><![CDATA[1704896037035]]></ItemName>
+						</GenericParameterSubstituteReference>
+					</GenericParameterSubstitute>
+					<Parameters>
+						<Parameter>
+							<Name><![CDATA[parameter]]></Name>
+							<Value Class="CodeValue">
+								<Code><![CDATA[random()]]></Code>
+							</Value>
+						</Parameter>
+					</Parameters>
+					<ReplicationFlag>true</ReplicationFlag>
+					<Replication Class="CodeValue">
+						<Code><![CDATA[100]]></Code>
+					</Replication>
+					<CollectionType>ARRAY_LIST_BASED</CollectionType>
+					<InEnvironment>true</InEnvironment>	
+					<InitialLocationType>AT_ANIMATION_POSITION</InitialLocationType>
+					<XCode Class="CodeValue">
+						<Code><![CDATA[0]]></Code>
+					</XCode>
+					<YCode Class="CodeValue">
+						<Code><![CDATA[0]]></Code>
+					</YCode>
+					<ZCode Class="CodeValue">
+						<Code><![CDATA[0]]></Code>
+					</ZCode>
+					<ColumnCode Class="CodeValue">
+						<Code><![CDATA[0]]></Code>
+					</ColumnCode>
+					<RowCode Class="CodeValue">
+						<Code><![CDATA[0]]></Code>
+					</RowCode>
+					<LatitudeCode Class="CodeValue">
+						<Code><![CDATA[0]]></Code>
+					</LatitudeCode>
+					<LongitudeCode Class="CodeValue">
+						<Code><![CDATA[0]]></Code>
+					</LongitudeCode>
+					<LocationNameCode Class="CodeValue">
+						<Code><![CDATA[""]]></Code>
+					</LocationNameCode>
+					<InitializationType>EMPTY</InitializationType>
+					<InitializationDatabaseTableQuery>
+						<TableReference>
+						</TableReference>
+					</InitializationDatabaseTableQuery>
+					<InitializationDatabaseType>ONE_AGENT_PER_DATABASE_RECORD</InitializationDatabaseType>
+					<QuantityColumn>
+					</QuantityColumn>
+				</EmbeddedObject>
+				<EmbeddedObject>
+					<Id>1704903185576</Id>
+					<Name><![CDATA[pop_EA_UtilityObjects]]></Name>
+					<X>-200</X><Y>100</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<PresentationId>1704905415672</PresentationId>
+					<ActiveObjectClass>
+						<PackageName><![CDATA[heat_transition_neighborhood]]></PackageName>
+						<ClassName><![CDATA[EA_UtilityObject]]></ClassName>
+					</ActiveObjectClass>
+					<GenericParameterSubstitute>
+						<GenericParameterSubstituteReference>
+							<PackageName><![CDATA[heat_transition_neighborhood]]></PackageName>
+							<ClassName><![CDATA[EA_UtilityObject]]></ClassName>
+							<ItemName><![CDATA[1704903185573]]></ItemName>
+						</GenericParameterSubstituteReference>
+					</GenericParameterSubstitute>
+					<Parameters>
+						<Parameter>
+							<Name><![CDATA[p_numid]]></Name>
+						</Parameter>
+						<Parameter>
+							<Name><![CDATA[p_pid]]></Name>
+						</Parameter>
+						<Parameter>
+							<Name><![CDATA[p_vid]]></Name>
+						</Parameter>
+						<Parameter>
+							<Name><![CDATA[p_postalCode]]></Name>
+						</Parameter>
+						<Parameter>
+							<Name><![CDATA[p_street]]></Name>
+						</Parameter>
+						<Parameter>
+							<Name><![CDATA[p_number]]></Name>
+						</Parameter>
+						<Parameter>
+							<Name><![CDATA[p_surfaceArea]]></Name>
+						</Parameter>
+						<Parameter>
+							<Name><![CDATA[p_householdEquivalent]]></Name>
+						</Parameter>
+						<Parameter>
+							<Name><![CDATA[p_buildingYear]]></Name>
+						</Parameter>
+						<Parameter>
+							<Name><![CDATA[p_averageWOZValueHouse]]></Name>
+						</Parameter>
+						<Parameter>
+							<Name><![CDATA[p_averageWOZValueMunicipality]]></Name>
+						</Parameter>
+						<Parameter>
+							<Name><![CDATA[p_energyLabelLetter]]></Name>
+						</Parameter>
+						<Parameter>
+							<Name><![CDATA[p_buildingTypeLabel]]></Name>
+						</Parameter>
+						<Parameter>
+							<Name><![CDATA[p_SBICode]]></Name>
+						</Parameter>
+						<Parameter>
+							<Name><![CDATA[p_EANCount]]></Name>
+						</Parameter>
+						<Parameter>
+							<Name><![CDATA[p_groupID2022]]></Name>
+						</Parameter>
+						<Parameter>
+							<Name><![CDATA[p_neighborhoodCode]]></Name>
+						</Parameter>
+						<Parameter>
+							<Name><![CDATA[p_neighborhoodName]]></Name>
+						</Parameter>
+						<Parameter>
+							<Name><![CDATA[p_districtCode]]></Name>
+						</Parameter>
+						<Parameter>
+							<Name><![CDATA[p_districtName]]></Name>
+						</Parameter>
+						<Parameter>
+							<Name><![CDATA[p_municipalityCode]]></Name>
+						</Parameter>
+						<Parameter>
+							<Name><![CDATA[p_municipalityName]]></Name>
+						</Parameter>
+						<Parameter>
+							<Name><![CDATA[p_provinceCode]]></Name>
+						</Parameter>
+						<Parameter>
+							<Name><![CDATA[p_provinceName]]></Name>
+						</Parameter>
+						<Parameter>
+							<Name><![CDATA[p_longitude]]></Name>
+						</Parameter>
+						<Parameter>
+							<Name><![CDATA[p_latitude]]></Name>
+						</Parameter>
+						<Parameter>
+							<Name><![CDATA[p_p6GasM3_2022]]></Name>
+						</Parameter>
+						<Parameter>
+							<Name><![CDATA[p_p6KWh_2022]]></Name>
+						</Parameter>
+						<Parameter>
+							<Name><![CDATA[p_p6KWhDirection_2022]]></Name>
+						</Parameter>
+						<Parameter>
+							<Name><![CDATA[p_p6LandSeizure_M2]]></Name>
+						</Parameter>
+						<Parameter>
+							<Name><![CDATA[p_p6GasConnections_2022]]></Name>
+						</Parameter>
+						<Parameter>
+							<Name><![CDATA[p_point]]></Name>
+						</Parameter>
+						<Parameter>
+							<Name><![CDATA[p_averageHomeOwnerPerc]]></Name>
+						</Parameter>
+						<Parameter>
+							<Name><![CDATA[p_averageHomeRentPerc]]></Name>
+						</Parameter>
+						<Parameter>
+							<Name><![CDATA[p_numberHousesHousingCooperations]]></Name>
+						</Parameter>
+						<Parameter>
+							<Name><![CDATA[p_neighborhood]]></Name>
+						</Parameter>
+						<Parameter>
+							<Name><![CDATA[p_usage]]></Name>
+						</Parameter>
+					</Parameters>
+					<ReplicationFlag>true</ReplicationFlag>
+					<Replication Class="CodeValue">
+						<Code><![CDATA[100]]></Code>
+					</Replication>
+					<CollectionType>ARRAY_LIST_BASED</CollectionType>
+					<InEnvironment>true</InEnvironment>	
+					<InitialLocationType>AT_ANIMATION_POSITION</InitialLocationType>
+					<XCode Class="CodeValue">
+						<Code><![CDATA[0]]></Code>
+					</XCode>
+					<YCode Class="CodeValue">
+						<Code><![CDATA[0]]></Code>
+					</YCode>
+					<ZCode Class="CodeValue">
+						<Code><![CDATA[0]]></Code>
+					</ZCode>
+					<ColumnCode Class="CodeValue">
+						<Code><![CDATA[0]]></Code>
+					</ColumnCode>
+					<RowCode Class="CodeValue">
+						<Code><![CDATA[0]]></Code>
+					</RowCode>
+					<LatitudeCode Class="CodeValue">
+						<Code><![CDATA[0]]></Code>
+					</LatitudeCode>
+					<LongitudeCode Class="CodeValue">
+						<Code><![CDATA[0]]></Code>
+					</LongitudeCode>
+					<LocationNameCode Class="CodeValue">
+						<Code><![CDATA[""]]></Code>
+					</LocationNameCode>
+					<InitializationType>EMPTY</InitializationType>
+					<InitializationDatabaseTableQuery>
+						<TableReference>
+						</TableReference>
+					</InitializationDatabaseTableQuery>
+					<InitializationDatabaseType>ONE_AGENT_PER_DATABASE_RECORD</InitializationDatabaseType>
+					<QuantityColumn>
+					</QuantityColumn>
+				</EmbeddedObject>
+				<EmbeddedObject>
+					<Id>1704903216728</Id>
+					<Name><![CDATA[pop_EA_IndustrySites]]></Name>
+					<X>-200</X><Y>120</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<PresentationId>1704905423392</PresentationId>
+					<ActiveObjectClass>
+						<PackageName><![CDATA[heat_transition_neighborhood]]></PackageName>
+						<ClassName><![CDATA[EA_IndustrySite]]></ClassName>
+					</ActiveObjectClass>
+					<GenericParameterSubstitute>
+						<GenericParameterSubstituteReference>
+							<PackageName><![CDATA[heat_transition_neighborhood]]></PackageName>
+							<ClassName><![CDATA[EA_IndustrySite]]></ClassName>
+							<ItemName><![CDATA[1704903216725]]></ItemName>
+						</GenericParameterSubstituteReference>
+					</GenericParameterSubstitute>
+					<Parameters>
+						<Parameter>
+							<Name><![CDATA[p_numid]]></Name>
+						</Parameter>
+						<Parameter>
+							<Name><![CDATA[p_pid]]></Name>
+						</Parameter>
+						<Parameter>
+							<Name><![CDATA[p_vid]]></Name>
+						</Parameter>
+						<Parameter>
+							<Name><![CDATA[p_postalCode]]></Name>
+						</Parameter>
+						<Parameter>
+							<Name><![CDATA[p_street]]></Name>
+						</Parameter>
+						<Parameter>
+							<Name><![CDATA[p_number]]></Name>
+						</Parameter>
+						<Parameter>
+							<Name><![CDATA[p_surfaceArea]]></Name>
+						</Parameter>
+						<Parameter>
+							<Name><![CDATA[p_householdEquivalent]]></Name>
+						</Parameter>
+						<Parameter>
+							<Name><![CDATA[p_buildingYear]]></Name>
+						</Parameter>
+						<Parameter>
+							<Name><![CDATA[p_averageWOZValueHouse]]></Name>
+						</Parameter>
+						<Parameter>
+							<Name><![CDATA[p_averageWOZValueMunicipality]]></Name>
+						</Parameter>
+						<Parameter>
+							<Name><![CDATA[p_energyLabelLetter]]></Name>
+						</Parameter>
+						<Parameter>
+							<Name><![CDATA[p_buildingTypeLabel]]></Name>
+						</Parameter>
+						<Parameter>
+							<Name><![CDATA[p_SBICode]]></Name>
+						</Parameter>
+						<Parameter>
+							<Name><![CDATA[p_EANCount]]></Name>
+						</Parameter>
+						<Parameter>
+							<Name><![CDATA[p_groupID2022]]></Name>
+						</Parameter>
+						<Parameter>
+							<Name><![CDATA[p_neighborhoodCode]]></Name>
+						</Parameter>
+						<Parameter>
+							<Name><![CDATA[p_neighborhoodName]]></Name>
+						</Parameter>
+						<Parameter>
+							<Name><![CDATA[p_districtCode]]></Name>
+						</Parameter>
+						<Parameter>
+							<Name><![CDATA[p_districtName]]></Name>
+						</Parameter>
+						<Parameter>
+							<Name><![CDATA[p_municipalityCode]]></Name>
+						</Parameter>
+						<Parameter>
+							<Name><![CDATA[p_municipalityName]]></Name>
+						</Parameter>
+						<Parameter>
+							<Name><![CDATA[p_provinceCode]]></Name>
+						</Parameter>
+						<Parameter>
+							<Name><![CDATA[p_provinceName]]></Name>
+						</Parameter>
+						<Parameter>
+							<Name><![CDATA[p_longitude]]></Name>
+						</Parameter>
+						<Parameter>
+							<Name><![CDATA[p_latitude]]></Name>
+						</Parameter>
+						<Parameter>
+							<Name><![CDATA[p_p6GasM3_2022]]></Name>
+						</Parameter>
+						<Parameter>
+							<Name><![CDATA[p_p6KWh_2022]]></Name>
+						</Parameter>
+						<Parameter>
+							<Name><![CDATA[p_p6KWhDirection_2022]]></Name>
+						</Parameter>
+						<Parameter>
+							<Name><![CDATA[p_p6LandSeizure_M2]]></Name>
+						</Parameter>
+						<Parameter>
+							<Name><![CDATA[p_p6GasConnections_2022]]></Name>
+						</Parameter>
+						<Parameter>
+							<Name><![CDATA[p_point]]></Name>
+						</Parameter>
+						<Parameter>
+							<Name><![CDATA[p_averageHomeOwnerPerc]]></Name>
+						</Parameter>
+						<Parameter>
+							<Name><![CDATA[p_averageHomeRentPerc]]></Name>
+						</Parameter>
+						<Parameter>
+							<Name><![CDATA[p_numberHousesHousingCooperations]]></Name>
+						</Parameter>
+						<Parameter>
+							<Name><![CDATA[p_neighborhood]]></Name>
+						</Parameter>
+						<Parameter>
+							<Name><![CDATA[p_usage]]></Name>
 						</Parameter>
 					</Parameters>
 					<ReplicationFlag>true</ReplicationFlag>
@@ -2618,6 +3413,434 @@ data_hybridHeatPumps_nb.add(count(pop_EA_Households, x->x.v_heatingMethod == HYB
 					<VerScaleType>AUTO</VerScaleType>
 					<LabelFormat>yyyy</LabelFormat>
     			</TimeStackChart>
+				<EmbeddedObjectPresentation>
+					<Id>1704905415672</Id>
+					<Name><![CDATA[pop_EA_UtilityObjects_presentation]]></Name>
+					<X>0</X><Y>0</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Z>0</Z>
+					<Rotation>0.0</Rotation>
+					<DrawingMode>AGENT_CURRENT_POSITION</DrawingMode>
+					<ScaleType>AUTOMATICALLY_CALCULATED</ScaleType>
+					<GISScaleForRealEmbeddedObjectPresentationSize>1000</GISScaleForRealEmbeddedObjectPresentationSize>
+					<GISScaleForFixedEmbeddedObjectPresentationSize>1000000000</GISScaleForFixedEmbeddedObjectPresentationSize>
+					<Latitude>52.13375434563888</Latitude>
+					<Longitude>5.469273666611113</Longitude>
+				</EmbeddedObjectPresentation>
+				<EmbeddedObjectPresentation>
+					<Id>1704905423392</Id>
+					<Name><![CDATA[pop_EA_IndustrySites_presentation]]></Name>
+					<X>0</X><Y>0</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Z>0</Z>
+					<Rotation>0.0</Rotation>
+					<DrawingMode>AGENT_CURRENT_POSITION</DrawingMode>
+					<ScaleType>AUTOMATICALLY_CALCULATED</ScaleType>
+					<GISScaleForRealEmbeddedObjectPresentationSize>1000</GISScaleForRealEmbeddedObjectPresentationSize>
+					<GISScaleForFixedEmbeddedObjectPresentationSize>1000000000</GISScaleForFixedEmbeddedObjectPresentationSize>
+					<Latitude>52.13375434563888</Latitude>
+					<Longitude>5.469273666611113</Longitude>
+				</EmbeddedObjectPresentation>
+				<Text>
+					<Id>1704917081885</Id>
+					<Name><![CDATA[text43]]></Name>
+					<X>200</X><Y>730</Y>
+					<Label><X>0</X><Y>-10</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D</DrawMode>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Z>0</Z>
+					<Rotation>0.0</Rotation>
+					<Color>-16777216</Color>
+					<Text><![CDATA[Legenda]]></Text>
+					<Font>
+						<Name>Calibri</Name>
+						<Size>16</Size>
+						<Style>1</Style>
+					</Font>
+					<Alignment>LEFT</Alignment>
+				</Text>
+				<Group>
+					<Id>1704917081892</Id>
+					<Name><![CDATA[gr_legendaTVW]]></Name>
+					<X>420</X><Y>845</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Z>0</Z>
+					<Rotation>0.0</Rotation>
+
+			<Presentation>
+				<Oval>
+					<Id>1704917081894</Id>
+					<Name><![CDATA[ovalWarmtenetKort]]></Name>
+					<X>-205.5</X><Y>-32.5</Y>
+					<Label><X>0</X><Y>0</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Z>0</Z>
+					<ZHeight>10</ZHeight>
+					<LineWidth>1</LineWidth>
+					<LineColor>-16777216</LineColor>
+					<LineMaterial>null</LineMaterial>
+					<LineStyle>SOLID</LineStyle>
+					<RadiusX>6.5</RadiusX>
+					<RadiusY>40</RadiusY>
+					<Rotation>0.0</Rotation>
+					<FillColor>-1</FillColor>
+					<FillColorCode><![CDATA[v_utilityColor]]></FillColorCode>
+					<FillMaterial>null</FillMaterial>
+				</Oval>
+				<Text>
+					<Id>1704917081896</Id>
+					<Name><![CDATA[text38]]></Name>
+					<X>-185</X><Y>-90</Y>
+					<Label><X>0</X><Y>-10</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D</DrawMode>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Z>0</Z>
+					<Rotation>0.0</Rotation>
+					<Color>-16777216</Color>
+					<Text><![CDATA[Industry]]></Text>
+					<Font>
+						<Name>SansSerif</Name>
+						<Size>12</Size>
+						<Style>0</Style>
+					</Font>
+					<Alignment>LEFT</Alignment>
+				</Text>
+				<Text>
+					<Id>1704917081898</Id>
+					<Name><![CDATA[t_naturalGasBlock]]></Name>
+					<X>-5</X><Y>-70</Y>
+					<Label><X>0</X><Y>-10</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D</DrawMode>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Z>0</Z>
+					<Rotation>0.0</Rotation>
+					<Color>-16777216</Color>
+					<Text><![CDATA[]]></Text>
+					<Font>
+						<Name>SansSerif</Name>
+						<Size>12</Size>
+						<Style>0</Style>
+					</Font>
+					<Alignment>LEFT</Alignment>
+				</Text>
+				<Text>
+					<Id>1704917081900</Id>
+					<Name><![CDATA[t_districtHeating]]></Name>
+					<X>-5</X><Y>-10</Y>
+					<Label><X>0</X><Y>-10</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D</DrawMode>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Z>0</Z>
+					<Rotation>0.0</Rotation>
+					<Color>-16777216</Color>
+					<Text><![CDATA[]]></Text>
+					<Font>
+						<Name>SansSerif</Name>
+						<Size>12</Size>
+						<Style>0</Style>
+					</Font>
+					<Alignment>LEFT</Alignment>
+				</Text>
+				<Oval>
+					<Id>1704917081902</Id>
+					<Name><![CDATA[ovalWarmtenetMiddel]]></Name>
+					<X>-25.5</X><Y>-2.5</Y>
+					<Label><X>0</X><Y>0</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Z>0</Z>
+					<ZHeight>10</ZHeight>
+					<LineWidth>1</LineWidth>
+					<LineColor>-16777216</LineColor>
+					<LineMaterial>null</LineMaterial>
+					<LineStyle>SOLID</LineStyle>
+					<RadiusX>6.5</RadiusX>
+					<RadiusY>40</RadiusY>
+					<Rotation>0.0</Rotation>
+					<FillColor>-1</FillColor>
+					<FillColorCode><![CDATA[v_districtHeatingColor]]></FillColorCode>
+					<FillMaterial>null</FillMaterial>
+				</Oval>
+				<Text>
+					<Id>1704917081904</Id>
+					<Name><![CDATA[t_electricHeatPump]]></Name>
+					<X>-5</X><Y>-30</Y>
+					<Label><X>0</X><Y>-10</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D</DrawMode>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Z>0</Z>
+					<Rotation>0.0</Rotation>
+					<Color>-16777216</Color>
+					<Text><![CDATA[]]></Text>
+					<Font>
+						<Name>SansSerif</Name>
+						<Size>12</Size>
+						<Style>0</Style>
+					</Font>
+					<Alignment>LEFT</Alignment>
+				</Text>
+				<Text>
+					<Id>1704917081906</Id>
+					<Name><![CDATA[text50]]></Name>
+					<X>-185</X><Y>-65</Y>
+					<Label><X>0</X><Y>-10</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D</DrawMode>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Z>0</Z>
+					<Rotation>0.0</Rotation>
+					<Color>-16777216</Color>
+					<Text><![CDATA[Shop]]></Text>
+					<Font>
+						<Name>SansSerif</Name>
+						<Size>12</Size>
+						<Style>0</Style>
+					</Font>
+					<Alignment>LEFT</Alignment>
+				</Text>
+				<Oval>
+					<Id>1704917081908</Id>
+					<Name><![CDATA[ovalAllElectric]]></Name>
+					<X>-205.5</X><Y>-82.5</Y>
+					<Label><X>0</X><Y>0</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Z>0</Z>
+					<ZHeight>10</ZHeight>
+					<LineWidth>1</LineWidth>
+					<LineColor>-16777216</LineColor>
+					<LineMaterial>null</LineMaterial>
+					<LineStyle>SOLID</LineStyle>
+					<RadiusX>6.5</RadiusX>
+					<RadiusY>40</RadiusY>
+					<Rotation>0.0</Rotation>
+					<FillColor>-1</FillColor>
+					<FillColorCode><![CDATA[v_industryColor]]></FillColorCode>
+					<FillMaterial>null</FillMaterial>
+				</Oval>
+				<Oval>
+					<Id>1704917081910</Id>
+					<Name><![CDATA[ovalBusinessPark]]></Name>
+					<X>-25.5</X><Y>-42.5</Y>
+					<Label><X>0</X><Y>0</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Z>0</Z>
+					<ZHeight>10</ZHeight>
+					<LineWidth>1</LineWidth>
+					<LineColor>-16777216</LineColor>
+					<LineMaterial>null</LineMaterial>
+					<LineStyle>SOLID</LineStyle>
+					<RadiusX>6.5</RadiusX>
+					<RadiusY>40</RadiusY>
+					<Rotation>0.0</Rotation>
+					<FillColor>-1</FillColor>
+					<FillColorCode><![CDATA[v_hybridHeatPumpColor]]></FillColorCode>
+					<FillMaterial>null</FillMaterial>
+				</Oval>
+				<Text>
+					<Id>1704917081912</Id>
+					<Name><![CDATA[t_naturalGasBoiler]]></Name>
+					<X>-5</X><Y>-90</Y>
+					<Label><X>0</X><Y>-10</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D</DrawMode>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Z>0</Z>
+					<Rotation>0.0</Rotation>
+					<Color>-16777216</Color>
+					<Text><![CDATA[]]></Text>
+					<Font>
+						<Name>SansSerif</Name>
+						<Size>12</Size>
+						<Style>0</Style>
+					</Font>
+					<Alignment>LEFT</Alignment>
+				</Text>
+				<Text>
+					<Id>1704917081914</Id>
+					<Name><![CDATA[text52]]></Name>
+					<X>-185</X><Y>-40</Y>
+					<Label><X>0</X><Y>-10</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D</DrawMode>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Z>0</Z>
+					<Rotation>0.0</Rotation>
+					<Color>-16777216</Color>
+					<Text><![CDATA[Utility]]></Text>
+					<Font>
+						<Name>SansSerif</Name>
+						<Size>12</Size>
+						<Style>0</Style>
+					</Font>
+					<Alignment>LEFT</Alignment>
+				</Text>
+				<Oval>
+					<Id>1704917081916</Id>
+					<Name><![CDATA[ovalOnzeker]]></Name>
+					<X>-25.5</X><Y>-62.5</Y>
+					<Label><X>0</X><Y>0</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Z>0</Z>
+					<ZHeight>10</ZHeight>
+					<LineWidth>1</LineWidth>
+					<LineColor>-16777216</LineColor>
+					<LineMaterial>null</LineMaterial>
+					<LineStyle>SOLID</LineStyle>
+					<RadiusX>6.5</RadiusX>
+					<RadiusY>40</RadiusY>
+					<Rotation>0.0</Rotation>
+					<FillColor>-1</FillColor>
+					<FillColorCode><![CDATA[v_naturalGasBlockColor]]></FillColorCode>
+					<FillMaterial>null</FillMaterial>
+				</Oval>
+				<Oval>
+					<Id>1704917081918</Id>
+					<Name><![CDATA[ovalGasnet]]></Name>
+					<X>-205.5</X><Y>-57.5</Y>
+					<Label><X>0</X><Y>0</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Z>0</Z>
+					<ZHeight>10</ZHeight>
+					<LineWidth>1</LineWidth>
+					<LineColor>-16777216</LineColor>
+					<LineMaterial>null</LineMaterial>
+					<LineStyle>SOLID</LineStyle>
+					<RadiusX>6.5</RadiusX>
+					<RadiusY>40</RadiusY>
+					<Rotation>0.0</Rotation>
+					<FillColor>-1</FillColor>
+					<FillColorCode><![CDATA[v_shopColor]]></FillColorCode>
+					<FillMaterial>null</FillMaterial>
+				</Oval>
+				<Oval>
+					<Id>1704917081920</Id>
+					<Name><![CDATA[ovalWarmtenetLang]]></Name>
+					<X>-25.5</X><Y>-82.5</Y>
+					<Label><X>0</X><Y>0</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Z>0</Z>
+					<ZHeight>10</ZHeight>
+					<LineWidth>1</LineWidth>
+					<LineColor>-16777216</LineColor>
+					<LineMaterial>null</LineMaterial>
+					<LineStyle>SOLID</LineStyle>
+					<RadiusX>6.5</RadiusX>
+					<RadiusY>40</RadiusY>
+					<Rotation>0.0</Rotation>
+					<FillColor>-1</FillColor>
+					<FillColorCode><![CDATA[v_naturalGasBoilerColor]]></FillColorCode>
+					<FillMaterial>null</FillMaterial>
+				</Oval>
+				<Oval>
+					<Id>1704917081922</Id>
+					<Name><![CDATA[ovalUitgesloten]]></Name>
+					<X>-25.5</X><Y>-22.5</Y>
+					<Label><X>0</X><Y>0</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Z>0</Z>
+					<ZHeight>10</ZHeight>
+					<LineWidth>1</LineWidth>
+					<LineColor>-16777216</LineColor>
+					<LineMaterial>null</LineMaterial>
+					<LineStyle>SOLID</LineStyle>
+					<RadiusX>6.5</RadiusX>
+					<RadiusY>40</RadiusY>
+					<Rotation>0.0</Rotation>
+					<FillColor>-1</FillColor>
+					<FillColorCode><![CDATA[v_electricHeatPumpColor]]></FillColorCode>
+					<FillMaterial>null</FillMaterial>
+				</Oval>
+				<Text>
+					<Id>1704917081924</Id>
+					<Name><![CDATA[t_hybridHeatPump]]></Name>
+					<X>-5</X><Y>-50</Y>
+					<Label><X>0</X><Y>-10</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D</DrawMode>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Z>0</Z>
+					<Rotation>0.0</Rotation>
+					<Color>-16777216</Color>
+					<Text><![CDATA[]]></Text>
+					<Font>
+						<Name>SansSerif</Name>
+						<Size>12</Size>
+						<Style>0</Style>
+					</Font>
+					<Alignment>LEFT</Alignment>
+				</Text>
+			</Presentation>
+
+				</Group>
 			</Presentation>
 
 				</Level>
@@ -2647,6 +3870,129 @@ data_hybridHeatPumps_nb.add(count(pop_EA_Households, x->x.v_heatingMethod == HYB
 		<ActiveObjectClass>
 			<Id>1693907545967</Id>
 			<Name><![CDATA[EA_Household]]></Name>
+			<ExtendsReference>
+				<PackageName><![CDATA[heat_transition_neighborhood]]></PackageName>
+				<ClassName><![CDATA[EA_BAGObject]]></ClassName>
+			</ExtendsReference>
+			<Parameters>
+				<Parameter>
+					<Name><![CDATA[p_usage]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_numid]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_pid]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_vid]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_postalCode]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_street]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_number]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_surfaceArea]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_householdEquivalent]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_buildingYear]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_averageWOZValueHouse]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_averageWOZValueMunicipality]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_energyLabelLetter]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_buildingTypeLabel]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_SBICode]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_EANCount]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_groupID2022]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_neighborhoodCode]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_neighborhoodName]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_districtCode]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_districtName]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_municipalityCode]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_municipalityName]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_provinceCode]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_provinceName]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_longitude]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_latitude]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_p6GasM3_2022]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_p6KWh_2022]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_p6KWhDirection_2022]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_p6LandSeizure_M2]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_p6GasConnections_2022]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_point]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_averageHomeOwnerPerc]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_averageHomeRentPerc]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_numberHousesHousingCooperations]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_neighborhood]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_rankedEnergyLabel]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_mostLikelyDistrictHeating]]></Name>
+				</Parameter>
+			</Parameters>
 			<StartupCode><![CDATA[v_utilityThreshold = uniform(0,2);]]></StartupCode>
 			<Generic>false</Generic>
 			<GenericParameter>
@@ -2888,9 +4234,9 @@ data_hybridHeatPumps_nb.add(count(pop_EA_Households, x->x.v_heatingMethod == HYB
 					</Properties>
 				</Variable>
 				<Variable Class="Parameter">
-					<Id>1693907545976</Id>
-					<Name><![CDATA[p_numid]]></Name>
-					<X>-420</X><Y>50</Y>
+					<Id>1704903126670</Id>
+					<Name><![CDATA[p_numberOfHouseholdsInBuilding]]></Name>
+					<X>-260</X><Y>210</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -2900,7 +4246,7 @@ data_hybridHeatPumps_nb.add(count(pop_EA_Households, x->x.v_heatingMethod == HYB
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<ParameterEditor>
-							<Id>0</Id>
+							<Id>1704903126668</Id>
 							<EditorContolType>TEXT_BOX</EditorContolType>
 							<MinSliderValue><![CDATA[0]]></MinSliderValue>
 							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
@@ -2909,30 +4255,9 @@ data_hybridHeatPumps_nb.add(count(pop_EA_Households, x->x.v_heatingMethod == HYB
 					</Properties>                 
 				</Variable>
 				<Variable Class="Parameter">
-					<Id>1693907545978</Id>
-					<Name><![CDATA[p_pid]]></Name>
-					<X>-420</X><Y>70</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
-						<Type><![CDATA[String]]></Type>
-						<UnitType><![CDATA[NONE]]></UnitType>
-						<SdArray>false</SdArray>
-						<ParameterEditor>
-							<Id>0</Id>
-							<EditorContolType>TEXT_BOX</EditorContolType>
-							<MinSliderValue><![CDATA[0]]></MinSliderValue>
-							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
-							<DelimeterType>NO_DELIMETER</DelimeterType>
-						</ParameterEditor>
-					</Properties>                 
-				</Variable>
-				<Variable Class="Parameter">
-					<Id>1693907556753</Id>
-					<Name><![CDATA[p_vid]]></Name>
-					<X>-420</X><Y>90</Y>
+					<Id>1705080718662</Id>
+					<Name><![CDATA[p_rankedEnergyLabel]]></Name>
+					<X>-260</X><Y>230</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -2942,7 +4267,7 @@ data_hybridHeatPumps_nb.add(count(pop_EA_Households, x->x.v_heatingMethod == HYB
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<ParameterEditor>
-							<Id>1693907556751</Id>
+							<Id>1705080718660</Id>
 							<EditorContolType>TEXT_BOX</EditorContolType>
 							<MinSliderValue><![CDATA[0]]></MinSliderValue>
 							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
@@ -2951,51 +4276,9 @@ data_hybridHeatPumps_nb.add(count(pop_EA_Households, x->x.v_heatingMethod == HYB
 					</Properties>                 
 				</Variable>
 				<Variable Class="Parameter">
-					<Id>1693907564307</Id>
-					<Name><![CDATA[p_postalCode]]></Name>
-					<X>-420</X><Y>270</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
-						<Type><![CDATA[String]]></Type>
-						<UnitType><![CDATA[NONE]]></UnitType>
-						<SdArray>false</SdArray>
-						<ParameterEditor>
-							<Id>1693907564305</Id>
-							<EditorContolType>TEXT_BOX</EditorContolType>
-							<MinSliderValue><![CDATA[0]]></MinSliderValue>
-							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
-							<DelimeterType>NO_DELIMETER</DelimeterType>
-						</ParameterEditor>
-					</Properties>                 
-				</Variable>
-				<Variable Class="Parameter">
-					<Id>1693907575552</Id>
-					<Name><![CDATA[p_street]]></Name>
-					<X>-420</X><Y>290</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
-						<Type><![CDATA[String]]></Type>
-						<UnitType><![CDATA[NONE]]></UnitType>
-						<SdArray>false</SdArray>
-						<ParameterEditor>
-							<Id>1693907575550</Id>
-							<EditorContolType>TEXT_BOX</EditorContolType>
-							<MinSliderValue><![CDATA[0]]></MinSliderValue>
-							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
-							<DelimeterType>NO_DELIMETER</DelimeterType>
-						</ParameterEditor>
-					</Properties>                 
-				</Variable>
-				<Variable Class="Parameter">
-					<Id>1693907583105</Id>
-					<Name><![CDATA[p_number]]></Name>
-					<X>-420</X><Y>310</Y>
+					<Id>1705080728076</Id>
+					<Name><![CDATA[p_mostLikelyDistrictHeating]]></Name>
+					<X>-260</X><Y>250</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -3005,637 +4288,7 @@ data_hybridHeatPumps_nb.add(count(pop_EA_Households, x->x.v_heatingMethod == HYB
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<ParameterEditor>
-							<Id>1693907583103</Id>
-							<EditorContolType>TEXT_BOX</EditorContolType>
-							<MinSliderValue><![CDATA[0]]></MinSliderValue>
-							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
-							<DelimeterType>NO_DELIMETER</DelimeterType>
-						</ParameterEditor>
-					</Properties>                 
-				</Variable>
-				<Variable Class="Parameter">
-					<Id>1693907591403</Id>
-					<Name><![CDATA[p_surfaceArea]]></Name>
-					<X>-420</X><Y>330</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
-						<Type><![CDATA[double]]></Type>
-						<UnitType><![CDATA[NONE]]></UnitType>
-						<SdArray>false</SdArray>
-						<ParameterEditor>
-							<Id>1693907591401</Id>
-							<EditorContolType>TEXT_BOX</EditorContolType>
-							<MinSliderValue><![CDATA[0]]></MinSliderValue>
-							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
-							<DelimeterType>NO_DELIMETER</DelimeterType>
-						</ParameterEditor>
-					</Properties>                 
-				</Variable>
-				<Variable Class="Parameter">
-					<Id>1693907597678</Id>
-					<Name><![CDATA[p_householdEquivalent]]></Name>
-					<X>-420</X><Y>350</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
-						<Type><![CDATA[double]]></Type>
-						<UnitType><![CDATA[NONE]]></UnitType>
-						<SdArray>false</SdArray>
-						<ParameterEditor>
-							<Id>1693907597676</Id>
-							<EditorContolType>TEXT_BOX</EditorContolType>
-							<MinSliderValue><![CDATA[0]]></MinSliderValue>
-							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
-							<DelimeterType>NO_DELIMETER</DelimeterType>
-						</ParameterEditor>
-					</Properties>                 
-				</Variable>
-				<Variable Class="Parameter">
-					<Id>1693907609240</Id>
-					<Name><![CDATA[p_buildingYear]]></Name>
-					<X>-420</X><Y>370</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
-						<Type><![CDATA[double]]></Type>
-						<UnitType><![CDATA[NONE]]></UnitType>
-						<SdArray>false</SdArray>
-						<ParameterEditor>
-							<Id>1693907609238</Id>
-							<EditorContolType>TEXT_BOX</EditorContolType>
-							<MinSliderValue><![CDATA[0]]></MinSliderValue>
-							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
-							<DelimeterType>NO_DELIMETER</DelimeterType>
-						</ParameterEditor>
-					</Properties>                 
-				</Variable>
-				<Variable Class="Parameter">
-					<Id>1693907627850</Id>
-					<Name><![CDATA[p_averageWOZValueHouse]]></Name>
-					<X>-420</X><Y>390</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
-						<Type><![CDATA[double]]></Type>
-						<UnitType><![CDATA[NONE]]></UnitType>
-						<SdArray>false</SdArray>
-						<ParameterEditor>
-							<Id>1693907627848</Id>
-							<EditorContolType>TEXT_BOX</EditorContolType>
-							<MinSliderValue><![CDATA[0]]></MinSliderValue>
-							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
-							<DelimeterType>NO_DELIMETER</DelimeterType>
-						</ParameterEditor>
-					</Properties>                 
-				</Variable>
-				<Variable Class="Parameter">
-					<Id>1693907676578</Id>
-					<Name><![CDATA[p_averageWOZValueMunicipality]]></Name>
-					<X>-420</X><Y>410</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
-						<Type><![CDATA[double]]></Type>
-						<UnitType><![CDATA[NONE]]></UnitType>
-						<SdArray>false</SdArray>
-						<ParameterEditor>
-							<Id>1693907676576</Id>
-							<EditorContolType>TEXT_BOX</EditorContolType>
-							<MinSliderValue><![CDATA[0]]></MinSliderValue>
-							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
-							<DelimeterType>NO_DELIMETER</DelimeterType>
-						</ParameterEditor>
-					</Properties>                 
-				</Variable>
-				<Variable Class="Parameter">
-					<Id>1693907705002</Id>
-					<Name><![CDATA[p_energyLabelLetter]]></Name>
-					<X>-420</X><Y>520</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
-						<Type><![CDATA[String]]></Type>
-						<UnitType><![CDATA[NONE]]></UnitType>
-						<SdArray>false</SdArray>
-						<ParameterEditor>
-							<Id>1693907705000</Id>
-							<EditorContolType>TEXT_BOX</EditorContolType>
-							<MinSliderValue><![CDATA[0]]></MinSliderValue>
-							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
-							<DelimeterType>NO_DELIMETER</DelimeterType>
-						</ParameterEditor>
-					</Properties>                 
-				</Variable>
-				<Variable Class="Parameter">
-					<Id>1693907728513</Id>
-					<Name><![CDATA[p_buildingTypeLabel]]></Name>
-					<X>-420</X><Y>540</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
-						<Type><![CDATA[String]]></Type>
-						<UnitType><![CDATA[NONE]]></UnitType>
-						<SdArray>false</SdArray>
-						<ParameterEditor>
-							<Id>1693907728511</Id>
-							<EditorContolType>TEXT_BOX</EditorContolType>
-							<MinSliderValue><![CDATA[0]]></MinSliderValue>
-							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
-							<DelimeterType>NO_DELIMETER</DelimeterType>
-						</ParameterEditor>
-					</Properties>                 
-				</Variable>
-				<Variable Class="Parameter">
-					<Id>1693907746039</Id>
-					<Name><![CDATA[p_SBICode]]></Name>
-					<X>-420</X><Y>560</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
-						<Type><![CDATA[String]]></Type>
-						<UnitType><![CDATA[NONE]]></UnitType>
-						<SdArray>false</SdArray>
-						<ParameterEditor>
-							<Id>1693907746037</Id>
-							<EditorContolType>TEXT_BOX</EditorContolType>
-							<MinSliderValue><![CDATA[0]]></MinSliderValue>
-							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
-							<DelimeterType>NO_DELIMETER</DelimeterType>
-						</ParameterEditor>
-					</Properties>                 
-				</Variable>
-				<Variable Class="Parameter">
-					<Id>1693907780135</Id>
-					<Name><![CDATA[p_EANCount]]></Name>
-					<X>-420</X><Y>580</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
-						<Type><![CDATA[double]]></Type>
-						<UnitType><![CDATA[NONE]]></UnitType>
-						<SdArray>false</SdArray>
-						<ParameterEditor>
-							<Id>1693907780133</Id>
-							<EditorContolType>TEXT_BOX</EditorContolType>
-							<MinSliderValue><![CDATA[0]]></MinSliderValue>
-							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
-							<DelimeterType>NO_DELIMETER</DelimeterType>
-						</ParameterEditor>
-					</Properties>                 
-				</Variable>
-				<Variable Class="Parameter">
-					<Id>1693907795909</Id>
-					<Name><![CDATA[p_groupID2022]]></Name>
-					<X>-420</X><Y>600</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
-						<Type><![CDATA[String]]></Type>
-						<UnitType><![CDATA[NONE]]></UnitType>
-						<SdArray>false</SdArray>
-						<ParameterEditor>
-							<Id>1693907795907</Id>
-							<EditorContolType>TEXT_BOX</EditorContolType>
-							<MinSliderValue><![CDATA[0]]></MinSliderValue>
-							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
-							<DelimeterType>NO_DELIMETER</DelimeterType>
-						</ParameterEditor>
-					</Properties>                 
-				</Variable>
-				<Variable Class="Parameter">
-					<Id>1693907832621</Id>
-					<Name><![CDATA[p_neighborhoodCode]]></Name>
-					<X>-420</X><Y>110</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
-						<Type><![CDATA[String]]></Type>
-						<UnitType><![CDATA[NONE]]></UnitType>
-						<SdArray>false</SdArray>
-						<ParameterEditor>
-							<Id>1693907832619</Id>
-							<EditorContolType>TEXT_BOX</EditorContolType>
-							<MinSliderValue><![CDATA[0]]></MinSliderValue>
-							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
-							<DelimeterType>NO_DELIMETER</DelimeterType>
-						</ParameterEditor>
-					</Properties>                 
-				</Variable>
-				<Variable Class="Parameter">
-					<Id>1693907847688</Id>
-					<Name><![CDATA[p_neighborhoodName]]></Name>
-					<X>-420</X><Y>130</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
-						<Type><![CDATA[String]]></Type>
-						<UnitType><![CDATA[NONE]]></UnitType>
-						<SdArray>false</SdArray>
-						<ParameterEditor>
-							<Id>1693907847686</Id>
-							<EditorContolType>TEXT_BOX</EditorContolType>
-							<MinSliderValue><![CDATA[0]]></MinSliderValue>
-							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
-							<DelimeterType>NO_DELIMETER</DelimeterType>
-						</ParameterEditor>
-					</Properties>                 
-				</Variable>
-				<Variable Class="Parameter">
-					<Id>1693907856995</Id>
-					<Name><![CDATA[p_districtCode]]></Name>
-					<X>-420</X><Y>150</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
-						<Type><![CDATA[String]]></Type>
-						<UnitType><![CDATA[NONE]]></UnitType>
-						<SdArray>false</SdArray>
-						<ParameterEditor>
-							<Id>1693907856993</Id>
-							<EditorContolType>TEXT_BOX</EditorContolType>
-							<MinSliderValue><![CDATA[0]]></MinSliderValue>
-							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
-							<DelimeterType>NO_DELIMETER</DelimeterType>
-						</ParameterEditor>
-					</Properties>                 
-				</Variable>
-				<Variable Class="Parameter">
-					<Id>1693907874874</Id>
-					<Name><![CDATA[p_districtName]]></Name>
-					<X>-420</X><Y>170</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
-						<Type><![CDATA[String]]></Type>
-						<UnitType><![CDATA[NONE]]></UnitType>
-						<SdArray>false</SdArray>
-						<ParameterEditor>
-							<Id>1693907874872</Id>
-							<EditorContolType>TEXT_BOX</EditorContolType>
-							<MinSliderValue><![CDATA[0]]></MinSliderValue>
-							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
-							<DelimeterType>NO_DELIMETER</DelimeterType>
-						</ParameterEditor>
-					</Properties>                 
-				</Variable>
-				<Variable Class="Parameter">
-					<Id>1693907899087</Id>
-					<Name><![CDATA[p_municipalityCode]]></Name>
-					<X>-420</X><Y>190</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
-						<Type><![CDATA[String]]></Type>
-						<UnitType><![CDATA[NONE]]></UnitType>
-						<SdArray>false</SdArray>
-						<ParameterEditor>
-							<Id>1693907899085</Id>
-							<EditorContolType>TEXT_BOX</EditorContolType>
-							<MinSliderValue><![CDATA[0]]></MinSliderValue>
-							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
-							<DelimeterType>NO_DELIMETER</DelimeterType>
-						</ParameterEditor>
-					</Properties>                 
-				</Variable>
-				<Variable Class="Parameter">
-					<Id>1693907899119</Id>
-					<Name><![CDATA[p_municipalityName]]></Name>
-					<X>-420</X><Y>210</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
-						<Type><![CDATA[String]]></Type>
-						<UnitType><![CDATA[NONE]]></UnitType>
-						<SdArray>false</SdArray>
-						<ParameterEditor>
-							<Id>1693907899117</Id>
-							<EditorContolType>TEXT_BOX</EditorContolType>
-							<MinSliderValue><![CDATA[0]]></MinSliderValue>
-							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
-							<DelimeterType>NO_DELIMETER</DelimeterType>
-						</ParameterEditor>
-					</Properties>                 
-				</Variable>
-				<Variable Class="Parameter">
-					<Id>1693907899122</Id>
-					<Name><![CDATA[p_provinceCode]]></Name>
-					<X>-420</X><Y>230</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
-						<Type><![CDATA[String]]></Type>
-						<UnitType><![CDATA[NONE]]></UnitType>
-						<SdArray>false</SdArray>
-						<ParameterEditor>
-							<Id>1693907899120</Id>
-							<EditorContolType>TEXT_BOX</EditorContolType>
-							<MinSliderValue><![CDATA[0]]></MinSliderValue>
-							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
-							<DelimeterType>NO_DELIMETER</DelimeterType>
-						</ParameterEditor>
-					</Properties>                 
-				</Variable>
-				<Variable Class="Parameter">
-					<Id>1693907899134</Id>
-					<Name><![CDATA[p_provinceName]]></Name>
-					<X>-420</X><Y>250</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
-						<Type><![CDATA[String]]></Type>
-						<UnitType><![CDATA[NONE]]></UnitType>
-						<SdArray>false</SdArray>
-						<ParameterEditor>
-							<Id>1693907899132</Id>
-							<EditorContolType>TEXT_BOX</EditorContolType>
-							<MinSliderValue><![CDATA[0]]></MinSliderValue>
-							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
-							<DelimeterType>NO_DELIMETER</DelimeterType>
-						</ParameterEditor>
-					</Properties>                 
-				</Variable>
-				<Variable Class="Parameter">
-					<Id>1693907961383</Id>
-					<Name><![CDATA[p_longitude]]></Name>
-					<X>-420</X><Y>620</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
-						<Type><![CDATA[double]]></Type>
-						<UnitType><![CDATA[NONE]]></UnitType>
-						<SdArray>false</SdArray>
-						<ParameterEditor>
-							<Id>1693907961381</Id>
-							<EditorContolType>TEXT_BOX</EditorContolType>
-							<MinSliderValue><![CDATA[0]]></MinSliderValue>
-							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
-							<DelimeterType>NO_DELIMETER</DelimeterType>
-						</ParameterEditor>
-					</Properties>                 
-				</Variable>
-				<Variable Class="Parameter">
-					<Id>1693907977389</Id>
-					<Name><![CDATA[p_latitude]]></Name>
-					<X>-420</X><Y>640</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
-						<Type><![CDATA[double]]></Type>
-						<UnitType><![CDATA[NONE]]></UnitType>
-						<SdArray>false</SdArray>
-						<ParameterEditor>
-							<Id>1693907977387</Id>
-							<EditorContolType>TEXT_BOX</EditorContolType>
-							<MinSliderValue><![CDATA[0]]></MinSliderValue>
-							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
-							<DelimeterType>NO_DELIMETER</DelimeterType>
-						</ParameterEditor>
-					</Properties>                 
-				</Variable>
-				<Variable Class="Parameter">
-					<Id>1693907998684</Id>
-					<Name><![CDATA[p_p6GasM3_2022]]></Name>
-					<X>-220</X><Y>50</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
-						<Type><![CDATA[double]]></Type>
-						<UnitType><![CDATA[NONE]]></UnitType>
-						<SdArray>false</SdArray>
-						<ParameterEditor>
-							<Id>1693907998682</Id>
-							<EditorContolType>TEXT_BOX</EditorContolType>
-							<MinSliderValue><![CDATA[0]]></MinSliderValue>
-							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
-							<DelimeterType>NO_DELIMETER</DelimeterType>
-						</ParameterEditor>
-					</Properties>                 
-				</Variable>
-				<Variable Class="Parameter">
-					<Id>1693908017881</Id>
-					<Name><![CDATA[p_p6KWh_2022]]></Name>
-					<X>-220</X><Y>70</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
-						<Type><![CDATA[double]]></Type>
-						<UnitType><![CDATA[NONE]]></UnitType>
-						<SdArray>false</SdArray>
-						<ParameterEditor>
-							<Id>1693908017879</Id>
-							<EditorContolType>TEXT_BOX</EditorContolType>
-							<MinSliderValue><![CDATA[0]]></MinSliderValue>
-							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
-							<DelimeterType>NO_DELIMETER</DelimeterType>
-						</ParameterEditor>
-					</Properties>                 
-				</Variable>
-				<Variable Class="Parameter">
-					<Id>1693908035558</Id>
-					<Name><![CDATA[p_p6KWhDirection_2022]]></Name>
-					<X>-220</X><Y>90</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
-						<Type><![CDATA[double]]></Type>
-						<UnitType><![CDATA[NONE]]></UnitType>
-						<SdArray>false</SdArray>
-						<ParameterEditor>
-							<Id>1693908035556</Id>
-							<EditorContolType>TEXT_BOX</EditorContolType>
-							<MinSliderValue><![CDATA[0]]></MinSliderValue>
-							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
-							<DelimeterType>NO_DELIMETER</DelimeterType>
-						</ParameterEditor>
-					</Properties>                 
-				</Variable>
-				<Variable Class="Parameter">
-					<Id>1693908035561</Id>
-					<Name><![CDATA[p_p6LandSeizure_M2]]></Name>
-					<X>-220</X><Y>110</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
-						<Type><![CDATA[double]]></Type>
-						<UnitType><![CDATA[NONE]]></UnitType>
-						<SdArray>false</SdArray>
-						<ParameterEditor>
-							<Id>1693908035559</Id>
-							<EditorContolType>TEXT_BOX</EditorContolType>
-							<MinSliderValue><![CDATA[0]]></MinSliderValue>
-							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
-							<DelimeterType>NO_DELIMETER</DelimeterType>
-						</ParameterEditor>
-					</Properties>                 
-				</Variable>
-				<Variable Class="Parameter">
-					<Id>1693908042507</Id>
-					<Name><![CDATA[p_p6GasConnections_2022]]></Name>
-					<X>-220</X><Y>130</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
-						<Type><![CDATA[double]]></Type>
-						<UnitType><![CDATA[NONE]]></UnitType>
-						<SdArray>false</SdArray>
-						<ParameterEditor>
-							<Id>1693908042505</Id>
-							<EditorContolType>TEXT_BOX</EditorContolType>
-							<MinSliderValue><![CDATA[0]]></MinSliderValue>
-							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
-							<DelimeterType>NO_DELIMETER</DelimeterType>
-						</ParameterEditor>
-					</Properties>                 
-				</Variable>
-				<Variable Class="Parameter">
-					<Id>1693926072722</Id>
-					<Name><![CDATA[p_point]]></Name>
-					<X>-420</X><Y>660</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
-						<Type><![CDATA[String]]></Type>
-						<UnitType><![CDATA[NONE]]></UnitType>
-						<SdArray>false</SdArray>
-						<ParameterEditor>
-							<Id>1693926072720</Id>
-							<EditorContolType>TEXT_BOX</EditorContolType>
-							<MinSliderValue><![CDATA[0]]></MinSliderValue>
-							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
-							<DelimeterType>NO_DELIMETER</DelimeterType>
-						</ParameterEditor>
-					</Properties>                 
-				</Variable>
-				<Variable Class="Parameter">
-					<Id>1704387717551</Id>
-					<Name><![CDATA[p_averageHomeOwnerPerc]]></Name>
-					<X>-420</X><Y>440</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
-						<Type><![CDATA[double]]></Type>
-						<UnitType><![CDATA[NONE]]></UnitType>
-						<SdArray>false</SdArray>
-						<ParameterEditor>
-							<Id>1704387717549</Id>
-							<EditorContolType>TEXT_BOX</EditorContolType>
-							<MinSliderValue><![CDATA[0]]></MinSliderValue>
-							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
-							<DelimeterType>NO_DELIMETER</DelimeterType>
-						</ParameterEditor>
-					</Properties>                 
-				</Variable>
-				<Variable Class="Parameter">
-					<Id>1704387726302</Id>
-					<Name><![CDATA[p_averageHomeRentPerc]]></Name>
-					<X>-420</X><Y>460</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
-						<Type><![CDATA[double]]></Type>
-						<UnitType><![CDATA[NONE]]></UnitType>
-						<SdArray>false</SdArray>
-						<ParameterEditor>
-							<Id>1704387726300</Id>
-							<EditorContolType>TEXT_BOX</EditorContolType>
-							<MinSliderValue><![CDATA[0]]></MinSliderValue>
-							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
-							<DelimeterType>NO_DELIMETER</DelimeterType>
-						</ParameterEditor>
-					</Properties>                 
-				</Variable>
-				<Variable Class="Parameter">
-					<Id>1704387733867</Id>
-					<Name><![CDATA[p_numberHousesHousingCooperations]]></Name>
-					<X>-420</X><Y>480</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
-						<Type><![CDATA[double]]></Type>
-						<UnitType><![CDATA[NONE]]></UnitType>
-						<SdArray>false</SdArray>
-						<ParameterEditor>
-							<Id>1704387733865</Id>
-							<EditorContolType>TEXT_BOX</EditorContolType>
-							<MinSliderValue><![CDATA[0]]></MinSliderValue>
-							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
-							<DelimeterType>NO_DELIMETER</DelimeterType>
-						</ParameterEditor>
-					</Properties>                 
-				</Variable>
-				<Variable Class="Parameter">
-					<Id>1704710304741</Id>
-					<Name><![CDATA[p_neighborhood]]></Name>
-					<X>-220</X><Y>180</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
-						<Type><![CDATA[GZ_Neighborhood]]></Type>
-						<UnitType><![CDATA[NONE]]></UnitType>
-						<SdArray>false</SdArray>
-						<ParameterEditor>
-							<Id>1704710304739</Id>
+							<Id>1705080728074</Id>
 							<EditorContolType>TEXT_BOX</EditorContolType>
 							<MinSliderValue><![CDATA[0]]></MinSliderValue>
 							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
@@ -3975,67 +4628,6 @@ if (hasAdopted == true && Math.random() < imitationCoefficient * contactRate){
 				<Function AccessType="default" StaticFunction="false">
 					<ReturnModificator>VOID</ReturnModificator>
 					<ReturnType><![CDATA[double]]></ReturnType>
-					<Id>1704710225588</Id>
-					<Name><![CDATA[f_setHouseholdLocation]]></Name>
-					<X>-220</X><Y>160</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<Body><![CDATA[double latitude, longitude;
-if (p_point != null){
-	
-	String pointString = p_point;
-		
-	//traceln(pointString);
-	
-	// Extract latitude and longitude from the point string
-	int startIndex = pointString.indexOf("(") + 1;
-	int spaceIndex = pointString.indexOf(" ", startIndex);
-	
-	//traceln(startIndex + " start index " + spaceIndex + " space index");
-	if (startIndex > 0 && spaceIndex > 0 ) {
-	   	// Extract latitude as a substring and convert it to a double
-		longitude = Double.parseDouble(pointString.substring(startIndex, spaceIndex));
-	   	//traceln(latitude);
-	    	
-	   	// Find the index of the space character after the latitude
-	   	int endIndex = pointString.length()-1;
-	    	
-		if (endIndex > 0) {
-			// Extract longitude as a substring and convert it to a double
-			latitude = Double.parseDouble(pointString.substring(spaceIndex + 1, endIndex));
-			//traceln(longitude);
-		}
-		else {
-			// Handle the case where longitude extraction fails
-			// You may want to set a default value or handle the error accordingly
-			latitude = 0.0;
-		}
-	
-	}
-	else {
-	    // Handle the case where latitude extraction fails
-	    // You may want to set a default value or handle the error accordingly
-	    latitude = 0.0;
-	    longitude = 0.0;
-	}
-}
-else {
-    // Handle the case with p_point == null
-    // You may want to set a default value or handle the error accordingly
-    latitude = 0.0;
-    longitude = 0.0;
-}
-// Set the latitude and longitude parameters for the agent
-setLatLon(latitude, longitude);
-p_latitude = latitude;
-p_longitude = longitude;
-]]></Body>
-				</Function>
-				<Function AccessType="default" StaticFunction="false">
-					<ReturnModificator>VOID</ReturnModificator>
-					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1704711241403</Id>
 					<Name><![CDATA[function]]></Name>
 					<X>350</X><Y>425</Y>
@@ -4059,7 +4651,10 @@ p_longitude = longitude;
 						<Type><![CDATA[HeatingMethod]]></Type>
 					</Parameter>
 					<Body><![CDATA[if (heatingMethod == NATURAL_GAS_BOILER){
-	oval.setFillColor(main.v_naturalGasColor);
+	oval.setFillColor(main.v_naturalGasBoilerColor);
+}
+else if (heatingMethod == NATURAL_GAS_BLOCK){
+	oval.setFillColor(main.v_naturalGasBlockColor);
 }
 else if (heatingMethod == DISTRICT_HEATING){
 	oval.setFillColor(main.v_districtHeatingColor);
@@ -4071,9 +4666,101 @@ else if (heatingMethod == HYBRID_HEAT_PUMP){
 	oval.setFillColor(main.v_hybridHeatPumpColor);
 }
 else{
-	traceln("Heating method " + heatingMethod + " has no color");
+	//traceln("Heating method " + heatingMethod + " has no color");
 }
 ]]></Body>
+				</Function>
+				<Function AccessType="default" StaticFunction="false">
+					<ReturnModificator>VOID</ReturnModificator>
+					<ReturnType><![CDATA[double]]></ReturnType>
+					<Id>1704894844684</Id>
+					<Name><![CDATA[f_setDefaultHeatingMethod]]></Name>
+					<X>-460</X><Y>720</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Parameter>
+						<Name><![CDATA[gasCV_perc]]></Name>
+						<Type><![CDATA[double]]></Type>
+					</Parameter>
+					<Parameter>
+						<Name><![CDATA[gasBlockHeating_perc]]></Name>
+						<Type><![CDATA[double]]></Type>
+					</Parameter>
+					<Parameter>
+						<Name><![CDATA[electricHeating_perc]]></Name>
+						<Type><![CDATA[double]]></Type>
+					</Parameter>
+					<Parameter>
+						<Name><![CDATA[districtHeating_perc]]></Name>
+						<Type><![CDATA[double]]></Type>
+					</Parameter>
+					<Body><![CDATA[double rand = random();
+
+if( rand < gasBlockHeating_perc){
+	v_heatingMethod = NATURAL_GAS_BLOCK;
+}
+else if( rand < gasCV_perc + gasBlockHeating_perc){
+	v_heatingMethod = NATURAL_GAS_BOILER;
+}
+else if (rand < gasCV_perc + gasBlockHeating_perc + electricHeating_perc){
+	v_heatingMethod = ELECTRIC_HEAT_PUMP;
+}
+else if (rand < gasCV_perc + gasBlockHeating_perc + electricHeating_perc){
+	v_heatingMethod = HYBRID_HEAT_PUMP;
+}
+else if (rand < gasCV_perc + gasBlockHeating_perc + electricHeating_perc + districtHeating_perc){
+	v_heatingMethod = DISTRICT_HEATING;
+}
+else {
+	v_heatingMethod = NATURAL_GAS_BOILER; //Rounding error could leave 1% undefined, which is given natural gas boiler due to its dominance
+}	
+]]></Body>
+				</Function>
+				<Function AccessType="default" StaticFunction="false">
+					<ReturnModificator>VOID</ReturnModificator>
+					<ReturnType><![CDATA[double]]></ReturnType>
+					<Id>1705080783441</Id>
+					<Name><![CDATA[f_setDefaultEnergyLabel]]></Name>
+					<X>-460</X><Y>740</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Body><![CDATA[if(p_energyLabelLetter.equals("A++++")){
+	p_rankedEnergyLabel = 11;
+}
+else if(p_energyLabelLetter.equals("A+++")){
+	p_rankedEnergyLabel = 10;
+}
+else if(p_energyLabelLetter.equals("A++")){
+	p_rankedEnergyLabel = 9;
+}
+else if(p_energyLabelLetter.equals("A+")){
+	p_rankedEnergyLabel = 8;
+}
+else if(p_energyLabelLetter.equals("A+")){
+	p_rankedEnergyLabel = 7;
+}
+else if(p_energyLabelLetter.equals("B")){
+	p_rankedEnergyLabel = 6;
+}
+else if(p_energyLabelLetter.equals("C")){
+	p_rankedEnergyLabel = 5;
+}
+else if(p_energyLabelLetter.equals("D")){
+	p_rankedEnergyLabel = 4;
+}
+else if(p_energyLabelLetter.equals("E")){
+	p_rankedEnergyLabel = 3;
+}
+else if(p_energyLabelLetter.equals("F")){
+	p_rankedEnergyLabel = 2;
+}
+else if(p_energyLabelLetter.equals("G")){
+	p_rankedEnergyLabel = 1;
+}]]></Body>
 				</Function>
 			</Functions>
 			<AgentLinks>
@@ -4287,28 +4974,6 @@ else{
 					</Font>
 					<Alignment>LEFT</Alignment>
 				</Text>
-				<Oval>
-					<Id>1694521183154</Id>
-					<Name><![CDATA[oval]]></Name>
-					<X>0</X><Y>0</Y>
-					<Label><X>0</X><Y>0</Y></Label>
-					<PublicFlag>true</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>false</ShowLabel>
-					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
-					<EmbeddedIcon>false</EmbeddedIcon>
-					<Z>0</Z>
-					<ZHeight>10</ZHeight>
-					<LineWidth>1</LineWidth>
-					<LineColor>-16777216</LineColor>
-					<LineMaterial>null</LineMaterial>
-					<LineStyle>SOLID</LineStyle>
-					<RadiusX>5</RadiusX>
-					<RadiusY>40</RadiusY>
-					<Rotation>0.0</Rotation>
-					<FillColor>-3308225</FillColor>
-					<FillMaterial>null</FillMaterial>
-				</Oval>
 				<Text>
 					<Id>1694513368716</Id>
 					<Name><![CDATA[text3]]></Name>
@@ -7229,6 +7894,48 @@ else{
 						</ParameterEditor>
 					</Properties>                 
 				</Variable>
+				<Variable Class="Parameter">
+					<Id>1704920306144</Id>
+					<Name><![CDATA[p_electricHeatPump_perc]]></Name>
+					<X>1580</X><Y>510</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[double]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<ParameterEditor>
+							<Id>1704920306142</Id>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1704920328401</Id>
+					<Name><![CDATA[p_hybridHeatPump_perc]]></Name>
+					<X>1580</X><Y>530</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[double]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<ParameterEditor>
+							<Id>1704920328399</Id>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
 				<Variable Class="CollectionVariable">
 					<Id>1700132370854</Id>
 					<Name><![CDATA[c_companies]]></Name>
@@ -7271,6 +7978,36 @@ else{
 					<Properties SaveInSnapshot="true" AccessType="public" StaticVariable="false">
 						<CollectionClass><![CDATA[ArrayList]]></CollectionClass>
 						<ElementClass><![CDATA[EA_Household]]></ElementClass>
+						<ValueElementClass><![CDATA[String]]></ValueElementClass>
+					</Properties>
+
+				</Variable>
+				<Variable Class="CollectionVariable">
+					<Id>1704904018349</Id>
+					<Name><![CDATA[c_industrySites]]></Name>
+					<X>670</X><Y>110</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" AccessType="public" StaticVariable="false">
+						<CollectionClass><![CDATA[ArrayList]]></CollectionClass>
+						<ElementClass><![CDATA[Object]]></ElementClass>
+						<ValueElementClass><![CDATA[String]]></ValueElementClass>
+					</Properties>
+
+				</Variable>
+				<Variable Class="CollectionVariable">
+					<Id>1704904031095</Id>
+					<Name><![CDATA[c_utilityObjects]]></Name>
+					<X>670</X><Y>90</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" AccessType="public" StaticVariable="false">
+						<CollectionClass><![CDATA[ArrayList]]></CollectionClass>
+						<ElementClass><![CDATA[Object]]></ElementClass>
 						<ValueElementClass><![CDATA[String]]></ValueElementClass>
 					</Properties>
 
@@ -7356,29 +8093,6 @@ else {
 	gisRegion.setLineWidth( 0.3 );
 	gisRegion.setFillColor( main.v_uitgeslotenColor );
 }]]></Body>
-				</Function>
-				<Function AccessType="default" StaticFunction="false">
-					<ReturnModificator>VOID</ReturnModificator>
-					<ReturnType><![CDATA[double]]></ReturnType>
-					<Id>1700132370872</Id>
-					<Name><![CDATA[f_setDefaultHeatSupply]]></Name>
-					<X>-420</X><Y>730</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<Body><![CDATA[v_electricHeatPumps_perc = p_electricHeatingLowGas_perc + p_electricHeatingNoGas_perc;
-v_hybridHeatPumps_perc = p_electricHeatingHighGas_perc;
-v_districtHeating_perc = p_districtHeating_perc;
-v_gasBoilers_perc = p_gasCV_perc;
-v_gasBlockHeating_perc = p_gasBlockHeating_perc;
-v_districtHeatingHighGas_perc = p_districtHeatingHighGas_perc;
-v_districtHeatingLowGas_perc = p_districtHeatingLowGas_perc;
-v_districtHeatingNoGas_perc = p_districtHeatingNoGas_perc;
-v_electricHeatingHighGas_perc = p_electricHeatingHighGas_perc;
-v_electricHeatingLowGas_perc = p_electricHeatingLowGas_perc;
-v_electricHeatingNoGas_perc = p_electricHeatingNoGas_perc;
-]]></Body>
 				</Function>
 				<Function AccessType="default" StaticFunction="false">
 					<ReturnModificator>VOID</ReturnModificator>
@@ -7766,19 +8480,116 @@ return (PmaxHouseholds + PmaxHeatPumps + PmaxEVs);]]></Body>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
-					<Body><![CDATA[//Get total households with heating m ethod in neighborhood.
+					<Body><![CDATA[//Get total households with heating method in neighborhood.
 v_gasBoilers_nb = count(c_households, x->x.v_heatingMethod == NATURAL_GAS_BOILER);
+v_gasBlockHeating_nb = count(c_households, x->x.v_heatingMethod == NATURAL_GAS_BLOCK);
 v_districtHeating_nb = count(c_households, x->x.v_heatingMethod == DISTRICT_HEATING);
 v_electricHeatPumps_nb = count(c_households, x->x.v_heatingMethod == ELECTRIC_HEAT_PUMP);
 v_hybridHeatPumps_nb = count(c_households, x->x.v_heatingMethod == HYBRID_HEAT_PUMP);
 
 double households = c_households.size();
 v_gasBoilers_perc = v_gasBoilers_nb / households;
+v_gasBlockHeating_perc = v_gasBlockHeating_nb / households;
 v_districtHeating_perc = v_districtHeating_nb / households;
 v_electricHeatPumps_perc = v_electricHeatPumps_nb / households;
 v_hybridHeatPumps_perc = v_hybridHeatPumps_nb / households;
 
 ]]></Body>
+				</Function>
+				<Function AccessType="default" StaticFunction="false">
+					<ReturnModificator>VOID</ReturnModificator>
+					<ReturnType><![CDATA[double]]></ReturnType>
+					<Id>1704917939254</Id>
+					<Name><![CDATA[f_setDefaultHeatingMethod]]></Name>
+					<X>-420</X><Y>820</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>false</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Parameter>
+						<Name><![CDATA[gasCV_perc]]></Name>
+						<Type><![CDATA[double]]></Type>
+					</Parameter>
+					<Parameter>
+						<Name><![CDATA[gasBlockHeating_perc]]></Name>
+						<Type><![CDATA[double]]></Type>
+					</Parameter>
+					<Parameter>
+						<Name><![CDATA[electricHeatPump_perc]]></Name>
+						<Type><![CDATA[double]]></Type>
+					</Parameter>
+					<Parameter>
+						<Name><![CDATA[hybridHeatPump_perc]]></Name>
+						<Type><![CDATA[double]]></Type>
+					</Parameter>
+					<Parameter>
+						<Name><![CDATA[districtHeating_perc]]></Name>
+						<Type><![CDATA[double]]></Type>
+					</Parameter>
+					<Body><![CDATA[double households = c_households.size();
+double gasBlockHouseholds = roundToInt(gasBlockHeating_perc * households);
+double gasBoilerHouseholds = roundToInt(gasCV_perc * households);
+double electricHPHouseholds = roundToInt(electricHeatPump_perc * households);
+double hybridHPHouseholds = roundToInt(hybridHeatPump_perc * households);
+double districtHeatingHouseholds = roundToInt(districtHeating_perc * households);
+
+double totalHouseholds = (gasBlockHouseholds + gasBoilerHouseholds + electricHPHouseholds + hybridHPHouseholds + districtHeatingHouseholds);
+if( totalHouseholds > households){
+	gasBoilerHouseholds -= (totalHouseholds - households);
+}
+else if (totalHouseholds < households){
+	gasBoilerHouseholds += (households - totalHouseholds);
+}
+//traceln(households + " " + gasBlockHouseholds + " " + totalHouseholds + " " + gasBoilerHouseholds);
+
+//Electric heat pump
+int householdsWithElectricHeatPump = 0;
+while( electricHPHouseholds > householdsWithElectricHeatPump){
+	List<EA_Household> householdsWithoutHeating = filter( c_households, p -> p.v_heatingMethod == null);
+	EA_Household household = top(householdsWithoutHeating, x->x.p_rankedEnergyLabel);
+	household.v_heatingMethod = ELECTRIC_HEAT_PUMP;
+	householdsWithElectricHeatPump++;
+} 
+
+//Electric heat pump
+int householdsWithHybridHeatPump = 0;
+while( hybridHPHouseholds > householdsWithHybridHeatPump){
+	List<EA_Household> householdsWithoutHeating = filter( c_households, p -> p.v_heatingMethod == null);
+	EA_Household household = top(householdsWithoutHeating, x->x.p_rankedEnergyLabel);
+	household.v_heatingMethod = HYBRID_HEAT_PUMP;
+	householdsWithHybridHeatPump++;
+} 
+
+//District heating
+int householdsWithDistrictHeating = 0;
+while( districtHeatingHouseholds > householdsWithDistrictHeating){
+	List<EA_Household> householdsWithoutHeating = filter( c_households, p -> p.v_heatingMethod == null);
+	EA_Household household = top(householdsWithoutHeating, x->x.p_mostLikelyDistrictHeating);
+	household.v_heatingMethod = DISTRICT_HEATING;
+	householdsWithDistrictHeating++;
+} 
+
+//Gas block heating
+int householdsWithGasBlockHeating = 0;
+while( gasBlockHouseholds > householdsWithGasBlockHeating){
+	List<EA_Household> householdsWithoutHeating = filter( c_households, p -> p.v_heatingMethod == null);
+	EA_Household household = top(householdsWithoutHeating, x->x.p_numberOfHouseholdsInBuilding);
+	household.v_heatingMethod = NATURAL_GAS_BLOCK;
+	householdsWithGasBlockHeating++;
+} 
+
+//District heating
+//TODO: District heating, hybrid heat pumps, and electric heat pumps
+//Electric heat pumps for top energy labels
+//Hybrid heat pumps for second top energy labels
+//district heating for location around block with most social housing??
+
+
+//Gas boilers
+while( gasBoilerHouseholds > count(c_households, x->x.v_heatingMethod == NATURAL_GAS_BOILER)){
+	EA_Household household = randomWhere(c_households, x->x.v_heatingMethod == null);
+	household.v_heatingMethod = NATURAL_GAS_BOILER;
+} ]]></Body>
 				</Function>
 			</Functions>
 			<AnalysisData>
@@ -8456,6 +9267,1718 @@ v_hybridHeatPumps_perc = v_hybridHeatPumps_nb / households;
 			</Presentation>
 
 		</ActiveObjectClass>
+		<!--   =========   Active Object Class   ========  -->
+		<ActiveObjectClass>
+			<Id>1704896037029</Id>
+			<Name><![CDATA[Test]]></Name>
+			<Generic>false</Generic>
+			<GenericParameter>
+				<Id>1704896037035</Id>
+				<Name><![CDATA[1704896037035]]></Name>
+				<GenericParameterValue Class="CodeValue">
+					<Code><![CDATA[T extends Agent]]></Code>
+				</GenericParameterValue>
+				<GenericParameterLabel><![CDATA[Generic parameter:]]></GenericParameterLabel>
+			</GenericParameter>
+			<FlowChartsUsage>ENTITY</FlowChartsUsage>
+			<SamplesToKeep>100</SamplesToKeep>
+			<LimitNumberOfArrayElements>false</LimitNumberOfArrayElements>
+			<ElementsLimitValue>100</ElementsLimitValue>
+			<MakeDefaultViewArea>true</MakeDefaultViewArea>
+			<SceneGridColor/>
+			<SceneBackgroundColor/>
+			<SceneSkybox>null</SceneSkybox>
+			<AgentProperties>
+				<EnvironmentDefinesInitialLocation>true</EnvironmentDefinesInitialLocation>
+				<RotateAnimationTowardsMovement>true</RotateAnimationTowardsMovement>
+				<RotateAnimationVertically>false</RotateAnimationVertically>
+				<VelocityCode Class="CodeUnitValue">
+					<Code><![CDATA[10]]></Code>
+					<Unit Class="SpeedUnits"><![CDATA[MPS]]></Unit>
+				</VelocityCode>
+				<PhysicalLength Class="CodeUnitValue">
+					<Code><![CDATA[1]]></Code>
+					<Unit Class="LengthUnits"><![CDATA[METER]]></Unit>
+				</PhysicalLength>
+				<PhysicalWidth Class="CodeUnitValue">
+					<Code><![CDATA[1]]></Code>
+					<Unit Class="LengthUnits"><![CDATA[METER]]></Unit>
+				</PhysicalWidth>
+				<PhysicalHeight Class="CodeUnitValue">
+					<Code><![CDATA[1]]></Code>
+					<Unit Class="LengthUnits"><![CDATA[METER]]></Unit>
+				</PhysicalHeight>
+			</AgentProperties>
+			<EnvironmentProperties>
+					<EnableSteps>false</EnableSteps>
+					<StepDurationCode Class="CodeUnitValue">
+						<Code><![CDATA[1.0]]></Code>
+						<Unit Class="TimeUnits"><![CDATA[SECOND]]></Unit>
+					</StepDurationCode>
+					<SpaceType>CONTINUOUS</SpaceType>
+					<WidthCode><![CDATA[500]]></WidthCode>
+					<HeightCode><![CDATA[500]]></HeightCode>
+					<ZHeightCode><![CDATA[0]]></ZHeightCode>
+					<ColumnsCountCode><![CDATA[100]]></ColumnsCountCode>
+					<RowsCountCode><![CDATA[100]]></RowsCountCode>
+					<NeigborhoodType>MOORE</NeigborhoodType>
+					<LayoutType>USER_DEF</LayoutType>
+					<LayoutTypeApplyOnStartup>true</LayoutTypeApplyOnStartup>
+					<NetworkType>USER_DEF</NetworkType>
+					<NetworkTypeApplyOnStartup>true</NetworkTypeApplyOnStartup>
+					<ConnectionsPerAgentCode><![CDATA[2]]></ConnectionsPerAgentCode>
+					<ConnectionsRangeCode><![CDATA[50]]></ConnectionsRangeCode>
+					<NeighborLinkFractionCode><![CDATA[0.95]]></NeighborLinkFractionCode>
+					<MCode><![CDATA[10]]></MCode>
+			</EnvironmentProperties>
+			<DatasetsCreationProperties>
+				<AutoCreate>true</AutoCreate>
+					<OccurrenceAtTime>true</OccurrenceAtTime>
+					<OccurrenceDate>1704960000000</OccurrenceDate>
+					<OccurrenceTime Class="CodeUnitValue">
+						<Code><![CDATA[0]]></Code>
+						<Unit Class="TimeUnits"><![CDATA[YEAR]]></Unit>
+					</OccurrenceTime>
+					<RecurrenceCode Class="CodeUnitValue">
+						<Code><![CDATA[1]]></Code>
+						<Unit Class="TimeUnits"><![CDATA[YEAR]]></Unit>
+					</RecurrenceCode>
+			</DatasetsCreationProperties>
+			<ScaleRuler>
+				<Id>1704896037032</Id>
+				<Name><![CDATA[scale]]></Name>
+				<X>0</X><Y>-150</Y>
+				<PublicFlag>false</PublicFlag>
+				<PresentationFlag>false</PresentationFlag>
+				<ShowLabel>false</ShowLabel>
+				<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
+				<Length>100</Length>
+				<Rotation>0</Rotation>
+				<ScaleType>BASED_ON_LENGTH</ScaleType>
+				<ModelLength>10</ModelLength>
+				<LengthUnits>METER</LengthUnits>
+				<Scale>10</Scale>
+				<InheritedFromParentAgentType>true</InheritedFromParentAgentType>
+			</ScaleRuler>
+			<CurrentLevel>1704896037036</CurrentLevel>
+			<ConnectionsId>1704896037030</ConnectionsId>
+			<Variables>
+				<Variable Class="Parameter">
+					<Id>1704896037040</Id>
+					<Name><![CDATA[parameter]]></Name>
+					<X>50</X><Y>50</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[double]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<ParameterEditor>
+							<Id>0</Id>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+			</Variables>
+			<AgentLinks>
+				<AgentLink>
+					<Id>1704896037030</Id>
+					<Name><![CDATA[connections]]></Name>
+					<X>50</X><Y>-50</Y>
+					<Label><X>15</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<HandleReceiveInConnections>false</HandleReceiveInConnections>
+					<AgentLinkType>COLLECTION_OF_LINKS</AgentLinkType>
+					<AgentLinkBidirectional>true</AgentLinkBidirectional>
+					<MessageType><![CDATA[Object]]></MessageType>
+					<LineStyle>SOLID</LineStyle>
+					<LineWidth>1</LineWidth>
+					<LineColor>-16777216</LineColor>
+					<LineZOrder>UNDER_AGENTS</LineZOrder>
+					<LineArrow>NONE</LineArrow>
+					<LineArrowPosition>END</LineArrowPosition>
+				</AgentLink>
+			</AgentLinks>
+
+			<ContainerLinks>
+				<ContainerLink>
+					<Id>1704896037076</Id>
+					<Name><![CDATA[main]]></Name>
+					<X>50</X><Y>-100</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<ActiveObjectClass>
+						<PackageName><![CDATA[heat_transition_neighborhood]]></PackageName>
+						<ClassName><![CDATA[Main]]></ClassName>
+					</ActiveObjectClass>
+				</ContainerLink>
+			</ContainerLinks>
+
+			<Presentation>
+				<Level>
+					<Id>1704896037036</Id>
+					<Name><![CDATA[level]]></Name>
+					<X>0</X><Y>0</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
+					<Z>0</Z>
+					<LevelVisibility>DIM_NON_CURRENT</LevelVisibility>
+
+
+				</Level>
+			</Presentation>
+
+		</ActiveObjectClass>
+		<!--   =========   Active Object Class   ========  -->
+		<ActiveObjectClass>
+			<Id>1704903024094</Id>
+			<Name><![CDATA[EA_BAGObject]]></Name>
+			<Generic>false</Generic>
+			<GenericParameter>
+				<Id>1704903024100</Id>
+				<Name><![CDATA[1704903024100]]></Name>
+				<GenericParameterValue Class="CodeValue">
+					<Code><![CDATA[T extends Agent]]></Code>
+				</GenericParameterValue>
+				<GenericParameterLabel><![CDATA[Generic parameter:]]></GenericParameterLabel>
+			</GenericParameter>
+			<FlowChartsUsage>ENTITY</FlowChartsUsage>
+			<SamplesToKeep>100</SamplesToKeep>
+			<LimitNumberOfArrayElements>false</LimitNumberOfArrayElements>
+			<ElementsLimitValue>100</ElementsLimitValue>
+			<MakeDefaultViewArea>true</MakeDefaultViewArea>
+			<SceneGridColor/>
+			<SceneBackgroundColor/>
+			<SceneSkybox>null</SceneSkybox>
+			<AgentProperties>
+				<EnvironmentDefinesInitialLocation>true</EnvironmentDefinesInitialLocation>
+				<RotateAnimationTowardsMovement>true</RotateAnimationTowardsMovement>
+				<RotateAnimationVertically>false</RotateAnimationVertically>
+				<VelocityCode Class="CodeUnitValue">
+					<Code><![CDATA[10]]></Code>
+					<Unit Class="SpeedUnits"><![CDATA[MPS]]></Unit>
+				</VelocityCode>
+				<PhysicalLength Class="CodeUnitValue">
+					<Code><![CDATA[1]]></Code>
+					<Unit Class="LengthUnits"><![CDATA[METER]]></Unit>
+				</PhysicalLength>
+				<PhysicalWidth Class="CodeUnitValue">
+					<Code><![CDATA[1]]></Code>
+					<Unit Class="LengthUnits"><![CDATA[METER]]></Unit>
+				</PhysicalWidth>
+				<PhysicalHeight Class="CodeUnitValue">
+					<Code><![CDATA[1]]></Code>
+					<Unit Class="LengthUnits"><![CDATA[METER]]></Unit>
+				</PhysicalHeight>
+			</AgentProperties>
+			<EnvironmentProperties>
+					<EnableSteps>false</EnableSteps>
+					<StepDurationCode Class="CodeUnitValue">
+						<Code><![CDATA[1.0]]></Code>
+						<Unit Class="TimeUnits"><![CDATA[SECOND]]></Unit>
+					</StepDurationCode>
+					<SpaceType>CONTINUOUS</SpaceType>
+					<WidthCode><![CDATA[500]]></WidthCode>
+					<HeightCode><![CDATA[500]]></HeightCode>
+					<ZHeightCode><![CDATA[0]]></ZHeightCode>
+					<ColumnsCountCode><![CDATA[100]]></ColumnsCountCode>
+					<RowsCountCode><![CDATA[100]]></RowsCountCode>
+					<NeigborhoodType>MOORE</NeigborhoodType>
+					<LayoutType>USER_DEF</LayoutType>
+					<LayoutTypeApplyOnStartup>true</LayoutTypeApplyOnStartup>
+					<NetworkType>USER_DEF</NetworkType>
+					<NetworkTypeApplyOnStartup>true</NetworkTypeApplyOnStartup>
+					<ConnectionsPerAgentCode><![CDATA[2]]></ConnectionsPerAgentCode>
+					<ConnectionsRangeCode><![CDATA[50]]></ConnectionsRangeCode>
+					<NeighborLinkFractionCode><![CDATA[0.95]]></NeighborLinkFractionCode>
+					<MCode><![CDATA[10]]></MCode>
+			</EnvironmentProperties>
+			<DatasetsCreationProperties>
+				<AutoCreate>true</AutoCreate>
+					<OccurrenceAtTime>true</OccurrenceAtTime>
+					<OccurrenceDate>1704960000000</OccurrenceDate>
+					<OccurrenceTime Class="CodeUnitValue">
+						<Code><![CDATA[0]]></Code>
+						<Unit Class="TimeUnits"><![CDATA[YEAR]]></Unit>
+					</OccurrenceTime>
+					<RecurrenceCode Class="CodeUnitValue">
+						<Code><![CDATA[1]]></Code>
+						<Unit Class="TimeUnits"><![CDATA[YEAR]]></Unit>
+					</RecurrenceCode>
+			</DatasetsCreationProperties>
+			<ScaleRuler>
+				<Id>1704903024097</Id>
+				<Name><![CDATA[scale]]></Name>
+				<X>0</X><Y>-150</Y>
+				<PublicFlag>false</PublicFlag>
+				<PresentationFlag>false</PresentationFlag>
+				<ShowLabel>false</ShowLabel>
+				<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
+				<Length>100</Length>
+				<Rotation>0</Rotation>
+				<ScaleType>BASED_ON_LENGTH</ScaleType>
+				<ModelLength>10</ModelLength>
+				<LengthUnits>METER</LengthUnits>
+				<Scale>10</Scale>
+				<InheritedFromParentAgentType>true</InheritedFromParentAgentType>
+			</ScaleRuler>
+			<CurrentLevel>1704903024101</CurrentLevel>
+			<ConnectionsId>1704903024095</ConnectionsId>
+			<Variables>
+				<Variable Class="Parameter">
+					<Id>1704903068802</Id>
+					<Name><![CDATA[p_numid]]></Name>
+					<X>-460</X><Y>45</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[double]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<ParameterEditor>
+							<Id>1704903068800</Id>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1704903068805</Id>
+					<Name><![CDATA[p_pid]]></Name>
+					<X>-460</X><Y>65</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[String]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<ParameterEditor>
+							<Id>1704903068803</Id>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1704903068816</Id>
+					<Name><![CDATA[p_vid]]></Name>
+					<X>-460</X><Y>85</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[double]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<ParameterEditor>
+							<Id>1704903068814</Id>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1704903068819</Id>
+					<Name><![CDATA[p_postalCode]]></Name>
+					<X>-460</X><Y>265</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[String]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<ParameterEditor>
+							<Id>1704903068817</Id>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1704903068822</Id>
+					<Name><![CDATA[p_street]]></Name>
+					<X>-460</X><Y>285</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[String]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<ParameterEditor>
+							<Id>1704903068820</Id>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1704903068825</Id>
+					<Name><![CDATA[p_number]]></Name>
+					<X>-460</X><Y>305</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[double]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<ParameterEditor>
+							<Id>1704903068823</Id>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1704903068828</Id>
+					<Name><![CDATA[p_surfaceArea]]></Name>
+					<X>-460</X><Y>325</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[double]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<ParameterEditor>
+							<Id>1704903068826</Id>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1704903068831</Id>
+					<Name><![CDATA[p_householdEquivalent]]></Name>
+					<X>-460</X><Y>345</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[double]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<ParameterEditor>
+							<Id>1704903068829</Id>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1704903068834</Id>
+					<Name><![CDATA[p_buildingYear]]></Name>
+					<X>-460</X><Y>365</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[double]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<ParameterEditor>
+							<Id>1704903068832</Id>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1704903068837</Id>
+					<Name><![CDATA[p_averageWOZValueHouse]]></Name>
+					<X>-460</X><Y>405</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[double]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<ParameterEditor>
+							<Id>1704903068835</Id>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1704903068840</Id>
+					<Name><![CDATA[p_averageWOZValueMunicipality]]></Name>
+					<X>-460</X><Y>425</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[double]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<ParameterEditor>
+							<Id>1704903068838</Id>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1704903068843</Id>
+					<Name><![CDATA[p_energyLabelLetter]]></Name>
+					<X>-460</X><Y>535</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[String]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<ParameterEditor>
+							<Id>1704903068841</Id>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1704903068846</Id>
+					<Name><![CDATA[p_buildingTypeLabel]]></Name>
+					<X>-460</X><Y>555</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[String]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<ParameterEditor>
+							<Id>1704903068844</Id>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1704903068849</Id>
+					<Name><![CDATA[p_SBICode]]></Name>
+					<X>-460</X><Y>575</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[String]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<ParameterEditor>
+							<Id>1704903068847</Id>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1704903068852</Id>
+					<Name><![CDATA[p_EANCount]]></Name>
+					<X>-460</X><Y>595</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[double]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<ParameterEditor>
+							<Id>1704903068850</Id>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1704903068855</Id>
+					<Name><![CDATA[p_groupID2022]]></Name>
+					<X>-460</X><Y>615</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[String]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<ParameterEditor>
+							<Id>1704903068853</Id>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1704903068858</Id>
+					<Name><![CDATA[p_neighborhoodCode]]></Name>
+					<X>-460</X><Y>105</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[String]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<ParameterEditor>
+							<Id>1704903068856</Id>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1704903068861</Id>
+					<Name><![CDATA[p_neighborhoodName]]></Name>
+					<X>-460</X><Y>125</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[String]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<ParameterEditor>
+							<Id>1704903068859</Id>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1704903068864</Id>
+					<Name><![CDATA[p_districtCode]]></Name>
+					<X>-460</X><Y>145</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[String]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<ParameterEditor>
+							<Id>1704903068862</Id>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1704903068867</Id>
+					<Name><![CDATA[p_districtName]]></Name>
+					<X>-460</X><Y>165</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[String]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<ParameterEditor>
+							<Id>1704903068865</Id>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1704903068870</Id>
+					<Name><![CDATA[p_municipalityCode]]></Name>
+					<X>-460</X><Y>185</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[String]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<ParameterEditor>
+							<Id>1704903068868</Id>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1704903068873</Id>
+					<Name><![CDATA[p_municipalityName]]></Name>
+					<X>-460</X><Y>205</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[String]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<ParameterEditor>
+							<Id>1704903068871</Id>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1704903068876</Id>
+					<Name><![CDATA[p_provinceCode]]></Name>
+					<X>-460</X><Y>225</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[String]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<ParameterEditor>
+							<Id>1704903068874</Id>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1704903068879</Id>
+					<Name><![CDATA[p_provinceName]]></Name>
+					<X>-460</X><Y>245</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[String]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<ParameterEditor>
+							<Id>1704903068877</Id>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1704903068882</Id>
+					<Name><![CDATA[p_longitude]]></Name>
+					<X>-460</X><Y>635</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[double]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<ParameterEditor>
+							<Id>1704903068880</Id>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1704903068885</Id>
+					<Name><![CDATA[p_latitude]]></Name>
+					<X>-460</X><Y>655</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[double]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<ParameterEditor>
+							<Id>1704903068883</Id>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1704903068888</Id>
+					<Name><![CDATA[p_p6GasM3_2022]]></Name>
+					<X>-260</X><Y>45</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[double]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<ParameterEditor>
+							<Id>1704903068886</Id>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1704903068891</Id>
+					<Name><![CDATA[p_p6KWh_2022]]></Name>
+					<X>-260</X><Y>65</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[double]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<ParameterEditor>
+							<Id>1704903068889</Id>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1704903068894</Id>
+					<Name><![CDATA[p_p6KWhDirection_2022]]></Name>
+					<X>-260</X><Y>85</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[double]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<ParameterEditor>
+							<Id>1704903068892</Id>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1704903068897</Id>
+					<Name><![CDATA[p_p6LandSeizure_M2]]></Name>
+					<X>-260</X><Y>105</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[double]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<ParameterEditor>
+							<Id>1704903068895</Id>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1704903068900</Id>
+					<Name><![CDATA[p_p6GasConnections_2022]]></Name>
+					<X>-260</X><Y>125</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[double]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<ParameterEditor>
+							<Id>1704903068898</Id>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1704903068903</Id>
+					<Name><![CDATA[p_point]]></Name>
+					<X>-460</X><Y>675</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[String]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<ParameterEditor>
+							<Id>1704903068901</Id>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1704903068906</Id>
+					<Name><![CDATA[p_averageHomeOwnerPerc]]></Name>
+					<X>-460</X><Y>455</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[double]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<ParameterEditor>
+							<Id>1704903068904</Id>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1704903068909</Id>
+					<Name><![CDATA[p_averageHomeRentPerc]]></Name>
+					<X>-460</X><Y>475</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[double]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<ParameterEditor>
+							<Id>1704903068907</Id>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1704903068912</Id>
+					<Name><![CDATA[p_numberHousesHousingCooperations]]></Name>
+					<X>-460</X><Y>495</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[double]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<ParameterEditor>
+							<Id>1704903068910</Id>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1704903068915</Id>
+					<Name><![CDATA[p_neighborhood]]></Name>
+					<X>-260</X><Y>175</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[GZ_Neighborhood]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<ParameterEditor>
+							<Id>1704903068913</Id>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1704904314138</Id>
+					<Name><![CDATA[p_usage]]></Name>
+					<X>-460</X><Y>385</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[String]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<ParameterEditor>
+							<Id>1704904314136</Id>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+			</Variables>
+			<Functions>
+				<Function AccessType="default" StaticFunction="false">
+					<ReturnModificator>VOID</ReturnModificator>
+					<ReturnType><![CDATA[double]]></ReturnType>
+					<Id>1704903068799</Id>
+					<Name><![CDATA[f_setLocation]]></Name>
+					<X>-460</X><Y>720</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Body><![CDATA[double latitude, longitude;
+if (p_point != null){
+	
+	String pointString = p_point;
+		
+	//traceln(pointString);
+	
+	// Extract latitude and longitude from the point string
+	int startIndex = pointString.indexOf("(") + 1;
+	int spaceIndex = pointString.indexOf(" ", startIndex);
+	
+	//traceln(startIndex + " start index " + spaceIndex + " space index");
+	if (startIndex > 0 && spaceIndex > 0 ) {
+	   	// Extract latitude as a substring and convert it to a double
+		longitude = Double.parseDouble(pointString.substring(startIndex, spaceIndex));
+	   	//traceln(latitude);
+	    	
+	   	// Find the index of the space character after the latitude
+	   	int endIndex = pointString.length()-1;
+	    	
+		if (endIndex > 0) {
+			// Extract longitude as a substring and convert it to a double
+			latitude = Double.parseDouble(pointString.substring(spaceIndex + 1, endIndex));
+			//traceln(longitude);
+		}
+		else {
+			// Handle the case where longitude extraction fails
+			// You may want to set a default value or handle the error accordingly
+			latitude = 0.0;
+		}
+	
+	}
+	else {
+	    // Handle the case where latitude extraction fails
+	    // You may want to set a default value or handle the error accordingly
+	    latitude = 0.0;
+	    longitude = 0.0;
+	}
+}
+else {
+    // Handle the case with p_point == null
+    // You may want to set a default value or handle the error accordingly
+    latitude = 0.0;
+    longitude = 0.0;
+}
+// Set the latitude and longitude parameters for the agent
+setLatLon(latitude, longitude);
+p_latitude = latitude;
+p_longitude = longitude;
+]]></Body>
+				</Function>
+			</Functions>
+			<AgentLinks>
+				<AgentLink>
+					<Id>1704903024095</Id>
+					<Name><![CDATA[connections]]></Name>
+					<X>50</X><Y>-50</Y>
+					<Label><X>15</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<HandleReceiveInConnections>false</HandleReceiveInConnections>
+					<AgentLinkType>COLLECTION_OF_LINKS</AgentLinkType>
+					<AgentLinkBidirectional>true</AgentLinkBidirectional>
+					<MessageType><![CDATA[Object]]></MessageType>
+					<LineStyle>SOLID</LineStyle>
+					<LineWidth>1</LineWidth>
+					<LineColor>-16777216</LineColor>
+					<LineZOrder>UNDER_AGENTS</LineZOrder>
+					<LineArrow>NONE</LineArrow>
+					<LineArrowPosition>END</LineArrowPosition>
+				</AgentLink>
+			</AgentLinks>
+
+
+			<Presentation>
+				<Level>
+					<Id>1704903024101</Id>
+					<Name><![CDATA[level]]></Name>
+					<X>0</X><Y>0</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
+					<Z>0</Z>
+					<LevelVisibility>DIM_NON_CURRENT</LevelVisibility>
+
+			<Presentation>
+				<Oval>
+					<Id>1704904243617</Id>
+					<Name><![CDATA[oval]]></Name>
+					<X>0</X><Y>0</Y>
+					<Label><X>0</X><Y>0</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Z>0</Z>
+					<ZHeight>10</ZHeight>
+					<LineWidth>1</LineWidth>
+					<LineColor>-16777216</LineColor>
+					<LineMaterial>null</LineMaterial>
+					<LineStyle>SOLID</LineStyle>
+					<RadiusX>5</RadiusX>
+					<RadiusY>40</RadiusY>
+					<Rotation>0.0</Rotation>
+					<FillColor>-3308225</FillColor>
+					<FillMaterial>null</FillMaterial>
+				</Oval>
+			</Presentation>
+
+				</Level>
+			</Presentation>
+
+		</ActiveObjectClass>
+		<!--   =========   Active Object Class   ========  -->
+		<ActiveObjectClass>
+			<Id>1704903185567</Id>
+			<Name><![CDATA[EA_UtilityObject]]></Name>
+			<ExtendsReference>
+				<PackageName><![CDATA[heat_transition_neighborhood]]></PackageName>
+				<ClassName><![CDATA[EA_BAGObject]]></ClassName>
+			</ExtendsReference>
+			<Parameters>
+				<Parameter>
+					<Name><![CDATA[p_numid]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_pid]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_vid]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_postalCode]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_street]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_number]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_surfaceArea]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_householdEquivalent]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_buildingYear]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_averageWOZValueHouse]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_averageWOZValueMunicipality]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_energyLabelLetter]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_buildingTypeLabel]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_SBICode]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_EANCount]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_groupID2022]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_neighborhoodCode]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_neighborhoodName]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_districtCode]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_districtName]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_municipalityCode]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_municipalityName]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_provinceCode]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_provinceName]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_longitude]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_latitude]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_p6GasM3_2022]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_p6KWh_2022]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_p6KWhDirection_2022]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_p6LandSeizure_M2]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_p6GasConnections_2022]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_point]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_averageHomeOwnerPerc]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_averageHomeRentPerc]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_numberHousesHousingCooperations]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_neighborhood]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_usage]]></Name>
+				</Parameter>
+			</Parameters>
+			<Generic>false</Generic>
+			<GenericParameter>
+				<Id>1704903185573</Id>
+				<Name><![CDATA[1704903185573]]></Name>
+				<GenericParameterValue Class="CodeValue">
+					<Code><![CDATA[T extends Agent]]></Code>
+				</GenericParameterValue>
+				<GenericParameterLabel><![CDATA[Generic parameter:]]></GenericParameterLabel>
+			</GenericParameter>
+			<FlowChartsUsage>ENTITY</FlowChartsUsage>
+			<SamplesToKeep>100</SamplesToKeep>
+			<LimitNumberOfArrayElements>false</LimitNumberOfArrayElements>
+			<ElementsLimitValue>100</ElementsLimitValue>
+			<MakeDefaultViewArea>true</MakeDefaultViewArea>
+			<SceneGridColor/>
+			<SceneBackgroundColor/>
+			<SceneSkybox>null</SceneSkybox>
+			<AgentProperties>
+				<EnvironmentDefinesInitialLocation>true</EnvironmentDefinesInitialLocation>
+				<RotateAnimationTowardsMovement>true</RotateAnimationTowardsMovement>
+				<RotateAnimationVertically>false</RotateAnimationVertically>
+				<VelocityCode Class="CodeUnitValue">
+					<Code><![CDATA[10]]></Code>
+					<Unit Class="SpeedUnits"><![CDATA[MPS]]></Unit>
+				</VelocityCode>
+				<PhysicalLength Class="CodeUnitValue">
+					<Code><![CDATA[1]]></Code>
+					<Unit Class="LengthUnits"><![CDATA[METER]]></Unit>
+				</PhysicalLength>
+				<PhysicalWidth Class="CodeUnitValue">
+					<Code><![CDATA[1]]></Code>
+					<Unit Class="LengthUnits"><![CDATA[METER]]></Unit>
+				</PhysicalWidth>
+				<PhysicalHeight Class="CodeUnitValue">
+					<Code><![CDATA[1]]></Code>
+					<Unit Class="LengthUnits"><![CDATA[METER]]></Unit>
+				</PhysicalHeight>
+			</AgentProperties>
+			<EnvironmentProperties>
+					<EnableSteps>false</EnableSteps>
+					<StepDurationCode Class="CodeUnitValue">
+						<Code><![CDATA[1.0]]></Code>
+						<Unit Class="TimeUnits"><![CDATA[SECOND]]></Unit>
+					</StepDurationCode>
+					<SpaceType>CONTINUOUS</SpaceType>
+					<WidthCode><![CDATA[500]]></WidthCode>
+					<HeightCode><![CDATA[500]]></HeightCode>
+					<ZHeightCode><![CDATA[0]]></ZHeightCode>
+					<ColumnsCountCode><![CDATA[100]]></ColumnsCountCode>
+					<RowsCountCode><![CDATA[100]]></RowsCountCode>
+					<NeigborhoodType>MOORE</NeigborhoodType>
+					<LayoutType>USER_DEF</LayoutType>
+					<LayoutTypeApplyOnStartup>true</LayoutTypeApplyOnStartup>
+					<NetworkType>USER_DEF</NetworkType>
+					<NetworkTypeApplyOnStartup>true</NetworkTypeApplyOnStartup>
+					<ConnectionsPerAgentCode><![CDATA[2]]></ConnectionsPerAgentCode>
+					<ConnectionsRangeCode><![CDATA[50]]></ConnectionsRangeCode>
+					<NeighborLinkFractionCode><![CDATA[0.95]]></NeighborLinkFractionCode>
+					<MCode><![CDATA[10]]></MCode>
+			</EnvironmentProperties>
+			<DatasetsCreationProperties>
+				<AutoCreate>true</AutoCreate>
+					<OccurrenceAtTime>true</OccurrenceAtTime>
+					<OccurrenceDate>1704960000000</OccurrenceDate>
+					<OccurrenceTime Class="CodeUnitValue">
+						<Code><![CDATA[0]]></Code>
+						<Unit Class="TimeUnits"><![CDATA[YEAR]]></Unit>
+					</OccurrenceTime>
+					<RecurrenceCode Class="CodeUnitValue">
+						<Code><![CDATA[1]]></Code>
+						<Unit Class="TimeUnits"><![CDATA[YEAR]]></Unit>
+					</RecurrenceCode>
+			</DatasetsCreationProperties>
+			<ScaleRuler>
+				<Id>1704903185570</Id>
+				<Name><![CDATA[scale]]></Name>
+				<X>0</X><Y>-150</Y>
+				<PublicFlag>false</PublicFlag>
+				<PresentationFlag>false</PresentationFlag>
+				<ShowLabel>false</ShowLabel>
+				<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
+				<Length>100</Length>
+				<Rotation>0</Rotation>
+				<ScaleType>BASED_ON_LENGTH</ScaleType>
+				<ModelLength>10</ModelLength>
+				<LengthUnits>METER</LengthUnits>
+				<Scale>10</Scale>
+				<InheritedFromParentAgentType>true</InheritedFromParentAgentType>
+			</ScaleRuler>
+			<CurrentLevel>1704903185574</CurrentLevel>
+			<ConnectionsId>1704903185568</ConnectionsId>
+			<AgentLinks>
+				<AgentLink>
+					<Id>1704903185568</Id>
+					<Name><![CDATA[connections]]></Name>
+					<X>50</X><Y>-50</Y>
+					<Label><X>15</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<HandleReceiveInConnections>false</HandleReceiveInConnections>
+					<AgentLinkType>COLLECTION_OF_LINKS</AgentLinkType>
+					<AgentLinkBidirectional>true</AgentLinkBidirectional>
+					<MessageType><![CDATA[Object]]></MessageType>
+					<LineStyle>SOLID</LineStyle>
+					<LineWidth>1</LineWidth>
+					<LineColor>-16777216</LineColor>
+					<LineZOrder>UNDER_AGENTS</LineZOrder>
+					<LineArrow>NONE</LineArrow>
+					<LineArrowPosition>END</LineArrowPosition>
+				</AgentLink>
+			</AgentLinks>
+
+			<ContainerLinks>
+				<ContainerLink>
+					<Id>1704903185600</Id>
+					<Name><![CDATA[main]]></Name>
+					<X>50</X><Y>-100</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<ActiveObjectClass>
+						<PackageName><![CDATA[heat_transition_neighborhood]]></PackageName>
+						<ClassName><![CDATA[Main]]></ClassName>
+					</ActiveObjectClass>
+				</ContainerLink>
+			</ContainerLinks>
+
+			<Presentation>
+				<Level>
+					<Id>1704903185574</Id>
+					<Name><![CDATA[level]]></Name>
+					<X>0</X><Y>0</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
+					<Z>0</Z>
+					<LevelVisibility>DIM_NON_CURRENT</LevelVisibility>
+
+
+				</Level>
+			</Presentation>
+
+		</ActiveObjectClass>
+		<!--   =========   Active Object Class   ========  -->
+		<ActiveObjectClass>
+			<Id>1704903216719</Id>
+			<Name><![CDATA[EA_IndustrySite]]></Name>
+			<ExtendsReference>
+				<PackageName><![CDATA[heat_transition_neighborhood]]></PackageName>
+				<ClassName><![CDATA[EA_BAGObject]]></ClassName>
+			</ExtendsReference>
+			<Parameters>
+				<Parameter>
+					<Name><![CDATA[p_numid]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_pid]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_vid]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_postalCode]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_street]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_number]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_surfaceArea]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_householdEquivalent]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_buildingYear]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_averageWOZValueHouse]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_averageWOZValueMunicipality]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_energyLabelLetter]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_buildingTypeLabel]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_SBICode]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_EANCount]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_groupID2022]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_neighborhoodCode]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_neighborhoodName]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_districtCode]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_districtName]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_municipalityCode]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_municipalityName]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_provinceCode]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_provinceName]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_longitude]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_latitude]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_p6GasM3_2022]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_p6KWh_2022]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_p6KWhDirection_2022]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_p6LandSeizure_M2]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_p6GasConnections_2022]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_point]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_averageHomeOwnerPerc]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_averageHomeRentPerc]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_numberHousesHousingCooperations]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_neighborhood]]></Name>
+				</Parameter>
+				<Parameter>
+					<Name><![CDATA[p_usage]]></Name>
+				</Parameter>
+			</Parameters>
+			<Generic>false</Generic>
+			<GenericParameter>
+				<Id>1704903216725</Id>
+				<Name><![CDATA[1704903216725]]></Name>
+				<GenericParameterValue Class="CodeValue">
+					<Code><![CDATA[T extends Agent]]></Code>
+				</GenericParameterValue>
+				<GenericParameterLabel><![CDATA[Generic parameter:]]></GenericParameterLabel>
+			</GenericParameter>
+			<FlowChartsUsage>ENTITY</FlowChartsUsage>
+			<SamplesToKeep>100</SamplesToKeep>
+			<LimitNumberOfArrayElements>false</LimitNumberOfArrayElements>
+			<ElementsLimitValue>100</ElementsLimitValue>
+			<MakeDefaultViewArea>true</MakeDefaultViewArea>
+			<SceneGridColor/>
+			<SceneBackgroundColor/>
+			<SceneSkybox>null</SceneSkybox>
+			<AgentProperties>
+				<EnvironmentDefinesInitialLocation>true</EnvironmentDefinesInitialLocation>
+				<RotateAnimationTowardsMovement>true</RotateAnimationTowardsMovement>
+				<RotateAnimationVertically>false</RotateAnimationVertically>
+				<VelocityCode Class="CodeUnitValue">
+					<Code><![CDATA[10]]></Code>
+					<Unit Class="SpeedUnits"><![CDATA[MPS]]></Unit>
+				</VelocityCode>
+				<PhysicalLength Class="CodeUnitValue">
+					<Code><![CDATA[1]]></Code>
+					<Unit Class="LengthUnits"><![CDATA[METER]]></Unit>
+				</PhysicalLength>
+				<PhysicalWidth Class="CodeUnitValue">
+					<Code><![CDATA[1]]></Code>
+					<Unit Class="LengthUnits"><![CDATA[METER]]></Unit>
+				</PhysicalWidth>
+				<PhysicalHeight Class="CodeUnitValue">
+					<Code><![CDATA[1]]></Code>
+					<Unit Class="LengthUnits"><![CDATA[METER]]></Unit>
+				</PhysicalHeight>
+			</AgentProperties>
+			<EnvironmentProperties>
+					<EnableSteps>false</EnableSteps>
+					<StepDurationCode Class="CodeUnitValue">
+						<Code><![CDATA[1.0]]></Code>
+						<Unit Class="TimeUnits"><![CDATA[SECOND]]></Unit>
+					</StepDurationCode>
+					<SpaceType>CONTINUOUS</SpaceType>
+					<WidthCode><![CDATA[500]]></WidthCode>
+					<HeightCode><![CDATA[500]]></HeightCode>
+					<ZHeightCode><![CDATA[0]]></ZHeightCode>
+					<ColumnsCountCode><![CDATA[100]]></ColumnsCountCode>
+					<RowsCountCode><![CDATA[100]]></RowsCountCode>
+					<NeigborhoodType>MOORE</NeigborhoodType>
+					<LayoutType>USER_DEF</LayoutType>
+					<LayoutTypeApplyOnStartup>true</LayoutTypeApplyOnStartup>
+					<NetworkType>USER_DEF</NetworkType>
+					<NetworkTypeApplyOnStartup>true</NetworkTypeApplyOnStartup>
+					<ConnectionsPerAgentCode><![CDATA[2]]></ConnectionsPerAgentCode>
+					<ConnectionsRangeCode><![CDATA[50]]></ConnectionsRangeCode>
+					<NeighborLinkFractionCode><![CDATA[0.95]]></NeighborLinkFractionCode>
+					<MCode><![CDATA[10]]></MCode>
+			</EnvironmentProperties>
+			<DatasetsCreationProperties>
+				<AutoCreate>true</AutoCreate>
+					<OccurrenceAtTime>true</OccurrenceAtTime>
+					<OccurrenceDate>1704960000000</OccurrenceDate>
+					<OccurrenceTime Class="CodeUnitValue">
+						<Code><![CDATA[0]]></Code>
+						<Unit Class="TimeUnits"><![CDATA[YEAR]]></Unit>
+					</OccurrenceTime>
+					<RecurrenceCode Class="CodeUnitValue">
+						<Code><![CDATA[1]]></Code>
+						<Unit Class="TimeUnits"><![CDATA[YEAR]]></Unit>
+					</RecurrenceCode>
+			</DatasetsCreationProperties>
+			<ScaleRuler>
+				<Id>1704903216722</Id>
+				<Name><![CDATA[scale]]></Name>
+				<X>0</X><Y>-150</Y>
+				<PublicFlag>false</PublicFlag>
+				<PresentationFlag>false</PresentationFlag>
+				<ShowLabel>false</ShowLabel>
+				<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
+				<Length>100</Length>
+				<Rotation>0</Rotation>
+				<ScaleType>BASED_ON_LENGTH</ScaleType>
+				<ModelLength>10</ModelLength>
+				<LengthUnits>METER</LengthUnits>
+				<Scale>10</Scale>
+				<InheritedFromParentAgentType>true</InheritedFromParentAgentType>
+			</ScaleRuler>
+			<CurrentLevel>1704903216726</CurrentLevel>
+			<ConnectionsId>1704903216720</ConnectionsId>
+			<AgentLinks>
+				<AgentLink>
+					<Id>1704903216720</Id>
+					<Name><![CDATA[connections]]></Name>
+					<X>50</X><Y>-50</Y>
+					<Label><X>15</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<HandleReceiveInConnections>false</HandleReceiveInConnections>
+					<AgentLinkType>COLLECTION_OF_LINKS</AgentLinkType>
+					<AgentLinkBidirectional>true</AgentLinkBidirectional>
+					<MessageType><![CDATA[Object]]></MessageType>
+					<LineStyle>SOLID</LineStyle>
+					<LineWidth>1</LineWidth>
+					<LineColor>-16777216</LineColor>
+					<LineZOrder>UNDER_AGENTS</LineZOrder>
+					<LineArrow>NONE</LineArrow>
+					<LineArrowPosition>END</LineArrowPosition>
+				</AgentLink>
+			</AgentLinks>
+
+			<ContainerLinks>
+				<ContainerLink>
+					<Id>1704903216757</Id>
+					<Name><![CDATA[main]]></Name>
+					<X>50</X><Y>-100</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<ActiveObjectClass>
+						<PackageName><![CDATA[heat_transition_neighborhood]]></PackageName>
+						<ClassName><![CDATA[Main]]></ClassName>
+					</ActiveObjectClass>
+				</ContainerLink>
+			</ContainerLinks>
+
+			<Presentation>
+				<Level>
+					<Id>1704903216726</Id>
+					<Name><![CDATA[level]]></Name>
+					<X>0</X><Y>0</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
+					<Z>0</Z>
+					<LevelVisibility>DIM_NON_CURRENT</LevelVisibility>
+
+
+				</Level>
+			</Presentation>
+
+		</ActiveObjectClass>
 	</ActiveObjectClasses>	
 	<DifferentialEquationsMethod>EULER</DifferentialEquationsMethod>
 	<MixedEquationsMethod>RK45_NEWTON</MixedEquationsMethod>
@@ -8705,6 +11228,9 @@ v_hybridHeatPumps_perc = v_hybridHeatPumps_nb / households;
 				</Parameter>
 				<Parameter>
 					<ParameterName><![CDATA[p_simultaneityHeatPump]]></ParameterName>
+				</Parameter>
+				<Parameter>
+					<ParameterName><![CDATA[p_testPopulationSize]]></ParameterName>
 				</Parameter>
 			</Parameters>			
 			<PresentationProperties>
@@ -9142,6 +11668,9 @@ chart1.addDataSet( , format( root.p_innovationCoefficient ), color, true, Chart.
 			<FreeformParamValue>	
 				<Id>1704794561362</Id>
 			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1704896138407</Id>
+			</FreeformParamValue>
 			<RangeVariationParamValue>	
 				<Id>1694513336932</Id>
 				<Type>FIXED</Type>
@@ -9209,6 +11738,10 @@ chart1.addDataSet( , format( root.p_innovationCoefficient ), color, true, Chart.
 			</RangeVariationParamValue>
 			<RangeVariationParamValue>	
 				<Id>1704794561362</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1704896138407</Id>
 				<Type>FIXED</Type>
 			</RangeVariationParamValue>
 			<ModelTimeProperties>
