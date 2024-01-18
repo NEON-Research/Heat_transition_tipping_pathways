@@ -1154,10 +1154,11 @@ for (GZ_Neighborhood x : pop_GZ_Neighborhoods) {
 
 			// Process the response data as needed
 			//String responseData = response.toString();
-			//System.out.println("API Response for gemeentecode " + gemeentecode + ":\n" + responseData);
+			System.out.println("API Response for buurtcode " + x.p_neighborhoodCode + ":\n" + response.toString());
 
 			// Parse the response (e.g., as JSON)
 	        JSONArray jsonArray = new JSONArray(response.toString()); // Use JSONArray for JSON data
+	        traceln(jsonArray);
 	        
 	        // Loop through the JSON array and create agents
 			for (int i = 0; i < jsonArray.length(); i++) {
@@ -3354,7 +3355,7 @@ for( EA_Household household : pop_EA_Households){
 					<Z>0</Z>
 					<Rotation>0.0</Rotation>
 					<DrawingMode>AGENT_CURRENT_POSITION</DrawingMode>
-					<ScaleType>AUTOMATICALLY_CALCULATED</ScaleType>
+					<ScaleType>DEFINED_EXPLICITLY</ScaleType>
 					<GISScaleForRealEmbeddedObjectPresentationSize>1000</GISScaleForRealEmbeddedObjectPresentationSize>
 					<GISScaleForFixedEmbeddedObjectPresentationSize>10000000</GISScaleForFixedEmbeddedObjectPresentationSize>
 					<Latitude>51.82395463185527</Latitude>
@@ -3985,12 +3986,6 @@ for( EA_Household household : pop_EA_Households){
 				</Parameter>
 				<Parameter>
 					<Name><![CDATA[p_neighborhood]]></Name>
-				</Parameter>
-				<Parameter>
-					<Name><![CDATA[p_rankedEnergyLabel]]></Name>
-				</Parameter>
-				<Parameter>
-					<Name><![CDATA[p_mostLikelyDistrictHeating]]></Name>
 				</Parameter>
 			</Parameters>
 			<StartupCode><![CDATA[v_utilityThreshold = uniform(0,2);]]></StartupCode>
