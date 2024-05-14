@@ -1107,6 +1107,489 @@ pauseSimulation();
 						</ParameterEditor>
 					</Properties>                 
 				</Variable>
+				<Variable Class="Parameter">
+					<Id>1715696364035</Id>
+					<Name><![CDATA[p_investmentCostsNaturalGasBoiler]]></Name>
+					<X>-570</X><Y>1190</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[double]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<ParameterEditor>
+							<Id>1715696364033</Id>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1715696385228</Id>
+					<Name><![CDATA[p_investmentCostsGasBlockHeating]]></Name>
+					<X>-570</X><Y>1210</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[double]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<ParameterEditor>
+							<Id>1715696385226</Id>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1715696404614</Id>
+					<Name><![CDATA[p_investmentCostsElectricHeatPump]]></Name>
+					<X>-570</X><Y>1230</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[double]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<ParameterEditor>
+							<Id>1715696404612</Id>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1715696418547</Id>
+					<Name><![CDATA[p_investmentCostsHybridHeatPump]]></Name>
+					<X>-570</X><Y>1250</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[double]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<ParameterEditor>
+							<Id>1715696418545</Id>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1715696432257</Id>
+					<Name><![CDATA[p_investmentCostsDistrictHeating]]></Name>
+					<X>-570</X><Y>1270</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[double]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<ParameterEditor>
+							<Id>1715696432255</Id>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1715696498931</Id>
+					<Name><![CDATA[p_electricityCosts_eurPerKWh]]></Name>
+					<X>-570</X><Y>1120</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[double]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<ParameterEditor>
+							<Id>1715696498929</Id>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1715696503447</Id>
+					<Name><![CDATA[p_naturalGasCosts_eurPerKWh]]></Name>
+					<X>-570</X><Y>1140</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[double]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<ParameterEditor>
+							<Id>1715696503445</Id>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1715696514773</Id>
+					<Name><![CDATA[p_districtHeatCosts_eurPerKWh]]></Name>
+					<X>-570</X><Y>1160</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[double]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<ParameterEditor>
+							<Id>1715696514771</Id>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1715700247204</Id>
+					<Name><![CDATA[p_maintenanceCostsNaturalGasBoiler]]></Name>
+					<X>-570</X><Y>1300</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[double]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<ParameterEditor>
+							<Id>1715700247202</Id>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1715700283887</Id>
+					<Name><![CDATA[p_maintenanceCostsBlockHeating]]></Name>
+					<X>-570</X><Y>1320</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[double]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<ParameterEditor>
+							<Id>1715700283885</Id>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1715700292703</Id>
+					<Name><![CDATA[p_maintenanceCostsElectricHeatPump]]></Name>
+					<X>-570</X><Y>1340</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[double]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<ParameterEditor>
+							<Id>1715700292701</Id>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1715700304953</Id>
+					<Name><![CDATA[p_maintenanceCostsHybridHeatPump]]></Name>
+					<X>-570</X><Y>1360</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[double]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<ParameterEditor>
+							<Id>1715700304951</Id>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1715700318107</Id>
+					<Name><![CDATA[p_maintenanceCostsDistrictHeating]]></Name>
+					<X>-570</X><Y>1380</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[double]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<ParameterEditor>
+							<Id>1715700318105</Id>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1715700445180</Id>
+					<Name><![CDATA[p_lifetimeNaturalGasBoiler]]></Name>
+					<X>-570</X><Y>1410</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[double]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<ParameterEditor>
+							<Id>1715700445178</Id>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1715700445187</Id>
+					<Name><![CDATA[p_lifetimeBlockHeating]]></Name>
+					<X>-570</X><Y>1430</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[double]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<ParameterEditor>
+							<Id>1715700445185</Id>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1715700445190</Id>
+					<Name><![CDATA[p_lifetimeElectricHeatPump]]></Name>
+					<X>-570</X><Y>1450</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[double]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<ParameterEditor>
+							<Id>1715700445188</Id>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1715700445193</Id>
+					<Name><![CDATA[p_lifetimeHybridHeatPump]]></Name>
+					<X>-570</X><Y>1470</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[double]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<ParameterEditor>
+							<Id>1715700445191</Id>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1715700445196</Id>
+					<Name><![CDATA[p_lifetimeDistrictHeating]]></Name>
+					<X>-570</X><Y>1490</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[double]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<ParameterEditor>
+							<Id>1715700445194</Id>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1715703420813</Id>
+					<Name><![CDATA[p_efficiencyNaturalGasBoiler]]></Name>
+					<X>-570</X><Y>1520</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[double]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<ParameterEditor>
+							<Id>1715703420811</Id>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1715703420817</Id>
+					<Name><![CDATA[p_efficiencyBlockHeating]]></Name>
+					<X>-570</X><Y>1540</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[double]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<ParameterEditor>
+							<Id>1715703420815</Id>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1715703420820</Id>
+					<Name><![CDATA[p_efficiencyElectricHeatPump]]></Name>
+					<X>-570</X><Y>1560</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[double]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<ParameterEditor>
+							<Id>1715703420818</Id>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1715703420823</Id>
+					<Name><![CDATA[p_efficiencyHybridHeatPump]]></Name>
+					<X>-570</X><Y>1580</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[double]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<ParameterEditor>
+							<Id>1715703420821</Id>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1715703420826</Id>
+					<Name><![CDATA[p_efficiencyDistrictHeating]]></Name>
+					<X>-570</X><Y>1600</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[double]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<ParameterEditor>
+							<Id>1715703420824</Id>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
 			</Variables>
 			<Events>
 				<Event>
@@ -1407,12 +1890,15 @@ else if (modeFullNetherlands == true){
 		x.f_colorGISRegionToHeatMethod();
 	}
 	f_generateOtherAgentPopulations();
+	f_initializeCosts();
 	double latitude = 52.5001698;
 	double longitude = 5.7480821;
 	map.setProjectionCenter(latitude, longitude);
 	double mapScale = 0.00000030;
 	map.setMapScale(mapScale);
 }
+
+
 f_setText();
 ]]></Body>
 				</Function>
@@ -2500,7 +2986,12 @@ for(GZ_Neighborhood neighborhood : pop_GZ_Neighborhoods){
 	for(J_Household x : neighborhood.c_javaHouseholds){
 	    x.f_normalizeUtilityCompositeGood(utilityCompositeGoodNaturalGasBoiler_max, utilityCompositeGoodNaturalGasBlock_max, utilityCompositeGoodAllElectricHeatPump_max, utilityCompositeGoodHybridHeatPump_max, utilityCompositeGoodDistrictHeating_max);
     	x.f_normalizeUtilityEnergy(utilityEnergyNaturalGasBoiler_max, utilityEnergyNaturalGasBlock_max, utilityEnergyAllElectricHeatPump_max, utilityEnergyHybridHeatPump_max, utilityEnergyDistrictHeating_max);    
+		
+		if( neighborhood.getIndex() == 0){
+			traceln("Normalized utility of household is: " + x.utilityCompositeGoodNaturalGasBoiler_eur);
+		}
 	}
+
 }
 
 traceln("Max utility composite good NGB: " + utilityCompositeGoodNaturalGasBoiler_max);
@@ -2526,7 +3017,11 @@ traceln("Max utility energy DH: " + utilityEnergyDistrictHeating_max);]]></Body>
 					<ShowLabel>true</ShowLabel>
 					<Body><![CDATA[for(GZ_Neighborhood neighborhood : pop_GZ_Neighborhoods){
 	for(J_Household x : neighborhood.c_javaHouseholds){
-		x.f_calculateUtilityNaturalGasBoiler();
+		x.f_calculateUtilityNaturalGasBoiler(p_investmentCostsNaturalGasBoiler, p_maintenanceCostsNaturalGasBoiler, p_lifetimeNaturalGasBoiler, p_efficiencyNaturalGasBoiler);
+		
+		if( neighborhood.getIndex() == 0){
+			traceln("Utility of household is: " + x.utilityCompositeGoodNaturalGasBoiler_eur);
+		}
 		/*
 		x.f_calculateUtilityNaturalGasBlock();
 		x.f_calculateUtilityHybridHeatPump();
@@ -2553,7 +3048,61 @@ traceln("Max utility energy DH: " + utilityEnergyDistrictHeating_max);]]></Body>
 	}
 }
 
+
 ]]></Body>
+				</Function>
+				<Function AccessType="default" StaticFunction="false">
+					<ReturnModificator>VOID</ReturnModificator>
+					<ReturnType><![CDATA[double]]></ReturnType>
+					<Id>1715696456908</Id>
+					<Name><![CDATA[f_initializeCosts]]></Name>
+					<Description><![CDATA[https://www.acm.nl/nl/energie/warmte-en-koude/warmtetarieven/tarieven-warmte-en-koude]]></Description>
+					<X>-570</X><Y>1100</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Body><![CDATA[//Energy costs
+p_electricityCosts_eurPerKWh = 0.30;
+double naturalGasCosts_eurPerM3 = 1.37;
+p_naturalGasCosts_eurPerKWh = 1.37 * 10 / 1000;
+double districtHeatCosts_eurPerGJ = 46.69;	 //2024 ACM Wamtewet
+p_districtHeatCosts_eurPerKWh = districtHeatCosts_eurPerGJ /3.6 * 1000;
+
+for(GZ_Neighborhood neighborhood : pop_GZ_Neighborhoods){
+	for(J_Household x : neighborhood.c_javaHouseholds){
+		x.electricityCosts_eurPerKWh = p_electricityCosts_eurPerKWh;
+		x.naturalGasCosts_eurPerKWh = p_naturalGasCosts_eurPerKWh;
+		x.districtHeatCosts_eurPerKWh = p_districtHeatCosts_eurPerKWh;
+	}
+}
+//Investment costs
+p_investmentCostsNaturalGasBoiler = 1200;
+p_investmentCostsGasBlockHeating = 1500;
+p_investmentCostsHybridHeatPump = 4500;
+p_investmentCostsElectricHeatPump = 9000;
+p_investmentCostsDistrictHeating = 5250.24; //2023 ACM Warmtewet
+
+//Maintenance costs
+p_maintenanceCostsNaturalGasBoiler = 0;
+p_maintenanceCostsBlockHeating = 0;
+p_maintenanceCostsElectricHeatPump = 0;
+p_maintenanceCostsHybridHeatPump = 0;
+p_maintenanceCostsDistrictHeating = 618.82; //2024 ACM Warmtewet
+
+//Lifetime
+p_lifetimeNaturalGasBoiler = 12;
+p_lifetimeBlockHeating = 20;
+p_lifetimeElectricHeatPump = 15;
+p_lifetimeHybridHeatPump = 15;
+p_lifetimeDistrictHeating = 30;
+
+//Lifetime
+p_efficiencyNaturalGasBoiler = 0.99;
+p_efficiencyBlockHeating = 0.95;
+p_efficiencyElectricHeatPump = 3;
+p_efficiencyHybridHeatPump = 3;
+p_efficiencyDistrictHeating = 0.8;]]></Body>
 				</Function>
 			</Functions>
 			<TableFunctions>
@@ -12963,6 +13512,75 @@ while (c_neighborhoodsBeingReinforced.size() < p_neighborhoodsPerYear+1 && c_nei
 				<Parameter>
 					<ParameterName><![CDATA[modeFullNetherlands]]></ParameterName>
 				</Parameter>
+				<Parameter>
+					<ParameterName><![CDATA[p_investmentCostsNaturalGasBoiler]]></ParameterName>
+				</Parameter>
+				<Parameter>
+					<ParameterName><![CDATA[p_investmentCostsGasBlockHeating]]></ParameterName>
+				</Parameter>
+				<Parameter>
+					<ParameterName><![CDATA[p_investmentCostsElectricHeatPump]]></ParameterName>
+				</Parameter>
+				<Parameter>
+					<ParameterName><![CDATA[p_investmentCostsHybridHeatPump]]></ParameterName>
+				</Parameter>
+				<Parameter>
+					<ParameterName><![CDATA[p_investmentCostsDistrictHeating]]></ParameterName>
+				</Parameter>
+				<Parameter>
+					<ParameterName><![CDATA[p_electricityCosts_eurPerKWh]]></ParameterName>
+				</Parameter>
+				<Parameter>
+					<ParameterName><![CDATA[p_naturalGasCosts_eurPerKWh]]></ParameterName>
+				</Parameter>
+				<Parameter>
+					<ParameterName><![CDATA[p_districtHeatCosts_eurPerKWh]]></ParameterName>
+				</Parameter>
+				<Parameter>
+					<ParameterName><![CDATA[p_maintenanceCostsNaturalGasBoiler]]></ParameterName>
+				</Parameter>
+				<Parameter>
+					<ParameterName><![CDATA[p_maintenanceCostsBlockHeating]]></ParameterName>
+				</Parameter>
+				<Parameter>
+					<ParameterName><![CDATA[p_maintenanceCostsElectricHeatPump]]></ParameterName>
+				</Parameter>
+				<Parameter>
+					<ParameterName><![CDATA[p_maintenanceCostsHybridHeatPump]]></ParameterName>
+				</Parameter>
+				<Parameter>
+					<ParameterName><![CDATA[p_maintenanceCostsDistrictHeating]]></ParameterName>
+				</Parameter>
+				<Parameter>
+					<ParameterName><![CDATA[p_lifetimeNaturalGasBoiler]]></ParameterName>
+				</Parameter>
+				<Parameter>
+					<ParameterName><![CDATA[p_lifetimeBlockHeating]]></ParameterName>
+				</Parameter>
+				<Parameter>
+					<ParameterName><![CDATA[p_lifetimeElectricHeatPump]]></ParameterName>
+				</Parameter>
+				<Parameter>
+					<ParameterName><![CDATA[p_lifetimeHybridHeatPump]]></ParameterName>
+				</Parameter>
+				<Parameter>
+					<ParameterName><![CDATA[p_lifetimeDistrictHeating]]></ParameterName>
+				</Parameter>
+				<Parameter>
+					<ParameterName><![CDATA[p_efficiencyNaturalGasBoiler]]></ParameterName>
+				</Parameter>
+				<Parameter>
+					<ParameterName><![CDATA[p_efficiencyBlockHeating]]></ParameterName>
+				</Parameter>
+				<Parameter>
+					<ParameterName><![CDATA[p_efficiencyElectricHeatPump]]></ParameterName>
+				</Parameter>
+				<Parameter>
+					<ParameterName><![CDATA[p_efficiencyHybridHeatPump]]></ParameterName>
+				</Parameter>
+				<Parameter>
+					<ParameterName><![CDATA[p_efficiencyDistrictHeating]]></ParameterName>
+				</Parameter>
 			</Parameters>			
 			<PresentationProperties>
 				<EnableZoomAndPanning>true</EnableZoomAndPanning>
@@ -13405,6 +14023,75 @@ chart1.addDataSet( , format( root.p_innovationCoefficient ), color, true, Chart.
 			<FreeformParamValue>	
 				<Id>1708543855343</Id>
 			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1715696364035</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1715696385228</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1715696404614</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1715696418547</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1715696432257</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1715696498931</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1715696503447</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1715696514773</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1715700247204</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1715700283887</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1715700292703</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1715700304953</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1715700318107</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1715700445180</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1715700445187</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1715700445190</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1715700445193</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1715700445196</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1715703420813</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1715703420817</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1715703420820</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1715703420823</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1715703420826</Id>
+			</FreeformParamValue>
 			<RangeVariationParamValue>	
 				<Id>1694513336932</Id>
 				<Type>FIXED</Type>
@@ -13482,6 +14169,98 @@ chart1.addDataSet( , format( root.p_innovationCoefficient ), color, true, Chart.
 				<Id>1708543855343</Id>
 				<Type>FIXED</Type>
 			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1715696364035</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1715696385228</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1715696404614</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1715696418547</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1715696432257</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1715696498931</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1715696503447</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1715696514773</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1715700247204</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1715700283887</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1715700292703</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1715700304953</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1715700318107</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1715700445180</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1715700445187</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1715700445190</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1715700445193</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1715700445196</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1715703420813</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1715703420817</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1715703420820</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1715703420823</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1715703420826</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
 			<ModelTimeProperties>
 				<StopOption><![CDATA[Stop at specified date]]></StopOption>
 				<InitialDate><![CDATA[1577836800000]]></InitialDate>	
@@ -13537,10 +14316,11 @@ public class J_Household {
 	public double discountRate = 0.02;
 	
 	//Household characteristics
-	public double electricityConsumption_kWh = 0;
-	public double electricityProduction_kWh = 0;
-	public double heatConsumption_kWh = 0;
-	public double heatProduction_kWh = 0;
+	//public double electricityConsumption_kWh = 0;
+	//public double electricityProduction_kWh = 0;
+	Random random = new Random(); // Create an instance of random
+	public double annualHeatConsumption_kWh = normal(2000, 11000, random);
+	//public double heatProduction_kWh = 0;
 	public HouseholdOwnership householdOwnership; 
 	public double willingnessEnergyMeasuresFactor = 0;
 	
@@ -13623,8 +14403,8 @@ public class J_Household {
     //2. ADOPTION PROCESS
     
     //2.1 Create adoption variables    
-    public double electricityCosts_eurPerKWh = 0;
-    public double naturalGasCosts_eurPerKWh = 0;
+    public double electricityCosts_eurPerKWh = 0.3;
+    public double naturalGasCosts_eurPerKWh = 11.2;
     public double districtHeatCosts_eurPerKWh = 0;
 
     public double utilityCompositeGoodNaturalGasBoiler_eur = 0;		//composite good in household budget
@@ -13676,18 +14456,16 @@ public class J_Household {
     //2.2 Calculate absolute utility per heating method
     
     //2.2.1 Utility natural gas boiler
-    public void f_calculateUtilityNaturalGasBoiler() {
-    	double investmentCosts_eur = 0;
-    	double maintenanceCosts_eur = 0;
-    	double electricityDemandAfterInvestment = 0;
-    	double naturalGasDemandAfterInvestment = 0;
-    	double districtHeatDemandAfterInvestment = 0;
-    	double annualHeatGenerated_kWh = 0;
-    	double systemLifetime = 0;
-    	double heatDemandAfterInvestment = 0;
+    public void f_calculateUtilityNaturalGasBoiler(double investmentCostsNaturalGasBoiler, double maintenanceCostsNaturalGasBoiler, double lifetimeNaturalGasBoiler, double naturalGasBoilerEfficiency) {
+    
+    	//calculate energy demands
+    	double electricityDemandAfterInvestment = 0;															//gas boiler has no electricity demand
+    	double naturalGasDemandAfterInvestment = annualHeatConsumption_kWh / naturalGasBoilerEfficiency;		//natural gas demand			
+    	double districtHeatDemandAfterInvestment = 0;															//gas boiler has no district heat demand
+    	double annualHeatGenerated_kWh = annualHeatConsumption_kWh;
     	
-    	utilityCompositeGoodNaturalGasBoiler_eur = f_calculateUtilityCompositeGood(investmentCosts_eur, maintenanceCosts_eur, electricityDemandAfterInvestment, naturalGasDemandAfterInvestment, 
-    			districtHeatDemandAfterInvestment, annualHeatGenerated_kWh, discountRate, systemLifetime, heatDemandAfterInvestment);
+    	utilityCompositeGoodNaturalGasBoiler_eur = f_calculateUtilityCompositeGood(investmentCostsNaturalGasBoiler, maintenanceCostsNaturalGasBoiler, electricityDemandAfterInvestment, naturalGasDemandAfterInvestment, 
+    			districtHeatDemandAfterInvestment, annualHeatGenerated_kWh, discountRate, lifetimeNaturalGasBoiler, annualHeatGenerated_kWh);
     
     	
     }
