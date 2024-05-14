@@ -1147,13 +1147,11 @@ pauseSimulation();
 v_PVUtilityCapex = 1.5 - p_pvCostStartYear * pow((1-p_pvCostDecline),time(YEAR));
 v_PVUtilityRevenue = limit(0,1 - 0.01 * exp(0.0005 * v_adopters),1);//limit(0,1 - 0.01 * exp(0.2*time(YEAR)),1);
 v_utility = v_PVUtilityCapex + v_PVUtilityRevenue;
-for(EA_Household x : pop_EA_Households){
-	x.f_adoptionProcess(p_innovationCoefficient, p_imitationCoefficient, p_contactRate);
-}
-for(GZ_Neighborhood n : pop_GZ_Neighborhoods){
-	n.f_householdAdoption(p_innovationCoefficient, p_imitationCoefficient, p_contactRate, v_utility);
 
-	//n.f_getHouseholdHeatingMethods();
+
+f_adoptionProces();
+
+for(GZ_Neighborhood n : pop_GZ_Neighborhoods){
 	n.f_energyCalculations();
 	n.v_adoptingHouseholds = count(n.c_javaHouseholds, y->y.hasAdopted);
 }
@@ -2047,29 +2045,10 @@ for (GZ_Neighborhood neighborhood : pop_GZ_Neighborhoods){
 		for( int i = 0; i < neighborhood.p_households; i++ ){
 		J_Household household = new J_Household(neighborhood);
 		neighborhood.c_javaHouseholds.add(household);
-		
-		//Set default household ownership
-		household.f_setHouseholdOwnership(neighborhood.p_ownerOccupiedHomes, neighborhood.p_ownedByHousingAssociation, neighborhood.p_ownedByOtherLandlords);
-		
-		//Set environmental attitude
-		household.f_setEnvironmentalAttitude(neighborhood.p_willingnessEnergyMeasuresHomeOwners, neighborhood.p_willingnessEnergyMeasuresRenters );
-		if( neighborhood.getIndex() < 2){
-			traceln(household.willingnessEnergyMeasuresFactor + " willingnessEnergyMeasureFactor");
-		}
-		
-		
-		//Set default heating method per household
-		household.f_setDefaultHeatingMethod(neighborhood.v_gasBlockHeating_perc, neighborhood.v_gasBoilers_perc, neighborhood.v_electricHeatPumps_perc, neighborhood.v_hybridHeatPumps_perc, neighborhood.v_districtHeating_perc);
-	
-		//Set default household ownership
 	}
-	neighborhood.householdWithGasHeating = count(neighborhood.c_javaHouseholds, y->y.heatingMethod == NATURAL_GAS_BOILER || y.heatingMethod == NATURAL_GAS_BLOCK);
-	
-		
+	neighborhood.f_householdInitialization();
+	neighborhood.householdWithGasHeating = count(neighborhood.c_javaHouseholds, y->y.heatingMethod == NATURAL_GAS_BOILER || y.heatingMethod == NATURAL_GAS_BLOCK);	
 }
-	
-
-
 
 traceln(sum(pop_GZ_Neighborhoods, x->x.householdWithGasHeating) + " households with gas boilers");
 traceln(roundToDecimal((System.currentTimeMillis() - v_timer)/1000,3) + " seconds to setHouseholdData");]]></Body>
@@ -2293,7 +2272,7 @@ for (Tuple row_data : rows_data){
 			x.p_rentalProperties = row_data.get(neighborhood_data.p_huurw);
 			x.p_ownedByHousingAssociation = row_data.get(neighborhood_data.p_wcorpw);
 			x.p_ownedByOtherLandlords = row_data.get(neighborhood_data.p_ov_hw);
-			x.p_ownershipUnkown = row_data.get(neighborhood_data.p_e_o_w);
+			x.p_ownershipUnknown = row_data.get(neighborhood_data.p_e_o_w);
 			x.p_housesBuildBefore2000 = row_data.get(neighborhood_data.p_bjj2k);
 			x.p_housesBuildAfter2000 = row_data.get(neighborhood_data.p_bjo2k);
 			
@@ -2357,7 +2336,7 @@ for (Tuple row_data : rows_data){
 			x.p_rentalProperties = f_returnZeroIfDoubleIsSmallerThanZero(x.p_rentalProperties);
 			x.p_ownedByHousingAssociation = f_returnZeroIfDoubleIsSmallerThanZero(x.p_ownedByHousingAssociation);
 			x.p_ownedByOtherLandlords = f_returnZeroIfDoubleIsSmallerThanZero(x.p_ownedByOtherLandlords);
-			x.p_ownershipUnkown = f_returnZeroIfDoubleIsSmallerThanZero(x.p_ownershipUnkown);
+			x.p_ownershipUnknown = f_returnZeroIfDoubleIsSmallerThanZero(x.p_ownershipUnknown);
 			x.p_housesBuildBefore2000 = f_returnZeroIfDoubleIsSmallerThanZero(x.p_housesBuildBefore2000);
 			x.p_housesBuildAfter2000 = f_returnZeroIfDoubleIsSmallerThanZero(x.p_housesBuildAfter2000);
 			x.p_percHouseholdsWithDistrictHeating = f_returnZeroIfDoubleIsSmallerThanZero(x.p_percHouseholdsWithDistrictHeating);
@@ -2438,6 +2417,142 @@ for (Tuple row_heatingMethod : rows_heatingMethods){
 		}
 	}
 }
+]]></Body>
+				</Function>
+				<Function AccessType="default" StaticFunction="false">
+					<ReturnModificator>VOID</ReturnModificator>
+					<ReturnType><![CDATA[double]]></ReturnType>
+					<Id>1715688573320</Id>
+					<Name><![CDATA[f_adoptionProces]]></Name>
+					<X>-570</X><Y>950</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Body><![CDATA[f_calculateUtilityPerHeatingMethod();
+f_normalizeUtilityValues();
+f_householdAdoption();
+
+//Update neighborhood stats
+for(GZ_Neighborhood neighborhood : pop_GZ_Neighborhoods){
+	neighborhood.f_getHeatingMethodCount();
+	neighborhood.f_colorGISRegionToHeatMethod();
+}]]></Body>
+				</Function>
+				<Function AccessType="default" StaticFunction="false">
+					<ReturnModificator>VOID</ReturnModificator>
+					<ReturnType><![CDATA[double]]></ReturnType>
+					<Id>1715688656736</Id>
+					<Name><![CDATA[f_normalizeUtilityValues]]></Name>
+					<X>-570</X><Y>990</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Body><![CDATA[double utilityCompositeGoodNaturalGasBoiler_max = 0;
+double utilityCompositeGoodNaturalGasBlock_max = 0;
+double utilityCompositeGoodAllElectricHeatPump_max = 0;
+double utilityCompositeGoodHybridHeatPump_max = 0;
+double utilityCompositeGoodDistrictHeating_max = 0;
+
+double utilityEnergyNaturalGasBoiler_max = 0;
+double utilityEnergyNaturalGasBlock_max = 0;
+double utilityEnergyAllElectricHeatPump_max = 0;
+double utilityEnergyHybridHeatPump_max = 0;
+double utilityEnergyDistrictHeating_max = 0;
+
+for(GZ_Neighborhood neighborhood : pop_GZ_Neighborhoods){
+	for(J_Household x : neighborhood.c_javaHouseholds){
+		if( x.utilityCompositeGoodNaturalGasBoiler_eur > utilityCompositeGoodNaturalGasBoiler_max){
+			utilityCompositeGoodNaturalGasBoiler_max = x.utilityCompositeGoodNaturalGasBoiler_eur;
+		}
+		if( x.utilityCompositeGoodNaturalGasBlock_eur > utilityCompositeGoodNaturalGasBlock_max){
+			utilityCompositeGoodNaturalGasBlock_max = x.utilityCompositeGoodNaturalGasBlock_eur;
+		}
+		if( x.utilityCompositeGoodAllElectricHeatPump_eur > utilityCompositeGoodAllElectricHeatPump_max){
+			utilityCompositeGoodAllElectricHeatPump_max = x.utilityCompositeGoodAllElectricHeatPump_eur;
+		}
+		if( x.utilityCompositeGoodHybridHeatPump_eur > utilityCompositeGoodHybridHeatPump_max){
+			utilityCompositeGoodHybridHeatPump_max = x.utilityCompositeGoodHybridHeatPump_eur;
+		}
+		if( x.utilityCompositeGoodDistrictHeating_eur > utilityCompositeGoodDistrictHeating_max){
+			utilityCompositeGoodDistrictHeating_max = x.utilityCompositeGoodDistrictHeating_eur;
+		}
+		if( x.utilityEnergyNaturalGasBoiler_eur > utilityEnergyNaturalGasBoiler_max){
+			utilityEnergyNaturalGasBoiler_max = x.utilityEnergyNaturalGasBoiler_eur;
+		}
+		if( x.utilityEnergyNaturalGasBlock_eur > utilityEnergyNaturalGasBlock_max){
+			utilityEnergyNaturalGasBlock_max = x.utilityEnergyNaturalGasBlock_eur;
+		}
+		if( x.utilityEnergyAllElectricHeatPump_eur > utilityEnergyAllElectricHeatPump_max){
+			utilityEnergyAllElectricHeatPump_max = x.utilityEnergyAllElectricHeatPump_eur;
+		}
+		if( x.utilityEnergyHybridHeatPump_eur > utilityEnergyHybridHeatPump_max){
+			utilityEnergyHybridHeatPump_max = x.utilityEnergyHybridHeatPump_eur;
+		}
+		if( x.utilityEnergyDistrictHeating_eur > utilityEnergyDistrictHeating_max){
+			utilityEnergyDistrictHeating_max = x.utilityEnergyDistrictHeating_eur;
+		}
+	}
+}
+
+for(GZ_Neighborhood neighborhood : pop_GZ_Neighborhoods){
+	for(J_Household x : neighborhood.c_javaHouseholds){
+	    x.f_normalizeUtilityCompositeGood(utilityCompositeGoodNaturalGasBoiler_max, utilityCompositeGoodNaturalGasBlock_max, utilityCompositeGoodAllElectricHeatPump_max, utilityCompositeGoodHybridHeatPump_max, utilityCompositeGoodDistrictHeating_max);
+    	x.f_normalizeUtilityEnergy(utilityEnergyNaturalGasBoiler_max, utilityEnergyNaturalGasBlock_max, utilityEnergyAllElectricHeatPump_max, utilityEnergyHybridHeatPump_max, utilityEnergyDistrictHeating_max);    
+	}
+}
+
+traceln("Max utility composite good NGB: " + utilityCompositeGoodNaturalGasBoiler_max);
+traceln("Max utility composite good NGBl: " + utilityCompositeGoodNaturalGasBlock_max);
+traceln("Max utility composite good AEHP: " + utilityCompositeGoodAllElectricHeatPump_max);
+traceln("Max utility composite good HHP: " + utilityCompositeGoodHybridHeatPump_max);
+traceln("Max utility composite good DH: " + utilityCompositeGoodDistrictHeating_max);
+traceln("Max utility energy NGB: " + utilityEnergyNaturalGasBoiler_max);
+traceln("Max utility energy NGBl: " + utilityEnergyNaturalGasBlock_max);
+traceln("Max utility energy AEHP: " + utilityEnergyAllElectricHeatPump_max);
+traceln("Max utility energy HHP: " + utilityEnergyHybridHeatPump_max);
+traceln("Max utility energy DH: " + utilityEnergyDistrictHeating_max);]]></Body>
+				</Function>
+				<Function AccessType="default" StaticFunction="false">
+					<ReturnModificator>VOID</ReturnModificator>
+					<ReturnType><![CDATA[double]]></ReturnType>
+					<Id>1715688656738</Id>
+					<Name><![CDATA[f_calculateUtilityPerHeatingMethod]]></Name>
+					<X>-570</X><Y>970</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Body><![CDATA[for(GZ_Neighborhood neighborhood : pop_GZ_Neighborhoods){
+	for(J_Household x : neighborhood.c_javaHouseholds){
+		x.f_calculateUtilityNaturalGasBoiler();
+		/*
+		x.f_calculateUtilityNaturalGasBlock();
+		x.f_calculateUtilityHybridHeatPump();
+		x.f_calculateUtilityAllElectricHeatPump();
+		x.f_calculateUtilityDistrictHeating();
+		*/
+	}
+}]]></Body>
+				</Function>
+				<Function AccessType="default" StaticFunction="false">
+					<ReturnModificator>VOID</ReturnModificator>
+					<ReturnType><![CDATA[double]]></ReturnType>
+					<Id>1715688656740</Id>
+					<Name><![CDATA[f_householdAdoption]]></Name>
+					<X>-570</X><Y>1010</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Body><![CDATA[for(GZ_Neighborhood neighborhood : pop_GZ_Neighborhoods){
+	for(J_Household x : neighborhood.c_javaHouseholds){
+		x.f_calculateUtilities();
+		x.f_investmentDecision(x.utilityGasBoiler, x.utilityGasBlock, x.utilityAllElectricHeatPump, x.utilityHybridHeatPump, x.utilityDistrictHeating);
+	}
+}
+
 ]]></Body>
 				</Function>
 			</Functions>
@@ -2975,7 +3090,7 @@ for (Tuple row_heatingMethod : rows_heatingMethods){
 							<Name><![CDATA[p_ownedByOtherLandlords]]></Name>
 						</Parameter>
 						<Parameter>
-							<Name><![CDATA[p_ownershipUnkown]]></Name>
+							<Name><![CDATA[p_ownershipUnknown]]></Name>
 						</Parameter>
 						<Parameter>
 							<Name><![CDATA[p_housesBuildBefore2000]]></Name>
@@ -6920,7 +7035,7 @@ else if(p_energyLabelLetter.equals("G")){
 				<Variable Class="PlainVariable">
 					<Id>1707494357862</Id>
 					<Name><![CDATA[v_adoptingHouseholds]]></Name>
-					<X>650</X><Y>370</Y>
+					<X>650</X><Y>460</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -6932,7 +7047,7 @@ else if(p_energyLabelLetter.equals("G")){
 				<Variable Class="PlainVariable">
 					<Id>1708544262972</Id>
 					<Name><![CDATA[v_districtHeatingHouseholds]]></Name>
-					<X>650</X><Y>450</Y>
+					<X>650</X><Y>540</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -6944,7 +7059,7 @@ else if(p_energyLabelLetter.equals("G")){
 				<Variable Class="PlainVariable">
 					<Id>1708544289587</Id>
 					<Name><![CDATA[v_naturalGasBoilerHouseholds]]></Name>
-					<X>650</X><Y>470</Y>
+					<X>650</X><Y>560</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -6956,7 +7071,7 @@ else if(p_energyLabelLetter.equals("G")){
 				<Variable Class="PlainVariable">
 					<Id>1708544299267</Id>
 					<Name><![CDATA[v_naturalGasBlockHeatingHouseholds]]></Name>
-					<X>650</X><Y>490</Y>
+					<X>650</X><Y>580</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -6968,7 +7083,7 @@ else if(p_energyLabelLetter.equals("G")){
 				<Variable Class="PlainVariable">
 					<Id>1708544324518</Id>
 					<Name><![CDATA[v_hybridHeatPumpHouseholds]]></Name>
-					<X>650</X><Y>510</Y>
+					<X>650</X><Y>600</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -6980,7 +7095,7 @@ else if(p_energyLabelLetter.equals("G")){
 				<Variable Class="PlainVariable">
 					<Id>1708544334415</Id>
 					<Name><![CDATA[v_electricHeatPumpHouseholds]]></Name>
-					<X>650</X><Y>530</Y>
+					<X>650</X><Y>620</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -7998,7 +8113,7 @@ else if(p_energyLabelLetter.equals("G")){
 				</Variable>
 				<Variable Class="Parameter">
 					<Id>1700132371258</Id>
-					<Name><![CDATA[p_ownershipUnkown]]></Name>
+					<Name><![CDATA[p_ownershipUnknown]]></Name>
 					<X>60</X><Y>700</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -9600,39 +9715,6 @@ while( gasBoilerHouseholds > count(c_households, x->x.v_heatingMethod == NATURAL
 				<Function AccessType="default" StaticFunction="false">
 					<ReturnModificator>VOID</ReturnModificator>
 					<ReturnType><![CDATA[double]]></ReturnType>
-					<Id>1707493939428</Id>
-					<Name><![CDATA[f_householdAdoption]]></Name>
-					<X>650</X><Y>350</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<Parameter>
-						<Name><![CDATA[innovationCoefficient]]></Name>
-						<Type><![CDATA[double]]></Type>
-					</Parameter>
-					<Parameter>
-						<Name><![CDATA[imitationCoefficient]]></Name>
-						<Type><![CDATA[double]]></Type>
-					</Parameter>
-					<Parameter>
-						<Name><![CDATA[contactRate]]></Name>
-						<Type><![CDATA[double]]></Type>
-					</Parameter>
-					<Parameter>
-						<Name><![CDATA[utility]]></Name>
-						<Type><![CDATA[double]]></Type>
-					</Parameter>
-					<Body><![CDATA[for(J_Household x : c_javaHouseholds){
-	x.f_adoptionProcess(innovationCoefficient, imitationCoefficient, contactRate, utility);
-}
-f_getHeatingMethodCount();
-f_colorGISRegionToHeatMethod();
-]]></Body>
-				</Function>
-				<Function AccessType="default" StaticFunction="false">
-					<ReturnModificator>VOID</ReturnModificator>
-					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1708544215015</Id>
 					<Name><![CDATA[f_colorGISRegionToHeatMethod]]></Name>
 					<X>-180</X><Y>200</Y>
@@ -9677,7 +9759,7 @@ else{
 					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1708549916601</Id>
 					<Name><![CDATA[f_getHeatingMethodCount]]></Name>
-					<X>650</X><Y>420</Y>
+					<X>650</X><Y>510</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -9928,6 +10010,26 @@ else{
 }
 traceln("Neighborhood " + this.getIndex() + " has willingness energy measures for home owners of " + p_willingnessEnergyMeasuresHomeOwners + " and for renters of " + p_willingnessEnergyMeasuresRenters);
 
+]]></Body>
+				</Function>
+				<Function AccessType="default" StaticFunction="false">
+					<ReturnModificator>VOID</ReturnModificator>
+					<ReturnType><![CDATA[double]]></ReturnType>
+					<Id>1715686279856</Id>
+					<Name><![CDATA[f_householdInitialization]]></Name>
+					<X>-420</X><Y>970</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Body><![CDATA[for(J_Household x : c_javaHouseholds){
+	//x.f_adoptionProcess(innovationCoefficient, imitationCoefficient, contactRate, utility);
+	x.f_setHouseholdOwnership((p_ownerOccupiedHomes + p_ownershipUnknown), p_ownedByHousingAssociation, p_ownedByOtherLandlords);
+    x.f_setEnvironmentalAttitude(p_willingnessEnergyMeasuresHomeOwners, p_willingnessEnergyMeasuresRenters);
+    x.f_setDefaultHeatingMethod(v_gasBlockHeating_perc, v_gasBoilers_perc, v_electricHeatPumps_perc, v_hybridHeatPumps_perc, v_districtHeating_perc);
+}
+f_getHeatingMethodCount();
+f_colorGISRegionToHeatMethod();
 ]]></Body>
 				</Function>
 			</Functions>
@@ -13416,11 +13518,23 @@ chart1.addDataSet( , format( root.p_innovationCoefficient ), color, true, Chart.
 public class J_Household {
 	public GZ_Neighborhood neighborhood;
 	
+    /**
+     * Default constructor
+     */
+    public J_Household(GZ_Neighborhood neighborhood) {
+    	this.neighborhood = neighborhood;
+    }
+    
+    
+    //1. INITIALIZATION
+    
+    //1.1 initial household carachteristics
 	public HeatingMethod heatingMethod;
 	public boolean hasAdopted = false;
 	public int v_receivedAdoptionMessage = 0;
 	public double utilityThreshold = random() * 2;
 	public Attitude attitude;
+	public double discountRate = 0.02;
 	
 	//Household characteristics
 	public double electricityConsumption_kWh = 0;
@@ -13436,14 +13550,13 @@ public class J_Household {
 	public double utilityAllElectricHeatPump = 0;
 	public double utilityHybridHeatPump = 0;
 	public double utilityDistrictHeating = 0;
+	
+    public double alpha = 0;										//share of annual income spent on composite good
+    public double income = 0;										//income of household
+    public double knowledgeFactor = 0;								//average of climate-energy-environment knowledge (CEEK), awareness (CEEA), and energy-related decision awareness (EDA)
 
-    /**
-     * Default constructor
-     */
-    public J_Household(GZ_Neighborhood neighborhood) {
-    	this.neighborhood = neighborhood;
-    }
-    
+
+    //1.2 Set household ownership
     public void f_setHouseholdOwnership(double privatelyOwned_perc, double housingAssociation_perc, double rented_perc) {
     	double rand = random();
     	if( rand < housingAssociation_perc) {
@@ -13457,7 +13570,7 @@ public class J_Household {
     	}
     }
     
-
+    //1.3 Set environmental attitude
     public void f_setEnvironmentalAttitude(WillingnessEnergyMeasures willingnessEnergyMeasuresHomeOwner, WillingnessEnergyMeasures willingnessEnergyMeasuresRenter) {
     	Random random = new Random(); // Create an instance of random
     	double mean = 0;
@@ -13483,7 +13596,7 @@ public class J_Household {
     }
     
           
-    //Set default heating method
+    //1.4 Set default heating method
     public void f_setDefaultHeatingMethod(double gasBlockHeating_perc, double gasCV_perc, double electricHeating_perc, double hybridHeating_perc, double districtHeating_perc) {
 	    double rand = random();
 	    if( rand < gasBlockHeating_perc){
@@ -13506,35 +13619,14 @@ public class J_Household {
 	    }	
     }
     
-    //Set adoption process
-    public void f_adoptionProcess(double innovationCoefficient, double imitationCoefficient, double contactRate, double utility) {
-	    //Set innovatiors
-	    if( hasAdopted == false){
-	    	if( Math.random() < innovationCoefficient){
-	    		f_adoption(utility);
-	    	}
-	    }
-	
-	    //Set imitators
-	    else{
-	    	if( Math.random() < imitationCoefficient * contactRate){
-	    		Random random = new Random();
-	    		int randomIndex = random.nextInt(neighborhood.c_javaHouseholds.size()); 		
-	    		J_Household imitator = neighborhood.c_javaHouseholds.get(randomIndex);
-	    		imitator.v_receivedAdoptionMessage++;
-	    		imitator.f_adoption(utility);
-	    	}
-	    }
-    }
+
+    //2. ADOPTION PROCESS
     
-    
-    public double utilitycompositeGood_eur = 0;						//composite good in household budget
-    public double utilityCompositeGood_norm = 0;					//composite good in household budget normalised
-    public double electricityConsumption_eur = 0;					//energy consumption in household budget
-    public double electricityConsumption_norm = 0;					//energy consumption in household budget normalised
-    public double alpha = 0;										//share of annual income spent on composite good
-    public double income = 0;										//income of household
-    
+    //2.1 Create adoption variables    
+    public double electricityCosts_eurPerKWh = 0;
+    public double naturalGasCosts_eurPerKWh = 0;
+    public double districtHeatCosts_eurPerKWh = 0;
+
     public double utilityCompositeGoodNaturalGasBoiler_eur = 0;		//composite good in household budget
     public double utilityCompositeGoodNaturalGasBlock_eur = 0;		//
     public double utilityCompositeGoodAllElectricHeatPump_eur = 0;	//
@@ -13565,8 +13657,6 @@ public class J_Household {
     public double considerationPowerHybridHeatPump = 0;				//
     public double considerationPowerDistrictHeating = 0;			//
     
-    public double knowledgeFactor = 0;								//average of climate-energy-environment knowledge (CEEK), awareness (CEEA), and energy-related decision awareness (EDA)
-    
     public double motivationFactorNaturalGasBoiler = 0;				//average of subjective norms and personal norms based on survey
     public double motivationFactorNaturalGasBlock = 0;				//
     public double motivationFactorAllElectricHeatPump = 0;			//
@@ -13574,62 +13664,155 @@ public class J_Household {
     public double motivationFactorDistrictHeating = 0;				//
     
   
-    //Calculate E and Z, or composite good and energy consumption in budget
-    public void f_calculateEconomicUtility(double utilityCompositeGood, double electricityCosts_eurPerKWh, double LCOEInvestments) {
-    	//set z_lce (h_income - ( (h_q * m_p_lce) + (h_invest_save * m_p_lce) + h_invest + h_conserv_p + h_switch))
-    	//compositeGood = household_income - energy costs;   	
-    	double energyConsumption_eur = electricityConsumption_kWh * electricityCosts_eurPerKWh + naturalGasConsumption_kWh * naturalGasCosts_eurPerKWh + heatConsumption_kWh * heatCosts_eurPerKWh; 
-    	utilityCompositeGoodNaturalGasBoiler_eur = income - electricityConsumption_kWh * electricityCosts_eurPerKWh + LCOEInvestments;  //TODO: For now just electricity
+    
+    public double electricityDemandNaturalGasBoiler_kWh = 0;
+    public double naturalGasDemandNaturalGasBoiler_kWh = 0;
+    public double heatDemandNaturalGasBoiler = 0;
+    public double investmentCostsNaturalGasBoiler = 0;
+    public double lifetimeNaturalGasBoiler = 0;
+    
+    
+    
+    //2.2 Calculate absolute utility per heating method
+    
+    //2.2.1 Utility natural gas boiler
+    public void f_calculateUtilityNaturalGasBoiler() {
+    	double investmentCosts_eur = 0;
+    	double maintenanceCosts_eur = 0;
+    	double electricityDemandAfterInvestment = 0;
+    	double naturalGasDemandAfterInvestment = 0;
+    	double districtHeatDemandAfterInvestment = 0;
+    	double annualHeatGenerated_kWh = 0;
+    	double systemLifetime = 0;
+    	double heatDemandAfterInvestment = 0;
+    	
+    	utilityCompositeGoodNaturalGasBoiler_eur = f_calculateUtilityCompositeGood(investmentCosts_eur, maintenanceCosts_eur, electricityDemandAfterInvestment, naturalGasDemandAfterInvestment, 
+    			districtHeatDemandAfterInvestment, annualHeatGenerated_kWh, discountRate, systemLifetime, heatDemandAfterInvestment);
     
     	
-    	utilityEnergyNaturalGasBoiler_eur = energyConsumption
-    			
-    	alpha = utilityEnergyNaturalGasBoiler_eur		
-    	//TODO: Calculate
-    	//TODO
+    }
+    	
+    //2.2.2 utility gas block heating
+    
+    //2.2.3 utility all electric heat pump
+    
+    //2.2.4 utility hybrid heat pump
+    
+    //2.2.5 district heating
+    
+    
+    //2.2-.Calculate utility composite good
+    public double f_calculateUtilityCompositeGood(double investmentCosts_eur, double maintenanceCosts_eur, double electricityDemandAfterInvestment, double naturalGasDemandAfterInvestment, 
+    		double districtHeatDemandAfterInvestment, double annualHeatGenerated_kWh, double discountRate, double systemLifetime, double heatDemandAfterInvestment) {
+    	
+    	double annualEnergyCosts_eur = electricityDemandAfterInvestment * electricityCosts_eurPerKWh + naturalGasDemandAfterInvestment * naturalGasCosts_eurPerKWh + districtHeatDemandAfterInvestment * districtHeatCosts_eurPerKWh;
+    	double LCOH = f_calculateLCOH(investmentCosts_eur, maintenanceCosts_eur, annualEnergyCosts_eur, annualHeatGenerated_kWh, discountRate, systemLifetime);
+    	
+    	//compositeGood = household_income - energy costs;   	
+       	double annualHeatCosts = LCOH * heatDemandAfterInvestment;
+       	return income - annualEnergyCosts_eur;
+
+    	/*
+    	utilityEnergyNaturalGasBoiler_eur = f_utilityEnergyConsumption();
+    	alpha = f_alpha();
+    	considerationPowerNaturalGasBoiler = f_considerationPower();
+    	knowledgeFactor = f_knowledgeFactor();
+    	motivationFactorNaturalGasBoiler = f_motivationFactor();*/
+    }
+        
+    //2.2-. //Calculate LCOH
+    public static double f_calculateLCOH(double investmentCosts_eur, double maintenanceCosts_eur, double annualEnergyCosts_eur, double annualHeatGenerated_kWh, double discountRate, double systemLifetime) {
+    	double LCOH = 0;
+    	double lifetimeCosts = 0;
+    	
+        double numerator = 0.0;
+        double denominator = 0.0;
+
+        //Set arrays
+    	int arrayLength = (int) systemLifetime;
+    	double[] capitalCostsArray_eur = new double [arrayLength];
+    	double[] maintenanceCostsArray_eur = new double [arrayLength];
+    	double[] energyCostsArray_eur = new double [arrayLength];
+    	double[] annualHeatGenerationArray_eur = new double [arrayLength];
+    	
+    	for( int i = 0; i < arrayLength; i++) {
+    		if( i == 0) {
+    			capitalCostsArray_eur[i] = investmentCosts_eur;
+    		}
+    		else {
+    			capitalCostsArray_eur[i] = 0;
+    		}
+    		maintenanceCostsArray_eur[i] = maintenanceCosts_eur;
+    		energyCostsArray_eur[i] = annualEnergyCosts_eur;
+    		annualHeatGenerationArray_eur[i] = annualHeatGenerated_kWh;
+    	}
+        
+        //Calculate LCOE numerator and denominator        
+        for (int t = 0; t < arrayLength; t++) {
+            numerator += (capitalCostsArray_eur[t] + maintenanceCostsArray_eur[t] + energyCostsArray_eur[t]) / pow(1 + discountRate, t);
+            denominator += annualHeatGenerationArray_eur[t] / pow(1 + discountRate, t);
+        }
+    	
+        LCOH = numerator / denominator;
+    	return LCOH;
     }
     
+    //2.2.3 Calculate utility energy
     
+    //2.2.4 Calculate consideration power
+    
+    //2.2.5 Calculate motivation factor
+    
+    //2.3 Normalize utility inputs
+    	
     //Normalize utility composite good values
     public void f_normalizeUtilityCompositeGood(double utilityCompositeGoodNaturalGasBoiler_max, double utilityCompositeGoodNaturalGasBlock_max, double utilityCompositeGoodAllElectricHeatPump_max,  double utilityCompositeGoodHybridHeatPump_max, double utilityCompositeGoodDistrictHeating_max) {
-    	//Work with normalized values as input for Utility calculations
-      	utilityCompositeGoodNaturalGasBoiler_norm = utilityCompositeGoodNaturalGasBoiler_eur / utilityCompositeGoodNaturalGasBoiler_max;
-    	utilityCompositeGoodNaturalGasBlock_norm = utilityCompositeGoodNaturalGasBlock_eur / utilityCompositeGoodNaturalGasBlock_max;
-    	utilityCompositeGoodAllElectricHeatPump_norm = utilityCompositeGoodAllElectricHeatPump_eur / utilityCompositeGoodHybridHeatPump_max;
-    	utilityCompositeGoodHybridHeatPump_norm = utilityCompositeGoodHybridHeatPump_eur / utilityCompositeGoodHybridHeatPump_max;
-    	utilityCompositeGoodDistrictHeating_norm = utilityCompositeGoodDistrictHeating_eur / utilityCompositeGoodDistrictHeating_max;
+      	//Work with normalized values as input for Utility calculations
+         utilityCompositeGoodNaturalGasBoiler_norm = utilityCompositeGoodNaturalGasBoiler_eur / utilityCompositeGoodNaturalGasBoiler_max;
+         utilityCompositeGoodNaturalGasBlock_norm = utilityCompositeGoodNaturalGasBlock_eur / utilityCompositeGoodNaturalGasBlock_max;
+         utilityCompositeGoodAllElectricHeatPump_norm = utilityCompositeGoodAllElectricHeatPump_eur / utilityCompositeGoodHybridHeatPump_max;
+         utilityCompositeGoodHybridHeatPump_norm = utilityCompositeGoodHybridHeatPump_eur / utilityCompositeGoodHybridHeatPump_max;
+         utilityCompositeGoodDistrictHeating_norm = utilityCompositeGoodDistrictHeating_eur / utilityCompositeGoodDistrictHeating_max;
     }
-    
+        
     //Normalize utility energy values
-    public void f_normalizeUtilityEnergy(double electricityConsumption_max, double utilityEnergyNaturalGasBoiler_max, double utilityEnergyNaturalGasBlock_max, double utilityEnergyAllElectricHeatPump_max,  double utilityEnergyHybridHeatPump_max, double utilityEnergyDistrictHeating_max) {
-       	//Work with normalized values as input for Utility calculations
-    	electricityConsumption_norm = electricityConsumption_eur / electricityConsumption_max;
-     	utilityEnergyNaturalGasBoiler_norm = utilityEnergyNaturalGasBoiler_eur / utilityEnergyNaturalGasBoiler_max;
+    public void f_normalizeUtilityEnergy(double utilityEnergyNaturalGasBoiler_max, double utilityEnergyNaturalGasBlock_max, double utilityEnergyAllElectricHeatPump_max,  double utilityEnergyHybridHeatPump_max, double utilityEnergyDistrictHeating_max) {
+    	//Work with normalized values as input for Utility calculations
+    	utilityEnergyNaturalGasBoiler_norm = utilityEnergyNaturalGasBoiler_eur / utilityEnergyNaturalGasBoiler_max;
     	utilityEnergyNaturalGasBlock_norm = utilityEnergyNaturalGasBlock_eur / utilityEnergyNaturalGasBlock_max;
-    	utilityEnergyAllElectricHeatPump_norm = utilityEnergyAllElectricHeatPump_eur / utilityEnergyHybridHeatPump_max;
-    	utilityEnergyHybridHeatPump_norm = utilityEnergyHybridHeatPump_eur / utilityEnergyHybridHeatPump_max;
-    	utilityEnergyDistrictHeating_norm = utilityEnergyDistrictHeating_eur / utilityEnergyDistrictHeating_max;
+        utilityEnergyAllElectricHeatPump_norm = utilityEnergyAllElectricHeatPump_eur / utilityEnergyHybridHeatPump_max;
+        utilityEnergyHybridHeatPump_norm = utilityEnergyHybridHeatPump_eur / utilityEnergyHybridHeatPump_max;
+        utilityEnergyDistrictHeating_norm = utilityEnergyDistrictHeating_eur / utilityEnergyDistrictHeating_max;
     }    
     
-    
-    //Calculate utility
-    public void f_calculateUtility() {
+    	
+
+    	
+
+            
+    //2.4 calculate final utilities
+    public void f_calculateUtilities() {
     	utilityGasBoiler = f_utilityFunction(utilityCompositeGoodNaturalGasBoiler_norm, utilityEnergyNaturalGasBoiler_norm, alpha, considerationPowerNaturalGasBoiler, knowledgeFactor, motivationFactorNaturalGasBoiler);
     	utilityGasBlock = f_utilityFunction(utilityCompositeGoodNaturalGasBlock_norm, utilityEnergyNaturalGasBlock_norm, alpha, considerationPowerNaturalGasBlock, knowledgeFactor, motivationFactorNaturalGasBlock);
     	utilityAllElectricHeatPump = f_utilityFunction(utilityCompositeGoodAllElectricHeatPump_norm, utilityEnergyAllElectricHeatPump_norm, alpha, considerationPowerAllElectricHeatPump, knowledgeFactor, motivationFactorAllElectricHeatPump);
     	utilityHybridHeatPump = f_utilityFunction(utilityCompositeGoodHybridHeatPump_norm, utilityEnergyHybridHeatPump_norm, alpha, considerationPowerHybridHeatPump, knowledgeFactor, motivationFactorHybridHeatPump);
     	utilityDistrictHeating = f_utilityFunction(utilityCompositeGoodDistrictHeating_norm, utilityEnergyDistrictHeating_norm, alpha, considerationPowerDistrictHeating, knowledgeFactor, motivationFactorDistrictHeating);
+    	
     }
     
-        
-    // Utility function
+    
+    //2.4-. Utility function
     public double f_utilityFunction(double utilityCompositeGood, double utilityEnergyConsumption, double alpha, double considerationPower, double knowledgeFactor, double motivationFactor) {
     	//U = Z * beta + E * alfa + K + M + C;
     	//U = ((Z * beta + E * alfa) * 1 - considerationPower) + ((K + M) * considerationPower;
     	return ((utilityCompositeGood * (1 - alpha)) + (utilityEnergyConsumption * alpha) * (1 - considerationPower)) + ((knowledgeFactor + motivationFactor) * considerationPower);
     }
-        
-    //Investment decision
+
+    
+    
+
+    
+    //4. INVESTMENT DECISION
     public void f_investmentDecision(double utilityGasBoiler, double utilityGasBlock, double utilityAllElectricHeatPump, double utilityHybridHeatPump, double utilityDistrictHeating) {
     	double max = max(max(max(max(utilityGasBoiler, utilityGasBlock), utilityAllElectricHeatPump), utilityHybridHeatPump), utilityDistrictHeating);
     	if( max == utilityGasBoiler) {
@@ -13649,9 +13832,35 @@ public class J_Household {
     	}
     }
     
+    //4. UPDATE SOCIAL NETWORK AND LEARNING
+    
+    
+    
+    /*
+    //Set adoption process
+    public void f_adoptionProcess(double innovationCoefficient, double imitationCoefficient, double contactRate, double utility) {
+	    //Set innovatiors
+	    if( hasAdopted == false){
+	    	if( Math.random() < innovationCoefficient){
+	    		f_adoption(utility);
+	    	}
+	    }
+	
+	    //Set imitators
+	    else{
+	    	if( Math.random() < imitationCoefficient * contactRate){
+	    		Random random = new Random();
+	    		int randomIndex = random.nextInt(neighborhood.c_javaHouseholds.size()); 		
+	    		J_Household imitator = neighborhood.c_javaHouseholds.get(randomIndex);
+	    		imitator.v_receivedAdoptionMessage++;
+	    		imitator.f_adoption(utility);
+	    	}
+	    }
+    }
     
     
     //Set adoption
+    
     public void f_adoption(double utility) {
     	if (hasAdopted == false){
    		
@@ -13675,7 +13884,7 @@ public class J_Household {
     	}
 
     }
-
+	*/
 	@Override
 	public String toString() {
 		return super.toString();
