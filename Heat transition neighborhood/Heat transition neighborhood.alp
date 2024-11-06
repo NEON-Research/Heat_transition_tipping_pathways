@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 *************************************************
-	         AnyLogic Project File 
-*************************************************	         
+	         AnyLogic Project File
+*************************************************
 -->
-<AnyLogicWorkspace WorkspaceVersion="1.9" AnyLogicVersion="8.9.0.202404161238" AlpVersion="8.9.0">
+<AnyLogicWorkspace WorkspaceVersion="1.9" AnyLogicVersion="8.9.2.202410172110" AlpVersion="8.9.2">
 <Model>
 	<Id>1693907397590</Id>
 	<Name><![CDATA[Heat transition neighborhood]]></Name>
@@ -129,6 +129,10 @@
 			</Option>
 		</OptionList>
 	</OptionLists>
+	
+	<Folders>
+		
+	</Folders>
 	<ActiveObjectClasses>
 		<!--   =========   Active Object Class   ========  -->
 		<ActiveObjectClass>
@@ -198,9 +202,7 @@ pauseSimulation();
 					<RowsCountCode><![CDATA[100]]></RowsCountCode>
 					<NeigborhoodType>MOORE</NeigborhoodType>
 					<LayoutType>USER_DEF</LayoutType>
-					<LayoutTypeApplyOnStartup>true</LayoutTypeApplyOnStartup>
 					<NetworkType>USER_DEF</NetworkType>
-					<NetworkTypeApplyOnStartup>true</NetworkTypeApplyOnStartup>
 					<ConnectionsPerAgentCode><![CDATA[2]]></ConnectionsPerAgentCode>
 					<ConnectionsRangeCode><![CDATA[50]]></ConnectionsRangeCode>
 					<NeighborLinkFractionCode><![CDATA[0.95]]></NeighborLinkFractionCode>
@@ -1590,6 +1592,21 @@ pauseSimulation();
 						</ParameterEditor>
 					</Properties>                 
 				</Variable>
+				<Variable Class="CollectionVariable">
+					<Id>1730389266762</Id>
+					<Name><![CDATA[c_households]]></Name>
+					<X>-550</X><Y>830</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" AccessType="public" StaticVariable="false">
+						<CollectionClass><![CDATA[ArrayList]]></CollectionClass>
+						<ElementClass><![CDATA[J_Household]]></ElementClass>
+						<ValueElementClass><![CDATA[String]]></ValueElementClass>
+					</Properties>
+
+				</Variable>
 			</Variables>
 			<Events>
 				<Event>
@@ -1969,7 +1986,7 @@ f_setHeatingMethodNeighborhoodData();
 
 for (GZ_Neighborhood neighborhood : pop_GZ_Neighborhoods){
 	//SET WILLINGNESS TO INVEST
-	neighborhood.f_setWillingnessToInvestData();
+	//neighborhood.f_setWillingnessToInvestData();
 	
 	
 	//SET GRID CAPACITY
@@ -1977,8 +1994,17 @@ for (GZ_Neighborhood neighborhood : pop_GZ_Neighborhoods){
 	neighborhood.p_gridCapacity_kW = neighborhood.f_setGridCapacity(p_PmaxPerHousehold, tf_simultaneityBaseload(neighborhood.p_households), neighborhood.p_households, p_PmaxPerHeatPump, p_simultaneityHeatPump, householdsWithHeatPump, p_PmaxPerEV, p_simultaneityEV, neighborhood.p_electricCars2025);
 	//traceln(x.p_gridCapacity_kW + " at neigbhorhood " + x.getIndex() + " average " + x.p_gridCapacity_kW/x.p_households + " kW per household");
 }
+int willingToInvestHomeOwnersHigh = count(pop_GZ_Neighborhoods, x->x.p_willingnessEnergyMeasuresHomeOwners == HIGH);
+int willingToInvestHomeOwnersMedium = count(pop_GZ_Neighborhoods, x->x.p_willingnessEnergyMeasuresHomeOwners == MEDIUM);
+int willingToInvestHomeOwnersLow = count(pop_GZ_Neighborhoods, x->x.p_willingnessEnergyMeasuresHomeOwners == LOW);
+int willingToInvestHomeOwnersUnkown = count(pop_GZ_Neighborhoods, x->x.p_willingnessEnergyMeasuresHomeOwners == null);
+int willingToInvestRentersHigh = count(pop_GZ_Neighborhoods, x->x.p_willingnessEnergyMeasuresRenters == HIGH);
+int willingToInvestRentersMedium = count(pop_GZ_Neighborhoods, x->x.p_willingnessEnergyMeasuresRenters == MEDIUM);
+int willingToInvestRentersLow = count(pop_GZ_Neighborhoods, x->x.p_willingnessEnergyMeasuresRenters == LOW);
+int willingToInvestRentersUnkown = count(pop_GZ_Neighborhoods, x->x.p_willingnessEnergyMeasuresRenters == null);
 
-				
+traceln("Neighborhoods with willingness home owners high " + willingToInvestHomeOwnersHigh + " medium " + willingToInvestHomeOwnersMedium + " low " + willingToInvestHomeOwnersLow + " unknown " + willingToInvestHomeOwnersUnkown);
+traceln("Neighborhoods with willingness home owners high " + willingToInvestRentersHigh + " medium " + willingToInvestRentersMedium + " low " + willingToInvestRentersLow + " unknown " + willingToInvestRentersUnkown);				
 	
 
 /*		.firstResult(neighborhood_warmtevisie.opgesteld_vermogen_van_zonnepanelen_6);
@@ -2487,7 +2513,7 @@ for( GZ_Neighborhood neighborhood : pop_GZ_Neighborhoods){
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
 					<Body><![CDATA[// CREATE AAGENTS FROM NEIGHBORHOOD CBS DATA
-v_timer = System.currentTimeMillis();
+double timer = System.currentTimeMillis();
 List<Tuple> rows = selectFrom(neighborhoods_netherlands)
 	//.where(neighborhoods_netherlands.gm_code.eq("GM0531")) //hardinxveld-giessendam is testcase
     .list();
@@ -2513,7 +2539,7 @@ for (Tuple row : rows) {
 	x.f_drawRegionFromWKTString();
 }
 
-traceln(roundToDecimal((System.currentTimeMillis() - v_timer)/1000,3) + " seconds to get neighborhood data");]]></Body>
+traceln(roundToDecimal((System.currentTimeMillis() - timer)/1000,3) + " seconds to get neighborhood data");]]></Body>
 				</Function>
 				<Function AccessType="default" StaticFunction="false">
 					<ReturnModificator>VOID</ReturnModificator>
@@ -2525,19 +2551,20 @@ traceln(roundToDecimal((System.currentTimeMillis() - v_timer)/1000,3) + " second
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
-					<Body><![CDATA[v_timer = System.currentTimeMillis();
+					<Body><![CDATA[double timer = System.currentTimeMillis();
 for (GZ_Neighborhood neighborhood : pop_GZ_Neighborhoods){
 	//CREATE HOUSEHOLDS
 		for( int i = 0; i < neighborhood.p_households; i++ ){
 		J_Household household = new J_Household(neighborhood);
 		neighborhood.c_javaHouseholds.add(household);
+		c_households.add(household);
 	}
 	neighborhood.f_householdInitialization();
 	neighborhood.householdWithGasHeating = count(neighborhood.c_javaHouseholds, y->y.heatingMethod == NATURAL_GAS_BOILER || y.heatingMethod == NATURAL_GAS_BLOCK);	
 }
 
 traceln(sum(pop_GZ_Neighborhoods, x->x.householdWithGasHeating) + " households with gas boilers");
-traceln(roundToDecimal((System.currentTimeMillis() - v_timer)/1000,3) + " seconds to setHouseholdData");]]></Body>
+traceln(roundToDecimal((System.currentTimeMillis() - timer)/1000,3) + " seconds to setHouseholdData");]]></Body>
 				</Function>
 				<Function AccessType="default" StaticFunction="false">
 					<ReturnModificator>VOID</ReturnModificator>
@@ -3442,28 +3469,13 @@ p_efficiencyDistrictHeating = 0.8;]]></Body>
 					</Replication>
 					<CollectionType>ARRAY_LIST_BASED</CollectionType>
 					<InEnvironment>true</InEnvironment>	
-					<InitialLocationType>AT_ANIMATION_POSITION</InitialLocationType>
-					<XCode Class="CodeValue">
-						<Code><![CDATA[0]]></Code>
-					</XCode>
-					<YCode Class="CodeValue">
-						<Code><![CDATA[0]]></Code>
-					</YCode>
-					<ZCode Class="CodeValue">
-						<Code><![CDATA[0]]></Code>
-					</ZCode>
+					<InitialLocationType>XYZ</InitialLocationType>
 					<ColumnCode Class="CodeValue">
 						<Code><![CDATA[0]]></Code>
 					</ColumnCode>
 					<RowCode Class="CodeValue">
 						<Code><![CDATA[0]]></Code>
 					</RowCode>
-					<LatitudeCode Class="CodeValue">
-						<Code><![CDATA[0]]></Code>
-					</LatitudeCode>
-					<LongitudeCode Class="CodeValue">
-						<Code><![CDATA[0]]></Code>
-					</LongitudeCode>
 					<LocationNameCode Class="CodeValue">
 						<Code><![CDATA[""]]></Code>
 					</LocationNameCode>
@@ -3777,28 +3789,13 @@ p_efficiencyDistrictHeating = 0.8;]]></Body>
 					</Replication>
 					<CollectionType>ARRAY_LIST_BASED</CollectionType>
 					<InEnvironment>true</InEnvironment>	
-					<InitialLocationType>AT_ANIMATION_POSITION</InitialLocationType>
-					<XCode Class="CodeValue">
-						<Code><![CDATA[0]]></Code>
-					</XCode>
-					<YCode Class="CodeValue">
-						<Code><![CDATA[0]]></Code>
-					</YCode>
-					<ZCode Class="CodeValue">
-						<Code><![CDATA[0]]></Code>
-					</ZCode>
+					<InitialLocationType>XYZ</InitialLocationType>
 					<ColumnCode Class="CodeValue">
 						<Code><![CDATA[0]]></Code>
 					</ColumnCode>
 					<RowCode Class="CodeValue">
 						<Code><![CDATA[0]]></Code>
 					</RowCode>
-					<LatitudeCode Class="CodeValue">
-						<Code><![CDATA[0]]></Code>
-					</LatitudeCode>
-					<LongitudeCode Class="CodeValue">
-						<Code><![CDATA[0]]></Code>
-					</LongitudeCode>
 					<LocationNameCode Class="CodeValue">
 						<Code><![CDATA[""]]></Code>
 					</LocationNameCode>
@@ -3845,7 +3842,7 @@ p_efficiencyDistrictHeating = 0.8;]]></Body>
 					</Replication>
 					<CollectionType>ARRAY_LIST_BASED</CollectionType>
 					<InEnvironment>true</InEnvironment>	
-					<InitialLocationType>AT_ANIMATION_POSITION</InitialLocationType>
+					<InitialLocationType>XYZ</InitialLocationType>
 					<XCode Class="CodeValue">
 						<Code><![CDATA[0]]></Code>
 					</XCode>
@@ -3861,12 +3858,6 @@ p_efficiencyDistrictHeating = 0.8;]]></Body>
 					<RowCode Class="CodeValue">
 						<Code><![CDATA[0]]></Code>
 					</RowCode>
-					<LatitudeCode Class="CodeValue">
-						<Code><![CDATA[0]]></Code>
-					</LatitudeCode>
-					<LongitudeCode Class="CodeValue">
-						<Code><![CDATA[0]]></Code>
-					</LongitudeCode>
 					<LocationNameCode Class="CodeValue">
 						<Code><![CDATA[""]]></Code>
 					</LocationNameCode>
@@ -4018,28 +4009,13 @@ p_efficiencyDistrictHeating = 0.8;]]></Body>
 					</Replication>
 					<CollectionType>ARRAY_LIST_BASED</CollectionType>
 					<InEnvironment>true</InEnvironment>	
-					<InitialLocationType>AT_ANIMATION_POSITION</InitialLocationType>
-					<XCode Class="CodeValue">
-						<Code><![CDATA[0]]></Code>
-					</XCode>
-					<YCode Class="CodeValue">
-						<Code><![CDATA[0]]></Code>
-					</YCode>
-					<ZCode Class="CodeValue">
-						<Code><![CDATA[0]]></Code>
-					</ZCode>
+					<InitialLocationType>XYZ</InitialLocationType>
 					<ColumnCode Class="CodeValue">
 						<Code><![CDATA[0]]></Code>
 					</ColumnCode>
 					<RowCode Class="CodeValue">
 						<Code><![CDATA[0]]></Code>
 					</RowCode>
-					<LatitudeCode Class="CodeValue">
-						<Code><![CDATA[0]]></Code>
-					</LatitudeCode>
-					<LongitudeCode Class="CodeValue">
-						<Code><![CDATA[0]]></Code>
-					</LongitudeCode>
 					<LocationNameCode Class="CodeValue">
 						<Code><![CDATA[""]]></Code>
 					</LocationNameCode>
@@ -4191,28 +4167,13 @@ p_efficiencyDistrictHeating = 0.8;]]></Body>
 					</Replication>
 					<CollectionType>ARRAY_LIST_BASED</CollectionType>
 					<InEnvironment>true</InEnvironment>	
-					<InitialLocationType>AT_ANIMATION_POSITION</InitialLocationType>
-					<XCode Class="CodeValue">
-						<Code><![CDATA[0]]></Code>
-					</XCode>
-					<YCode Class="CodeValue">
-						<Code><![CDATA[0]]></Code>
-					</YCode>
-					<ZCode Class="CodeValue">
-						<Code><![CDATA[0]]></Code>
-					</ZCode>
+					<InitialLocationType>XYZ</InitialLocationType>
 					<ColumnCode Class="CodeValue">
 						<Code><![CDATA[0]]></Code>
 					</ColumnCode>
 					<RowCode Class="CodeValue">
 						<Code><![CDATA[0]]></Code>
 					</RowCode>
-					<LatitudeCode Class="CodeValue">
-						<Code><![CDATA[0]]></Code>
-					</LatitudeCode>
-					<LongitudeCode Class="CodeValue">
-						<Code><![CDATA[0]]></Code>
-					</LongitudeCode>
 					<LocationNameCode Class="CodeValue">
 						<Code><![CDATA[""]]></Code>
 					</LocationNameCode>
@@ -4255,7 +4216,7 @@ p_efficiencyDistrictHeating = 0.8;]]></Body>
 					</Replication>
 					<CollectionType>ARRAY_LIST_BASED</CollectionType>
 					<InEnvironment>true</InEnvironment>	
-					<InitialLocationType>AT_ANIMATION_POSITION</InitialLocationType>
+					<InitialLocationType>XYZ</InitialLocationType>
 					<XCode Class="CodeValue">
 						<Code><![CDATA[0]]></Code>
 					</XCode>
@@ -4271,12 +4232,6 @@ p_efficiencyDistrictHeating = 0.8;]]></Body>
 					<RowCode Class="CodeValue">
 						<Code><![CDATA[0]]></Code>
 					</RowCode>
-					<LatitudeCode Class="CodeValue">
-						<Code><![CDATA[0]]></Code>
-					</LatitudeCode>
-					<LongitudeCode Class="CodeValue">
-						<Code><![CDATA[0]]></Code>
-					</LongitudeCode>
 					<LocationNameCode Class="CodeValue">
 						<Code><![CDATA[""]]></Code>
 					</LocationNameCode>
@@ -4316,7 +4271,7 @@ p_efficiencyDistrictHeating = 0.8;]]></Body>
 					</Replication>
 					<CollectionType>ARRAY_LIST_BASED</CollectionType>
 					<InEnvironment>true</InEnvironment>	
-					<InitialLocationType>AT_ANIMATION_POSITION</InitialLocationType>
+					<InitialLocationType>XYZ</InitialLocationType>
 					<XCode Class="CodeValue">
 						<Code><![CDATA[0]]></Code>
 					</XCode>
@@ -4332,12 +4287,6 @@ p_efficiencyDistrictHeating = 0.8;]]></Body>
 					<RowCode Class="CodeValue">
 						<Code><![CDATA[0]]></Code>
 					</RowCode>
-					<LatitudeCode Class="CodeValue">
-						<Code><![CDATA[0]]></Code>
-					</LatitudeCode>
-					<LongitudeCode Class="CodeValue">
-						<Code><![CDATA[0]]></Code>
-					</LongitudeCode>
 					<LocationNameCode Class="CodeValue">
 						<Code><![CDATA[""]]></Code>
 					</LocationNameCode>
@@ -4591,8 +4540,7 @@ p_efficiencyDistrictHeating = 0.8;]]></Body>
 					<EmbeddedIcon>false</EmbeddedIcon>
 					<Z>0</Z>
 					<Rotation>0.0</Rotation>
-					<DrawingMode>AGENT_CURRENT_POSITION</DrawingMode>
-					<ScaleType>DEFINED_EXPLICITLY</ScaleType>
+					<ScaleType>AUTOMATICALLY_CALCULATED</ScaleType>
 					<GISScaleForRealEmbeddedObjectPresentationSize>1000</GISScaleForRealEmbeddedObjectPresentationSize>
 					<GISScaleForFixedEmbeddedObjectPresentationSize>10000000</GISScaleForFixedEmbeddedObjectPresentationSize>
 					<Latitude>51.82395463185527</Latitude>
@@ -4663,7 +4611,6 @@ p_efficiencyDistrictHeating = 0.8;]]></Body>
 					<EmbeddedIcon>false</EmbeddedIcon>
 					<Z>0</Z>
 					<Rotation>0.0</Rotation>
-					<DrawingMode>AGENT_CURRENT_POSITION</DrawingMode>
 					<ScaleType>AUTOMATICALLY_CALCULATED</ScaleType>
 					<GISScaleForRealEmbeddedObjectPresentationSize>1000</GISScaleForRealEmbeddedObjectPresentationSize>
 					<GISScaleForFixedEmbeddedObjectPresentationSize>1000000000</GISScaleForFixedEmbeddedObjectPresentationSize>
@@ -4682,7 +4629,6 @@ p_efficiencyDistrictHeating = 0.8;]]></Body>
 					<EmbeddedIcon>false</EmbeddedIcon>
 					<Z>0</Z>
 					<Rotation>0.0</Rotation>
-					<DrawingMode>AGENT_CURRENT_POSITION</DrawingMode>
 					<ScaleType>AUTOMATICALLY_CALCULATED</ScaleType>
 					<GISScaleForRealEmbeddedObjectPresentationSize>1000</GISScaleForRealEmbeddedObjectPresentationSize>
 					<GISScaleForFixedEmbeddedObjectPresentationSize>1000000000</GISScaleForFixedEmbeddedObjectPresentationSize>
@@ -5267,7 +5213,6 @@ p_efficiencyDistrictHeating = 0.8;]]></Body>
 					<EmbeddedIcon>false</EmbeddedIcon>
 					<Z>0</Z>
 					<Rotation>0.0</Rotation>
-					<DrawingMode>AGENT_CURRENT_POSITION</DrawingMode>
 					<ScaleType>AUTOMATICALLY_CALCULATED</ScaleType>
 					<GISScaleForRealEmbeddedObjectPresentationSize>1000</GISScaleForRealEmbeddedObjectPresentationSize>
 					<GISScaleForFixedEmbeddedObjectPresentationSize>1000000000</GISScaleForFixedEmbeddedObjectPresentationSize>
@@ -5451,9 +5396,7 @@ p_efficiencyDistrictHeating = 0.8;]]></Body>
 					<RowsCountCode><![CDATA[100]]></RowsCountCode>
 					<NeigborhoodType>MOORE</NeigborhoodType>
 					<LayoutType>USER_DEF</LayoutType>
-					<LayoutTypeApplyOnStartup>true</LayoutTypeApplyOnStartup>
 					<NetworkType>USER_DEF</NetworkType>
-					<NetworkTypeApplyOnStartup>true</NetworkTypeApplyOnStartup>
 					<ConnectionsPerAgentCode><![CDATA[2]]></ConnectionsPerAgentCode>
 					<ConnectionsRangeCode><![CDATA[50]]></ConnectionsRangeCode>
 					<NeighborLinkFractionCode><![CDATA[0.95]]></NeighborLinkFractionCode>
@@ -6457,9 +6400,7 @@ else if(p_energyLabelLetter.equals("G")){
 					<RowsCountCode><![CDATA[100]]></RowsCountCode>
 					<NeigborhoodType>MOORE</NeigborhoodType>
 					<LayoutType>USER_DEF</LayoutType>
-					<LayoutTypeApplyOnStartup>true</LayoutTypeApplyOnStartup>
 					<NetworkType>USER_DEF</NetworkType>
-					<NetworkTypeApplyOnStartup>true</NetworkTypeApplyOnStartup>
 					<ConnectionsPerAgentCode><![CDATA[2]]></ConnectionsPerAgentCode>
 					<ConnectionsRangeCode><![CDATA[50]]></ConnectionsRangeCode>
 					<NeighborLinkFractionCode><![CDATA[0.95]]></NeighborLinkFractionCode>
@@ -10557,7 +10498,7 @@ else if( p_environmentAsADriverRenters != null ){
 else{
 	p_willingnessEnergyMeasuresRenters = MEDIUM;
 }
-traceln("Neighborhood " + this.getIndex() + " has willingness energy measures for home owners of " + p_willingnessEnergyMeasuresHomeOwners + " and for renters of " + p_willingnessEnergyMeasuresRenters);
+//traceln("Neighborhood " + this.getIndex() + " has willingness energy measures for home owners of " + p_willingnessEnergyMeasuresHomeOwners + " and for renters of " + p_willingnessEnergyMeasuresRenters);
 
 ]]></Body>
 				</Function>
@@ -11333,9 +11274,7 @@ f_colorGISRegionToHeatMethod();
 					<RowsCountCode><![CDATA[100]]></RowsCountCode>
 					<NeigborhoodType>MOORE</NeigborhoodType>
 					<LayoutType>USER_DEF</LayoutType>
-					<LayoutTypeApplyOnStartup>true</LayoutTypeApplyOnStartup>
 					<NetworkType>USER_DEF</NetworkType>
-					<NetworkTypeApplyOnStartup>true</NetworkTypeApplyOnStartup>
 					<ConnectionsPerAgentCode><![CDATA[2]]></ConnectionsPerAgentCode>
 					<ConnectionsRangeCode><![CDATA[50]]></ConnectionsRangeCode>
 					<NeighborLinkFractionCode><![CDATA[0.95]]></NeighborLinkFractionCode>
@@ -12452,9 +12391,7 @@ p_longitude = longitude;
 					<RowsCountCode><![CDATA[100]]></RowsCountCode>
 					<NeigborhoodType>MOORE</NeigborhoodType>
 					<LayoutType>USER_DEF</LayoutType>
-					<LayoutTypeApplyOnStartup>true</LayoutTypeApplyOnStartup>
 					<NetworkType>USER_DEF</NetworkType>
-					<NetworkTypeApplyOnStartup>true</NetworkTypeApplyOnStartup>
 					<ConnectionsPerAgentCode><![CDATA[2]]></ConnectionsPerAgentCode>
 					<ConnectionsRangeCode><![CDATA[50]]></ConnectionsRangeCode>
 					<NeighborLinkFractionCode><![CDATA[0.95]]></NeighborLinkFractionCode>
@@ -12720,9 +12657,7 @@ p_longitude = longitude;
 					<RowsCountCode><![CDATA[100]]></RowsCountCode>
 					<NeigborhoodType>MOORE</NeigborhoodType>
 					<LayoutType>USER_DEF</LayoutType>
-					<LayoutTypeApplyOnStartup>true</LayoutTypeApplyOnStartup>
 					<NetworkType>USER_DEF</NetworkType>
-					<NetworkTypeApplyOnStartup>true</NetworkTypeApplyOnStartup>
 					<ConnectionsPerAgentCode><![CDATA[2]]></ConnectionsPerAgentCode>
 					<ConnectionsRangeCode><![CDATA[50]]></ConnectionsRangeCode>
 					<NeighborLinkFractionCode><![CDATA[0.95]]></NeighborLinkFractionCode>
@@ -12871,9 +12806,7 @@ p_longitude = longitude;
 					<RowsCountCode><![CDATA[100]]></RowsCountCode>
 					<NeigborhoodType>MOORE</NeigborhoodType>
 					<LayoutType>USER_DEF</LayoutType>
-					<LayoutTypeApplyOnStartup>true</LayoutTypeApplyOnStartup>
 					<NetworkType>USER_DEF</NetworkType>
-					<NetworkTypeApplyOnStartup>true</NetworkTypeApplyOnStartup>
 					<ConnectionsPerAgentCode><![CDATA[2]]></ConnectionsPerAgentCode>
 					<ConnectionsRangeCode><![CDATA[50]]></ConnectionsRangeCode>
 					<NeighborLinkFractionCode><![CDATA[0.95]]></NeighborLinkFractionCode>
@@ -13131,9 +13064,7 @@ while (c_neighborhoodsBeingReinforced.size() < p_neighborhoodsPerYear+1 && c_nei
 					<RowsCountCode><![CDATA[100]]></RowsCountCode>
 					<NeigborhoodType>MOORE</NeigborhoodType>
 					<LayoutType>USER_DEF</LayoutType>
-					<LayoutTypeApplyOnStartup>true</LayoutTypeApplyOnStartup>
 					<NetworkType>USER_DEF</NetworkType>
-					<NetworkTypeApplyOnStartup>true</NetworkTypeApplyOnStartup>
 					<ConnectionsPerAgentCode><![CDATA[2]]></ConnectionsPerAgentCode>
 					<ConnectionsRangeCode><![CDATA[50]]></ConnectionsRangeCode>
 					<NeighborLinkFractionCode><![CDATA[0.95]]></NeighborLinkFractionCode>
@@ -13226,7 +13157,7 @@ while (c_neighborhoodsBeingReinforced.size() < p_neighborhoodsPerYear+1 && c_nei
 			</Presentation>
 
 		</ActiveObjectClass>
-	</ActiveObjectClasses>	
+	</ActiveObjectClasses>
 	<DifferentialEquationsMethod>EULER</DifferentialEquationsMethod>
 	<MixedEquationsMethod>RK45_NEWTON</MixedEquationsMethod>
 	<AlgebraicEquationsMethod>MODIFIED_NEWTON</AlgebraicEquationsMethod>
@@ -13397,7 +13328,7 @@ while (c_neighborhoodsBeingReinforced.size() < p_neighborhoodsPerYear+1 && c_nei
 		<ExportSettings>
 		</ExportSettings>
 	</Database>
-	
+
 	<RunConfiguration ActiveObjectClassId="1693907397593">
 		<Id>1693907397607</Id>
 		<Name><![CDATA[RunConfiguration]]></Name>
@@ -14464,7 +14395,7 @@ public class J_Household {
     	double districtHeatDemandAfterInvestment = 0;															//gas boiler has no district heat demand
     	double annualHeatGenerated_kWh = annualHeatConsumption_kWh;
     	
-    	utilityCompositeGoodNaturalGasBoiler_eur = f_calculateUtilityCompositeGood(investmentCostsNaturalGasBoiler, maintenanceCostsNaturalGasBoiler, electricityDemandAfterInvestment, naturalGasDemandAfterInvestment, 
+    	utilityCompositeGoodNaturalGasBoiler_eur = f_calculateLCOE(investmentCostsNaturalGasBoiler, maintenanceCostsNaturalGasBoiler, electricityDemandAfterInvestment, naturalGasDemandAfterInvestment, 
     			districtHeatDemandAfterInvestment, annualHeatGenerated_kWh, discountRate, lifetimeNaturalGasBoiler, annualHeatGenerated_kWh);
     
     	
@@ -14478,9 +14409,31 @@ public class J_Household {
     
     //2.2.5 district heating
     
+    //2.1 Calculate TCO
+    private double TCONaturalGasBoiler;
+    private double TCONaturalGasBlock;
+    private double TCOHybridHeatPump;
+    private double TCOElectricHeatPump;
+    private double TCODistrictHeating;
+    public double f_rankTCO() {
+    	TCONaturalGasBoiler = f_getTCO(investmentCostsNaturalGasBoiler, maintenanceCostsNaturalGasBoiler, energyInputsNaturalGasBoiler)
+    }
+    
+    
+    // TCO = CAPEX + sum_over_time(OPEXt / (1+r)^t)
+    public double f_getTCO( double investmentCosts_eur, double maintenanceCosts_eur, double energyInputCosts_eur, double lifetime, double discountRate) {
+    	double TCO = investmentCosts_eur;
+    	for(int t=1; t<lifetime + 1; t++) {
+    		double opex = energyInputCosts_eur + maintenanceCosts_eur;
+    		double annualDiscountedCosts = opex / pow((1 + discountRate), t);
+    		TCO += annualDiscountedCosts;
+    	}
+    	return TCO;
+    }
+    
     
     //2.2-.Calculate utility composite good
-    public double f_calculateUtilityCompositeGood(double investmentCosts_eur, double maintenanceCosts_eur, double electricityDemandAfterInvestment, double naturalGasDemandAfterInvestment, 
+    public double f_calculateLCOE(double investmentCosts_eur, double maintenanceCosts_eur, double electricityDemandAfterInvestment, double naturalGasDemandAfterInvestment, 
     		double districtHeatDemandAfterInvestment, double annualHeatGenerated_kWh, double discountRate, double systemLifetime, double heatDemandAfterInvestment) {
     	
     	double annualEnergyCosts_eur = electricityDemandAfterInvestment * electricityCosts_eurPerKWh + naturalGasDemandAfterInvestment * naturalGasCosts_eurPerKWh + districtHeatDemandAfterInvestment * districtHeatCosts_eurPerKWh;
