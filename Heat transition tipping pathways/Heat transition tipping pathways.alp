@@ -128,6 +128,26 @@
 				<Name><![CDATA[HIGH]]></Name>
 			</Option>
 		</OptionList>
+		<OptionList>
+			<Id>1733326124838</Id>
+			<Name><![CDATA[OL_EnergyCarrier]]></Name>
+			<Option>
+				<Id>1733326124839</Id>
+				<Name><![CDATA[ELECTRICITY]]></Name>
+			</Option>
+			<Option>
+				<Id>1733326124840</Id>
+				<Name><![CDATA[NATURAL_GAS]]></Name>
+			</Option>
+			<Option>
+				<Id>1733326124841</Id>
+				<Name><![CDATA[HEAT]]></Name>
+			</Option>
+			<Option>
+				<Id>1733326356404</Id>
+				<Name><![CDATA[NOT_APPLICABLE]]></Name>
+			</Option>
+		</OptionList>
 	</OptionLists>
 	
 	<Folders>
@@ -827,6 +847,81 @@ pauseSimulation();
 					<ShowLabel>true</ShowLabel>
 					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
 						<Type><![CDATA[int]]></Type>        
+					</Properties>
+				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1732721865755</Id>
+					<Name><![CDATA[v_electricHeatPumps_installedLastYear]]></Name>
+					<X>-840</X><Y>800</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[int]]></Type>        
+					</Properties>
+				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1732721865758</Id>
+					<Name><![CDATA[v_hybridHeatPumps_installedLastYear]]></Name>
+					<X>-840</X><Y>820</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[int]]></Type>        
+					</Properties>
+				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1732721865760</Id>
+					<Name><![CDATA[v_districtHeating_installedLastYear]]></Name>
+					<X>-840</X><Y>840</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[int]]></Type>        
+					</Properties>
+				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1732721865762</Id>
+					<Name><![CDATA[v_gasBoilers_installedLastYear]]></Name>
+					<X>-840</X><Y>860</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[int]]></Type>        
+					</Properties>
+				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1732721865764</Id>
+					<Name><![CDATA[v_gasBlockHeating_installedLastYear]]></Name>
+					<X>-840</X><Y>880</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[int]]></Type>        
+					</Properties>
+				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1733303539959</Id>
+					<Name><![CDATA[randomInstance]]></Name>
+					<X>-570</X><Y>760</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[Random]]></Type>        
+						<InitialValue Class="CodeValue">
+							<Code><![CDATA[new Random();]]></Code>
+						</InitialValue>
 					</Properties>
 				</Variable>
 				<Variable Class="Parameter">
@@ -1855,7 +1950,7 @@ f_updateDatasets();
 
 
 
-inputPatternPlot.updateData();
+
 marketStateByMonths.updateData();]]></Action>
 				</Event>
 			</Events>
@@ -2386,13 +2481,117 @@ ch_heatingMethodStackChart.addDataSet(data_hybridHeatPumps_nb, v_hybridHeatPumpT
 
 //AVG EAC
 pl_averageEAC.removeAll();
-pl_averageEAC.addDataSet(data_naturalGasBoilers_avgEAC, v_naturalGasBoilerText, v_naturalGasBoilerColor);
-pl_averageEAC.addDataSet(data_naturalGasBlock_avgEAC, v_naturalGasBlockText, v_naturalGasBlockColor);
-pl_averageEAC.addDataSet(data_districtHeating_avgEAC, v_districtHeatText, v_districtHeatingColor);
-pl_averageEAC.addDataSet(data_electricHeatPumps_avgEAC, v_electricHeatPumpText, v_electricHeatPumpColor);
-pl_averageEAC.addDataSet(data_hybridHeatPumps_avgEAC, v_hybridHeatPumpText, v_hybridHeatPumpColor);
+pl_averageEAC.addDataSet(
+    data_naturalGasBoilers_avgEAC, 
+    v_naturalGasBoilerText, 
+    v_naturalGasBoilerColor, 
+    true,  // Draw line
+    false, // Fill area under line
+    Chart.INTERPOLATION_LINEAR, 
+    1.0,   // Line width
+    Chart.POINT_NONE // No points
+);
 
-]]></Body>
+pl_averageEAC.addDataSet(
+    data_naturalGasBlock_avgEAC, 
+    v_naturalGasBlockText, 
+    v_naturalGasBlockColor, 
+    true, 
+    false, 
+    Chart.INTERPOLATION_LINEAR, 
+    1.0, 
+    Chart.POINT_NONE
+);
+
+pl_averageEAC.addDataSet(
+    data_districtHeating_avgEAC, 
+    v_districtHeatText, 
+    v_districtHeatingColor, 
+    true, 
+    false, 
+    Chart.INTERPOLATION_LINEAR, 
+    1.0, 
+    Chart.POINT_NONE
+);
+
+pl_averageEAC.addDataSet(
+    data_electricHeatPumps_avgEAC, 
+    v_electricHeatPumpText, 
+    v_electricHeatPumpColor, 
+    true, 
+    false, 
+    Chart.INTERPOLATION_LINEAR, 
+    1.0, 
+    Chart.POINT_NONE
+);
+
+pl_averageEAC.addDataSet(
+    data_hybridHeatPumps_avgEAC, 
+    v_hybridHeatPumpText, 
+    v_hybridHeatPumpColor, 
+    true, 
+    false, 
+    Chart.INTERPOLATION_LINEAR, 
+    1.0, 
+    Chart.POINT_NONE
+);
+
+//CAPEX
+pl_CAPEX.removeAll();
+pl_CAPEX.addDataSet(
+    data_naturalGasBoilers_capex, 
+    v_naturalGasBoilerText, 
+    v_naturalGasBoilerColor, 
+    true,  // Draw line
+    false, // Fill area under line
+    Chart.INTERPOLATION_LINEAR, 
+    1.0,   // Line width
+    Chart.POINT_NONE // No points
+);
+
+pl_CAPEX.addDataSet(
+    data_naturalGasBlock_capex, 
+    v_naturalGasBlockText, 
+    v_naturalGasBlockColor, 
+    true, 
+    false, 
+    Chart.INTERPOLATION_LINEAR, 
+    1.0, 
+    Chart.POINT_NONE
+);
+
+pl_CAPEX.addDataSet(
+    data_districtHeating_capex,
+    v_districtHeatText, 
+    v_districtHeatingColor, 
+    true, 
+    false, 
+    Chart.INTERPOLATION_LINEAR, 
+    1.0, 
+    Chart.POINT_NONE
+);
+
+pl_CAPEX.addDataSet(
+    data_electricHeatPumps_capex, 
+    v_electricHeatPumpText, 
+    v_electricHeatPumpColor, 
+    true, 
+    false, 
+    Chart.INTERPOLATION_LINEAR, 
+    1.0, 
+    Chart.POINT_NONE
+);
+
+pl_CAPEX.addDataSet(
+    data_hybridHeatPumps_capex,
+    v_hybridHeatPumpText, 
+    v_hybridHeatPumpColor, 
+    true, 
+    false, 
+    Chart.INTERPOLATION_LINEAR, 
+    1.0, 
+    Chart.POINT_NONE
+);]]></Body>
 				</Function>
 				<Function AccessType="default" StaticFunction="false">
 					<ReturnModificator>VOID</ReturnModificator>
@@ -2416,7 +2615,13 @@ data_districtHeating_perc.add(v_districtHeating_perc);
 data_electricHeatPumps_perc.add(v_electricHeatPumps_perc);
 data_hybridHeatPumps_perc.add(v_hybridHeatPumps_perc);
 
+data_naturalGasBoilers_installedPerYear.add(v_gasBoilers_installedLastYear);
+data_naturalGasBlock_installedPerYear.add(v_gasBlockHeating_installedLastYear);
+data_districtHeating_installedPerYear.add(v_districtHeating_installedLastYear);
+data_electricHeatPumps_installedPerYear.add(v_electricHeatPumps_installedLastYear);
+data_hybridHeatPumps_installedPerYear.add(v_hybridHeatPumps_installedLastYear);
 
+//AVERAGE EAC
 double v_gasBoilers_avgEAC = 0;
 double v_gasBlockHeating_avgEAC = 0;
 double v_districtHeating_avgEAC = 0;
@@ -2425,16 +2630,61 @@ double v_hybridHeatPumps_avgEAC = 0;
 int households = c_households.size();
 
 for(J_Household hh : c_households){
-	v_gasBoilers_avgEAC += hh.he
+	for( J_HeatingSystemOptions hso : hh.getHeatingSystemOptions()){
+		switch (hso.getType()) {
+	        case NATURAL_GAS_BOILER:
+	            v_gasBoilers_avgEAC += hso.getEAC();
+	            break;
+	        case NATURAL_GAS_BLOCK:
+	            v_gasBlockHeating_avgEAC += hso.getEAC();
+	            break;
+	        case HYBRID_HEAT_PUMP:
+	            v_hybridHeatPumps_avgEAC += hso.getEAC();
+	            break;
+	        case ELECTRIC_HEAT_PUMP:
+	           v_electricHeatPumps_avgEAC += hso.getEAC();
+	           break;
+	        case DISTRICT_HEATING:
+	            v_districtHeating_avgEAC += hso.getEAC();
+	            break;
+    	}
+    }
+}
 
 
-
+v_gasBoilers_avgEAC = v_gasBoilers_avgEAC / households;
+v_gasBlockHeating_avgEAC = v_gasBlockHeating_avgEAC / households;
+v_districtHeating_avgEAC = v_districtHeating_avgEAC / households;
+v_electricHeatPumps_avgEAC = v_electricHeatPumps_avgEAC / households;
+v_hybridHeatPumps_avgEAC = v_hybridHeatPumps_avgEAC / households;		
 
 data_naturalGasBoilers_avgEAC.add(v_gasBoilers_avgEAC);
 data_naturalGasBlock_avgEAC.add(v_gasBlockHeating_avgEAC);
 data_districtHeating_avgEAC.add(v_districtHeating_avgEAC);
 data_electricHeatPumps_avgEAC.add(v_electricHeatPumps_avgEAC);
 data_hybridHeatPumps_avgEAC.add(v_hybridHeatPumps_avgEAC);
+
+
+//CAPEX
+for( J_HeatingSystemOptions hso : c_heatingSystemOptions){
+	switch (hso.getType()) {
+		case NATURAL_GAS_BOILER:
+			data_naturalGasBoilers_capex.add(hso.getCAPEX());
+			break;
+		case NATURAL_GAS_BLOCK:
+			data_naturalGasBlock_capex.add(hso.getCAPEX());	
+			break;
+		case HYBRID_HEAT_PUMP:
+			data_hybridHeatPumps_capex.add(hso.getCAPEX());
+			break;
+		case ELECTRIC_HEAT_PUMP:
+			data_electricHeatPumps_capex.add(hso.getCAPEX());
+			break;
+		case DISTRICT_HEATING:
+			data_districtHeating_capex.add(hso.getCAPEX());
+			break;
+	}
+}
 ]]></Body>
 				</Function>
 				<Function AccessType="default" StaticFunction="false">
@@ -2761,6 +3011,27 @@ for (GZ_Neighborhood neighborhood : pop_GZ_Neighborhoods){
 	neighborhood.f_householdInitialization();
 }
 f_countHouseholdHeatingMethods();
+
+//Set initial units installed per heating method
+for( J_HeatingSystemOptions hso : c_heatingSystemOptions){
+	switch (hso.getType()) {
+		case NATURAL_GAS_BOILER:
+			hso.setInitialUnitsInstalled(v_gasBoilers_nb);
+			break;
+		case NATURAL_GAS_BLOCK:
+			hso.setInitialUnitsInstalled(v_gasBlockHeating_nb);
+			break;
+		case HYBRID_HEAT_PUMP:
+			hso.setInitialUnitsInstalled(v_hybridHeatPumps_nb);
+			break;
+		case ELECTRIC_HEAT_PUMP:
+			hso.setInitialUnitsInstalled(v_electricHeatPumps_nb);
+			break;
+		case DISTRICT_HEATING:
+			hso.setInitialUnitsInstalled(v_districtHeating_nb);
+			break;
+	}
+}
 
 traceln(roundToDecimal((System.currentTimeMillis() - timer)/1000,3) + " seconds to setHouseholdData");]]></Body>
 				</Function>
@@ -3497,15 +3768,31 @@ List<Tuple> rows = selectFrom(heating_system_data)
 for (Tuple row : rows) {
 	OL_HeatingSystem type = OL_HeatingSystem.valueOf(row.get(heating_system_data.type));
 	
+	OL_EnergyCarrier primaryEnergySource = f_convertEnergySourceStringToOL(row.get(heating_system_data.energy_source_primary));
+	OL_EnergyCarrier secondaryEnergySource = f_convertEnergySourceStringToOL(row.get(heating_system_data.energy_source_secondary));
+	
+	double primaryEnergySourceCosts_eurPerkWh = f_getEnergySourceCosts(primaryEnergySource);
+	double secondaryEnergySourceCosts_eurPerkWh = f_getEnergySourceCosts(secondaryEnergySource);
+	
 	J_HeatingSystemOptions data = new J_HeatingSystemOptions(
-		type, 								//Type of heating system
-		row.get(heating_system_data.capex_eur_k_w),			//CAPEX
-		row.get(heating_system_data.opex_eur_k_wh),			//OPEX
-		row.get(heating_system_data.lifetime_years),		//Lifetime
-		row.get(heating_system_data.discount_rate),			//Discount rate
-		row.get(heating_system_data.learning_rate_per_unit)	//Learning rate
+		type, 																					//Type of heating system
+		row.get(heating_system_data.capex_eur_k_w),												//CAPEX
+		row.get(heating_system_data.maintenance_costs_eur_k_wh),								//maintenance costs per year
+		row.get(heating_system_data.lifetime_years),											//Lifetime
+		row.get(heating_system_data.discount_rate),												//Discount rate
+		row.get(heating_system_data.learning_rate_per_unit),									//Learning rate
+		primaryEnergySource,																	//Primary energy source
+		secondaryEnergySource,																	//Secondary energy source
+		row.get(heating_system_data.efficiency_primary_source),									//Efficiency primary energy source
+		row.get(heating_system_data.efficiency_primary_source),									//Efficiency secondary energy source
+		row.get(heating_system_data.fraction_primary_energy_source),							//Fraction primary energy source
+		row.get(heating_system_data.fraction_secondary_energy_source),							//Fraction secondary energy source 
+		primaryEnergySourceCosts_eurPerkWh,
+		secondaryEnergySourceCosts_eurPerkWh
 	);
 	c_heatingSystemOptions.add(data);
+	
+	
 }
 ]]></Body>
 				</Function>
@@ -3525,6 +3812,12 @@ v_gasBlockHeating_nb = 0;
 v_hybridHeatPumps_nb = 0;
 v_electricHeatPumps_nb = 0;
 v_districtHeating_nb = 0;
+
+v_gasBoilers_installedLastYear = 0;
+v_gasBlockHeating_installedLastYear = 0;
+v_hybridHeatPumps_installedLastYear = 0;
+v_electricHeatPumps_installedLastYear = 0;
+v_districtHeating_installedLastYear = 0;
 
 // Iterate over the households to count heating system types
 for (J_Household hh : c_households) {
@@ -3548,6 +3841,28 @@ for (J_Household hh : c_households) {
 			// Handle unknown or unsupported heating systems, if needed
 			break;
     }
+    if( hh.getHeatingSystemInstalledThisYear() != null ){
+	    switch (hh.getHeatingSystemInstalledThisYear().getType()) {
+			case NATURAL_GAS_BOILER:
+				v_gasBoilers_installedLastYear++;
+				break;
+			case NATURAL_GAS_BLOCK:
+				v_gasBlockHeating_installedLastYear++;
+				break;
+			case HYBRID_HEAT_PUMP:
+				v_hybridHeatPumps_installedLastYear++;
+				break;
+			case ELECTRIC_HEAT_PUMP:
+				v_electricHeatPumps_installedLastYear++;
+				break;
+			case DISTRICT_HEATING:
+				v_districtHeating_installedLastYear++;
+				break;
+			default:
+				// Handle unknown or unsupported heating systems, if needed
+				break;
+	    }
+	}
 }
 
 v_gasBoilers_perc = v_gasBoilers_nb / households;
@@ -3555,6 +3870,8 @@ v_gasBlockHeating_perc = v_gasBlockHeating_nb / households;
 v_hybridHeatPumps_perc = v_hybridHeatPumps_nb / households;
 v_electricHeatPumps_perc = v_electricHeatPumps_nb / households;
 v_districtHeating_perc = v_districtHeating_nb / households;
+
+
 
 //traceln("Perc heating system households( Gas boiler " + v_gasBoilers_perc + "%, Gas block " + v_gasBlockHeating_perc + "%, Hybrid heat pump " + v_hybridHeatPumps_perc + "%, Electric heat pump " + v_electricHeatPumps_perc + "%, District heating " + v_districtHeating_perc + "%");
 ]]></Body>
@@ -3564,43 +3881,154 @@ v_districtHeating_perc = v_districtHeating_nb / households;
 					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1732635161531</Id>
 					<Name><![CDATA[f_updateGlobalCostsHeatingMethods]]></Name>
-					<X>-560</X><Y>920</Y>
+					<X>-560</X><Y>930</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
 					<Body><![CDATA[if(time() > 1){	
 	//Set units installed last year to update learning curve
-	int year = data_naturalGasBoilers_nb.size();
-	double gasBoiler_unitsInstalledPrevYear = data_naturalGasBoilers_nb.getY(year - 1) - data_naturalGasBoilers_nb.getY(year - 2);
-	double gasBlock_unitsInstalledPrevYear = data_naturalGasBlock_nb.getY(year - 1) - data_naturalGasBlock_nb.getY(year - 2);
-	double hybridHeatPump_unitsInstalledPrevYear = data_hybridHeatPumps_nb.getY(year - 1) - data_hybridHeatPumps_nb.getY(year - 2);
-	double electricHeatPump_unitsInstalledPrevYear = data_electricHeatPumps_nb.getY(year - 1) - data_electricHeatPumps_nb.getY(year - 2);
-	double districtHeating_unitsInstalledPrevYear = data_districtHeating_nb.getY(year - 1) - data_districtHeating_nb.getY(year - 2);
-	double unitsInstalledPrevYear = 0;
+	double unitsInstalledCumulative = 0;
 	
 	for( J_HeatingSystemOptions hso : c_heatingSystemOptions ){
 		switch (hso.getType()) {
 	        case NATURAL_GAS_BOILER:
-				unitsInstalledPrevYear = gasBoiler_unitsInstalledPrevYear;
+				unitsInstalledCumulative = f_sumDataset(data_naturalGasBoilers_installedPerYear);
 	            break;
 	        case NATURAL_GAS_BLOCK:
-				unitsInstalledPrevYear = gasBlock_unitsInstalledPrevYear;
+				unitsInstalledCumulative = f_sumDataset(data_naturalGasBlock_installedPerYear);
 	            break;
 	        case HYBRID_HEAT_PUMP:
-				unitsInstalledPrevYear = hybridHeatPump_unitsInstalledPrevYear;
+				unitsInstalledCumulative = f_sumDataset(data_hybridHeatPumps_installedPerYear);
 	            break;
 	        case ELECTRIC_HEAT_PUMP:
-				unitsInstalledPrevYear = electricHeatPump_unitsInstalledPrevYear;
+				unitsInstalledCumulative = f_sumDataset(data_electricHeatPumps_installedPerYear);
 	            break;
 	        case DISTRICT_HEATING:
-				unitsInstalledPrevYear = districtHeating_unitsInstalledPrevYear;
+				unitsInstalledCumulative = f_sumDataset(data_districtHeating_installedPerYear);
 	            break;
 	    }	
-		hso.setCAPEX(hso.getCAPEX() - hso.getCAPEX() * hso.getLearningRate() * unitsInstalledPrevYear);
+		hso.f_updateCapexFromLearningCurve(unitsInstalledCumulative);
 	}
 }		
 ]]></Body>
+				</Function>
+				<Function AccessType="default" StaticFunction="false">
+					<ReturnModificator>VOID</ReturnModificator>
+					<ReturnType><![CDATA[double]]></ReturnType>
+					<Id>1732725688021</Id>
+					<Name><![CDATA[f_setCostsFromLearningCurve]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
+					<X>-560</X><Y>950</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Parameter>
+						<Name><![CDATA[initialCost]]></Name>
+						<Type><![CDATA[double]]></Type>
+					</Parameter>
+					<Parameter>
+						<Name><![CDATA[initialProduction]]></Name>
+						<Type><![CDATA[double]]></Type>
+					</Parameter>
+					<Parameter>
+						<Name><![CDATA[totalProduction]]></Name>
+						<Type><![CDATA[double]]></Type>
+					</Parameter>
+					<Parameter>
+						<Name><![CDATA[learningRate]]></Name>
+						<Type><![CDATA[double]]></Type>
+					</Parameter>
+					<Body><![CDATA[// Calculate number of doublings (log2 of total production divided by initial production)
+double doublings = Math.log(totalProduction / initialProduction) / Math.log(2);
+
+// Calculate current cost using learning curve formula
+double currentCost = initialCost * Math.pow(learningRate, doublings);
+
+/*
+Cn​=C1​⋅nlog(learningRate)/log(2)
+Where:
+    CnCn​: Cost of the nth unit.
+    C1C1​: Cost of the first unit (initial production cost).
+    nn: Cumulative production quantity.
+    learningRatelearningRate: Percentage by which cost reduces every time cumulative production doubles.
+*/
+]]></Body>
+				</Function>
+				<Function AccessType="default" StaticFunction="false">
+					<ReturnModificator>RETURNS_VALUE</ReturnModificator>
+					<ReturnType><![CDATA[double]]></ReturnType>
+					<Id>1733243051884</Id>
+					<Name><![CDATA[f_sumDataset]]></Name>
+					<X>-570</X><Y>780</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Parameter>
+						<Name><![CDATA[dataSet]]></Name>
+						<Type><![CDATA[DataSet]]></Type>
+					</Parameter>
+					<Body><![CDATA[double sum = 0.0;
+for (int i=0; i < dataSet.size(); i++) {
+	sum += dataSet.getY(i);
+}
+return sum;]]></Body>
+				</Function>
+				<Function AccessType="default" StaticFunction="false">
+					<ReturnModificator>RETURNS_VALUE</ReturnModificator>
+					<ReturnType><![CDATA[OL_EnergyCarrier]]></ReturnType>
+					<Id>1733326431825</Id>
+					<Name><![CDATA[f_convertEnergySourceStringToOL]]></Name>
+					<X>-570</X><Y>710</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Parameter>
+						<Name><![CDATA[energyCarrierString]]></Name>
+						<Type><![CDATA[String]]></Type>
+					</Parameter>
+					<Body><![CDATA[switch( energyCarrierString ){
+	case "NATURAL_GAS":
+		return NATURAL_GAS;
+	case "ELECTRICITY":
+		return ELECTRICITY;
+	case "HEAT":
+		return HEAT;
+	default:
+		return NOT_APPLICABLE;
+}
+]]></Body>
+				</Function>
+				<Function AccessType="default" StaticFunction="false">
+					<ReturnModificator>RETURNS_VALUE</ReturnModificator>
+					<ReturnType><![CDATA[double]]></ReturnType>
+					<Id>1733333422693</Id>
+					<Name><![CDATA[f_getEnergySourceCosts]]></Name>
+					<X>-570</X><Y>730</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Parameter>
+						<Name><![CDATA[energySource]]></Name>
+						<Type><![CDATA[OL_EnergyCarrier]]></Type>
+					</Parameter>
+					<Body><![CDATA[double energySourceCosts_eurPerkWh = 0.0;
+
+List<Tuple> rows = selectFrom(energy_source_data)
+    .list();
+
+for(Tuple row : rows){
+	OL_EnergyCarrier energyCarrier = f_convertEnergySourceStringToOL(row.get(energy_source_data.energy_source));
+	if(energyCarrier == energySource){
+		energySourceCosts_eurPerkWh = row.get(energy_source_data.costs_eur_per_k_wh);
+	}
+}
+
+return energySourceCosts_eurPerkWh;		]]></Body>
 				</Function>
 			</Functions>
 			<TableFunctions>
@@ -3642,7 +4070,7 @@ v_districtHeating_perc = v_districtHeating_nb / households;
     			<DataSet>
 					<Id>1704723280525</Id>
 					<Name><![CDATA[data_naturalGasBoilers_nb]]></Name>
-					<X>-840</X><Y>800</Y>
+					<X>-840</X><Y>920</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -3664,7 +4092,7 @@ v_districtHeating_perc = v_districtHeating_nb / households;
     			<DataSet>
 					<Id>1704723351057</Id>
 					<Name><![CDATA[data_districtHeating_nb]]></Name>
-					<X>-840</X><Y>840</Y>
+					<X>-840</X><Y>960</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -3686,7 +4114,7 @@ v_districtHeating_perc = v_districtHeating_nb / households;
     			<DataSet>
 					<Id>1704723375249</Id>
 					<Name><![CDATA[data_electricHeatPumps_nb]]></Name>
-					<X>-840</X><Y>860</Y>
+					<X>-840</X><Y>980</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -3708,7 +4136,7 @@ v_districtHeating_perc = v_districtHeating_nb / households;
     			<DataSet>
 					<Id>1704723391035</Id>
 					<Name><![CDATA[data_hybridHeatPumps_nb]]></Name>
-					<X>-840</X><Y>880</Y>
+					<X>-840</X><Y>1000</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -3730,7 +4158,7 @@ v_districtHeating_perc = v_districtHeating_nb / households;
     			<DataSet>
 					<Id>1704898582469</Id>
 					<Name><![CDATA[data_naturalGasBlock_nb]]></Name>
-					<X>-840</X><Y>820</Y>
+					<X>-840</X><Y>940</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -3752,7 +4180,7 @@ v_districtHeating_perc = v_districtHeating_nb / households;
     			<DataSet>
 					<Id>1732631016622</Id>
 					<Name><![CDATA[data_naturalGasBoilers_perc]]></Name>
-					<X>-840</X><Y>920</Y>
+					<X>-840</X><Y>1040</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -3774,7 +4202,7 @@ v_districtHeating_perc = v_districtHeating_nb / households;
     			<DataSet>
 					<Id>1732631016649</Id>
 					<Name><![CDATA[data_districtHeating_perc]]></Name>
-					<X>-840</X><Y>960</Y>
+					<X>-840</X><Y>1080</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -3796,7 +4224,7 @@ v_districtHeating_perc = v_districtHeating_nb / households;
     			<DataSet>
 					<Id>1732631016660</Id>
 					<Name><![CDATA[data_electricHeatPumps_perc]]></Name>
-					<X>-840</X><Y>980</Y>
+					<X>-840</X><Y>1100</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -3818,7 +4246,7 @@ v_districtHeating_perc = v_districtHeating_nb / households;
     			<DataSet>
 					<Id>1732631016668</Id>
 					<Name><![CDATA[data_hybridHeatPumps_perc]]></Name>
-					<X>-840</X><Y>1000</Y>
+					<X>-840</X><Y>1120</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -3840,7 +4268,7 @@ v_districtHeating_perc = v_districtHeating_nb / households;
     			<DataSet>
 					<Id>1732631016675</Id>
 					<Name><![CDATA[data_naturalGasBlock_perc]]></Name>
-					<X>-840</X><Y>940</Y>
+					<X>-840</X><Y>1060</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -3862,7 +4290,7 @@ v_districtHeating_perc = v_districtHeating_nb / households;
     			<DataSet>
 					<Id>1732642727824</Id>
 					<Name><![CDATA[data_naturalGasBoilers_avgEAC]]></Name>
-					<X>-840</X><Y>1040</Y>
+					<X>-840</X><Y>1270</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -3884,7 +4312,7 @@ v_districtHeating_perc = v_districtHeating_nb / households;
     			<DataSet>
 					<Id>1732642727835</Id>
 					<Name><![CDATA[data_districtHeating_avgEAC]]></Name>
-					<X>-840</X><Y>1080</Y>
+					<X>-840</X><Y>1310</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -3906,7 +4334,7 @@ v_districtHeating_perc = v_districtHeating_nb / households;
     			<DataSet>
 					<Id>1732642727842</Id>
 					<Name><![CDATA[data_electricHeatPumps_avgEAC]]></Name>
-					<X>-840</X><Y>1100</Y>
+					<X>-840</X><Y>1330</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -3928,7 +4356,7 @@ v_districtHeating_perc = v_districtHeating_nb / households;
     			<DataSet>
 					<Id>1732642727850</Id>
 					<Name><![CDATA[data_hybridHeatPumps_avgEAC]]></Name>
-					<X>-840</X><Y>1120</Y>
+					<X>-840</X><Y>1350</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -3950,7 +4378,227 @@ v_districtHeating_perc = v_districtHeating_nb / households;
     			<DataSet>
 					<Id>1732642727857</Id>
 					<Name><![CDATA[data_naturalGasBlock_avgEAC]]></Name>
-					<X>-840</X><Y>1060</Y>
+					<X>-840</X><Y>1290</Y>
+					<Label><X>15</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<AutoUpdate>false</AutoUpdate>
+					<OccurrenceAtTime>true</OccurrenceAtTime>
+					<OccurrenceDate>1704787200000</OccurrenceDate>
+					<OccurrenceTime Class="CodeUnitValue">
+						<Code><![CDATA[0]]></Code>
+						<Unit Class="TimeUnits"><![CDATA[YEAR]]></Unit>
+					</OccurrenceTime>
+					<RecurrenceCode Class="CodeUnitValue">
+						<Code><![CDATA[1]]></Code>
+						<Unit Class="TimeUnits"><![CDATA[YEAR]]></Unit>
+					</RecurrenceCode>
+					<FreezeXAxis>true</FreezeXAxis>
+					<SamplesToKeep>40</SamplesToKeep>
+				</DataSet>
+    			<DataSet>
+					<Id>1732721763945</Id>
+					<Name><![CDATA[data_naturalGasBoilers_installedPerYear]]></Name>
+					<X>-840</X><Y>1150</Y>
+					<Label><X>15</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<AutoUpdate>false</AutoUpdate>
+					<OccurrenceAtTime>true</OccurrenceAtTime>
+					<OccurrenceDate>1704787200000</OccurrenceDate>
+					<OccurrenceTime Class="CodeUnitValue">
+						<Code><![CDATA[0]]></Code>
+						<Unit Class="TimeUnits"><![CDATA[YEAR]]></Unit>
+					</OccurrenceTime>
+					<RecurrenceCode Class="CodeUnitValue">
+						<Code><![CDATA[1]]></Code>
+						<Unit Class="TimeUnits"><![CDATA[YEAR]]></Unit>
+					</RecurrenceCode>
+					<FreezeXAxis>true</FreezeXAxis>
+					<SamplesToKeep>40</SamplesToKeep>
+				</DataSet>
+    			<DataSet>
+					<Id>1732721763962</Id>
+					<Name><![CDATA[data_districtHeating_installedPerYear]]></Name>
+					<X>-840</X><Y>1190</Y>
+					<Label><X>15</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<AutoUpdate>false</AutoUpdate>
+					<OccurrenceAtTime>true</OccurrenceAtTime>
+					<OccurrenceDate>1704787200000</OccurrenceDate>
+					<OccurrenceTime Class="CodeUnitValue">
+						<Code><![CDATA[0]]></Code>
+						<Unit Class="TimeUnits"><![CDATA[YEAR]]></Unit>
+					</OccurrenceTime>
+					<RecurrenceCode Class="CodeUnitValue">
+						<Code><![CDATA[1]]></Code>
+						<Unit Class="TimeUnits"><![CDATA[YEAR]]></Unit>
+					</RecurrenceCode>
+					<FreezeXAxis>true</FreezeXAxis>
+					<SamplesToKeep>40</SamplesToKeep>
+				</DataSet>
+    			<DataSet>
+					<Id>1732721763972</Id>
+					<Name><![CDATA[data_electricHeatPumps_installedPerYear]]></Name>
+					<X>-840</X><Y>1210</Y>
+					<Label><X>15</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<AutoUpdate>false</AutoUpdate>
+					<OccurrenceAtTime>true</OccurrenceAtTime>
+					<OccurrenceDate>1704787200000</OccurrenceDate>
+					<OccurrenceTime Class="CodeUnitValue">
+						<Code><![CDATA[0]]></Code>
+						<Unit Class="TimeUnits"><![CDATA[YEAR]]></Unit>
+					</OccurrenceTime>
+					<RecurrenceCode Class="CodeUnitValue">
+						<Code><![CDATA[1]]></Code>
+						<Unit Class="TimeUnits"><![CDATA[YEAR]]></Unit>
+					</RecurrenceCode>
+					<FreezeXAxis>true</FreezeXAxis>
+					<SamplesToKeep>40</SamplesToKeep>
+				</DataSet>
+    			<DataSet>
+					<Id>1732721763982</Id>
+					<Name><![CDATA[data_hybridHeatPumps_installedPerYear]]></Name>
+					<X>-840</X><Y>1230</Y>
+					<Label><X>15</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<AutoUpdate>false</AutoUpdate>
+					<OccurrenceAtTime>true</OccurrenceAtTime>
+					<OccurrenceDate>1704787200000</OccurrenceDate>
+					<OccurrenceTime Class="CodeUnitValue">
+						<Code><![CDATA[0]]></Code>
+						<Unit Class="TimeUnits"><![CDATA[YEAR]]></Unit>
+					</OccurrenceTime>
+					<RecurrenceCode Class="CodeUnitValue">
+						<Code><![CDATA[1]]></Code>
+						<Unit Class="TimeUnits"><![CDATA[YEAR]]></Unit>
+					</RecurrenceCode>
+					<FreezeXAxis>true</FreezeXAxis>
+					<SamplesToKeep>40</SamplesToKeep>
+				</DataSet>
+    			<DataSet>
+					<Id>1732721763990</Id>
+					<Name><![CDATA[data_naturalGasBlock_installedPerYear]]></Name>
+					<X>-840</X><Y>1170</Y>
+					<Label><X>15</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<AutoUpdate>false</AutoUpdate>
+					<OccurrenceAtTime>true</OccurrenceAtTime>
+					<OccurrenceDate>1704787200000</OccurrenceDate>
+					<OccurrenceTime Class="CodeUnitValue">
+						<Code><![CDATA[0]]></Code>
+						<Unit Class="TimeUnits"><![CDATA[YEAR]]></Unit>
+					</OccurrenceTime>
+					<RecurrenceCode Class="CodeUnitValue">
+						<Code><![CDATA[1]]></Code>
+						<Unit Class="TimeUnits"><![CDATA[YEAR]]></Unit>
+					</RecurrenceCode>
+					<FreezeXAxis>true</FreezeXAxis>
+					<SamplesToKeep>40</SamplesToKeep>
+				</DataSet>
+    			<DataSet>
+					<Id>1733243650414</Id>
+					<Name><![CDATA[data_naturalGasBoilers_capex]]></Name>
+					<X>-840</X><Y>1390</Y>
+					<Label><X>15</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<AutoUpdate>false</AutoUpdate>
+					<OccurrenceAtTime>true</OccurrenceAtTime>
+					<OccurrenceDate>1704787200000</OccurrenceDate>
+					<OccurrenceTime Class="CodeUnitValue">
+						<Code><![CDATA[0]]></Code>
+						<Unit Class="TimeUnits"><![CDATA[YEAR]]></Unit>
+					</OccurrenceTime>
+					<RecurrenceCode Class="CodeUnitValue">
+						<Code><![CDATA[1]]></Code>
+						<Unit Class="TimeUnits"><![CDATA[YEAR]]></Unit>
+					</RecurrenceCode>
+					<FreezeXAxis>true</FreezeXAxis>
+					<SamplesToKeep>40</SamplesToKeep>
+				</DataSet>
+    			<DataSet>
+					<Id>1733243650450</Id>
+					<Name><![CDATA[data_districtHeating_capex]]></Name>
+					<X>-840</X><Y>1430</Y>
+					<Label><X>15</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<AutoUpdate>false</AutoUpdate>
+					<OccurrenceAtTime>true</OccurrenceAtTime>
+					<OccurrenceDate>1704787200000</OccurrenceDate>
+					<OccurrenceTime Class="CodeUnitValue">
+						<Code><![CDATA[0]]></Code>
+						<Unit Class="TimeUnits"><![CDATA[YEAR]]></Unit>
+					</OccurrenceTime>
+					<RecurrenceCode Class="CodeUnitValue">
+						<Code><![CDATA[1]]></Code>
+						<Unit Class="TimeUnits"><![CDATA[YEAR]]></Unit>
+					</RecurrenceCode>
+					<FreezeXAxis>true</FreezeXAxis>
+					<SamplesToKeep>40</SamplesToKeep>
+				</DataSet>
+    			<DataSet>
+					<Id>1733243650460</Id>
+					<Name><![CDATA[data_electricHeatPumps_capex]]></Name>
+					<X>-840</X><Y>1450</Y>
+					<Label><X>15</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<AutoUpdate>false</AutoUpdate>
+					<OccurrenceAtTime>true</OccurrenceAtTime>
+					<OccurrenceDate>1704787200000</OccurrenceDate>
+					<OccurrenceTime Class="CodeUnitValue">
+						<Code><![CDATA[0]]></Code>
+						<Unit Class="TimeUnits"><![CDATA[YEAR]]></Unit>
+					</OccurrenceTime>
+					<RecurrenceCode Class="CodeUnitValue">
+						<Code><![CDATA[1]]></Code>
+						<Unit Class="TimeUnits"><![CDATA[YEAR]]></Unit>
+					</RecurrenceCode>
+					<FreezeXAxis>true</FreezeXAxis>
+					<SamplesToKeep>40</SamplesToKeep>
+				</DataSet>
+    			<DataSet>
+					<Id>1733243650468</Id>
+					<Name><![CDATA[data_hybridHeatPumps_capex]]></Name>
+					<X>-840</X><Y>1470</Y>
+					<Label><X>15</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<AutoUpdate>false</AutoUpdate>
+					<OccurrenceAtTime>true</OccurrenceAtTime>
+					<OccurrenceDate>1704787200000</OccurrenceDate>
+					<OccurrenceTime Class="CodeUnitValue">
+						<Code><![CDATA[0]]></Code>
+						<Unit Class="TimeUnits"><![CDATA[YEAR]]></Unit>
+					</OccurrenceTime>
+					<RecurrenceCode Class="CodeUnitValue">
+						<Code><![CDATA[1]]></Code>
+						<Unit Class="TimeUnits"><![CDATA[YEAR]]></Unit>
+					</RecurrenceCode>
+					<FreezeXAxis>true</FreezeXAxis>
+					<SamplesToKeep>40</SamplesToKeep>
+				</DataSet>
+    			<DataSet>
+					<Id>1733243650476</Id>
+					<Name><![CDATA[data_naturalGasBlock_capex]]></Name>
+					<X>-840</X><Y>1410</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -5307,6 +5955,63 @@ v_districtHeating_perc = v_districtHeating_nb / households;
 					<FillColor>-1644806</FillColor>
 					<FillMaterial>null</FillMaterial>
 				</Rectangle>
+    			<TimePlot>
+					<Id>1733243245447</Id>
+					<Name><![CDATA[pl_CAPEX]]></Name>
+					<X>850</X><Y>980</Y>
+					<Label><X>0</X><Y>-10</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
+					<AutoUpdate>false</AutoUpdate>
+					<OccurrenceAtTime>true</OccurrenceAtTime>
+					<OccurrenceDate>1412150400000</OccurrenceDate>
+					<OccurrenceTime Class="CodeUnitValue">
+						<Code><![CDATA[0]]></Code>
+						<Unit Class="TimeUnits"><![CDATA[YEAR]]></Unit>
+					</OccurrenceTime>
+					<RecurrenceCode Class="CodeUnitValue">
+						<Code><![CDATA[1]]></Code>
+						<Unit Class="TimeUnits"><![CDATA[YEAR]]></Unit>
+					</RecurrenceCode>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Width>640</Width>
+					<Height>230</Height>
+					<BackgroundColor/>
+					<BorderColor/>
+					<ChartArea>
+						<XOffset>50</XOffset>
+						<YOffset>20</YOffset>
+						<Width>570</Width>
+						<Height>150</Height>
+						<BackgroundColor/>
+						<BorderColor>-16777216</BorderColor>
+						<GridColor>-12566464</GridColor>
+					</ChartArea>
+					<Legend>
+						<Place>SOUTH</Place>
+						<TextColor>-16777216</TextColor>
+						<Size>40</Size>
+					</Legend>
+					<Labels>
+						<HorLabelsPosition>DEFAULT</HorLabelsPosition>
+						<VerLabelsPosition>DEFAULT</VerLabelsPosition>
+						<TextColor>-12566464</TextColor>
+					</Labels>
+					<ShowLegend>true</ShowLegend>
+					<TimeWindowsMovementType>MOVEMENT_WITH_DATA</TimeWindowsMovementType>		
+					<TimeWindowUnits>YEAR</TimeWindowUnits>
+					<VerScaleFromExpression><![CDATA[0]]></VerScaleFromExpression>
+					<VerScaleToExpression><![CDATA[p_totalPopulation]]></VerScaleToExpression>
+					<VerScaleType>AUTO</VerScaleType>
+					<DrawLine>true</DrawLine>
+					<Interpolation>LINEAR</Interpolation>
+					<SamplesToKeep>100</SamplesToKeep>
+					<TimeWindowExpression><![CDATA[30]]></TimeWindowExpression>
+					<FillAreaUnderLine>false</FillAreaUnderLine>
+					<LabelFormat>yyyy</LabelFormat>
+    			</TimePlot>
 			</Presentation>
 
 				</Level>
@@ -10531,7 +11236,7 @@ for( int i = 0; i < p_households; i++ ){
 	OL_HouseholdOwnership ownership = f_getHouseholdOwnership();
 	OL_HeatingSystem heatingSystem = f_getHouseholdDefaultHeatingSystem();
 		
-	J_Household household = new J_Household(this, main.c_heatingSystemOptions, ownership, heatingSystem, main.idCounter);
+	J_Household household = new J_Household(this, main.c_heatingSystemOptions, ownership, heatingSystem, main.idCounter, main);
 	c_households.add(household);
 	main.c_households.add(household);
 	main.idCounter++;
@@ -13305,7 +14010,7 @@ while (c_neighborhoodsBeingReinforced.size() < p_neighborhoodsPerYear+1 && c_nei
 		<ShutdownCompact>false</ShutdownCompact>
 		<ImportSettings>
 			<ExternalConnection>
-				<Id>1700142357559</Id>
+				<Id>1715091121012</Id>
 				<Name><![CDATA[database]]></Name>
 				<X>0</X><Y>0</Y>
 				<Label><X>10</X><Y>0</Y></Label>
@@ -13318,28 +14023,7 @@ while (c_neighborhoodsBeingReinforced.size() < p_neighborhoodsPerYear+1 && c_nei
 				<DatabaseName><![CDATA[]]></DatabaseName>
 				<ResourceReference>
 					<PackageName><![CDATA[heat_transition_tipping_pathways]]></PackageName>
-					<ClassName><![CDATA[_neighborhoods_data_2021.xls]]></ClassName>
-				</ResourceReference>
-				<Host><![CDATA[localhost]]></Host>
-				<JdbcDriverClassName><![CDATA[net.sourceforge.jtds.jdbc.Driver]]></JdbcDriverClassName>
-				<Login><![CDATA[]]></Login>
-				<Password><![CDATA[]]></Password>
-			</ExternalConnection>
-			<ExternalConnection>
-				<Id>1704715330799</Id>
-				<Name><![CDATA[database]]></Name>
-				<X>0</X><Y>0</Y>
-				<Label><X>10</X><Y>0</Y></Label>
-				<PublicFlag>false</PublicFlag>
-				<PresentationFlag>true</PresentationFlag>
-				<ShowLabel>true</ShowLabel>
-				<DatabaseType>EXCEL_ACCESS</DatabaseType>
-				<ConnectionURL><![CDATA[]]></ConnectionURL>
-				<ConnectOnStartup>true</ConnectOnStartup>
-				<DatabaseName><![CDATA[]]></DatabaseName>
-				<ResourceReference>
-					<PackageName><![CDATA[heat_transition_tipping_pathways]]></PackageName>
-					<ClassName><![CDATA[_neighborhood_warmtevisie.xlsx]]></ClassName>
+					<ClassName><![CDATA[C:/Users/s124129/Documents/GitHub/Tipping-pathways/Heat transition Netherlands/_neighborhoods_willingnessEnergyTransitionInvestments.xlsx]]></ClassName>
 				</ResourceReference>
 				<Host><![CDATA[localhost]]></Host>
 				<JdbcDriverClassName><![CDATA[net.sourceforge.jtds.jdbc.Driver]]></JdbcDriverClassName>
@@ -13389,7 +14073,7 @@ while (c_neighborhoodsBeingReinforced.size() < p_neighborhoodsPerYear+1 && c_nei
 				<Password><![CDATA[]]></Password>
 			</ExternalConnection>
 			<ExternalConnection>
-				<Id>1715091121012</Id>
+				<Id>1704715330799</Id>
 				<Name><![CDATA[database]]></Name>
 				<X>0</X><Y>0</Y>
 				<Label><X>10</X><Y>0</Y></Label>
@@ -13402,7 +14086,28 @@ while (c_neighborhoodsBeingReinforced.size() < p_neighborhoodsPerYear+1 && c_nei
 				<DatabaseName><![CDATA[]]></DatabaseName>
 				<ResourceReference>
 					<PackageName><![CDATA[heat_transition_tipping_pathways]]></PackageName>
-					<ClassName><![CDATA[C:/Users/s124129/Documents/GitHub/Tipping-pathways/Heat transition Netherlands/_neighborhoods_willingnessEnergyTransitionInvestments.xlsx]]></ClassName>
+					<ClassName><![CDATA[_neighborhood_warmtevisie.xlsx]]></ClassName>
+				</ResourceReference>
+				<Host><![CDATA[localhost]]></Host>
+				<JdbcDriverClassName><![CDATA[net.sourceforge.jtds.jdbc.Driver]]></JdbcDriverClassName>
+				<Login><![CDATA[]]></Login>
+				<Password><![CDATA[]]></Password>
+			</ExternalConnection>
+			<ExternalConnection>
+				<Id>1700142357559</Id>
+				<Name><![CDATA[database]]></Name>
+				<X>0</X><Y>0</Y>
+				<Label><X>10</X><Y>0</Y></Label>
+				<PublicFlag>false</PublicFlag>
+				<PresentationFlag>true</PresentationFlag>
+				<ShowLabel>true</ShowLabel>
+				<DatabaseType>EXCEL_ACCESS</DatabaseType>
+				<ConnectionURL><![CDATA[]]></ConnectionURL>
+				<ConnectOnStartup>true</ConnectOnStartup>
+				<DatabaseName><![CDATA[]]></DatabaseName>
+				<ResourceReference>
+					<PackageName><![CDATA[heat_transition_tipping_pathways]]></PackageName>
+					<ClassName><![CDATA[_neighborhoods_data_2021.xls]]></ClassName>
 				</ResourceReference>
 				<Host><![CDATA[localhost]]></Host>
 				<JdbcDriverClassName><![CDATA[net.sourceforge.jtds.jdbc.Driver]]></JdbcDriverClassName>
@@ -13433,19 +14138,10 @@ while (c_neighborhoodsBeingReinforced.size() < p_neighborhoodsPerYear+1 && c_nei
 			<TableImportSettings>
 				<TableReference>
 					<PackageName><![CDATA[heat_transition_tipping_pathways]]></PackageName>
-					<ClassName><![CDATA[neighborhood_data]]></ClassName>
+					<ClassName><![CDATA[neighborhoods_wti]]></ClassName>
 				</TableReference>
 				<ConnectionIndex>0</ConnectionIndex>
-				<ExternalTableName><![CDATA["neighborhood_data"]]></ExternalTableName>
-				<AutoImport>false</AutoImport>
-			</TableImportSettings>
-			<TableImportSettings>
-				<TableReference>
-					<PackageName><![CDATA[heat_transition_tipping_pathways]]></PackageName>
-					<ClassName><![CDATA[neighborhood_warmtevisie]]></ClassName>
-				</TableReference>
-				<ConnectionIndex>1</ConnectionIndex>
-				<ExternalTableName><![CDATA["neighborhood_warmtevisie"]]></ExternalTableName>
+				<ExternalTableName><![CDATA["neighborhoods_WTI"]]></ExternalTableName>
 				<AutoImport>false</AutoImport>
 			</TableImportSettings>
 			<TableImportSettings>
@@ -13453,7 +14149,7 @@ while (c_neighborhoodsBeingReinforced.size() < p_neighborhoodsPerYear+1 && c_nei
 					<PackageName><![CDATA[heat_transition_tipping_pathways]]></PackageName>
 					<ClassName><![CDATA[neighborhoods_household_heating]]></ClassName>
 				</TableReference>
-				<ConnectionIndex>2</ConnectionIndex>
+				<ConnectionIndex>1</ConnectionIndex>
 				<ExternalTableName><![CDATA["neighborhoods_householdHeating"]]></ExternalTableName>
 				<AutoImport>false</AutoImport>
 			</TableImportSettings>
@@ -13462,17 +14158,35 @@ while (c_neighborhoodsBeingReinforced.size() < p_neighborhoodsPerYear+1 && c_nei
 					<PackageName><![CDATA[heat_transition_tipping_pathways]]></PackageName>
 					<ClassName><![CDATA[heating_system_data]]></ClassName>
 				</TableReference>
-				<ConnectionIndex>3</ConnectionIndex>
+				<ConnectionIndex>2</ConnectionIndex>
 				<ExternalTableName><![CDATA["heating_system_data"]]></ExternalTableName>
+				<AutoImport>true</AutoImport>
+			</TableImportSettings>
+			<TableImportSettings>
+				<TableReference>
+					<PackageName><![CDATA[heat_transition_tipping_pathways]]></PackageName>
+					<ClassName><![CDATA[neighborhood_warmtevisie]]></ClassName>
+				</TableReference>
+				<ConnectionIndex>3</ConnectionIndex>
+				<ExternalTableName><![CDATA["neighborhood_warmtevisie"]]></ExternalTableName>
 				<AutoImport>false</AutoImport>
 			</TableImportSettings>
 			<TableImportSettings>
 				<TableReference>
 					<PackageName><![CDATA[heat_transition_tipping_pathways]]></PackageName>
-					<ClassName><![CDATA[neighborhoods_wti]]></ClassName>
+					<ClassName><![CDATA[neighborhood_data]]></ClassName>
 				</TableReference>
 				<ConnectionIndex>4</ConnectionIndex>
-				<ExternalTableName><![CDATA["neighborhoods_WTI"]]></ExternalTableName>
+				<ExternalTableName><![CDATA["neighborhood_data"]]></ExternalTableName>
+				<AutoImport>false</AutoImport>
+			</TableImportSettings>
+			<TableImportSettings>
+				<TableReference>
+					<PackageName><![CDATA[heat_transition_tipping_pathways]]></PackageName>
+					<ClassName><![CDATA[energy_source_data]]></ClassName>
+				</TableReference>
+				<ConnectionIndex>2</ConnectionIndex>
+				<ExternalTableName><![CDATA["energy_source_data"]]></ExternalTableName>
 				<AutoImport>false</AutoImport>
 			</TableImportSettings>
 			<TableImportSettings>
@@ -14403,42 +15117,51 @@ public class J_Household {
 	private int id;
 	private J_HeatingSystem heatingSystem;
 	private List<J_HeatingSystemOptions> heatingSystemOptions = new ArrayList<>();
-	//private List<J_HeatingSystemOptions> rankedHeatingSystems = new ArrayList<>();
+	private J_HeatingSystem heatingSystemInstalledThisYear;
+	private double heatDemand_kWh;
+	private Main main;
+	
     /**
      * Default constructor
      */
-    public J_Household(GZ_Neighborhood neighborhood, List<J_HeatingSystemOptions> heatingSystemOptions, OL_HouseholdOwnership ownership, OL_HeatingSystem heatingSystem_OL, int id) {
+    public J_Household(GZ_Neighborhood neighborhood, List<J_HeatingSystemOptions> heatingSystemOptions, OL_HouseholdOwnership ownership, OL_HeatingSystem heatingSystem_OL, int id, Main main) {
     	this.neighborhood = neighborhood;
     	this.ownership = ownership;
     	this.id = id;
-    	this.heatingSystemOptions = heatingSystemOptions;
-    	
+    	this.main = main;
+
     	//Get random age of heating system
     	J_HeatingSystemOptions hs = findFirst(heatingSystemOptions, x->x.getType() == heatingSystem_OL);
     	int ageHeatingSystem = (int) (Math.random() * (hs.getLifetime() + 1));
     	
     	//Initalize heating system
     	this.heatingSystem = new J_HeatingSystem(heatingSystem_OL, ageHeatingSystem, hs.getLifetime());
+    	this.heatingSystemInstalledThisYear = heatingSystem;
+    	
+    	//Set heat demand
+    	//TODO: Set based on actual household characteristics based on hestia or other data
+    	double mean = 32.5;						//GJ average heat demand
+    	double standardDeviation = 5.0; 		//based on spread
+    	
+    	double heatDemand_GJ = mean + standardDeviation * main.randomInstance.nextGaussian();
+    	this.heatDemand_kWh = heatDemand_GJ / 3.6 * 1000;
+    	
+    	//Set heating system options and their EAC
+    	f_setHeatingSystemOptions(heatingSystemOptions);
     }
     
-    //1.1 INITIALIZE RANKED HEATING SYSTEM LIST AS PART OF INITIALIZATION
-    public List<J_HeatingSystemOptions> f_rankHeatingSystems(List<J_HeatingSystemOptions> heatingSystemOptions) {
-    	heatingSystemOptions.sort(Comparator.comparingDouble(J_HeatingSystemOptions::getEAC));
-        
-    	if(id == 1) {
-	        System.out.println("Heating systems sorted EAC: " + heatingSystemOptions.get(0).getType() + " with TCO " + heatingSystemOptions.get(0).getEAC() + ", " + heatingSystemOptions.get(1).getType() + ", with EAC " + heatingSystemOptions.get(1).getEAC() + ", " + heatingSystemOptions.get(2).getType() + ", with EAC " + heatingSystemOptions.get(2).getEAC() + ", " + heatingSystemOptions.get(3).getType() + ", with EAC " + heatingSystemOptions.get(3).getEAC() + ", " + heatingSystemOptions.get(4).getType() + ", with EAC " + heatingSystemOptions.get(4).getEAC());
-        }
-        return heatingSystemOptions;
-    }
+    //1. Set heating system options
+    public void f_setHeatingSystemOptions(List<J_HeatingSystemOptions> heatingSystemOptions) {
+       	this.heatingSystemOptions = heatingSystemOptions;
+    	for( J_HeatingSystemOptions hso : this.heatingSystemOptions) {
+    		hso.f_calculateEAC(heatDemand_kWh);
+    	}
+	}    
     
-    //2. Update heating system age
-    public void f_updateHeatingSystemAge() {
-    	heatingSystem.updateAge();
-	}
-    
-    //3. Adopt heating method if out of lifetime
+    //2. Check if end of lifetime and adopt new heating system
     public boolean f_isAdoptingNewHeatingMethod() {
     	//Adopt only if end of lifetime
+    	heatingSystemInstalledThisYear = null;
     	if(heatingSystem.getAge() >= heatingSystem.getLifetime()) {
     		return true;
     	} else {
@@ -14446,23 +15169,29 @@ public class J_Household {
     	}
     }
     
-    //3. Adopt heating method if out of lifetime
+    //3. Rank and adopt heating method if out of lifetime
     public void f_adoptNewHeatingMethod() {
-    	//Adopt only if end of lifetime
-    	List<J_HeatingSystemOptions> rankedHeatingSystems = new ArrayList<>();
-    	rankedHeatingSystems = f_rankHeatingSystems(heatingSystemOptions);
+    	//Rank heating system options
+    	List<J_HeatingSystemOptions> rankedHeatingSystems = heatingSystemOptions; 
+    	rankedHeatingSystems.sort(Comparator.comparingDouble(J_HeatingSystemOptions::getEAC));
+    	
+    	//Adopt highest ranked option
     	OL_HeatingSystem type = rankedHeatingSystems.get(0).getType();
     	int age = 0;
     	int lifetime = rankedHeatingSystems.get(0).getLifetime();
     	heatingSystem = new J_HeatingSystem(type, age, lifetime);
+    	heatingSystemInstalledThisYear = heatingSystem;
+    	
+    	//Trace rank
+    	if(id == 1) {
+	        System.out.println("Heating systems sorted EAC: " + rankedHeatingSystems.get(0).getType() + " with TCO " + rankedHeatingSystems.get(0).getEAC() + ", " + rankedHeatingSystems.get(1).getType() + ", with EAC " + rankedHeatingSystems.get(1).getEAC() + ", " + rankedHeatingSystems.get(2).getType() + ", with EAC " + rankedHeatingSystems.get(2).getEAC() + ", " + rankedHeatingSystems.get(3).getType() + ", with EAC " + rankedHeatingSystems.get(3).getEAC() + ", " + rankedHeatingSystems.get(4).getType() + ", with EAC " + rankedHeatingSystems.get(4).getEAC());
+        }
     }
     
-    
-    //4. Update heating system options
-    public void f_setHeatingSystemOptions(List<J_HeatingSystemOptions> heatingSystemOptions) {
-    	this.heatingSystemOptions = heatingSystemOptions;
-    }
-    
+    //4. Update heating system age
+    public void f_updateHeatingSystemAge() {
+    	heatingSystem.updateAge();
+	}
     
     /*
     //1. INITIALIZATION
@@ -14814,6 +15543,14 @@ public class J_Household {
         return id;
     }
     
+    public List<J_HeatingSystemOptions> getHeatingSystemOptions() {
+    	return heatingSystemOptions;
+    }
+    
+    public J_HeatingSystem getHeatingSystemInstalledThisYear() {
+    	return heatingSystemInstalledThisYear;
+    }
+    
 	@Override
 	public String toString() {
 		return "Household (ID: " + id + " heating system, " + heatingSystem + ", ownership " + ownership + ", nbh name " + neighborhood.p_neighborhood + ", nbh index " + neighborhood.getIndex();
@@ -14888,58 +15625,108 @@ public class J_HeatingSystemOptions {
 	
 	private OL_HeatingSystem type;
 	private double CAPEX;
-	private double OPEX;
+	private double maintenanceCosts;
 	private int lifetime;
 	private double discountRate;
 	private double learningRate;
+	private OL_EnergyCarrier primaryEnergySource;
+	private OL_EnergyCarrier secondaryEnergySource;
+	private double efficiencyPrimarySource;
+	private double efficiencySecondarySource;	
+	private double fractionPrimaryEnergySource;
+	private double fractionSecondaryEnergySource;
+	private double primaryEnergySourceCosts_eurPerkWh;
+	private double secondaryEnergySourceCosts_eurPerkWh;
 	
 	private double TCO;					//Total Costs of Ownership
 	private double EAC;					//Equivalent Annual Costs - TCO / annuity factor to compare discounted costs per year
 	private boolean isPossible;
+	
+	private double initialUnitsInstalled;
+	private double unitsInstalled;
+	private double initialCAPEX;
+	
 	/**
     * Default constructor
     */
 	
-	public J_HeatingSystemOptions(OL_HeatingSystem type, double CAPEX, double OPEX, int lifetime, double discountRate, double learningRate) {
+	public J_HeatingSystemOptions(OL_HeatingSystem type, double CAPEX, double maintenanceCosts, int lifetime, double discountRate, double learningRate, OL_EnergyCarrier primaryEnergySource, OL_EnergyCarrier secondaryEnergySource, double efficiencyPrimarySource, double efficiencySecondarySource, double fractionPrimaryEnergySource, double fractionSecondaryEnergySource, double primaryEnergySourceCosts_eurPerkWh, double secondaryEnergySourceCosts_eurPerkWh) {
 		this.type = type;
 		this.CAPEX = CAPEX;
-		this.OPEX = OPEX;
+		this.initialCAPEX = CAPEX;
+		this.maintenanceCosts = maintenanceCosts;
 		this.lifetime = lifetime;
 		this.discountRate = discountRate;
 		this.learningRate = learningRate;
-		f_calculateEAC();
+		this.primaryEnergySource = primaryEnergySource;
+		this.secondaryEnergySource = secondaryEnergySource;
+		this.efficiencyPrimarySource = efficiencyPrimarySource;
+		this.efficiencySecondarySource = efficiencySecondarySource;	
+		this.fractionPrimaryEnergySource = fractionPrimaryEnergySource;
+		this.fractionSecondaryEnergySource = fractionSecondaryEnergySource;
+		this.primaryEnergySourceCosts_eurPerkWh = primaryEnergySourceCosts_eurPerkWh;
+		this.secondaryEnergySourceCosts_eurPerkWh = secondaryEnergySourceCosts_eurPerkWh;
 	}
 	
-	public void f_calculateEAC() {
-		//EquivalentAnnualCosts (EAC) = TCO / Annuity factor
-		//TCO = CAPEX + sum_over_time(OPEXt / (1+r)^t)	  
-		//Annuity Factor = 1 - (1 + r)^-n / r
-	    TCO = 0;
-		for(int t=0; t<lifetime; t++) {
+	public void f_calculateEAC(double heatDemand_kWh) {
+		TCO = 0;
+		double energyCosts_eurPerYear = 0.0;
+		
+		//1. Calculate energy source costs per year
+		energyCosts_eurPerYear += (primaryEnergySourceCosts_eurPerkWh * heatDemand_kWh * fractionPrimaryEnergySource / efficiencyPrimarySource);
+		if(secondaryEnergySource != NOT_APPLICABLE) {
+			energyCosts_eurPerYear += (secondaryEnergySourceCosts_eurPerkWh * heatDemand_kWh * fractionSecondaryEnergySource / efficiencySecondarySource);
+		}
+		
+	    for(int t=0; t<lifetime; t++) {
 	    	if(t==0) {		
 	    		//investment costs in 1st year
 	    		TCO += CAPEX;
 	    	}
 	    	//annual discounted opex in all years
-	    	TCO += OPEX / pow((1 + discountRate), t);
+	    	TCO += (maintenanceCosts + energyCosts_eurPerYear) / pow((1 + discountRate), t);
 	    }
 		
 		double annuityFactor = (1 - Math.pow(1 + discountRate, -lifetime)) / discountRate;
 		EAC = roundToInt(TCO / annuityFactor);
 		TCO = roundToInt(TCO);
+		
+		//EquivalentAnnualCosts (EAC) = TCO / Annuity factor
+				//TCO = CAPEX + sum_over_time(OPEXt / (1+r)^t)	  
+				//Annuity Factor = 1 - (1 + r)^-n / r
 	}
 	
-	
+	public void f_updateCapexFromLearningCurve(double cumulativeUnitsInstalled) {
+		this.unitsInstalled = cumulativeUnitsInstalled;
+		
+		// Calculate number of doublings (log2 of total production divided by initial production)
+		double doublings = Math.log(unitsInstalled / initialUnitsInstalled) / Math.log(2);
+		double capexLearningFactor = Math.pow(1-learningRate, doublings);
+
+		// Calculate current cost using learning curve formula
+		CAPEX = initialCAPEX * capexLearningFactor;
+		
+		//traceln("Heating system: " + type + ", CAPEX = " + roundToInt(CAPEX) + " EUR, cum. units installed = " + unitsInstalled + ", inital units installed = " + initialUnitsInstalled + ", initial CAPEX = " + initialCAPEX + " EUR, learning rate " + roundToDecimal(learningRate * 100,3) + "%, doublings = " + roundToDecimal(doublings,3) + " learning factor = " + roundToDecimal(capexLearningFactor, 13));
+		
+	/*
+	Cn​=C1​⋅nlog(learningRate)/log(2)
+	Where:
+	    CnCn​: Cost of the nth unit.
+	    C1C1​: Cost of the first unit (initial production cost).
+	    nn: Cumulative production quantity.
+	    learningRatelearningRate: Percentage by which cost reduces every time cumulative production doubles.
+	*/
+	}
 	
 	
 	
 	/**
 	* Setter methods
 	*/
-	public void setCAPEX(double CAPEX) {
-        this.CAPEX = CAPEX;
+	public void setInitialUnitsInstalled(double initialUnitsInstalled) {
+        this.initialUnitsInstalled = initialUnitsInstalled;
     }
-	
+
 	
 	/**
 	* Getter methods
@@ -14953,8 +15740,8 @@ public class J_HeatingSystemOptions {
         return CAPEX;
     }
 
-    public double getOPEX() {
-        return OPEX;
+    public double getMaintenanceCosts() {
+        return maintenanceCosts;
     }
 
     public int getLifetime() {
@@ -14980,7 +15767,7 @@ public class J_HeatingSystemOptions {
 
 	@Override
 	public String toString() {
-		return type + " (CAPEX: " + CAPEX + ", OPEX: " + OPEX + ", Lifetime: " + lifetime + ", Discount rate " + discountRate + ", Learning rate " + learningRate + ")";
+		return type + " (CAPEX: " + CAPEX + ", Maintenance costs: " + maintenanceCosts + ", Lifetime: " + lifetime + ", Discount rate " + discountRate + ", Learning rate " + learningRate + ")";
 	}
 
 }
