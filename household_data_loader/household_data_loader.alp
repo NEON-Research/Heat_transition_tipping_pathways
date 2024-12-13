@@ -1,0 +1,748 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+*************************************************
+	         AnyLogic Project File
+*************************************************
+-->
+<AnyLogicWorkspace WorkspaceVersion="1.9" AnyLogicVersion="8.9.2.202410172110" AlpVersion="8.9.2">
+<Model>
+	<Id>1734080351666</Id>
+	<Name><![CDATA[household_data_loader]]></Name>
+	<EngineVersion>6</EngineVersion>
+	<JavaPackageName><![CDATA[household_data_loader]]></JavaPackageName>
+	<ModelTimeUnit><![CDATA[Second]]></ModelTimeUnit>
+	
+	<Folders>
+		
+	</Folders>
+	<ActiveObjectClasses>
+		<!--   =========   Active Object Class   ========  -->
+		<ActiveObjectClass>
+			<Id>1734080351669</Id>
+			<Name><![CDATA[Main]]></Name>
+			<Import><![CDATA[import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+//import java.sql.ResultSet;
+import java.sql.SQLException;
+]]></Import>
+			<StartupCode><![CDATA[//J_APIConnection startConnection = new J_APIConnection(neighborhoodCodes);
+
+
+f_readDB(db_households);]]></StartupCode>
+			<Generic>false</Generic>
+			<GenericParameter>
+				<Id>1734080351675</Id>
+				<Name><![CDATA[1734080351675]]></Name>
+				<GenericParameterValue Class="CodeValue">
+					<Code><![CDATA[T extends Agent]]></Code>
+				</GenericParameterValue>
+				<GenericParameterLabel><![CDATA[Generic parameter:]]></GenericParameterLabel>
+			</GenericParameter>
+			<FlowChartsUsage>ENTITY</FlowChartsUsage>
+			<SamplesToKeep>100</SamplesToKeep>
+			<LimitNumberOfArrayElements>false</LimitNumberOfArrayElements>
+			<ElementsLimitValue>100</ElementsLimitValue>
+			<MakeDefaultViewArea>true</MakeDefaultViewArea>
+			<SceneGridColor/>
+			<SceneBackgroundColor/>
+			<SceneSkybox>null</SceneSkybox>
+			<AgentProperties>
+				<EnvironmentDefinesInitialLocation>true</EnvironmentDefinesInitialLocation>
+				<RotateAnimationTowardsMovement>true</RotateAnimationTowardsMovement>
+				<RotateAnimationVertically>false</RotateAnimationVertically>
+				<VelocityCode Class="CodeUnitValue">
+					<Code><![CDATA[10]]></Code>
+					<Unit Class="SpeedUnits"><![CDATA[MPS]]></Unit>
+				</VelocityCode>
+				<PhysicalLength Class="CodeUnitValue">
+					<Code><![CDATA[1]]></Code>
+					<Unit Class="LengthUnits"><![CDATA[METER]]></Unit>
+				</PhysicalLength>
+				<PhysicalWidth Class="CodeUnitValue">
+					<Code><![CDATA[1]]></Code>
+					<Unit Class="LengthUnits"><![CDATA[METER]]></Unit>
+				</PhysicalWidth>
+				<PhysicalHeight Class="CodeUnitValue">
+					<Code><![CDATA[1]]></Code>
+					<Unit Class="LengthUnits"><![CDATA[METER]]></Unit>
+				</PhysicalHeight>
+			</AgentProperties>
+			<EnvironmentProperties>
+					<EnableSteps>false</EnableSteps>
+					<StepDurationCode Class="CodeUnitValue">
+						<Code><![CDATA[1.0]]></Code>
+						<Unit Class="TimeUnits"><![CDATA[SECOND]]></Unit>
+					</StepDurationCode>
+					<SpaceType>CONTINUOUS</SpaceType>
+					<WidthCode><![CDATA[500]]></WidthCode>
+					<HeightCode><![CDATA[500]]></HeightCode>
+					<ZHeightCode><![CDATA[0]]></ZHeightCode>
+					<ColumnsCountCode><![CDATA[100]]></ColumnsCountCode>
+					<RowsCountCode><![CDATA[100]]></RowsCountCode>
+					<NeigborhoodType>MOORE</NeigborhoodType>
+					<LayoutType>USER_DEF</LayoutType>
+					<NetworkType>USER_DEF</NetworkType>
+					<ConnectionsPerAgentCode><![CDATA[2]]></ConnectionsPerAgentCode>
+					<ConnectionsRangeCode><![CDATA[50]]></ConnectionsRangeCode>
+					<NeighborLinkFractionCode><![CDATA[0.95]]></NeighborLinkFractionCode>
+					<MCode><![CDATA[10]]></MCode>
+			</EnvironmentProperties>
+			<DatasetsCreationProperties>
+				<AutoCreate>true</AutoCreate>
+					<OccurrenceAtTime>true</OccurrenceAtTime>
+					<OccurrenceDate>1734163200000</OccurrenceDate>
+					<OccurrenceTime Class="CodeUnitValue">
+						<Code><![CDATA[0]]></Code>
+						<Unit Class="TimeUnits"><![CDATA[SECOND]]></Unit>
+					</OccurrenceTime>
+					<RecurrenceCode Class="CodeUnitValue">
+						<Code><![CDATA[1]]></Code>
+						<Unit Class="TimeUnits"><![CDATA[SECOND]]></Unit>
+					</RecurrenceCode>
+			</DatasetsCreationProperties>
+			<ScaleRuler>
+				<Id>1734080351672</Id>
+				<Name><![CDATA[scale]]></Name>
+				<X>0</X><Y>-150</Y>
+				<PublicFlag>false</PublicFlag>
+				<PresentationFlag>false</PresentationFlag>
+				<ShowLabel>false</ShowLabel>
+				<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
+				<Length>100</Length>
+				<Rotation>0</Rotation>
+				<ScaleType>BASED_ON_LENGTH</ScaleType>
+				<ModelLength>10</ModelLength>
+				<LengthUnits>METER</LengthUnits>
+				<Scale>10</Scale>
+				<InheritedFromParentAgentType>true</InheritedFromParentAgentType>
+			</ScaleRuler>
+			<CurrentLevel>1734080351676</CurrentLevel>
+			<ConnectionsId>1734080351670</ConnectionsId>
+			<Variables>
+				<Variable Class="PlainVariable">
+					<Id>1734081175545</Id>
+					<Name><![CDATA[neighborhoodCodes]]></Name>
+					<X>100</X><Y>50</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[String[]]]></Type>        
+						<InitialValue Class="CodeValue">
+							<Code><![CDATA[{"BU00900013",
+"BU00900014",
+"BU00900015",
+"BU00900016",
+}]]></Code>
+						</InitialValue>
+					</Properties>
+				</Variable>
+			</Variables>
+			<Functions>
+				<Function AccessType="default" StaticFunction="false">
+					<ReturnModificator>VOID</ReturnModificator>
+					<ReturnType><![CDATA[double]]></ReturnType>
+					<Id>1734087915803</Id>
+					<Name><![CDATA[f_readDB]]></Name>
+					<X>100</X><Y>150</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Parameter>
+						<Name><![CDATA[myDatabase]]></Name>
+						<Type><![CDATA[Database]]></Type>
+					</Parameter>
+					<Body><![CDATA[/*// Define the SQL query
+String query = "SELECT * FROM households";
+
+// Execute the query and get the ResultSet
+ResultSet resultSet = myDatabase.getResultSet(query);
+//ResultSet resultSet = myDatabase.getTableResultSet(tableName, listOfFields, keyField, keyFieldValue);
+
+//List<J_Household> households = new ArrayList<>();
+
+try {
+    // Iterate through the results
+    while (resultSet.next()) {
+        int id = resultSet.getInt("id");
+        String characteristic1 = resultSet.getString("characteristic1");
+        String characteristic2 = resultSet.getString("characteristic2");
+        // Retrieve other characteristics as needed
+
+        // Create an instance of J_Household
+        //J_Household household = new J_Household(id, characteristic1, characteristic2);
+        // Add the instance to the list
+       // households.add(household);
+    }
+} 
+catch (SQLException e) {
+    e.printStackTrace();
+} 
+finally {
+    // Close the ResultSet
+    try {
+        if (resultSet != null) {
+            resultSet.close();
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+}
+
+// Now you have a list of J_Household instances
+
+
+// Ensure the database is connected
+if (!myDatabase.isConnected()) {
+    myDatabase.connect();
+}
+*/
+// Get the database connection
+        Connection connection = getEngine().getModelDatabase().getConnection();
+
+        // Get the metadata
+        DatabaseMetaData metaData = connection.getMetaData();
+        
+traceln(metaData.toString());
+        // Retrieve the table names
+        /*ResultSet tables = metaData.getTables(null, null, "%", new String[] {"TABLE"});
+        while (tables.next()) {
+            String tableName = tables.getString("TABLE_NAME");
+            System.out.println("Table Name: " + tableName);
+        }*/
+
+// Define the SQL query
+String query = "SELECT * FROM households";
+
+// Execute the query and get the ResultSet
+System.out.println("Executing query: " + query);
+ResultSet resultSet = myDatabase.getResultSet(query);
+System.out.println("Query executed successfully.");
+
+// Check if the ResultSet is not null
+    if (resultSet != null) {
+        System.out.println("ResultSet is not null.");
+        traceln(resultSet.toString());
+        // Iterate through the results
+        //resultSet.last();
+		//int rowCount = resultSet.getRow();
+		//resultSet.beforeFirst();
+		//System.out.println("Number of rows: " + resultSet.last());
+        
+        while (resultSet.next()) {
+        	traceln("in while loop");
+            int id = resultSet.getInt("numid");
+            String characteristic1 = resultSet.getString("postcode");
+            String characteristic2 = resultSet.getString("wijkcode");
+            // Retrieve other characteristics as needed
+			//resultSet.
+            // Print the retrieved data for debugging
+            System.out.println("ID: " + id + ", postcode 1: " + characteristic1 + ", wijkcode 2: " + characteristic2);
+
+            // Create an instance of J_Household
+            // J_Household household = new J_Household(id, characteristic1, characteristic2);
+            // Add the instance to the list
+            // households.add(household);
+        }
+    } else {
+        System.out.println("ResultSet is null.");
+    }
+resultSet.close();]]></Body>
+				</Function>
+			</Functions>
+			<Connectivity>
+				<Database>
+					<Id>1734087040814</Id>
+					<Name><![CDATA[db_households]]></Name>
+					<X>100</X><Y>100</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<DatabaseType>OTHER</DatabaseType>
+					<ConnectionURL><![CDATA[jdbc:sqlite:household_data.db]]></ConnectionURL>
+					<ConnectOnStartup>false</ConnectOnStartup>
+					<DatabaseName><![CDATA[]]></DatabaseName>
+					<Host><![CDATA[localhost]]></Host>
+					<JdbcDriverClassName><![CDATA[net.sourceforge.jtds.jdbc.Driver]]></JdbcDriverClassName>
+					<Login><![CDATA[]]></Login>
+					<Password><![CDATA[]]></Password>
+				</Database>
+			</Connectivity>
+			<AgentLinks>
+				<AgentLink>
+					<Id>1734080351670</Id>
+					<Name><![CDATA[connections]]></Name>
+					<X>50</X><Y>-50</Y>
+					<Label><X>15</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<HandleReceiveInConnections>false</HandleReceiveInConnections>
+					<AgentLinkType>COLLECTION_OF_LINKS</AgentLinkType>
+					<AgentLinkBidirectional>true</AgentLinkBidirectional>
+					<MessageType><![CDATA[Object]]></MessageType>
+					<LineStyle>SOLID</LineStyle>
+					<LineWidth>1</LineWidth>
+					<LineColor>-16777216</LineColor>
+					<LineZOrder>UNDER_AGENTS</LineZOrder>
+					<LineArrow>NONE</LineArrow>
+					<LineArrowPosition>END</LineArrowPosition>
+				</AgentLink>
+			</AgentLinks>
+
+
+			<Presentation>
+				<Level>
+					<Id>1734080351676</Id>
+					<Name><![CDATA[level]]></Name>
+					<X>0</X><Y>0</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
+					<Z>0</Z>
+					<LevelVisibility>DIM_NON_CURRENT</LevelVisibility>
+
+
+				</Level>
+			</Presentation>
+
+		</ActiveObjectClass>
+	</ActiveObjectClasses>
+	<DifferentialEquationsMethod>EULER</DifferentialEquationsMethod>
+	<MixedEquationsMethod>RK45_NEWTON</MixedEquationsMethod>
+	<AlgebraicEquationsMethod>MODIFIED_NEWTON</AlgebraicEquationsMethod>
+	<AbsoluteAccuracy>1.0E-5</AbsoluteAccuracy>
+	<FixedTimeStep>0.001</FixedTimeStep>
+	<RelativeAccuracy>1.0E-5</RelativeAccuracy>
+	<TimeAccuracy>1.0E-5</TimeAccuracy>
+	<Frame>
+		<Width>1000</Width>
+		<Height>600</Height>
+	</Frame>
+	<Database>
+		<Logging>false</Logging>
+		<AutoExport>false</AutoExport>
+		<ShutdownCompact>false</ShutdownCompact>
+		<ImportSettings>
+		</ImportSettings>
+		<ExportSettings>
+		</ExportSettings>
+	</Database>
+
+	<RunConfiguration ActiveObjectClassId="1734080351669">
+		<Id>1734080351695</Id>
+		<Name><![CDATA[RunConfiguration]]></Name>
+		<MaximumMemory>512</MaximumMemory>
+		<ModelTimeProperties>
+			<StopOption><![CDATA[Stop at specified time]]></StopOption>
+			<InitialDate><![CDATA[1734048000000]]></InitialDate>	
+			<InitialTime><![CDATA[0.0]]></InitialTime>	
+			<FinalDate><![CDATA[1736726400000]]></FinalDate>	
+			<FinalTime><![CDATA[100.0]]></FinalTime>	
+		</ModelTimeProperties>
+		<AnimationProperties>
+			<StopNever>true</StopNever>
+			<ExecutionMode>realTimeScaled</ExecutionMode>
+			<RealTimeScale>1.0</RealTimeScale>
+			<EnableZoomAndPanning>true</EnableZoomAndPanning>
+			<EnableDeveloperPanel>false</EnableDeveloperPanel>
+			<ShowDeveloperPanelOnStart>false</ShowDeveloperPanelOnStart>
+		</AnimationProperties>
+		<Inputs>		
+		</Inputs>
+		<Outputs>
+		</Outputs>
+	</RunConfiguration>
+	<Experiments>	
+		<!--   =========   Simulation Experiment   ========  -->
+		<SimulationExperiment ActiveObjectClassId="1734080351669">
+			<Id>1734080351692</Id>
+			<Name><![CDATA[Simulation]]></Name>
+			<CommandLineArguments><![CDATA[]]></CommandLineArguments>
+			<MaximumMemory>512</MaximumMemory>
+			<RandomNumberGenerationType>fixedSeed</RandomNumberGenerationType>
+			<CustomGeneratorCode>new Random()</CustomGeneratorCode>
+			<SeedValue>1</SeedValue>
+			<SelectionModeForSimultaneousEvents>LIFO</SelectionModeForSimultaneousEvents>
+			<VmArgs><![CDATA[]]></VmArgs>
+			<LoadRootFromSnapshot>false</LoadRootFromSnapshot>
+
+			<Presentation>
+				<Text>
+					<Id>1734080351694</Id>
+					<Name><![CDATA[text]]></Name>
+					<X>50</X><Y>30</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Z>0</Z>
+					<Rotation>0.0</Rotation>
+					<Color>-12490271</Color>
+					<Text><![CDATA[household_data_loader]]></Text>
+					<Font>
+						<Name>SansSerif</Name>
+						<Size>24</Size>
+						<Style>0</Style>
+					</Font>
+					<Alignment>LEFT</Alignment>
+				</Text>
+			</Presentation>
+
+			<Parameters>			
+			</Parameters>			
+			<PresentationProperties>
+				<EnableZoomAndPanning>true</EnableZoomAndPanning>
+				<ExecutionMode><![CDATA[realTimeScaled]]></ExecutionMode>
+				<Title><![CDATA[household_data_loader : Simulation]]></Title>	
+				<EnableDeveloperPanel>true</EnableDeveloperPanel>
+				<ShowDeveloperPanelOnStart>false</ShowDeveloperPanelOnStart>
+				<RealTimeScale>1.0</RealTimeScale>
+			</PresentationProperties>
+			<ModelTimeProperties>
+				<StopOption><![CDATA[Never]]></StopOption>
+				<InitialDate><![CDATA[1734048000000]]></InitialDate>	
+				<InitialTime><![CDATA[0.0]]></InitialTime>	
+				<FinalDate><![CDATA[1736726400000]]></FinalDate>	
+				<FinalTime><![CDATA[100.0]]></FinalTime>	
+			</ModelTimeProperties>
+			<BypassInitialScreen>true</BypassInitialScreen>
+		</SimulationExperiment>	
+	</Experiments>
+	<JavaClasses>
+		<!--   =========   Java Class   ========  -->
+		<JavaClass>
+			<Id>1734080383030</Id>
+			<Name><![CDATA[J_APIDownloader]]></Name>
+			<ExcludeFromBuild>true</ExcludeFromBuild>
+			<Text><![CDATA[/**
+ * J_APIDownloader
+ */	
+import okhttp3.*;
+import java.io.FileWriter;
+import java.io.IOException;
+
+
+public class J_APIDownloader {
+    private static final OkHttpClient client = new OkHttpClient();
+
+    public static void main(String[] args) throws IOException {
+        for (String neighborhoodId : getNeighborhoodIds()) {
+            String apiUrl = "https://example.com/api/neighborhood?id=" + neighborhoodId;
+            String response = fetchFromAPI(apiUrl);
+            saveToFile(neighborhoodId, response); // Save as a JSON file
+        }
+    }
+
+    private static String fetchFromAPI(String apiUrl) throws IOException {
+        Request request = new Request.Builder().url(apiUrl).build();
+        try (Response response = client.newCall(request).execute()) {
+            if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
+            return response.body().string();
+        }
+    }
+
+    private static void saveToFile(String neighborhoodId, String data) throws IOException {
+        try (FileWriter fileWriter = new FileWriter("data/neighborhood_" + neighborhoodId + ".json")) {
+            fileWriter.write(data);
+        }
+    }
+
+    private static String[] getNeighborhoodIds() {
+        return new String[]{"1", "2", "3"}; // Replace with dynamic IDs
+    }
+
+	@Override
+	public String toString() {
+		return super.toString();
+	}
+
+}]]></Text>
+		</JavaClass>
+		<!--   =========   Java Class   ========  -->
+		<JavaClass>
+			<Id>1734080614209</Id>
+			<Name><![CDATA[J_APIConnection]]></Name>
+			<Text><![CDATA[/**
+ * J_APIConnection
+ */	
+
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.IOException;
+import java.io.FileWriter;
+import org.json.JSONObject; // for JSON parsing
+import org.json.JSONArray;
+import java.util.ArrayList;
+import java.util.List;
+
+public class J_APIConnection  {
+
+    /**
+     * Default constructor
+     */
+    public J_APIConnection(String[] neighborhoodCodes) {
+    	
+    	//Generate households based on included neighborhoods
+    	for (String neighborhoodID : neighborhoodCodes) {	
+    		try {
+    			// Build the URL with the comma-separated gemeentecodes
+    			//String baseUrl = "https://ds.vboenergie.commondatafactory.nl/list/?match-gemeentecode=";
+    		    //String url = baseUrl + gemeentecode;
+    		    String baseUrl = "https://ds.vboenergie.commondatafactory.nl/list/?match-buurtcode=";
+    		    String url = baseUrl + neighborhoodID;
+    			//traceln(url);
+    		   
+    		   // Create an HttpURLConnection and set the request method
+    			HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+    			connection.setRequestMethod("GET");
+
+    			// Get the response code
+    			int responseCode = connection.getResponseCode();
+
+    			if (responseCode == HttpURLConnection.HTTP_OK) {
+    				// Read the response data
+    				BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+    				String inputLine;
+    				StringBuilder response = new StringBuilder();
+
+    				while ((inputLine = in.readLine()) != null) {
+    					response.append(inputLine);
+    				}
+    				in.close();
+
+    				// Process the response data as needed
+    				//String responseData = response.toString();
+    				//System.out.println("API Response for buurtcode " + x.p_neighborhoodCode + ":\n" + response.toString());
+
+    				// Parse the response (e.g., as JSON)
+    				saveToFile(neighborhoodID, response.toString());
+    		        JSONArray jsonArray = new JSONArray(response.toString()); // Use JSONArray for JSON data
+    		        //traceln(jsonArray);
+    		        
+    		        // Loop through the JSON array and create agents
+    				for (int i = 0; i < jsonArray.length(); i++) {
+    		    		JSONObject jsonObject = jsonArray.getJSONObject(i);
+    					
+    					//Make households just for gebruiksdoel woonfuctie				
+    					if(jsonObject.getString("gebruiksdoelen").contains("woonfunctie")){
+    			   			// Create agents and set their properties based on JSON data
+    						//f_getHouseholds(jsonObject, x);
+    					}
+    					//for industry
+    					/*
+    					else if (jsonObject.getString("gebruiksdoelen").contains("industriefunctie")){
+    						f_getIndustrySites(jsonObject, x);
+    					}
+    					else {
+    						f_getUtilityObjects(jsonObject, x);
+    					}*/			
+    				}
+    				
+    			} 
+    			else {
+    				System.out.println("API request for buurtcode " + neighborhoodID + " failed with status code: " + responseCode);
+    			}
+    		} catch (Exception e) {
+    		    e.printStackTrace();
+    		}
+    	}  	
+    }
+
+    //Save to file
+    private static void saveToFile(String neighborhoodId, String data) throws IOException {
+        try (FileWriter fileWriter = new FileWriter("C:\\Users\\s124129\\Documents\\GitHub\\Heat_transition_tipping_pathways\\household_data_loader\\neighborhood_" + neighborhoodId + ".json")) {
+        //	File file = new File("data/neighborhood_BU00900013.json");
+            fileWriter.write(data);
+        }
+    }
+    
+	@Override
+	public String toString() {
+		return super.toString();
+	}
+}]]></Text>
+		</JavaClass>
+		<!--   =========   Java Class   ========  -->
+		<JavaClass>
+			<Id>1734082775598</Id>
+			<Name><![CDATA[J_JSONToDatabase]]></Name>
+			<ExcludeFromBuild>true</ExcludeFromBuild>
+			<Text><![CDATA[/**
+ * J_JSONToDatabase
+ */	
+
+/*
+import com.fasterxml.jackson.databind.*;
+import java.sql.*;
+import java.io.File;
+*/
+public class J_JSONToDatabase {
+	
+	public J_JSONToDatabase() {
+		private static final ObjectMapper objectMapper = new ObjectMapper();
+		private static final String DB_URL = "jdbc:sqlite:households.db";
+
+	    public static void main(String[] args) throws Exception {
+	        try (Connection conn = DriverManager.getConnection(DB_URL)) {
+	            createTable(conn);
+	            for (File file : new File("data").listFiles()) {
+	                insertDataFromJSON(conn, file);
+	            }
+	        }
+	    }
+
+    private static void createTable(Connection conn) throws SQLException {
+        String createTableSQL = "CREATE TABLE IF NOT EXISTS households (" +
+                                "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                                "neighborhood_id INT, " +
+                                "attribute1 TEXT, " +
+                                "attribute2 TEXT, " +
+                                "attribute15 TEXT)";
+        conn.createStatement().execute(createTableSQL);
+    }
+
+    private static void insertDataFromJSON(Connection conn, File file) throws Exception {
+        int neighborhoodId = extractNeighborhoodId(file.getName()); // Custom logic for ID extraction
+        J_Household[] households = objectMapper.readValue(file, J_Household[].class);
+        String insertSQL = "INSERT INTO households (neighborhood_id, attribute1, attribute2, attribute15) VALUES (?, ?, ?, ?)";
+
+        try (PreparedStatement stmt = conn.prepareStatement(insertSQL)) {
+            for (J_Household household : households) {
+                stmt.setInt(1, neighborhoodId);
+                stmt.setString(2, household.getAttribute1());
+                stmt.setString(3, household.getAttribute2());
+                stmt.setString(4, household.getAttribute15());
+                stmt.addBatch();
+            }
+            stmt.executeBatch();
+        }
+    }
+
+    private static int extractNeighborhoodId(String fileName) {
+        return Integer.parseInt(fileName.replace("neighborhood_", "").replace(".json", ""));
+    }
+}
+
+
+	@Override
+	public String toString() {
+		return super.toString();
+	}
+}]]></Text>
+		</JavaClass>
+		<!--   =========   Java Class   ========  -->
+		<JavaClass>
+			<Id>1734092951959</Id>
+			<Name><![CDATA[J_Household]]></Name>
+			<Text><![CDATA[/**
+ * J_Household
+ */	
+public class J_Household {
+	
+	private int numid;
+	private int pid;
+	private String postcode;
+	private String energieklasse;
+
+    /**
+     * Default constructor
+     */
+    public J_Household() {
+    }
+
+    
+    
+    /**
+     * Setters
+     */
+    
+    public void setNumid(int numid) {
+    	this.numid = numid;
+    }
+    
+    public void setPid(int pid) {
+    	this.numid = pid;
+    }
+    
+    public void setPostcode(String postcode) {
+    	this.postcode = postcode;
+    }
+    
+    public void setEnergieklasse(String energieklasse ) {
+    	this.energieklasse = energieklasse;
+    }
+    
+	@Override
+	public String toString() {
+		return super.toString();
+	}
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+]]></Text>
+		</JavaClass>
+	</JavaClasses>
+	<ModelResources>
+		<Resource>
+			<Path><![CDATA[json-20230618.jar]]></Path>
+			<ReferencedFromUserCode>false</ReferencedFromUserCode>
+			<Location>FILE_SYSTEM</Location>
+		</Resource>
+		<Resource>
+			<Path><![CDATA[sqlite-jdbc-3.47.1.0.jar]]></Path>
+			<ReferencedFromUserCode>false</ReferencedFromUserCode>
+			<Location>FILE_SYSTEM</Location>
+		</Resource>
+	</ModelResources>
+    <RequiredLibraryReference>
+		<LibraryName><![CDATA[com.anylogic.libraries.modules.markup_descriptors]]></LibraryName>
+		<VersionMajor>1</VersionMajor>
+		<VersionMinor>0</VersionMinor>
+		<VersionBuild>0</VersionBuild>
+    </RequiredLibraryReference>
+	<ClassPathEntry>
+		<ResourceReference>
+			<PackageName><![CDATA[household_data_loader]]></PackageName>
+			<ClassName><![CDATA[json-20230618.jar]]></ClassName>
+		</ResourceReference>
+		<Imported>true</Imported>
+		<Folder>false</Folder>
+	</ClassPathEntry>
+	<ClassPathEntry>
+		<ResourceReference>
+			<PackageName><![CDATA[household_data_loader]]></PackageName>
+			<ClassName><![CDATA[sqlite-jdbc-3.47.1.0.jar]]></ClassName>
+		</ResourceReference>
+		<Imported>true</Imported>
+		<Folder>false</Folder>
+	</ClassPathEntry>
+</Model>
+</AnyLogicWorkspace>
