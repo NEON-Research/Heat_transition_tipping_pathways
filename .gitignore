@@ -1,10 +1,11 @@
-
 # Created by https://www.toptal.com/developers/gitignore/api/python,jupyternotebooks
 # Edit at https://www.toptal.com/developers/gitignore?templates=python,jupyternotebooks
 
 ### JupyterNotebooks ###
 # gitignore template for Jupyter Notebooks
 # website: http://jupyter.org/
+
+
 
 .ipynb_checkpoints
 */.ipynb_checkpoints/*
@@ -152,5 +153,8 @@ dmypy.json
 
 # Cython debug symbols
 cython_debug/
+
+# Ignore large_files folder in household_data_loader
+household_data_loader/large_files/
 
 # End of https://www.toptal.com/developers/gitignore/api/python,jupyternotebooks

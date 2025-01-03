@@ -138,6 +138,21 @@ f_readDB(db_households);]]></StartupCode>
 						</InitialValue>
 					</Properties>
 				</Variable>
+				<Variable Class="CollectionVariable">
+					<Id>1734353507960</Id>
+					<Name><![CDATA[c_households]]></Name>
+					<X>100</X><Y>220</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" AccessType="public" StaticVariable="false">
+						<CollectionClass><![CDATA[ArrayList]]></CollectionClass>
+						<ElementClass><![CDATA[J_Household]]></ElementClass>
+						<ValueElementClass><![CDATA[String]]></ValueElementClass>
+					</Properties>
+
+				</Variable>
 			</Variables>
 			<Functions>
 				<Function AccessType="default" StaticFunction="false">
@@ -154,102 +169,88 @@ f_readDB(db_households);]]></StartupCode>
 						<Name><![CDATA[myDatabase]]></Name>
 						<Type><![CDATA[Database]]></Type>
 					</Parameter>
-					<Body><![CDATA[/*// Define the SQL query
-String query = "SELECT * FROM households";
+					<Body><![CDATA[myDatabase.connect();
+System.out.println("Database connected successfully");
 
-// Execute the query and get the ResultSet
-ResultSet resultSet = myDatabase.getResultSet(query);
-//ResultSet resultSet = myDatabase.getTableResultSet(tableName, listOfFields, keyField, keyFieldValue);
+String query = "SELECT * FROM households WHERE gebruiksdoelen = 'woonfunctie'";
 
-//List<J_Household> households = new ArrayList<>();
-
-try {
-    // Iterate through the results
-    while (resultSet.next()) {
-        int id = resultSet.getInt("id");
-        String characteristic1 = resultSet.getString("characteristic1");
-        String characteristic2 = resultSet.getString("characteristic2");
-        // Retrieve other characteristics as needed
-
-        // Create an instance of J_Household
-        //J_Household household = new J_Household(id, characteristic1, characteristic2);
-        // Add the instance to the list
-       // households.add(household);
-    }
-} 
-catch (SQLException e) {
-    e.printStackTrace();
-} 
-finally {
-    // Close the ResultSet
-    try {
-        if (resultSet != null) {
-            resultSet.close();
-        }
-    } catch (SQLException e) {
-        e.printStackTrace();
-    }
+ResultSet rs = myDatabase.getResultSet( query );
+if (!rs.isBeforeFirst()) {
+    System.out.println("No data found for the query");
+} else {
+	while( rs.next() ) {
+		f_createHouseholds(rs);
+	}
 }
 
-// Now you have a list of J_Household instances
 
+rs.close();
+]]></Body>
+				</Function>
+				<Function AccessType="default" StaticFunction="false">
+					<ReturnModificator>VOID</ReturnModificator>
+					<ReturnType><![CDATA[double]]></ReturnType>
+					<Id>1734353535923</Id>
+					<Name><![CDATA[f_createHouseholds]]></Name>
+					<X>110</X><Y>170</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Parameter>
+						<Name><![CDATA[rs]]></Name>
+						<Type><![CDATA[ResultSet]]></Type>
+					</Parameter>
+					<Body><![CDATA[int numid = rs.getInt("numid");
+int pid = rs.getInt("pid");
+int vid = rs.getInt("vid");
+String lid = rs.getString("lid");
+String sid = rs.getString("sid");
+String postcode = rs.getString("postcode");
+String straat = rs.getString("straat");
+String woonplaatsnaam = rs.getString("woonplaatsnaam");
+int huisnummer = rs.getInt("huisnummer");
+String huisletter = rs.getString("huisletter");
+String huisnummertoevoeging = rs.getString("huisnummertoevoeging");
+int oppervlakte = rs.getInt("oppervlakte");
+int woningequivalent = rs.getInt("woningequivalent");
+String gebruiksdoelen = rs.getString("gebruiksdoelen");
+int pand_bouwjaar = rs.getInt("pand_bouwjaar");
+int pc6_gemiddelde_woz_waarde_woning = rs.getInt("pc6_gemiddelde_woz_waarde_woning");
+int gemiddelde_gemeente_woz = rs.getInt("gemiddelde_gemeente_woz");
+int pc6_eigendomssituatie_perc_koop = rs.getInt("pc6_eigendomssituatie_perc_koop");
+int pc6_eigendomssituatie_perc_huur = rs.getInt("pc6_eigendomssituatie_perc_huur");
+int pc6_eigendomssituatie_aantal_woningen_corporaties = rs.getInt("pc6_eigendomssituatie_aantal_woningen_corporaties");
+String netbeheerder = rs.getString("netbeheerder");
+String energieklasse = rs.getString("energieklasse");
+String woning_type = rs.getString("woning_type");
+String sbicode = rs.getString("sbicode");
+int gas_ean_count = rs.getInt("gas_ean_count");
+int p6_grondbeslag_m2 = rs.getInt("p6_grondbeslag_m2");
+int p6_gasm3_2023 = rs.getInt("p6_gasm3_2023");
+int p6_gas_aansluitingen_2023 = rs.getInt("p6_gas_aansluitingen_2023");
+int p6_kwh_2023 = rs.getInt("p6_kwh_2023");
+int p6_kwh_productie_2023 = rs.getInt("p6_kwh_productie_2023");
+String point = rs.getString("point");
+String buurtcode = rs.getString("buurtcode");
+String buurtnaam = rs.getString("buurtnaam");
+String wijkcode = rs.getString("wijkcode");
+String wijknaam = rs.getString("wijknaam");
+String gemeentecode = rs.getString("gemeentecode");
+String gemeentenaam = rs.getString("gemeentenaam");
+String provincienaam = rs.getString("provincienaam");
+String provinciecode = rs.getString("provinciecode");
 
-// Ensure the database is connected
-if (!myDatabase.isConnected()) {
-    myDatabase.connect();
-}
-*/
-// Get the database connection
-        Connection connection = getEngine().getModelDatabase().getConnection();
-
-        // Get the metadata
-        DatabaseMetaData metaData = connection.getMetaData();
-        
-traceln(metaData.toString());
-        // Retrieve the table names
-        /*ResultSet tables = metaData.getTables(null, null, "%", new String[] {"TABLE"});
-        while (tables.next()) {
-            String tableName = tables.getString("TABLE_NAME");
-            System.out.println("Table Name: " + tableName);
-        }*/
-
-// Define the SQL query
-String query = "SELECT * FROM households";
-
-// Execute the query and get the ResultSet
-System.out.println("Executing query: " + query);
-ResultSet resultSet = myDatabase.getResultSet(query);
-System.out.println("Query executed successfully.");
-
-// Check if the ResultSet is not null
-    if (resultSet != null) {
-        System.out.println("ResultSet is not null.");
-        traceln(resultSet.toString());
-        // Iterate through the results
-        //resultSet.last();
-		//int rowCount = resultSet.getRow();
-		//resultSet.beforeFirst();
-		//System.out.println("Number of rows: " + resultSet.last());
-        
-        while (resultSet.next()) {
-        	traceln("in while loop");
-            int id = resultSet.getInt("numid");
-            String characteristic1 = resultSet.getString("postcode");
-            String characteristic2 = resultSet.getString("wijkcode");
-            // Retrieve other characteristics as needed
-			//resultSet.
-            // Print the retrieved data for debugging
-            System.out.println("ID: " + id + ", postcode 1: " + characteristic1 + ", wijkcode 2: " + characteristic2);
-
-            // Create an instance of J_Household
-            // J_Household household = new J_Household(id, characteristic1, characteristic2);
-            // Add the instance to the list
-            // households.add(household);
-        }
-    } else {
-        System.out.println("ResultSet is null.");
-    }
-resultSet.close();]]></Body>
+J_Household household = new J_Household(
+	numid,
+	pid,
+	vid,
+	oppervlakte,
+	woningequivalent,
+	pand_bouwjaar,
+	energieklasse
+	);
+c_households.add(household);]]></Body>
 				</Function>
 			</Functions>
 			<Connectivity>
@@ -651,13 +652,23 @@ public class J_Household {
 	
 	private int numid;
 	private int pid;
-	private String postcode;
+	private int vid;
+	private int oppervlakte;
+	private int woningequivalent;
+	private int pand_bouwjaar;
 	private String energieklasse;
-
+	
     /**
      * Default constructor
      */
-    public J_Household() {
+    public J_Household(int numid, int pid, int vid, int oppervlakte, int woningequivaltent, int pand_bouwjaar, String energieklasse) {
+    	this.numid = numid;
+    	this.pid = pid;
+    	this.vid = vid;
+    	this.oppervlakte = oppervlakte;
+    	this.woningequivalent = woningequivaltent;
+    	this.pand_bouwjaar = pand_bouwjaar;
+    	this.energieklasse = energieklasse;
     }
 
     
@@ -673,11 +684,7 @@ public class J_Household {
     public void setPid(int pid) {
     	this.numid = pid;
     }
-    
-    public void setPostcode(String postcode) {
-    	this.postcode = postcode;
-    }
-    
+        
     public void setEnergieklasse(String energieklasse ) {
     	this.energieklasse = energieklasse;
     }
