@@ -1860,6 +1860,27 @@ pauseSimulation();
 						</ParameterEditor>
 					</Properties>                 
 				</Variable>
+				<Variable Class="Parameter">
+					<Id>1736855776222</Id>
+					<Name><![CDATA[p_connectionObligationNewDistrictHeating]]></Name>
+					<X>-200</X><Y>200</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[boolean]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<ParameterEditor>
+							<Id>1736855776220</Id>
+							<EditorContolType>CHECK_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
 				<Variable Class="CollectionVariable">
 					<Id>1730389266762</Id>
 					<Name><![CDATA[c_households]]></Name>
@@ -2489,6 +2510,8 @@ data_hybridHeatPumps_installedPerYear.add(v_hybridHeatPumps_installedLastYear);
 
 //AVERAGE EAC
 int households = c_households.size();
+int householdsNGBlPossible = 0;
+int householdsDHPossible = 0;
 
 double gasBoilers_totEAC = 0.0;
 double gasBlockHeating_totEAC = 0.0;
@@ -2517,9 +2540,12 @@ for(J_Household hh : c_households){
 	            gasBoilers_totPreferenceValue += hso.getPreferenceValue();
 	            break;
 	        case NATURAL_GAS_BLOCK:
-	            gasBlockHeating_totEAC += hso.getEAC();
-	            gasBlockHeating_totPerceivedValue += hso.getPerceivedValue();
-	            gasBlockHeating_totPreferenceValue += hso.getPreferenceValue();
+	        	if(hso.getIsPossible()){
+		            gasBlockHeating_totEAC += hso.getEAC();
+		            gasBlockHeating_totPerceivedValue += hso.getPerceivedValue();
+		            gasBlockHeating_totPreferenceValue += hso.getPreferenceValue();
+		            householdsNGBlPossible++;
+		        }
 	            break;
 	        case HYBRID_HEAT_PUMP:
 				hybridHeatPumps_totEAC += hso.getEAC();
@@ -2532,29 +2558,32 @@ for(J_Household hh : c_households){
 				electricHeatPumps_totPreferenceValue += hso.getPreferenceValue();
 				break;
 	        case DISTRICT_HEATING:
-	            districtHeating_totEAC += hso.getEAC();
-	            districtHeating_totPerceivedValue += hso.getPerceivedValue();
-	            districtHeating_totPreferenceValue += hso.getPreferenceValue();
-	            break;
+	            if(hso.getIsPossible()){
+		            districtHeating_totEAC += hso.getEAC();
+		            districtHeating_totPerceivedValue += hso.getPerceivedValue();
+		            districtHeating_totPreferenceValue += hso.getPreferenceValue();
+		            householdsDHPossible++;
+		        }
+		        break;
     	}
     }
 }
 
 double gasBoilers_avgEAC = gasBoilers_totEAC / households;
-double gasBlockHeating_avgEAC = gasBlockHeating_totEAC / households;
-double districtHeating_avgEAC = districtHeating_totEAC / households;
+double gasBlockHeating_avgEAC = gasBlockHeating_totEAC / householdsNGBlPossible;
+double districtHeating_avgEAC = districtHeating_totEAC / householdsDHPossible;
 double electricHeatPumps_avgEAC = electricHeatPumps_totEAC / households;
 double hybridHeatPumps_avgEAC = hybridHeatPumps_totEAC / households;
 
 double gasBoilers_avgPerceivedValue = gasBoilers_totPerceivedValue / households;
-double gasBlockHeating_avgPerceivedValue = gasBlockHeating_totPerceivedValue / households;
-double districtHeating_avgPerceivedValue = districtHeating_totPerceivedValue / households;
+double gasBlockHeating_avgPerceivedValue = gasBlockHeating_totPerceivedValue / householdsNGBlPossible;
+double districtHeating_avgPerceivedValue = districtHeating_totPerceivedValue / householdsDHPossible;
 double electricHeatPumps_avgPerceivedValue = electricHeatPumps_totPerceivedValue / households;
 double hybridHeatPumps_avgPerceivedValue = hybridHeatPumps_totPerceivedValue / households;		
 
 double gasBoilers_avgPreferenceValue = gasBoilers_totPreferenceValue / households;
-double gasBlockHeating_avgPreferenceValue = gasBlockHeating_totPreferenceValue / households;
-double districtHeating_avgPreferenceValue = districtHeating_totPreferenceValue / households;
+double gasBlockHeating_avgPreferenceValue = gasBlockHeating_totPreferenceValue / householdsNGBlPossible;
+double districtHeating_avgPreferenceValue = districtHeating_totPreferenceValue / householdsDHPossible;
 double electricHeatPumps_avgPreferenceValue = electricHeatPumps_totPreferenceValue / households;
 double hybridHeatPumps_avgPreferenceValue = hybridHeatPumps_totPreferenceValue / households;		
 
@@ -2581,19 +2610,19 @@ data_hybridHeatPumps_avgPreferenceValue.add(hybridHeatPumps_avgPreferenceValue);
 for( J_HeatingSystemOptionsGlobal hso : c_heatingSystemOptions){
 	switch (hso.getType()) {
 		case NATURAL_GAS_BOILER:
-			data_naturalGasBoilers_capex.add(hso.getInvestmentCosts());
+			data_naturalGasBoilers_capex.add(hso.getInvestmentCostsHeatDistributionSystem() + hso.getInvestmentCostsHeatSupplySystem());
 			break;
 		case NATURAL_GAS_BLOCK:
-			data_naturalGasBlock_capex.add(hso.getInvestmentCosts());	
+			data_naturalGasBlock_capex.add(hso.getInvestmentCostsHeatDistributionSystem() + hso.getInvestmentCostsHeatSupplySystem());	
 			break;
 		case HYBRID_HEAT_PUMP:
-			data_hybridHeatPumps_capex.add(hso.getInvestmentCosts());
+			data_hybridHeatPumps_capex.add(hso.getInvestmentCostsHeatDistributionSystem() + hso.getInvestmentCostsHeatSupplySystem());
 			break;
 		case ELECTRIC_HEAT_PUMP:
-			data_electricHeatPumps_capex.add(hso.getInvestmentCosts());
+			data_electricHeatPumps_capex.add(hso.getInvestmentCostsHeatDistributionSystem() + hso.getInvestmentCostsHeatSupplySystem());
 			break;
 		case DISTRICT_HEATING:
-			data_districtHeating_capex.add(hso.getInvestmentCosts());
+			data_districtHeating_capex.add(hso.getInvestmentCostsHeatDistributionSystem() + hso.getInvestmentCostsHeatSupplySystem());
 			break;
 	}
 }
@@ -3559,7 +3588,7 @@ List<Tuple> rows = selectFrom(heating_system_data)
 
 for (Tuple row : rows) {
 	OL_HeatingSystem type = OL_HeatingSystem.valueOf(row.get(heating_system_data.type));
-	double investmentCostsHeatSupplySystem = row.get(heating_system_data.investment_costs_heat_supply_eur);							//Capex
+	double investmentCostsHeatSupplySystem = row.get(heating_system_data.investment_costs_eur_per_unit);							//Capex
 	double investmentCostsHeatDistributionSystem =  row.get(heating_system_data.investment_costs_heat_distribution_system_eur);
 	double maintenanceCosts =row.get(heating_system_data.maintenance_costs_eur_per_year);											//maintenance costs per year
 	int lifetime = row.get(heating_system_data.lifetime_years);																	//Lifetime
@@ -3575,6 +3604,7 @@ for (Tuple row : rows) {
 	double secondaryEnergySourceCosts_eurPerkWh = f_getEnergySourceCosts(secondaryEnergySource);
 	int subsidy_eur = row.get(heating_system_data.subsidy_eur);
 	int sustainability_score = row.get(heating_system_data.sustainability_score);
+	String requiredHeatDistributionSystem = row.get(heating_system_data.required_distribution_system);
 		
 	J_HeatingSystemOptionsGlobal data = new J_HeatingSystemOptionsGlobal(
 		type,
@@ -3593,7 +3623,8 @@ for (Tuple row : rows) {
 		primaryEnergySourceCosts_eurPerkWh,
 		secondaryEnergySourceCosts_eurPerkWh,
 		subsidy_eur,
-		sustainability_score
+		sustainability_score,
+		requiredHeatDistributionSystem
 	);
 	c_heatingSystemOptions.add(data);
 }
@@ -11849,6 +11880,9 @@ for( int i = 0; i < p_households; i++ ){
 	
 	//Set default heating method
 	OL_HeatingSystem heatingSystem = f_getHouseholdDefaultHeatingSystem(hasDistrictHeating, isInBlock);
+	double householdAge = uniform_discr(1945, 2020);
+	String energyLabel = "A";
+	
 		
 		//Instantiate Household
 	J_Household household = new J_Household(
@@ -11859,9 +11893,11 @@ for( int i = 0; i < p_households; i++ ){
 		main.idCounter,
 		hasDistrictHeating,
 		isInBlock,
-		main
+		householdAge,
+		main,
+		energyLabel
 	);
-	
+		
 	c_households.add(household);
 	main.c_households.add(household);
 	main.idCounter++;
@@ -14292,6 +14328,7 @@ for(GZ_Neighborhood neighborhood : main.pop_GZ_Neighborhoods){
 					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1733934438588</Id>
 					<Name><![CDATA[f_setDHPolicy]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>115</X><Y>116</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -14611,6 +14648,20 @@ for(GZ_Neighborhood neighborhood : main.pop_GZ_Neighborhoods){
 			<SelectionModeForSimultaneousEvents>LIFO</SelectionModeForSimultaneousEvents>
 			<VmArgs><![CDATA[]]></VmArgs>
 			<LoadRootFromSnapshot>false</LoadRootFromSnapshot>
+			<Variables>
+				<Variable Class="PlainVariable">
+					<Id>1736855723455</Id>
+					<Name><![CDATA[v_connectionObligationNewDH]]></Name>
+					<X>100</X><Y>400</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[boolean]]></Type>        
+					</Properties>
+				</Variable>
+			</Variables>
 
 			<Presentation>
 				<Text>
@@ -14634,6 +14685,28 @@ for(GZ_Neighborhood neighborhood : main.pop_GZ_Neighborhoods){
 					</Font>
 					<Alignment>LEFT</Alignment>
 				</Text>
+				<Control Type="CheckBox">
+				 	<EmbeddedIcon>false</EmbeddedIcon>				
+					<Id>1736855638403</Id>
+					<Name><![CDATA[cb_connectionObligationDH]]></Name>
+					<X>60</X><Y>120</Y>
+					<Label><X>0</X><Y>-10</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
+					<BasicProperties Width="280" Height="30">
+                        <EmbeddedIcon>false</EmbeddedIcon>	
+						<TextColor/>
+						<Enabled>true</Enabled>
+					</BasicProperties>
+					<ExtendedProperties>
+						<Font Name="Dialog" Size="11" Style="0"/>
+						<LabelText><![CDATA[Connection obligation new DH]]></LabelText>
+						<LinkTo>true</LinkTo>
+						<Link>v_connectionObligationNewDH</Link>
+	 				</ExtendedProperties>
+				</Control>
 			</Presentation>
 
 			<Parameters>			
@@ -14754,6 +14827,12 @@ for(GZ_Neighborhood neighborhood : main.pop_GZ_Neighborhoods){
 				<Parameter>
 					<ParameterName><![CDATA[p_province]]></ParameterName>
 				</Parameter>
+				<Parameter>
+					<ParameterName><![CDATA[p_connectionObligationNewDistrictHeating]]></ParameterName>
+					<ParameterValue Class="CodeValue">
+						<Code><![CDATA[v_connectionObligationNewDH]]></Code>
+					</ParameterValue>
+				</Parameter>
 			</Parameters>			
 			<PresentationProperties>
 				<EnableZoomAndPanning>true</EnableZoomAndPanning>
@@ -14770,7 +14849,7 @@ for(GZ_Neighborhood neighborhood : main.pop_GZ_Neighborhoods){
 				<FinalDate><![CDATA[2524608000000]]></FinalDate>	
 				<FinalTime><![CDATA[30.02191780821918]]></FinalTime>	
 			</ModelTimeProperties>
-			<BypassInitialScreen>true</BypassInitialScreen>
+			<BypassInitialScreen>false</BypassInitialScreen>
 		</SimulationExperiment>
 		<!--   =========  Parameter Variation Experiment   ========  -->
 		<ParamVariationExperiment ActiveObjectClassId="1693907397593">
@@ -15262,6 +15341,9 @@ chart1.addDataSet( , format( root.p_innovationCoefficient ), color, true, Chart.
 			<FreeformParamValue>	
 				<Id>1732026943629</Id>
 			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1736855776222</Id>
+			</FreeformParamValue>
 			<RangeVariationParamValue>	
 				<Id>1694513336932</Id>
 				<Type>FIXED</Type>
@@ -15427,6 +15509,10 @@ chart1.addDataSet( , format( root.p_innovationCoefficient ), color, true, Chart.
 				<Id>1732026943629</Id>
 				<Type>FIXED</Type>
 			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1736855776222</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
 			<ModelTimeProperties>
 				<StopOption><![CDATA[Stop at specified date]]></StopOption>
 				<InitialDate><![CDATA[1577836800000]]></InitialDate>	
@@ -15463,33 +15549,43 @@ chart1.addDataSet( , format( root.p_innovationCoefficient ), color, true, Chart.
 
 
 public class J_Household {
+	//Household characteristics
+	private double householdAge;
 	private GZ_Neighborhood neighborhood;
 	private OL_HouseholdOwnership ownership;
 	private int id;
+	private Main main;
+	private String energyLabel;
+	
+	//Heating system characteristics
 	private J_HeatingSystem heatingSystem;
 	private List<J_HeatingSystemOptionsLocal> heatingSystemOptions = new ArrayList<>();
-	//private List<J_HeatingSystemOptions> rankedHeatingSystemOptions = new ArrayList<>();
 	private J_HeatingSystem heatingSystemInstalledThisYear;
 	private double heatDemand_kWh;
+	
+	//Behavioral characteristics
 	private double sustainabilityAttitude;
 	private double sustainabilityAttitude_norm;
-	private Main main;
-	
+	private double statusQuoScore;
+
+		
     /**
      * Default constructor
      */
-    public J_Household(GZ_Neighborhood neighborhood, List<J_HeatingSystemOptionsGlobal> heatingSystemOptionsInput, OL_HouseholdOwnership ownership, OL_HeatingSystem heatingSystem_OL, int id, boolean hasDistrictHeatingGrid, boolean isPartOfBlock, Main main) {
+    public J_Household(GZ_Neighborhood neighborhood, List<J_HeatingSystemOptionsGlobal> heatingSystemOptionsInput, OL_HouseholdOwnership ownership, OL_HeatingSystem heatingSystem_OL, int id, boolean hasDistrictHeatingGrid, boolean isPartOfBlock, double householdAge, Main main, String energyLabel) {
     	this.neighborhood = neighborhood;
     	this.ownership = ownership;
     	this.id = id;
-    	//this.main = main;
+    	this.householdAge = householdAge;
+    	this.energyLabel = energyLabel;
+    	this.main = main;
 
     	//Get random age of heating system
-    	J_HeatingSystemOptionsGlobal hs = findFirst(heatingSystemOptionsInput, x->x.getType() == heatingSystem_OL);
-    	int ageHeatingSystem = (int) (Math.random() * (hs.getLifetime() + 1));
+    	J_HeatingSystemOptionsGlobal initialHeatingSystem = findFirst(heatingSystemOptionsInput, x->x.getType() == heatingSystem_OL);
+    	int ageHeatingSystem = (int) (Math.random() * (initialHeatingSystem.getLifetime() + 1));
     	
     	//Initalize heating system
-    	this.heatingSystem = new J_HeatingSystem(heatingSystem_OL, ageHeatingSystem, hs.getLifetime());
+    	this.heatingSystem = new J_HeatingSystem(initialHeatingSystem, ageHeatingSystem);
     	this.heatingSystemInstalledThisYear = heatingSystem;
     	
     	//Set heat demand
@@ -15497,7 +15593,7 @@ public class J_Household {
     	double mean = 32.5;						//GJ average heat demand
     	double standardDeviation = 5.0; 		//based on spread
     	
-    	double heatDemand_GJ = mean + standardDeviation * main.randomInstance.nextGaussian();
+    	double heatDemand_GJ = mean + standardDeviation * this.main.randomInstance.nextGaussian();
     	this.heatDemand_kWh = heatDemand_GJ / 3.6 * 1000;
     	
     	//Set attitude
@@ -15505,13 +15601,14 @@ public class J_Household {
     	double sigma_att = 1.0;
     	double mean_att = 0;
     	sustainabilityAttitude = normal(sigma_att, mean_att, main.randomInstance);
+    	statusQuoScore = normal(0, 1, 0.5, 0.15, main.randomInstance); 
     	
-    	 f_initializeHeatingSystemOptions(heatingSystemOptionsInput, hasDistrictHeatingGrid, isPartOfBlock);
+    	 f_initializeHeatingSystemOptions(heatingSystemOptionsInput, hasDistrictHeatingGrid, isPartOfBlock, heatingSystem);
     	
     }
     
     //1. Initalize heating system options
-    public void f_initializeHeatingSystemOptions(List<J_HeatingSystemOptionsGlobal> heatingSystemOptionsInput, boolean hasDistrictHeatingGrid, boolean isPartOfBlock) {
+    public void f_initializeHeatingSystemOptions(List<J_HeatingSystemOptionsGlobal> heatingSystemOptionsInput, boolean hasDistrictHeatingGrid, boolean isPartOfBlock, J_HeatingSystem heatingSystem) {
     	for( J_HeatingSystemOptionsGlobal hso_input : heatingSystemOptionsInput) {
     		
     		//Set input
@@ -15530,7 +15627,8 @@ public class J_Household {
     				id,
     				isPossible,
     				heatDemand_kWh,
-    				hso_input
+    				hso_input,
+    				heatingSystem
     		);
     		heatingSystemOptions.add(hso_household);
     	}
@@ -15539,7 +15637,7 @@ public class J_Household {
     //2. Calcualte EAC
     public void f_calculateHeatingSystemOptionsEAC() {
     	for( J_HeatingSystemOptionsLocal hso : this.heatingSystemOptions) {
-    		hso.f_calculateEAC(heatDemand_kWh);
+    		hso.f_calculateEAC(heatDemand_kWh, heatingSystem);
     	}
     }
     /*
@@ -15553,9 +15651,10 @@ public class J_Household {
     public void f_rankHeatingSystemOptions() {
     	//Rank heating system options
     	for( J_HeatingSystemOptionsLocal hso : this.heatingSystemOptions) {
-    		hso.f_setPreferenceScore(sustainabilityAttitude_norm);
-    		double weight_financial = 0.6;
-    		double weight_intention = 0.4;
+    		hso.f_setPreferenceScore(sustainabilityAttitude_norm, heatingSystem.getType(), statusQuoScore);
+    		double weight_financial = 0.5;
+    		double weight_intention = 0.5;
+    		
     		hso.f_setPerceivedValue(weight_financial, weight_intention);
     		/*
     		if(id < 3) {
@@ -15592,10 +15691,9 @@ public class J_Household {
     //3. Rank and adopt heating method if out of lifetime
     public void f_adoptNewHeatingMethod() { 	
     	//Adopt highest ranked option
-    	OL_HeatingSystem type = this.heatingSystemOptions.get(0).getType();
+    	J_HeatingSystemOptionsLocal preferredHeatingSystem = this.heatingSystemOptions.get(0);
     	int age = 0;
-    	int lifetime = this.heatingSystemOptions.get(0).getHeatingSystemGlobalData().getLifetime();
-    	heatingSystem = new J_HeatingSystem(type, age, lifetime);
+    	heatingSystem = new J_HeatingSystem(preferredHeatingSystem, age);
     	heatingSystemInstalledThisYear = heatingSystem;
     	
     	
@@ -16008,14 +16106,24 @@ public class J_HeatingSystem {
 	private OL_HeatingSystem type;
 	private int age_years;		
 	private int lifetime_years;
+	private boolean hasLowTemperatureInhouseHeatDistribution;
 	/**
     * Default constructor
     */
 	
-	public J_HeatingSystem(OL_HeatingSystem type, int age_years, int lifetime_years) {
-		this.type = type;
+	public J_HeatingSystem(J_HeatingSystemOptionsLocal preferredHeatingSystem, int age_years) {
+		this.type = preferredHeatingSystem.getType();
 		this.age_years = age_years;
-		this.lifetime_years = lifetime_years;
+		this.lifetime_years = preferredHeatingSystem.getHeatingSystemGlobalData().getLifetime();
+		this.hasLowTemperatureInhouseHeatDistribution = preferredHeatingSystem.getHeatingSystemGlobalData().getRequiresLowTemperatureInhouseHeatDistribution();
+	}
+	
+	// Constructor 2
+	public J_HeatingSystem(J_HeatingSystemOptionsGlobal initialHeatingSystem, int age_years) {
+		this.type = initialHeatingSystem.getType();
+		this.age_years = age_years;
+		this.lifetime_years = initialHeatingSystem.getLifetime();
+		this.hasLowTemperatureInhouseHeatDistribution = initialHeatingSystem.getRequiresLowTemperatureInhouseHeatDistribution();
 	}
 	
 
@@ -16041,6 +16149,9 @@ public class J_HeatingSystem {
     	return lifetime_years;
     }
 
+    public boolean getHasLowTemperatureInhouseHeatDistribution() {
+    	return hasLowTemperatureInhouseHeatDistribution;
+    }
 	
 
 	@Override
@@ -16062,7 +16173,6 @@ public class J_HeatingSystemOptionsGlobal {
 	private OL_HeatingSystem type;
 	private double investmentCostsHeatSupplySystem;
 	private double investmentCostsHeatDistributionSystem;
-	private double investmentCosts;
 	private double maintenanceCosts;
 	private int lifetime;
 	private double discountRate;
@@ -16078,22 +16188,23 @@ public class J_HeatingSystemOptionsGlobal {
 	private int subsidy_eur;
 	private int sustainability_score;
 	private double sustainability_score_normalized;
+	private boolean requiresLowTemperatureInhouseHeatDistribution;
 	
 	private double initialUnitsInstalled;
 	private double unitsInstalled;
 	private double initialInvestmentCostsHeatSupplySystem;
 	
 	
+	
 	/**
     * Default constructor
     */
 	
-	public J_HeatingSystemOptionsGlobal(OL_HeatingSystem type, double investmentCostsHeatSupplySystem, double investmentCostsHeatDistributionSystem, double maintenanceCosts, int lifetime, double discountRate, double learningRate, OL_EnergyCarrier primaryEnergySource, OL_EnergyCarrier secondaryEnergySource, double efficiencyPrimarySource, double efficiencySecondarySource, double fractionPrimaryEnergySource, double fractionSecondaryEnergySource, double primaryEnergySourceCosts_eurPerkWh, double secondaryEnergySourceCosts_eurPerkWh, int subsidy_eur, int sustainability_score) {
+	public J_HeatingSystemOptionsGlobal(OL_HeatingSystem type, double investmentCostsHeatSupplySystem, double investmentCostsHeatDistributionSystem, double maintenanceCosts, int lifetime, double discountRate, double learningRate, OL_EnergyCarrier primaryEnergySource, OL_EnergyCarrier secondaryEnergySource, double efficiencyPrimarySource, double efficiencySecondarySource, double fractionPrimaryEnergySource, double fractionSecondaryEnergySource, double primaryEnergySourceCosts_eurPerkWh, double secondaryEnergySourceCosts_eurPerkWh, int subsidy_eur, int sustainability_score, String requiredHeatDistributionSystem) {
 		this.type = type;
 		this.investmentCostsHeatSupplySystem = investmentCostsHeatSupplySystem;
 		this.investmentCostsHeatDistributionSystem = investmentCostsHeatDistributionSystem;
 		this.initialInvestmentCostsHeatSupplySystem = investmentCostsHeatSupplySystem;
-		this.investmentCosts = investmentCostsHeatSupplySystem + investmentCostsHeatDistributionSystem;
 		this.maintenanceCosts = maintenanceCosts;
 		this.lifetime = lifetime;
 		this.discountRate = discountRate;
@@ -16108,6 +16219,13 @@ public class J_HeatingSystemOptionsGlobal {
 		this.secondaryEnergySourceCosts_eurPerkWh = secondaryEnergySourceCosts_eurPerkWh;
 		this.subsidy_eur = subsidy_eur;
 		this.sustainability_score = sustainability_score;
+		
+		if( requiredHeatDistributionSystem.contains("HT")) {
+			requiresLowTemperatureInhouseHeatDistribution = false;
+		}
+		else {
+			requiresLowTemperatureInhouseHeatDistribution = true;
+		}
 	}
 		
 	public void f_updateCapexFromLearningCurve(double cumulativeUnitsInstalled) {
@@ -16119,7 +16237,6 @@ public class J_HeatingSystemOptionsGlobal {
 
 		// Calculate current cost using learning curve formula
 		investmentCostsHeatSupplySystem = initialInvestmentCostsHeatSupplySystem * capexLearningFactor;
-		investmentCosts = investmentCostsHeatDistributionSystem + investmentCostsHeatSupplySystem;
 		//traceln("Heating system: " + type + ", CAPEX = " + roundToInt(CAPEX) + " EUR, cum. units installed = " + unitsInstalled + ", inital units installed = " + initialUnitsInstalled + ", initial CAPEX = " + initialCAPEX + " EUR, learning rate " + roundToDecimal(learningRate * 100,3) + "%, doublings = " + roundToDecimal(doublings,3) + " learning factor = " + roundToDecimal(capexLearningFactor, 13));
 		
 	/*
@@ -16155,8 +16272,12 @@ public class J_HeatingSystemOptionsGlobal {
         return type;
     }
 
-    public double getInvestmentCosts() {
-        return investmentCosts;
+    public double getInvestmentCostsHeatDistributionSystem() {
+        return investmentCostsHeatDistributionSystem;
+    }
+    
+    public double getInvestmentCostsHeatSupplySystem() {
+        return investmentCostsHeatSupplySystem;
     }
 
     public double getMaintenanceCosts() {
@@ -16218,12 +16339,15 @@ public class J_HeatingSystemOptionsGlobal {
     public double getSustainabilityScoreNormalized() {
     	return sustainability_score_normalized;
     }
-
+    
+    public boolean getRequiresLowTemperatureInhouseHeatDistribution() {
+    	return requiresLowTemperatureInhouseHeatDistribution;
+    }
 
 
 	@Override
 	public String toString() {
-		return type + " (Invest. costs: " + investmentCosts + ", Maintenance costs: " + maintenanceCosts + ", Lifetime: " + lifetime + ", Discount rate " + discountRate + ", Learning rate " + learningRate + ")";
+		return type + " (Invest. costs supply sys: " + investmentCostsHeatSupplySystem + ", invest. costs distr sys: " + investmentCostsHeatDistributionSystem + ", Maintenance costs: " + maintenanceCosts + ", Lifetime: " + lifetime + ", Discount rate " + discountRate + ", Learning rate " + learningRate + ")";
 	}
 
 }
@@ -16251,25 +16375,29 @@ public class J_HeatingSystemOptionsLocal {
 	private double EAC_norm;
 	private double preferenceValue;
 	
+	private boolean requiresLowTemperatureInhouseHeatDistribution;
+	
 
 	
 	/**
     * Default constructor
     */
 	
-	public J_HeatingSystemOptionsLocal(OL_HeatingSystem type, int householdID, boolean isPossible, double heatDemand_kWh, J_HeatingSystemOptionsGlobal heatingSystemGlobalData) {
+	public J_HeatingSystemOptionsLocal(OL_HeatingSystem type, int householdID, boolean isPossible, double heatDemand_kWh, J_HeatingSystemOptionsGlobal heatingSystemGlobalData, J_HeatingSystem currentHeatingSystem) {
 		this.type = type;
 		this.householdID = householdID;
 		this.isPossible = isPossible;
 		this.heatingSystemGlobalData = heatingSystemGlobalData;
+		this.requiresLowTemperatureInhouseHeatDistribution = heatingSystemGlobalData.getRequiresLowTemperatureInhouseHeatDistribution();
 		
-		f_calculateEAC(heatDemand_kWh);
+		f_calculateEAC(heatDemand_kWh, currentHeatingSystem);
 		
 	}
 	
-	public void f_calculateEAC(double heatDemand_kWh) {
+	public void f_calculateEAC(double heatDemand_kWh, J_HeatingSystem currentHeatingSystem) {
 		//Get global values
-		double investmentCosts = heatingSystemGlobalData.getInvestmentCosts();
+		double investmentCostsHeatDistributionSystem = heatingSystemGlobalData.getInvestmentCostsHeatDistributionSystem();
+		double investmentCostsHeatSupplySystem = heatingSystemGlobalData.getInvestmentCostsHeatSupplySystem();
 		double lifetime = heatingSystemGlobalData.getLifetime();
 		double maintenanceCosts = heatingSystemGlobalData.getMaintenanceCosts();
 		double discountRate = heatingSystemGlobalData.getDiscountRate();
@@ -16282,10 +16410,16 @@ public class J_HeatingSystemOptionsLocal {
 		double efficiencyPrimarySource = heatingSystemGlobalData.getEfficiencyPrimarySource();
 		double efficiencySecondarySource = heatingSystemGlobalData.getEfficiencySecondarySource();
 		double subsidy = heatingSystemGlobalData.getSubsidy();
-
 		
 		TCO = 0;
 		double energyCosts_eurPerYear = 0.0;
+		double investmentCosts = 0.0;
+		if(requiresLowTemperatureInhouseHeatDistribution == true && currentHeatingSystem.getHasLowTemperatureInhouseHeatDistribution() == false) {
+			investmentCosts = investmentCostsHeatSupplySystem + investmentCostsHeatDistributionSystem;
+		}
+		else {
+			investmentCosts = investmentCostsHeatSupplySystem;
+		}
 		
 		//1. Calculate energy source costs per year
 		energyCosts_eurPerYear += (primaryEnergySourceCosts_eurPerkWh * heatDemand_kWh * fractionPrimaryEnergySource / efficiencyPrimarySource);
@@ -16314,13 +16448,20 @@ public class J_HeatingSystemOptionsLocal {
 				//Annuity Factor = 1 - (1 + r)^-n / r
 	}
 	
-	public void f_setPreferenceScore(double sustainabilityAttitudeHousehold_norm) {
+	public void f_setPreferenceScore(double sustainabilityAttitudeHousehold_norm, OL_HeatingSystem currentHeatingSystemType, double statusQuoScore) {
 		sustainabilityScore_norm = heatingSystemGlobalData.getSustainabilityScoreNormalized();
 		/*double alpha = 1.0; //Sensetivity in Gaussian distribution
 		double squaredDeviation = pow( sustainabilityAttitudeHousehold_norm - sustainabilityScore_norm,2);  //squared deviation or preference gap
 		preferenceValue = pow(Math.E, -alpha * squaredDeviation); //Gausian similarity function preference=e−α(household_attitude−heating_score)^2		
 		*/
-		preferenceValue = 1 - abs(sustainabilityAttitudeHousehold_norm - sustainabilityScore_norm);
+		double intention = 1 - abs(sustainabilityAttitudeHousehold_norm - sustainabilityScore_norm);
+		
+		double statusQuoValue = 0;
+		if( currentHeatingSystemType == type) {
+			statusQuoValue = statusQuoScore;
+		}
+		//preferenceValue = intention;
+		preferenceValue = (intention + statusQuoValue) / 2;
 		/*
 		if(householdID < 3 && type == HYBRID_HEAT_PUMP) {
 			traceln("At hh " + householdID + " with HSO " + type + ", Pref. value = " + preferenceValue + ", sus att hh norm = " + sustainabilityAttitudeHousehold_norm + ", sus score norm " + sustainabilityScore_norm);

@@ -24,11 +24,13 @@
 import java.sql.DatabaseMetaData;
 //import java.sql.ResultSet;
 import java.sql.SQLException;
-]]></Import>
+import java.sql.PreparedStatement;]]></Import>
 			<StartupCode><![CDATA[//J_APIConnection startConnection = new J_APIConnection(neighborhoodCodes);
 
+//f_readHouseholdsDatabase(db_householdData);
+//f_readDB(db_households);
 
-f_readDB(db_households);]]></StartupCode>
+f_hashMapApproach();]]></StartupCode>
 			<Generic>false</Generic>
 			<GenericParameter>
 				<Id>1734080351675</Id>
@@ -122,7 +124,8 @@ f_readDB(db_households);]]></StartupCode>
 				<Variable Class="PlainVariable">
 					<Id>1734081175545</Id>
 					<Name><![CDATA[neighborhoodCodes]]></Name>
-					<X>100</X><Y>50</Y>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
+					<X>50</X><Y>130</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -138,10 +141,58 @@ f_readDB(db_households);]]></StartupCode>
 						</InitialValue>
 					</Properties>
 				</Variable>
+				<Variable Class="Parameter">
+					<Id>1737030538413</Id>
+					<Name><![CDATA[p_modeFullNetherlands]]></Name>
+					<X>50</X><Y>30</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[boolean]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<DefaultValue Class="CodeValue">
+							<Code><![CDATA[true]]></Code>
+						</DefaultValue>
+						<ParameterEditor>
+							<Id>1737030538411</Id>
+							<EditorContolType>CHECK_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1737030630260</Id>
+					<Name><![CDATA[p_province]]></Name>
+					<X>50</X><Y>50</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[String]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<DefaultValue Class="CodeValue">
+							<Code><![CDATA["Limburg"]]></Code>
+						</DefaultValue>
+						<ParameterEditor>
+							<Id>1737030630258</Id>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
 				<Variable Class="CollectionVariable">
 					<Id>1734353507960</Id>
 					<Name><![CDATA[c_households]]></Name>
-					<X>100</X><Y>220</Y>
+					<X>310</X><Y>130</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -153,6 +204,21 @@ f_readDB(db_households);]]></StartupCode>
 					</Properties>
 
 				</Variable>
+				<Variable Class="CollectionVariable">
+					<Id>1737024853156</Id>
+					<Name><![CDATA[c_buurtcodeToHouseholds]]></Name>
+					<X>310</X><Y>150</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" AccessType="public" StaticVariable="false">
+						<CollectionClass><![CDATA[LinkedHashMap]]></CollectionClass>
+						<ElementClass><![CDATA[String]]></ElementClass>
+						<ValueElementClass><![CDATA[ArrayList<J_Household>]]></ValueElementClass>
+					</Properties>
+
+				</Variable>
 			</Variables>
 			<Functions>
 				<Function AccessType="default" StaticFunction="false">
@@ -160,7 +226,8 @@ f_readDB(db_households);]]></StartupCode>
 					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1734087915803</Id>
 					<Name><![CDATA[f_readDB]]></Name>
-					<X>100</X><Y>150</Y>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
+					<X>50</X><Y>170</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -192,7 +259,7 @@ rs.close();
 					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1734353535923</Id>
 					<Name><![CDATA[f_createHouseholds]]></Name>
-					<X>110</X><Y>170</Y>
+					<X>310</X><Y>90</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -248,16 +315,563 @@ J_Household household = new J_Household(
 	oppervlakte,
 	woningequivalent,
 	pand_bouwjaar,
-	energieklasse
+	energieklasse,
+	buurtcode
 	);
-c_households.add(household);]]></Body>
+c_households.add(household);
+
+// Add the current household to the list corresponding to the buurtcode
+// Check if the buurtcode exists in the map
+if (c_buurtcodeToHouseholds.containsKey(buurtcode)) {
+    // Add the current household to the list corresponding to the buurtcode
+    c_buurtcodeToHouseholds.get(buurtcode).add(household);
+} else {
+    // Handle the case where the buurtcode doesn't exist
+    System.out.println("Buurtcode " + buurtcode + " does not exist in the map.");
+    // Optionally, you can create a new list for this buurtcode if you want to add the household anyway:
+    c_buurtcodeToHouseholds.put(buurtcode, new ArrayList<>());
+    c_buurtcodeToHouseholds.get(buurtcode).add(household);
+}]]></Body>
+				</Function>
+				<Function AccessType="default" StaticFunction="false">
+					<ReturnModificator>VOID</ReturnModificator>
+					<ReturnType><![CDATA[double]]></ReturnType>
+					<Id>1737012341275</Id>
+					<Name><![CDATA[f_readHouseholdsDatabase]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
+					<X>100</X><Y>320</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Parameter>
+						<Name><![CDATA[myDatabase]]></Name>
+						<Type><![CDATA[Database]]></Type>
+					</Parameter>
+					<Body><![CDATA[myDatabase.connect();
+System.out.println("Database households connected successfully");
+
+f_printDatabaseTables(myDatabase);
+f_indexTables(myDatabase);
+f_checkDataTypes(myDatabase);
+//f_joinTables(myDatabase);
+//f_joinTablesOptimized(myDatabase);
+
+/*
+String query = "SELECT * FROM households WHERE gebruiksdoelen = 'woonfunctie'";
+
+ResultSet rs = myDatabase.getResultSet( query );
+if (!rs.isBeforeFirst()) {
+    System.out.println("No data found for the query");
+} else {
+	while( rs.next() ) {
+		f_createHouseholds(rs);
+	}
+}
+
+
+rs.close();
+*/]]></Body>
+				</Function>
+				<Function AccessType="default" StaticFunction="false">
+					<ReturnModificator>VOID</ReturnModificator>
+					<ReturnType><![CDATA[double]]></ReturnType>
+					<Id>1737012606209</Id>
+					<Name><![CDATA[f_printDatabaseTables]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
+					<X>110</X><Y>340</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Parameter>
+						<Name><![CDATA[myDatabase]]></Name>
+						<Type><![CDATA[Database]]></Type>
+					</Parameter>
+					<Body><![CDATA[try {
+    // Get connection
+    java.sql.Connection connection = myDatabase.getConnection();
+
+    // Retrieve metadata
+    java.sql.DatabaseMetaData metaData = connection.getMetaData();
+
+    // Get the list of tables
+    java.sql.ResultSet tables = metaData.getTables(null, null, "%", new String[]{"TABLE"});
+    
+    System.out.println("Tables in the database:");
+    while (tables.next()) {
+        String tableName = tables.getString("TABLE_NAME");
+        System.out.println(tableName);
+    }
+
+    tables.close();
+} catch (SQLException e) {
+    e.printStackTrace();
+} finally {
+    myDatabase.disconnect();
+}]]></Body>
+				</Function>
+				<Function AccessType="default" StaticFunction="false">
+					<ReturnModificator>VOID</ReturnModificator>
+					<ReturnType><![CDATA[double]]></ReturnType>
+					<Id>1737013376803</Id>
+					<Name><![CDATA[f_joinTables]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
+					<X>110</X><Y>410</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Parameter>
+						<Name><![CDATA[myDatabase]]></Name>
+						<Type><![CDATA[Database]]></Type>
+					</Parameter>
+					<Body><![CDATA[myDatabase.connect();
+System.out.println("Database connected successfully");
+System.out.println("Starting join operation");
+try {
+
+	// Get the JDBC connection from AnyLogic's Database object
+    java.sql.Connection connection = myDatabase.getConnection();
+    
+    // Define the query
+    String query = 
+        "UPDATE households " +
+        "SET " +
+        "    energieklasse_EL = ( " +
+        "        SELECT Energieklasse " +
+        "        FROM temp_energy_labels " +
+        "        WHERE temp_energy_labels.BAGVerblijfsobjectID = households.vid " +
+        "    ), " +
+        "    energiegebruik_EL = ( " +
+        "        SELECT BerekendeEnergieverbruik " +
+        "        FROM temp_energy_labels " +
+        "        WHERE temp_energy_labels.BAGVerblijfsobjectID = households.vid " +
+        "    ) " +
+        "WHERE EXISTS ( " +
+        "    SELECT 1 " +
+        "    FROM temp_energy_labels " +
+        "    WHERE temp_energy_labels.BAGVerblijfsobjectID = households.vid " +
+        ");";
+
+ 	// Create a statement and execute the query
+    java.sql.Statement statement = connection.createStatement();
+    int rowsAffected = statement.executeUpdate(query);
+    System.out.println(rowsAffected + " rows updated successfully in the households table.");
+
+} catch (Exception e) {
+    e.printStackTrace();
+} finally {
+    myDatabase.disconnect();
+}
+]]></Body>
+				</Function>
+				<Function AccessType="default" StaticFunction="false">
+					<ReturnModificator>VOID</ReturnModificator>
+					<ReturnType><![CDATA[double]]></ReturnType>
+					<Id>1737016467226</Id>
+					<Name><![CDATA[f_joinTablesOptimized]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
+					<X>110</X><Y>430</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Parameter>
+						<Name><![CDATA[myDatabase]]></Name>
+						<Type><![CDATA[Database]]></Type>
+					</Parameter>
+					<Body><![CDATA[myDatabase.connect();
+System.out.println("Database connected successfully");
+
+try {
+    // Get the JDBC connection from AnyLogic's Database object
+    java.sql.Connection connection = myDatabase.getConnection();
+
+    // Determine the maximum ROWID in the households table
+    java.sql.Statement statement = connection.createStatement();
+    java.sql.ResultSet resultSet = statement.executeQuery("SELECT MAX(ROWID) AS maxRowId FROM households;");
+    long maxRowId = 0;
+    if (resultSet.next()) {
+        maxRowId = resultSet.getLong("maxRowId");
+    }
+    resultSet.close();
+    statement.close();
+
+    // Set up batch size and tracking variables
+    int batchSize = 1000; // Number of rows to process in each batch
+    long lastProcessedRowId = 0; // Track the last processed ROWID
+    int totalRowsUpdated = 0;
+
+    while (lastProcessedRowId < maxRowId) {
+        // Start timer for the batch
+        long batchStartTime = System.currentTimeMillis();
+        
+        // Define the batched SQLite-compatible query using ROWID
+        String query = 
+            "UPDATE households " +
+            "SET " +
+            "    energieklasse_EL = ( " +
+            "        SELECT Energieklasse " +
+            "        FROM temp_energy_labels " +
+            "        WHERE temp_energy_labels.BAGVerblijfsobjectID = households.vid " +
+            "    ), " +
+            "    energiegebruik_EL = ( " +
+            "        SELECT BerekendeEnergieverbruik " +
+            "        FROM temp_energy_labels " +
+            "        WHERE temp_energy_labels.BAGVerblijfsobjectID = households.vid " +
+            "    ) " +
+            "WHERE ROWID > " + lastProcessedRowId + " " +
+            "AND ROWID <= " + (lastProcessedRowId + batchSize) + " " +
+            "AND EXISTS ( " +
+            "    SELECT 1 " +
+            "    FROM temp_energy_labels " +
+            "    WHERE temp_energy_labels.BAGVerblijfsobjectID = households.vid " +
+            ");";
+
+        // Execute the batch update
+        statement = connection.createStatement();
+        int currentBatchRowsUpdated = statement.executeUpdate(query);
+
+        // Track rows updated
+        totalRowsUpdated += currentBatchRowsUpdated;
+
+        // Log progress
+        long batchEndTime = System.currentTimeMillis();
+        long batchDuration = batchEndTime - batchStartTime;
+        System.out.println("Processed ROWID range: " + (lastProcessedRowId + 1) + " to " + (lastProcessedRowId + batchSize));
+        System.out.println("Batch updated: " + currentBatchRowsUpdated + " rows.");
+        System.out.println("Batch took: " + roundToInt(batchDuration/1000) + " seconds.");
+
+        // Advance the lastProcessedRowId to the next batch
+        lastProcessedRowId += batchSize;
+
+        // Close the statement
+        statement.close();
+    }
+
+    // Final verification
+    System.out.println("Total rows updated: " + totalRowsUpdated);
+
+} catch (Exception e) {
+    e.printStackTrace();
+} finally {
+    myDatabase.disconnect();
+    System.out.println("Database connection closed.");
+}
+]]></Body>
+				</Function>
+				<Function AccessType="default" StaticFunction="false">
+					<ReturnModificator>VOID</ReturnModificator>
+					<ReturnType><![CDATA[double]]></ReturnType>
+					<Id>1737016765096</Id>
+					<Name><![CDATA[f_indexTables]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
+					<X>110</X><Y>360</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Parameter>
+						<Name><![CDATA[myDatabase]]></Name>
+						<Type><![CDATA[Database]]></Type>
+					</Parameter>
+					<Body><![CDATA[try {
+    java.sql.Connection connection = myDatabase.getConnection();
+    java.sql.Statement statement = connection.createStatement();
+
+    // Create index on temp_energy_labels.BAGVerblijfsobjectID
+    statement.executeUpdate("CREATE INDEX IF NOT EXISTS idx_temp_energy_labels_bag ON temp_energy_labels (BAGVerblijfsobjectID);");
+
+    // Create index on households.vid
+    statement.executeUpdate("CREATE INDEX IF NOT EXISTS idx_households_vid ON households (vid);");
+
+    System.out.println("Indexes created successfully.");
+
+    statement.close();
+} catch (Exception e) {
+    e.printStackTrace();
+}
+]]></Body>
+				</Function>
+				<Function AccessType="default" StaticFunction="false">
+					<ReturnModificator>VOID</ReturnModificator>
+					<ReturnType><![CDATA[double]]></ReturnType>
+					<Id>1737020331462</Id>
+					<Name><![CDATA[f_checkDataTypes]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
+					<X>110</X><Y>380</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Parameter>
+						<Name><![CDATA[myDatabase]]></Name>
+						<Type><![CDATA[Database]]></Type>
+					</Parameter>
+					<Body><![CDATA[try {
+    myDatabase.connect();
+    java.sql.Connection connection = myDatabase.getConnection();
+    java.sql.DatabaseMetaData metaData = connection.getMetaData();
+
+    // Check households table
+    System.out.println("Columns in 'households':");
+    java.sql.ResultSet columns = metaData.getColumns(null, null, "households", null);
+    while (columns.next()) {
+        String columnName = columns.getString("COLUMN_NAME");
+        String dataType = columns.getString("TYPE_NAME");
+        System.out.println(columnName + " -> " + dataType);
+    }
+    columns.close();
+
+    // Check temp_energy_labels table
+    System.out.println("\nColumns in 'temp_energy_labels':");
+    columns = metaData.getColumns(null, null, "temp_energy_labels", null);
+    while (columns.next()) {
+        String columnName = columns.getString("COLUMN_NAME");
+        String dataType = columns.getString("TYPE_NAME");
+        System.out.println(columnName + " -> " + dataType);
+    }
+    columns.close();
+
+    myDatabase.disconnect();
+} catch (Exception e) {
+    e.printStackTrace();
+}
+]]></Body>
+				</Function>
+				<Function AccessType="default" StaticFunction="false">
+					<ReturnModificator>VOID</ReturnModificator>
+					<ReturnType><![CDATA[double]]></ReturnType>
+					<Id>1737024825122</Id>
+					<Name><![CDATA[f_hashMapApproach]]></Name>
+					<X>300</X><Y>50</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Body><![CDATA[traceln("Start hashmap approach");
+double startTime = System.currentTimeMillis();
+int decimals = 2;
+
+// Create neighbrohoods
+f_selectNeighborhoods();
+double time1 = System.currentTimeMillis();
+double duration = roundToDecimal((time1 - startTime) / 1000, decimals);
+traceln("Created neighborhoods in " + duration + " seconds");
+
+//Create hashmap
+for( GZ_Neighborhood nbh : pop_GZ_Neighborhoods ){
+	String buurtcode = nbh.p_neighborhoodCode;
+	c_buurtcodeToHouseholds.put(buurtcode, new ArrayList<>());
+}
+double time2 = System.currentTimeMillis();
+duration = roundToDecimal((time2 - time1) / 1000, decimals);
+traceln("Created hashmap in " + duration + " seconds");
+
+// Connect to database
+Database myDatabase = db_householdData;
+myDatabase.connect();
+//System.out.println("Database connected successfully");
+
+//Create households
+f_generateHouseholdsFromDatabase(myDatabase, p_modeFullNetherlands);
+double time3 = System.currentTimeMillis();
+duration = roundToDecimal((time3 - time2) / 1000, decimals);
+traceln("Created households in " + duration + " seconds");
+
+//Link households to neighborhoods
+f_linkNeighborhoodsToHouseholds();
+double time4 = System.currentTimeMillis();
+duration = roundToDecimal((time4 - time3) / 1000, decimals);
+traceln("Linked households and neighborhoods in " + duration + " seconds");
+
+//Check total time
+duration = roundToDecimal((time4 - startTime) / 1000, decimals);
+traceln("Total start-up time: " + duration + " seconds");
+
+]]></Body>
+				</Function>
+				<Function AccessType="default" StaticFunction="false">
+					<ReturnModificator>VOID</ReturnModificator>
+					<ReturnType><![CDATA[double]]></ReturnType>
+					<Id>1737024963054</Id>
+					<Name><![CDATA[f_generateHouseholdsFromDatabase]]></Name>
+					<X>310</X><Y>70</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Parameter>
+						<Name><![CDATA[myDatabase]]></Name>
+						<Type><![CDATA[Database]]></Type>
+					</Parameter>
+					<Parameter>
+						<Name><![CDATA[modeFullNetherlands]]></Name>
+						<Type><![CDATA[boolean]]></Type>
+					</Parameter>
+					<Body><![CDATA[// Create the query
+String query = "";
+if(modeFullNetherlands){
+	query = "SELECT * FROM households WHERE gebruiksdoelen = 'woonfunctie'";
+}
+else {
+	query = String.format("SELECT * FROM households WHERE gebruiksdoelen = 'woonfunctie' AND provincienaam = '%s'", p_province);
+}
+//traceln(query);
+
+// Execute the query
+ResultSet rs = myDatabase.getResultSet( query );
+traceln("Resultset created, starting household creation");
+
+if (!rs.isBeforeFirst()) {
+    System.out.println("No data found for the query");
+} else {
+	while( rs.next() ) {
+		f_createHouseholds(rs);
+	}
+}
+
+
+rs.close();
+]]></Body>
+				</Function>
+				<Function AccessType="default" StaticFunction="false">
+					<ReturnModificator>VOID</ReturnModificator>
+					<ReturnType><![CDATA[double]]></ReturnType>
+					<Id>1737025224542</Id>
+					<Name><![CDATA[f_linkNeighborhoodsToHouseholds]]></Name>
+					<X>310</X><Y>110</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Body><![CDATA[// Link households to neighborhoods
+for (GZ_Neighborhood neighborhood : pop_GZ_Neighborhoods) {
+    String buurtcode = neighborhood.p_neighborhoodCode;
+	neighborhood.c_households.addAll(c_buurtcodeToHouseholds.get(buurtcode));
+    
+    if (neighborhood.c_households != null) {
+        for (J_Household household : neighborhood.c_households) {
+            neighborhood.f_initializeHousehold(household);  // Link household to neighborhood
+        }
+    }
+}]]></Body>
+				</Function>
+				<Function AccessType="default" StaticFunction="false">
+					<ReturnModificator>VOID</ReturnModificator>
+					<ReturnType><![CDATA[double]]></ReturnType>
+					<Id>1737026465057</Id>
+					<Name><![CDATA[f_selectNeighborhoods]]></Name>
+					<X>300</X><Y>-100</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Body><![CDATA[// CREATE AAGENTS FROM NEIGHBORHOOD CBS DATA
+double timer = System.currentTimeMillis();
+List<Tuple> rows = selectFrom(neighborhood_shape)
+    .list();
+
+
+for (Tuple row : rows) {
+	//If not full netherlands mode, check if municiaplities match with default test province
+	if( p_modeFullNetherlands == false){
+		String[] municipalityCodes = f_setMunicipalityCodes(p_province);
+		boolean municipalityInRegion = java.util.Arrays.asList(municipalityCodes).contains(row.get(neighborhood_shape.gemeenteco));
+		if(municipalityInRegion){
+			f_createNeighborhood(row);
+		}
+	}
+	else{
+		//Else just create all neighborhoods
+		f_createNeighborhood(row);
+	}
+}
+
+
+//traceln(roundToDecimal((System.currentTimeMillis() - timer)/1000,3) + " seconds to get neighborhood data");]]></Body>
+				</Function>
+				<Function AccessType="default" StaticFunction="false">
+					<ReturnModificator>VOID</ReturnModificator>
+					<ReturnType><![CDATA[double]]></ReturnType>
+					<Id>1737026465059</Id>
+					<Name><![CDATA[f_createNeighborhood]]></Name>
+					<X>310</X><Y>-60</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Parameter>
+						<Name><![CDATA[row]]></Name>
+						<Type><![CDATA[Tuple]]></Type>
+					</Parameter>
+					<Body><![CDATA[GZ_Neighborhood x;
+x = add_pop_GZ_Neighborhoods();
+x.p_neighborhoodCode = row.get( neighborhood_shape.buurtcode);
+x.p_neighborhood = row.get( neighborhood_shape.buurtnaam);
+
+/*
+x.p_municipalityCode = row.get( neighborhoods_netherlands.gm_code);
+x.p_geometeryCoordinates = row.get( neighborhoods_netherlands.wkt_geom);
+	
+//Set neighborhood code
+String replaced = "WK" + x.p_neighborhoodCode.substring(2);
+x.p_districtCode = replaced.substring(0, replaced.length()-2);
+		
+//SET LOCATION
+x.p_longitude = row.get( neighborhoods_netherlands.longitude);
+x.p_latitude = row.get( neighborhoods_netherlands.latitude);	
+x.setLatLon(x.p_latitude, x.p_longitude);
+			
+//SET COORDINATES AND REGION FROM WKT_GEOM STRING
+//x.f_drawRegionFromWKTString();
+*/]]></Body>
+				</Function>
+				<Function AccessType="default" StaticFunction="false">
+					<ReturnModificator>RETURNS_VALUE</ReturnModificator>
+					<ReturnType><![CDATA[String[]]]></ReturnType>
+					<Id>1737026669618</Id>
+					<Name><![CDATA[f_setMunicipalityCodes]]></Name>
+					<X>310</X><Y>-80</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Parameter>
+						<Name><![CDATA[province]]></Name>
+						<Type><![CDATA[String]]></Type>
+					</Parameter>
+					<Body><![CDATA[String[] municipalityCodes = { "initializeString" };
+
+if(province.equals("Limburg")){
+	//Municipality codes Limburg
+	municipalityCodes = new String[] {
+		"GM0882", "GM0888", "GM0889", "GM0893", "GM0899", 
+		"GM0907", "GM0917", "GM0928", "GM0935", "GM0938", 
+		"GM0944", "GM0946", "GM0957", "GM0965", "GM0971", 
+		"GM0981", "GM0983", "GM0984", "GM0986", "GM0988", 
+		"GM0994", "GM1507", "GM1640", "GM1641", "GM1669", 
+		"GM1711", "GM1729", "GM1883", "GM1894", "GM1903", 
+		"GM1954"
+	};
+}
+else if(province.equals("Groningen")){
+	municipalityCodes = new String[] {
+    	"GM0014", "GM0037", "GM0047", "GM0765", "GM1895", 
+    	"GM1950", "GM1952", "GM1966", "GM1969", "GM1979"
+	};
+}
+
+return municipalityCodes;]]></Body>
 				</Function>
 			</Functions>
 			<Connectivity>
 				<Database>
 					<Id>1734087040814</Id>
 					<Name><![CDATA[db_households]]></Name>
-					<X>100</X><Y>100</Y>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
+					<X>50</X><Y>150</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -265,6 +879,23 @@ c_households.add(household);]]></Body>
 					<DatabaseType>OTHER</DatabaseType>
 					<ConnectionURL><![CDATA[jdbc:sqlite:household_data.db]]></ConnectionURL>
 					<ConnectOnStartup>false</ConnectOnStartup>
+					<DatabaseName><![CDATA[]]></DatabaseName>
+					<Host><![CDATA[localhost]]></Host>
+					<JdbcDriverClassName><![CDATA[net.sourceforge.jtds.jdbc.Driver]]></JdbcDriverClassName>
+					<Login><![CDATA[]]></Login>
+					<Password><![CDATA[]]></Password>
+				</Database>
+				<Database>
+					<Id>1737012166055</Id>
+					<Name><![CDATA[db_householdData]]></Name>
+					<X>100</X><Y>450</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<DatabaseType>OTHER</DatabaseType>
+					<ConnectionURL><![CDATA[jdbc:sqlite:households.db]]></ConnectionURL>
+					<ConnectOnStartup>true</ConnectOnStartup>
 					<DatabaseName><![CDATA[]]></DatabaseName>
 					<Host><![CDATA[localhost]]></Host>
 					<JdbcDriverClassName><![CDATA[net.sourceforge.jtds.jdbc.Driver]]></JdbcDriverClassName>
@@ -294,6 +925,61 @@ c_households.add(household);]]></Body>
 				</AgentLink>
 			</AgentLinks>
 
+			<EmbeddedObjects>
+				<EmbeddedObject>
+					<Id>1737030482664</Id>
+					<Name><![CDATA[pop_GZ_Neighborhoods]]></Name>
+					<X>300</X><Y>-130</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<PresentationId>1737030482666</PresentationId>
+					<ActiveObjectClass>
+						<PackageName><![CDATA[household_data_loader]]></PackageName>
+						<ClassName><![CDATA[GZ_Neighborhood]]></ClassName>
+					</ActiveObjectClass>
+					<GenericParameterSubstitute>
+						<GenericParameterSubstituteReference>
+							<PackageName><![CDATA[household_data_loader]]></PackageName>
+							<ClassName><![CDATA[GZ_Neighborhood]]></ClassName>
+							<ItemName><![CDATA[1737025300384]]></ItemName>
+						</GenericParameterSubstituteReference>
+					</GenericParameterSubstitute>
+					<Parameters>
+						<Parameter>
+							<Name><![CDATA[p_neighborhoodCode]]></Name>
+						</Parameter>
+						<Parameter>
+							<Name><![CDATA[p_neighborhood]]></Name>
+						</Parameter>
+					</Parameters>
+					<ReplicationFlag>true</ReplicationFlag>
+					<Replication Class="CodeValue">
+						<Code><![CDATA[100]]></Code>
+					</Replication>
+					<CollectionType>ARRAY_LIST_BASED</CollectionType>
+					<InEnvironment>true</InEnvironment>	
+					<InitialLocationType>XYZ</InitialLocationType>
+					<ColumnCode Class="CodeValue">
+						<Code><![CDATA[0]]></Code>
+					</ColumnCode>
+					<RowCode Class="CodeValue">
+						<Code><![CDATA[0]]></Code>
+					</RowCode>
+					<LocationNameCode Class="CodeValue">
+						<Code><![CDATA[""]]></Code>
+					</LocationNameCode>
+					<InitializationType>EMPTY</InitializationType>
+					<InitializationDatabaseTableQuery>
+						<TableReference>
+						</TableReference>
+					</InitializationDatabaseTableQuery>
+					<InitializationDatabaseType>ONE_AGENT_PER_DATABASE_RECORD</InitializationDatabaseType>
+					<QuantityColumn>
+					</QuantityColumn>
+				</EmbeddedObject>
+			</EmbeddedObjects>
 
 			<Presentation>
 				<Level>
@@ -308,6 +994,273 @@ c_households.add(household);]]></Body>
 					<Z>0</Z>
 					<LevelVisibility>DIM_NON_CURRENT</LevelVisibility>
 
+
+				</Level>
+				<EmbeddedObjectPresentation>
+					<Id>1737030482666</Id>
+					<Name><![CDATA[pop_GZ_Neighborhoods_presentation]]></Name>
+					<X>400</X><Y>-130</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Z>0</Z>
+					<Rotation>0.0</Rotation>
+					<ScaleType>AUTOMATICALLY_CALCULATED</ScaleType>
+					<GISScaleForRealEmbeddedObjectPresentationSize>1000</GISScaleForRealEmbeddedObjectPresentationSize>
+					<GISScaleForFixedEmbeddedObjectPresentationSize>1000000000</GISScaleForFixedEmbeddedObjectPresentationSize>
+					<Latitude>0.0</Latitude>
+					<Longitude>0.0</Longitude>
+				</EmbeddedObjectPresentation>
+			</Presentation>
+
+		</ActiveObjectClass>
+		<!--   =========   Active Object Class   ========  -->
+		<ActiveObjectClass>
+			<Id>1737025300378</Id>
+			<Name><![CDATA[GZ_Neighborhood]]></Name>
+			<Generic>false</Generic>
+			<GenericParameter>
+				<Id>1737025300384</Id>
+				<Name><![CDATA[1737025300384]]></Name>
+				<GenericParameterValue Class="CodeValue">
+					<Code><![CDATA[T extends Agent]]></Code>
+				</GenericParameterValue>
+				<GenericParameterLabel><![CDATA[Generic parameter:]]></GenericParameterLabel>
+			</GenericParameter>
+			<FlowChartsUsage>ENTITY</FlowChartsUsage>
+			<SamplesToKeep>100</SamplesToKeep>
+			<LimitNumberOfArrayElements>false</LimitNumberOfArrayElements>
+			<ElementsLimitValue>100</ElementsLimitValue>
+			<MakeDefaultViewArea>true</MakeDefaultViewArea>
+			<SceneGridColor/>
+			<SceneBackgroundColor/>
+			<SceneSkybox>null</SceneSkybox>
+			<AgentProperties>
+				<EnvironmentDefinesInitialLocation>true</EnvironmentDefinesInitialLocation>
+				<RotateAnimationTowardsMovement>true</RotateAnimationTowardsMovement>
+				<RotateAnimationVertically>false</RotateAnimationVertically>
+				<VelocityCode Class="CodeUnitValue">
+					<Code><![CDATA[10]]></Code>
+					<Unit Class="SpeedUnits"><![CDATA[MPS]]></Unit>
+				</VelocityCode>
+				<PhysicalLength Class="CodeUnitValue">
+					<Code><![CDATA[1]]></Code>
+					<Unit Class="LengthUnits"><![CDATA[METER]]></Unit>
+				</PhysicalLength>
+				<PhysicalWidth Class="CodeUnitValue">
+					<Code><![CDATA[1]]></Code>
+					<Unit Class="LengthUnits"><![CDATA[METER]]></Unit>
+				</PhysicalWidth>
+				<PhysicalHeight Class="CodeUnitValue">
+					<Code><![CDATA[1]]></Code>
+					<Unit Class="LengthUnits"><![CDATA[METER]]></Unit>
+				</PhysicalHeight>
+			</AgentProperties>
+			<EnvironmentProperties>
+					<EnableSteps>false</EnableSteps>
+					<StepDurationCode Class="CodeUnitValue">
+						<Code><![CDATA[1.0]]></Code>
+						<Unit Class="TimeUnits"><![CDATA[SECOND]]></Unit>
+					</StepDurationCode>
+					<SpaceType>CONTINUOUS</SpaceType>
+					<WidthCode><![CDATA[500]]></WidthCode>
+					<HeightCode><![CDATA[500]]></HeightCode>
+					<ZHeightCode><![CDATA[0]]></ZHeightCode>
+					<ColumnsCountCode><![CDATA[100]]></ColumnsCountCode>
+					<RowsCountCode><![CDATA[100]]></RowsCountCode>
+					<NeigborhoodType>MOORE</NeigborhoodType>
+					<LayoutType>USER_DEF</LayoutType>
+					<NetworkType>USER_DEF</NetworkType>
+					<ConnectionsPerAgentCode><![CDATA[2]]></ConnectionsPerAgentCode>
+					<ConnectionsRangeCode><![CDATA[50]]></ConnectionsRangeCode>
+					<NeighborLinkFractionCode><![CDATA[0.95]]></NeighborLinkFractionCode>
+					<MCode><![CDATA[10]]></MCode>
+			</EnvironmentProperties>
+			<DatasetsCreationProperties>
+				<AutoCreate>true</AutoCreate>
+					<OccurrenceAtTime>true</OccurrenceAtTime>
+					<OccurrenceDate>1737100800000</OccurrenceDate>
+					<OccurrenceTime Class="CodeUnitValue">
+						<Code><![CDATA[0]]></Code>
+						<Unit Class="TimeUnits"><![CDATA[SECOND]]></Unit>
+					</OccurrenceTime>
+					<RecurrenceCode Class="CodeUnitValue">
+						<Code><![CDATA[1]]></Code>
+						<Unit Class="TimeUnits"><![CDATA[SECOND]]></Unit>
+					</RecurrenceCode>
+			</DatasetsCreationProperties>
+			<ScaleRuler>
+				<Id>1737025300381</Id>
+				<Name><![CDATA[scale]]></Name>
+				<X>0</X><Y>-150</Y>
+				<PublicFlag>false</PublicFlag>
+				<PresentationFlag>false</PresentationFlag>
+				<ShowLabel>false</ShowLabel>
+				<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
+				<Length>100</Length>
+				<Rotation>0</Rotation>
+				<ScaleType>BASED_ON_LENGTH</ScaleType>
+				<ModelLength>10</ModelLength>
+				<LengthUnits>METER</LengthUnits>
+				<Scale>10</Scale>
+				<InheritedFromParentAgentType>true</InheritedFromParentAgentType>
+			</ScaleRuler>
+			<CurrentLevel>1737025300385</CurrentLevel>
+			<ConnectionsId>1737025300379</ConnectionsId>
+			<Variables>
+				<Variable Class="Parameter">
+					<Id>1737025485967</Id>
+					<Name><![CDATA[p_neighborhoodCode]]></Name>
+					<X>50</X><Y>90</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[String]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<ParameterEditor>
+							<Id>1737025485965</Id>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1737025485970</Id>
+					<Name><![CDATA[p_neighborhood]]></Name>
+					<X>50</X><Y>70</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[String]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<ParameterEditor>
+							<Id>1737025485968</Id>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="CollectionVariable">
+					<Id>1737025471310</Id>
+					<Name><![CDATA[c_households]]></Name>
+					<X>50</X><Y>150</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" AccessType="public" StaticVariable="false">
+						<CollectionClass><![CDATA[ArrayList]]></CollectionClass>
+						<ElementClass><![CDATA[J_Household]]></ElementClass>
+						<ValueElementClass><![CDATA[String]]></ValueElementClass>
+					</Properties>
+
+				</Variable>
+			</Variables>
+			<Functions>
+				<Function AccessType="default" StaticFunction="false">
+					<ReturnModificator>VOID</ReturnModificator>
+					<ReturnType><![CDATA[double]]></ReturnType>
+					<Id>1737025651132</Id>
+					<Name><![CDATA[f_initializeHousehold]]></Name>
+					<X>50</X><Y>175</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Parameter>
+						<Name><![CDATA[household]]></Name>
+						<Type><![CDATA[J_Household]]></Type>
+					</Parameter>
+					<Body><![CDATA[household.setNeighborhood(this);]]></Body>
+				</Function>
+			</Functions>
+			<AgentLinks>
+				<AgentLink>
+					<Id>1737025300379</Id>
+					<Name><![CDATA[connections]]></Name>
+					<X>50</X><Y>-50</Y>
+					<Label><X>15</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<HandleReceiveInConnections>false</HandleReceiveInConnections>
+					<AgentLinkType>COLLECTION_OF_LINKS</AgentLinkType>
+					<AgentLinkBidirectional>true</AgentLinkBidirectional>
+					<MessageType><![CDATA[Object]]></MessageType>
+					<LineStyle>SOLID</LineStyle>
+					<LineWidth>1</LineWidth>
+					<LineColor>-16777216</LineColor>
+					<LineZOrder>UNDER_AGENTS</LineZOrder>
+					<LineArrow>NONE</LineArrow>
+					<LineArrowPosition>END</LineArrowPosition>
+				</AgentLink>
+			</AgentLinks>
+
+			<ContainerLinks>
+				<ContainerLink>
+					<Id>1737030482676</Id>
+					<Name><![CDATA[main]]></Name>
+					<X>50</X><Y>-100</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<ActiveObjectClass>
+						<PackageName><![CDATA[household_data_loader]]></PackageName>
+						<ClassName><![CDATA[Main]]></ClassName>
+					</ActiveObjectClass>
+				</ContainerLink>
+			</ContainerLinks>
+
+			<Presentation>
+				<Level>
+					<Id>1737025300385</Id>
+					<Name><![CDATA[level]]></Name>
+					<X>0</X><Y>0</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
+					<Z>0</Z>
+					<LevelVisibility>DIM_NON_CURRENT</LevelVisibility>
+
+			<Presentation>
+				<Text>
+					<Id>1737025485962</Id>
+					<Name><![CDATA[Btext]]></Name>
+					<X>100</X><Y>35</Y>
+					<Label><X>0</X><Y>-10</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D</DrawMode>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Z>0</Z>
+					<Rotation>0.0</Rotation>
+					<Color>-16777216</Color>
+					<Text><![CDATA[Buurt beschrijving]]></Text>
+					<Font>
+						<Name>SansSerif</Name>
+						<Size>14</Size>
+						<Style>1</Style>
+					</Font>
+					<Alignment>CENTER</Alignment>
+				</Text>
+			</Presentation>
 
 				</Level>
 			</Presentation>
@@ -330,6 +1283,66 @@ c_households.add(household);]]></Body>
 		<AutoExport>false</AutoExport>
 		<ShutdownCompact>false</ShutdownCompact>
 		<ImportSettings>
+			<ExternalConnection>
+				<Id>1737061645590</Id>
+				<Name><![CDATA[database]]></Name>
+				<X>0</X><Y>0</Y>
+				<Label><X>10</X><Y>0</Y></Label>
+				<PublicFlag>false</PublicFlag>
+				<PresentationFlag>true</PresentationFlag>
+				<ShowLabel>true</ShowLabel>
+				<DatabaseType>EXCEL_ACCESS</DatabaseType>
+				<ConnectionURL><![CDATA[]]></ConnectionURL>
+				<ConnectOnStartup>true</ConnectOnStartup>
+				<DatabaseName><![CDATA[]]></DatabaseName>
+				<ResourceReference>
+					<PackageName><![CDATA[household_data_loader]]></PackageName>
+					<ClassName><![CDATA[C:/Users/s124129/Documents/GitHub/Heat_transition_tipping_pathways/Heat transition tipping pathways/_neighborhood_shapes_2023.xlsx]]></ClassName>
+				</ResourceReference>
+				<Host><![CDATA[localhost]]></Host>
+				<JdbcDriverClassName><![CDATA[net.sourceforge.jtds.jdbc.Driver]]></JdbcDriverClassName>
+				<Login><![CDATA[]]></Login>
+				<Password><![CDATA[]]></Password>
+			</ExternalConnection>
+			<ExternalConnection>
+				<Id>1737026498391</Id>
+				<Name><![CDATA[database]]></Name>
+				<X>0</X><Y>0</Y>
+				<Label><X>10</X><Y>0</Y></Label>
+				<PublicFlag>false</PublicFlag>
+				<PresentationFlag>true</PresentationFlag>
+				<ShowLabel>true</ShowLabel>
+				<DatabaseType>EXCEL_ACCESS</DatabaseType>
+				<ConnectionURL><![CDATA[]]></ConnectionURL>
+				<ConnectOnStartup>true</ConnectOnStartup>
+				<DatabaseName><![CDATA[]]></DatabaseName>
+				<ResourceReference>
+					<PackageName><![CDATA[household_data_loader]]></PackageName>
+					<ClassName><![CDATA[C:/Users/s124129/Documents/GitHub/Heat_transition_tipping_pathways/Heat transition tipping pathways/_neighborhoods_netherlands.xlsx]]></ClassName>
+				</ResourceReference>
+				<Host><![CDATA[localhost]]></Host>
+				<JdbcDriverClassName><![CDATA[net.sourceforge.jtds.jdbc.Driver]]></JdbcDriverClassName>
+				<Login><![CDATA[]]></Login>
+				<Password><![CDATA[]]></Password>
+			</ExternalConnection>
+			<TableImportSettings>
+				<TableReference>
+					<PackageName><![CDATA[household_data_loader]]></PackageName>
+					<ClassName><![CDATA[neighborhood_shape]]></ClassName>
+				</TableReference>
+				<ConnectionIndex>0</ConnectionIndex>
+				<ExternalTableName><![CDATA["neighborhood_shape"]]></ExternalTableName>
+				<AutoImport>false</AutoImport>
+			</TableImportSettings>
+			<TableImportSettings>
+				<TableReference>
+					<PackageName><![CDATA[household_data_loader]]></PackageName>
+					<ClassName><![CDATA[neighborhoods_netherlands]]></ClassName>
+				</TableReference>
+				<ConnectionIndex>1</ConnectionIndex>
+				<ExternalTableName><![CDATA["neighborhoods_netherlands"]]></ExternalTableName>
+				<AutoImport>false</AutoImport>
+			</TableImportSettings>
 		</ImportSettings>
 		<ExportSettings>
 		</ExportSettings>
@@ -365,7 +1378,7 @@ c_households.add(household);]]></Body>
 			<Id>1734080351692</Id>
 			<Name><![CDATA[Simulation]]></Name>
 			<CommandLineArguments><![CDATA[]]></CommandLineArguments>
-			<MaximumMemory>512</MaximumMemory>
+			<MaximumMemory>16384</MaximumMemory>
 			<RandomNumberGenerationType>fixedSeed</RandomNumberGenerationType>
 			<CustomGeneratorCode>new Random()</CustomGeneratorCode>
 			<SeedValue>1</SeedValue>
@@ -398,6 +1411,12 @@ c_households.add(household);]]></Body>
 			</Presentation>
 
 			<Parameters>			
+				<Parameter>
+					<ParameterName><![CDATA[p_modeFullNetherlands]]></ParameterName>
+				</Parameter>
+				<Parameter>
+					<ParameterName><![CDATA[p_province]]></ParameterName>
+				</Parameter>
 			</Parameters>			
 			<PresentationProperties>
 				<EnableZoomAndPanning>true</EnableZoomAndPanning>
@@ -657,11 +1676,13 @@ public class J_Household {
 	private int woningequivalent;
 	private int pand_bouwjaar;
 	private String energieklasse;
+	private String neighborhoodCode;
+	private GZ_Neighborhood neighborhood;
 	
     /**
      * Default constructor
      */
-    public J_Household(int numid, int pid, int vid, int oppervlakte, int woningequivaltent, int pand_bouwjaar, String energieklasse) {
+    public J_Household(int numid, int pid, int vid, int oppervlakte, int woningequivaltent, int pand_bouwjaar, String energieklasse, String neighborhoodCode) {
     	this.numid = numid;
     	this.pid = pid;
     	this.vid = vid;
@@ -669,6 +1690,7 @@ public class J_Household {
     	this.woningequivalent = woningequivaltent;
     	this.pand_bouwjaar = pand_bouwjaar;
     	this.energieklasse = energieklasse;
+    	this.neighborhoodCode = neighborhoodCode;
     }
 
     
@@ -687,6 +1709,10 @@ public class J_Household {
         
     public void setEnergieklasse(String energieklasse ) {
     	this.energieklasse = energieklasse;
+    }
+    
+    public void setNeighborhood(GZ_Neighborhood neighborhood) {
+    	this.neighborhood = neighborhood;
     }
     
 	@Override
@@ -725,6 +1751,16 @@ public class J_Household {
 		</Resource>
 		<Resource>
 			<Path><![CDATA[sqlite-jdbc-3.47.1.0.jar]]></Path>
+			<ReferencedFromUserCode>false</ReferencedFromUserCode>
+			<Location>FILE_SYSTEM</Location>
+		</Resource>
+		<Resource>
+			<Path><![CDATA[C:/Users/s124129/Documents/GitHub/Heat_transition_tipping_pathways/Heat transition tipping pathways/_neighborhoods_netherlands.xlsx]]></Path>
+			<ReferencedFromUserCode>false</ReferencedFromUserCode>
+			<Location>FILE_SYSTEM</Location>
+		</Resource>
+		<Resource>
+			<Path><![CDATA[C:/Users/s124129/Documents/GitHub/Heat_transition_tipping_pathways/Heat transition tipping pathways/_neighborhood_shapes_2023.xlsx]]></Path>
 			<ReferencedFromUserCode>false</ReferencedFromUserCode>
 			<Location>FILE_SYSTEM</Location>
 		</Resource>
