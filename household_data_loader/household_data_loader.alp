@@ -894,7 +894,7 @@ return municipalityCodes;]]></Body>
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
 					<DatabaseType>OTHER</DatabaseType>
-					<ConnectionURL><![CDATA[jdbc:sqlite:households.db]]></ConnectionURL>
+					<ConnectionURL><![CDATA[jdbc:sqlite:large_files/households.db]]></ConnectionURL>
 					<ConnectOnStartup>true</ConnectOnStartup>
 					<DatabaseName><![CDATA[]]></DatabaseName>
 					<Host><![CDATA[localhost]]></Host>
