@@ -122,13 +122,21 @@
 		<ActiveObjectClass>
 			<Id>1693907397593</Id>
 			<Name><![CDATA[Main]]></Name>
-			<Import><![CDATA[import java.net.HttpURLConnection;
+			<Import><![CDATA[/*
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.IOException;
 import org.json.JSONObject; // for JSON parsing
-import org.json.JSONArray;]]></Import>
+import org.json.JSONArray;
+*/
+
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+//import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.PreparedStatement;]]></Import>
 			<StartupCode><![CDATA[v_timer = System.currentTimeMillis();
 f_initalizeSettings();
 traceln(roundToDecimal((System.currentTimeMillis() - v_timer)/1000,3) + " seconds to initialize model");
@@ -227,7 +235,7 @@ pauseSimulation();
 				<Variable Class="PlainVariable">
 					<Id>1693914229230</Id>
 					<Name><![CDATA[v_timer]]></Name>
-					<X>-570</X><Y>440</Y>
+					<X>-570</X><Y>570</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -239,7 +247,7 @@ pauseSimulation();
 				<Variable Class="PlainVariable">
 					<Id>1693914232713</Id>
 					<Name><![CDATA[v_inputLine]]></Name>
-					<X>-570</X><Y>460</Y>
+					<X>-570</X><Y>590</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -443,7 +451,7 @@ pauseSimulation();
 					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
 						<Type><![CDATA[Color]]></Type>        
 						<InitialValue Class="CodeValue">
-							<Code><![CDATA[new Color(255, 250, 205)//, 180)]]></Code>
+							<Code><![CDATA[new Color(32, 178, 170)//, 180)]]></Code>
 						</InitialValue>
 					</Properties>
 				</Variable>
@@ -510,7 +518,7 @@ pauseSimulation();
 				<Variable Class="PlainVariable">
 					<Id>1704723492529</Id>
 					<Name><![CDATA[v_naturalGasBoilerText]]></Name>
-					<X>400</X><Y>1180</Y>
+					<X>400</X><Y>1205</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -525,7 +533,7 @@ pauseSimulation();
 				<Variable Class="PlainVariable">
 					<Id>1704723492531</Id>
 					<Name><![CDATA[v_districtHeatingText]]></Name>
-					<X>400</X><Y>1220</Y>
+					<X>400</X><Y>1245</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -540,7 +548,7 @@ pauseSimulation();
 				<Variable Class="PlainVariable">
 					<Id>1704723492533</Id>
 					<Name><![CDATA[v_hybridHeatPumpText]]></Name>
-					<X>400</X><Y>1260</Y>
+					<X>400</X><Y>1285</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -555,7 +563,7 @@ pauseSimulation();
 				<Variable Class="PlainVariable">
 					<Id>1704723492535</Id>
 					<Name><![CDATA[v_electricHeatPumpText]]></Name>
-					<X>400</X><Y>1240</Y>
+					<X>400</X><Y>1265</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -570,7 +578,7 @@ pauseSimulation();
 				<Variable Class="PlainVariable">
 					<Id>1704898494221</Id>
 					<Name><![CDATA[v_naturalGasBlockText]]></Name>
-					<X>400</X><Y>1200</Y>
+					<X>400</X><Y>1225</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -669,7 +677,7 @@ pauseSimulation();
 				<Variable Class="PlainVariable">
 					<Id>1708545417195</Id>
 					<Name><![CDATA[v_mixedText]]></Name>
-					<X>400</X><Y>1280</Y>
+					<X>400</X><Y>1305</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -684,7 +692,7 @@ pauseSimulation();
 				<Variable Class="PlainVariable">
 					<Id>1732035721421</Id>
 					<Name><![CDATA[idCounter]]></Name>
-					<X>-570</X><Y>520</Y>
+					<X>-570</X><Y>650</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -876,7 +884,7 @@ pauseSimulation();
 				<Variable Class="PlainVariable">
 					<Id>1733303539959</Id>
 					<Name><![CDATA[randomInstance]]></Name>
-					<X>-570</X><Y>760</Y>
+					<X>-570</X><Y>890</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -891,7 +899,7 @@ pauseSimulation();
 				<Variable Class="PlainVariable">
 					<Id>1733818521357</Id>
 					<Name><![CDATA[v_fillUnderArea_chart]]></Name>
-					<X>400</X><Y>1340</Y>
+					<X>400</X><Y>1365</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -906,7 +914,7 @@ pauseSimulation();
 				<Variable Class="PlainVariable">
 					<Id>1733818564977</Id>
 					<Name><![CDATA[v_drawLine_chart]]></Name>
-					<X>400</X><Y>1320</Y>
+					<X>400</X><Y>1345</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -921,7 +929,7 @@ pauseSimulation();
 				<Variable Class="PlainVariable">
 					<Id>1733818596157</Id>
 					<Name><![CDATA[v_interpolationType]]></Name>
-					<X>400</X><Y>1360</Y>
+					<X>400</X><Y>1385</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -936,7 +944,7 @@ pauseSimulation();
 				<Variable Class="PlainVariable">
 					<Id>1733818632830</Id>
 					<Name><![CDATA[v_linewidth]]></Name>
-					<X>400</X><Y>1380</Y>
+					<X>400</X><Y>1405</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -951,7 +959,7 @@ pauseSimulation();
 				<Variable Class="PlainVariable">
 					<Id>1733818644657</Id>
 					<Name><![CDATA[v_pointStyle]]></Name>
-					<X>400</X><Y>1400</Y>
+					<X>400</X><Y>1425</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -960,6 +968,36 @@ pauseSimulation();
 						<Type><![CDATA[Chart.PointStyle]]></Type>        
 						<InitialValue Class="CodeValue">
 							<Code><![CDATA[Chart.POINT_NONE]]></Code>
+						</InitialValue>
+					</Properties>
+				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1737391287443</Id>
+					<Name><![CDATA[v_noHouseholdsColor]]></Name>
+					<X>400</X><Y>1165</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[Color]]></Type>        
+						<InitialValue Class="CodeValue">
+							<Code><![CDATA[new Color(255, 250, 205)//, 180)]]></Code>
+						</InitialValue>
+					</Properties>
+				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1737391421139</Id>
+					<Name><![CDATA[v_noHouseholdsText]]></Name>
+					<X>400</X><Y>1325</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[String]]></Type>        
+						<InitialValue Class="CodeValue">
+							<Code><![CDATA["Geen huishoudens"]]></Code>
 						</InitialValue>
 					</Properties>
 				</Variable>
@@ -1319,7 +1357,7 @@ pauseSimulation();
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[false]]></Code>
+							<Code><![CDATA[true]]></Code>
 						</DefaultValue>
 						<ParameterEditor>
 							<Id>1708543855341</Id>
@@ -1884,7 +1922,7 @@ pauseSimulation();
 				<Variable Class="CollectionVariable">
 					<Id>1730389266762</Id>
 					<Name><![CDATA[c_households]]></Name>
-					<X>-570</X><Y>580</Y>
+					<X>-570</X><Y>710</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -1899,7 +1937,7 @@ pauseSimulation();
 				<Variable Class="CollectionVariable">
 					<Id>1732024389301</Id>
 					<Name><![CDATA[c_heatingSystemOptions]]></Name>
-					<X>-570</X><Y>690</Y>
+					<X>-570</X><Y>820</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -1908,6 +1946,21 @@ pauseSimulation();
 						<CollectionClass><![CDATA[ArrayList]]></CollectionClass>
 						<ElementClass><![CDATA[J_HeatingSystemOptionsGlobal]]></ElementClass>
 						<ValueElementClass><![CDATA[String]]></ValueElementClass>
+					</Properties>
+
+				</Variable>
+				<Variable Class="CollectionVariable">
+					<Id>1737379663209</Id>
+					<Name><![CDATA[c_buurtcodeToHouseholds]]></Name>
+					<X>-790</X><Y>130</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" AccessType="public" StaticVariable="false">
+						<CollectionClass><![CDATA[LinkedHashMap]]></CollectionClass>
+						<ElementClass><![CDATA[String]]></ElementClass>
+						<ValueElementClass><![CDATA[ArrayList<J_Household>]]></ValueElementClass>
 					</Properties>
 
 				</Variable>
@@ -1933,7 +1986,7 @@ pauseSimulation();
 						<OccurrenceAtTime>true</OccurrenceAtTime>
 						<OccurrenceDate>1654156800000</OccurrenceDate>
 						<OccurrenceTime Class="CodeUnitValue">
-							<Code><![CDATA[1]]></Code>
+							<Code><![CDATA[0]]></Code>
 							<Unit Class="TimeUnits"><![CDATA[YEAR]]></Unit>
 						</OccurrenceTime>
 						<RecurrenceCode Class="CodeUnitValue">
@@ -1946,7 +1999,9 @@ pauseSimulation();
 	pauseSimulation();
 }
 
-f_adoptionProces();
+if(time() >= 1 ){
+	f_adoptionProces();
+}
 /*
 for(GZ_Neighborhood n : pop_GZ_Neighborhoods){
 	n.f_energyCalculations();
@@ -2030,6 +2085,7 @@ p_p6GasConnections_2022
 					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1693909271524</Id>
 					<Name><![CDATA[f_generateObjectsFromAPI]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>-550</X><Y>-200</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -2174,21 +2230,63 @@ try {
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
-					<Body><![CDATA[f_setHeatingSystemOptions();
-f_selectNeighborhoods();
+					<Body><![CDATA[traceln("Start initialization");
+double startTime = System.currentTimeMillis();
+int decimals = 2;
+
+//1. Set heating methods
+f_setHeatingSystemOptions();
+traceln("Heating methods set");
+
+//2. Create neighbrohoods
+f_initializeNeighborhoods();
 f_setNeighborhoodData();
-f_generateHouseholds();
-//f_generateJavaHouseholdsFromAPI();
-for(GZ_Neighborhood x : pop_GZ_Neighborhoods){
-	x.f_countHouseholdHeatingMethods();
-	x.f_colorGISRegionToHeatMethod();
+double time1 = System.currentTimeMillis();
+double duration = roundToDecimal((time1 - startTime) / 1000, decimals);
+traceln("Created neighborhoods in " + duration + " seconds");
+
+//3. Create hashmap for hh -> nbh connection
+for( GZ_Neighborhood nbh : pop_GZ_Neighborhoods ){
+	String buurtcode = nbh.p_neighborhoodCode;
+	c_buurtcodeToHouseholds.put(buurtcode, new ArrayList<>());
 }
-f_generateOtherAgentPopulations();
+double time2 = System.currentTimeMillis();
+duration = roundToDecimal((time2 - time1) / 1000, decimals);
+traceln("Created hashmap in " + duration + " seconds");
+
+//4. Connect to database
+Database myDatabase = db_householdData;
+myDatabase.connect();
+
+//5. Create households
+f_initializeHouseholdsFromDatabase(myDatabase, p_modeFullNetherlands);
+double time3 = System.currentTimeMillis();
+duration = roundToDecimal((time3 - time2) / 1000, decimals);
+traceln("Created households in " + duration + " seconds");
+
+//6. Link households to neighborhoods
+f_linkNeighborhoodsToHouseholds();
+double time4 = System.currentTimeMillis();
+duration = roundToDecimal((time4 - time3) / 1000, decimals);
+traceln("Linked households and neighborhoods in " + duration + " seconds");
+
+//7. Get initial heating method data, counts and numbers
+f_getInitialHeatingMethods();
+
+//Check total time
+duration = roundToDecimal((time4 - startTime) / 1000, decimals);
+traceln("Total start-up time: " + duration + " seconds");
+
+
+
+//8. Initialize DSO
+f_initializeDSO();
+
+//9. Set visuals
+f_setVisuals();
+
 //f_initializeCosts();
-f_setMap(p_modeFullNetherlands);
-f_setText();
-f_updateDatasets();
-f_setCharts();
+
 
 
 //Check total values
@@ -2271,7 +2369,7 @@ traceln(roundToDecimal((System.currentTimeMillis() - v_timer)/1000,3) + " second
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
 					<Body><![CDATA[//SET GENERAL DATA
-f_setGeneralNeighborhoodData();
+f_setGeneralNeighborhoodData_2023();
 f_setHeatingMethodNeighborhoodData();
 
 
@@ -2296,9 +2394,7 @@ int willingToInvestRentersMedium = count(pop_GZ_Neighborhoods, x->x.p_willingnes
 int willingToInvestRentersLow = count(pop_GZ_Neighborhoods, x->x.p_willingnessEnergyMeasuresRenters == LOW);
 int willingToInvestRentersUnkown = count(pop_GZ_Neighborhoods, x->x.p_willingnessEnergyMeasuresRenters == null);
 
-traceln("Neighborhoods with willingness home owners: High " + willingToInvestHomeOwnersHigh + " medium " + willingToInvestHomeOwnersMedium + " low " + willingToInvestHomeOwnersLow + " unknown " + willingToInvestHomeOwnersUnkown);
-traceln("Neighborhoods with willingness renters: High " + willingToInvestRentersHigh + " medium " + willingToInvestRentersMedium + " low " + willingToInvestRentersLow + " unknown " + willingToInvestRentersUnkown);				
-	
+traceln("Neighborhoods willingness energy measures: Home owners high = " + willingToInvestHomeOwnersHigh + " medium = " + willingToInvestHomeOwnersMedium + " low = " + willingToInvestHomeOwnersLow + " unknown = " + willingToInvestHomeOwnersUnkown + ", Renters High = "  + willingToInvestRentersHigh + " medium = " + willingToInvestRentersMedium + " low = " + willingToInvestRentersLow + " unknown = " + willingToInvestRentersUnkown);
 
 /*		.firstResult(neighborhood_warmtevisie.opgesteld_vermogen_van_zonnepanelen_6);
 		
@@ -2332,8 +2428,7 @@ traceln("Neighborhoods with willingness renters: High " + willingToInvestRenters
 
 		
 */
-traceln(sum(pop_GZ_Neighborhoods, x->x.p_households) + " totaal aantal huishoudens");
-traceln(sum(pop_GZ_Neighborhoods, x->x.p_inhabitants) + " totaal aantal inwoners");
+traceln("Descriptive data from neigbhorhoods: Households = " + roundToInt(sum(pop_GZ_Neighborhoods, x->x.p_households)) + ", inhabitants = " + roundToDecimal(sum(pop_GZ_Neighborhoods, x->x.p_inhabitants) / 1000000, 2) + "million");
 ]]></Body>
 				</Function>
 				<Function AccessType="default" StaticFunction="false">
@@ -2341,7 +2436,7 @@ traceln(sum(pop_GZ_Neighborhoods, x->x.p_inhabitants) + " totaal aantal inwoners
 					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1700142574123</Id>
 					<Name><![CDATA[f_returnZeroIfDoubleIsSmallerThanZero]]></Name>
-					<X>-570</X><Y>480</Y>
+					<X>-570</X><Y>610</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -2363,7 +2458,7 @@ else {
 					<ReturnType><![CDATA[int]]></ReturnType>
 					<Id>1700142574134</Id>
 					<Name><![CDATA[f_returnZeroIfDoubleIsSmallerThanZeroInt]]></Name>
-					<X>-570</X><Y>500</Y>
+					<X>-570</X><Y>630</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -2729,6 +2824,7 @@ else {
 					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1704903345615</Id>
 					<Name><![CDATA[f_getHouseholds]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>-540</X><Y>-180</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -2868,7 +2964,7 @@ industrySite.oval.setFillColor(v_industryColor);]]></Body>
 					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1704917508592</Id>
 					<Name><![CDATA[f_setText]]></Name>
-					<X>-570</X><Y>420</Y>
+					<X>-570</X><Y>550</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>false</PresentationFlag>
@@ -2879,7 +2975,7 @@ t_districtHeating.setText(v_districtHeatingText);
 t_electricHeatPump.setText(v_electricHeatPumpText);
 t_hybridHeatPump.setText(v_hybridHeatPumpText);
 t_mixed.setText(v_mixedText);
-
+t_noHouseholds.setText(v_noHouseholdsText);
 ]]></Body>
 				</Function>
 				<Function AccessType="default" StaticFunction="false">
@@ -2908,7 +3004,7 @@ for( GZ_Neighborhood neighborhood : pop_GZ_Neighborhoods){
 					<ReturnModificator>VOID</ReturnModificator>
 					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1707468673193</Id>
-					<Name><![CDATA[f_selectNeighborhoods]]></Name>
+					<Name><![CDATA[f_initializeNeighborhoods]]></Name>
 					<X>-570</X><Y>140</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -2916,15 +3012,15 @@ for( GZ_Neighborhood neighborhood : pop_GZ_Neighborhoods){
 					<ShowLabel>true</ShowLabel>
 					<Body><![CDATA[// CREATE AAGENTS FROM NEIGHBORHOOD CBS DATA
 double timer = System.currentTimeMillis();
-List<Tuple> rows = selectFrom(neighborhoods_netherlands)
+List<Tuple> rows = selectFrom(neighborhood_shape)
+    .where(neighborhood_shape.water.eq("NEE"))
     .list();
-
 
 for (Tuple row : rows) {
 	//If not full netherlands mode, check if municiaplities match with default test province
 	if( p_modeFullNetherlands == false){
 		String[] municipalityCodes = f_setMunicipalityCodes(p_province);
-		boolean municipalityInRegion = java.util.Arrays.asList(municipalityCodes).contains(row.get(neighborhoods_netherlands.gm_code));
+		boolean municipalityInRegion = java.util.Arrays.asList(municipalityCodes).contains(row.get(neighborhood_shape.gemeenteco));
 		if(municipalityInRegion){
 			f_createNeighborhood(row);
 		}
@@ -2934,16 +3030,15 @@ for (Tuple row : rows) {
 		f_createNeighborhood(row);
 	}
 }
-
-
-traceln(roundToDecimal((System.currentTimeMillis() - timer)/1000,3) + " seconds to get neighborhood data");]]></Body>
+]]></Body>
 				</Function>
 				<Function AccessType="default" StaticFunction="false">
 					<ReturnModificator>VOID</ReturnModificator>
 					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1708545045651</Id>
 					<Name><![CDATA[f_generateHouseholds]]></Name>
-					<X>-570</X><Y>290</Y>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
+					<X>-880</X><Y>280</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -2977,8 +3072,8 @@ traceln(roundToDecimal((System.currentTimeMillis() - timer)/1000,3) + " seconds 
 					<ReturnModificator>VOID</ReturnModificator>
 					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1708550035912</Id>
-					<Name><![CDATA[f_generateOtherAgentPopulations]]></Name>
-					<X>-570</X><Y>360</Y>
+					<Name><![CDATA[f_initializeDSO]]></Name>
+					<X>-570</X><Y>480</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -3163,87 +3258,87 @@ household.f_setHouseholdOwnership(neighborhood.p_ownerOccupiedHomes, neighborhoo
 					<ReturnModificator>VOID</ReturnModificator>
 					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1715092257622</Id>
-					<Name><![CDATA[f_setGeneralNeighborhoodData]]></Name>
+					<Name><![CDATA[f_setGeneralNeighborhoodData_2023]]></Name>
 					<X>-550</X><Y>220</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
-					<Body><![CDATA[List<Tuple> rows_data = selectFrom(neighborhood_data)
+					<Body><![CDATA[List<Tuple> rows_data = selectFrom(neighborhood_data_selection)
     .list();
     
 for (Tuple row_data : rows_data){
 	for (GZ_Neighborhood x : pop_GZ_Neighborhoods){
-		if (x.p_neighborhoodCode.equals(row_data.get(neighborhood_data.buurtcode))){
+		if (x.p_neighborhoodCode.equals(row_data.get(neighborhood_data_selection.gwb_code_10))){
 			
-			x.p_inhabitants = row_data.get(neighborhood_data.a_inw);
-			x.p_males = row_data.get(neighborhood_data.a_man);
-			x.p_females = row_data.get(neighborhood_data.a_vrouw);
+			x.p_inhabitants = row_data.get(neighborhood_data_selection.a_inw);
+			x.p_males = row_data.get(neighborhood_data_selection.a_man);
+			x.p_females = row_data.get(neighborhood_data_selection.a_vrouw);
 			
-			x.p_households = row_data.get(neighborhood_data.a_hh);
-			x.p_singlePersonHouseholds = row_data.get(neighborhood_data.a_1p_hh);
-			x.p_householdsWithoutChildren = row_data.get(neighborhood_data.a_hh_z_k);
-			x.p_householdsWithChildren = row_data.get(neighborhood_data.a_hh_m_k);
-			x.p_averageHouseholdSize = row_data.get(neighborhood_data.g_hhgro);
-			x.p_populationDensity = row_data.get(neighborhood_data.bev_dich);
+			x.p_households = row_data.get(neighborhood_data_selection.a_hh);
+			x.p_singlePersonHouseholds = row_data.get(neighborhood_data_selection.a_1p_hh);
+			x.p_householdsWithoutChildren = row_data.get(neighborhood_data_selection.a_hh_z_k);
+			x.p_householdsWithChildren = row_data.get(neighborhood_data_selection.a_hh_m_k);
+			x.p_averageHouseholdSize = row_data.get(neighborhood_data_selection.g_hhgro);
+			x.p_populationDensity = row_data.get(neighborhood_data_selection.bev_dich);
 			
 			//Living
-			x.p_houses = row_data.get(neighborhood_data.a_woning);
-			x.p_housesAverageWOZValue = row_data.get(neighborhood_data.g_wozbag);
-			x.p_ownerOccupiedHomes = row_data.get(neighborhood_data.p_koopw);
-			x.p_rentalProperties = row_data.get(neighborhood_data.p_huurw);
-			x.p_ownedByHousingAssociation = row_data.get(neighborhood_data.p_wcorpw);
-			x.p_ownedByOtherLandlords = row_data.get(neighborhood_data.p_ov_hw);
-			x.p_ownershipUnknown = row_data.get(neighborhood_data.p_e_o_w);
-			x.p_housesBuildBefore2000 = row_data.get(neighborhood_data.p_bjj2k);
-			x.p_housesBuildAfter2000 = row_data.get(neighborhood_data.p_bjo2k);
-			x.set_p_multiFamilyHouseholds_perc(row_data.get(neighborhood_data.p_mgezw));
-			x.set_p_singleFamilyHouseholds_perc(row_data.get(neighborhood_data.p_1gezw));
+			x.p_houses = row_data.get(neighborhood_data_selection.a_woning);
+			x.p_housesAverageWOZValue = row_data.get(neighborhood_data_selection.g_wozbag);
+			x.p_ownerOccupiedHomes = row_data.get(neighborhood_data_selection.p_koopw);
+			x.p_rentalProperties = row_data.get(neighborhood_data_selection.p_huurw);
+			x.p_ownedByHousingAssociation = row_data.get(neighborhood_data_selection.p_wcorpw);
+			x.p_ownedByOtherLandlords = row_data.get(neighborhood_data_selection.p_ov_hw);
+			x.p_ownershipUnknown = row_data.get(neighborhood_data_selection.p_e_o_w);
+			x.p_housesBuildBefore2000 = row_data.get(neighborhood_data_selection.p_bjj2k);
+			x.p_housesBuildAfter2000 = row_data.get(neighborhood_data_selection.p_bjo2k);
+			x.set_p_multiFamilyHouseholds_perc(row_data.get(neighborhood_data_selection.p_mgezw));
+			x.set_p_singleFamilyHouseholds_perc(row_data.get(neighborhood_data_selection.p_1gezw));
 			
 			//Energie
-			x.p_averageElectricityConsumptionTotal = row_data.get(neighborhood_data.g_ele);
+			x.p_averageElectricityConsumptionTotal = row_data.get(neighborhood_data_selection.g_ele);
 			/*
-			x.p_averageElectricityConsumptionApartment = row_data.get(neighborhood_data.g_ele_ap);
-			x.p_averageElectricityConsumptionTerraced = row_data.get(neighborhood_data.g_ele_tw);
-			x.p_averageElectricityConsumptionCorner = row_data.get(neighborhood_data.g_ele_hw);
-			x.p_averageElectricityConsumptionSemiDetached = row_data.get(neighborhood_data.g_ele_2w);
-			x.p_averageElectricityConsumptionDetached = row_data.get(neighborhood_data.g_ele_vw);
+			x.p_averageElectricityConsumptionApartment = row_data.get(neighborhood_data_selection.g_ele_ap);
+			x.p_averageElectricityConsumptionTerraced = row_data.get(neighborhood_data_selection.g_ele_tw);
+			x.p_averageElectricityConsumptionCorner = row_data.get(neighborhood_data_selection.g_ele_hw);
+			x.p_averageElectricityConsumptionSemiDetached = row_data.get(neighborhood_data_selection.g_ele_2w);
+			x.p_averageElectricityConsumptionDetached = row_data.get(neighborhood_data_selection.g_ele_vw);
 			*/
-			x.p_averageGasConsumptionTotal = row_data.get(neighborhood_data.g_gas);
+			x.p_averageGasConsumptionTotal = row_data.get(neighborhood_data_selection.g_gas);
 			/*
-			x.p_averageGasConsumptionApartment = row_data.get(neighborhood_data.g_gas_ap);
-			x.p_averageGasConsumptionTerraced = row_data.get(neighborhood_data.g_tw);
-			x.p_averageGasConsumptionCorner = row_data.get(neighborhood_data.g_gas_hw);
-			x.p_averageGasConsumptionSemiDetached = row_data.get(neighborhood_data.g_gas_2w);
-			x.p_averageGasConsumptionDetached = row_data.get(neighborhood_data.g_gas_vw);
+			x.p_averageGasConsumptionApartment = row_data.get(neighborhood_data_selection.g_gas_ap);
+			x.p_averageGasConsumptionTerraced = row_data.get(neighborhood_data_selection.g_tw);
+			x.p_averageGasConsumptionCorner = row_data.get(neighborhood_data_selection.g_gas_hw);
+			x.p_averageGasConsumptionSemiDetached = row_data.get(neighborhood_data_selection.g_gas_2w);
+			x.p_averageGasConsumptionDetached = row_data.get(neighborhood_data_selection.g_gas_vw);
 			*/
-			x.p_percHouseholdsWithDistrictHeating = row_data.get(neighborhood_data.p_stadsv);
-			x.p_averageIncomeHousehold = row_data.get(neighborhood_data.g_hh_sti);
+			x.p_percHouseholdsWithDistrictHeating = row_data.get(neighborhood_data_selection.p_stadsv);
+			x.p_averageIncomeHousehold = row_data.get(neighborhood_data_selection.g_hh_sti);
 			/*
-			x.p_companyLocations = row_data.get(neighborhood_data.a_bedv);
-			x.p_companyLocationsA = row_data.get(neighborhood_data.a_bed_a);
-			x.p_companyLocationsBF = row_data.get(neighborhood_data.a_bed_bf);
-			x.p_companyLocationsGI = row_data.get(neighborhood_data.a_bed_gi);
-			x.p_companyLocationsHJ = row_data.get(neighborhood_data.a_bed_hj);
-			x.p_companyLocationsKL = row_data.get(neighborhood_data.a_bed_kl);
-			x.p_companyLocationsMN = row_data.get(neighborhood_data.a_bed_mn);
-			x.p_companyLocationsOQ = row_data.get(neighborhood_data.a_bed_oq);
-			x.p_companyLocationsRU = row_data.get(neighborhood_data.a_bed_ru);
+			x.p_companyLocations = row_data.get(neighborhood_data_selection.a_bedv);
+			x.p_companyLocationsA = row_data.get(neighborhood_data_selection.a_bed_a);
+			x.p_companyLocationsBF = row_data.get(neighborhood_data_selection.a_bed_bf);
+			x.p_companyLocationsGI = row_data.get(neighborhood_data_selection.a_bed_gi);
+			x.p_companyLocationsHJ = row_data.get(neighborhood_data_selection.a_bed_hj);
+			x.p_companyLocationsKL = row_data.get(neighborhood_data_selection.a_bed_kl);
+			x.p_companyLocationsMN = row_data.get(neighborhood_data_selection.a_bed_mn);
+			x.p_companyLocationsOQ = row_data.get(neighborhood_data_selection.a_bed_oq);
+			x.p_companyLocationsRU = row_data.get(neighborhood_data_selection.a_bed_ru);
 			*/
 			//Motor vehicles
-			x.p_cars = row_data.get(neighborhood_data.a_pau);
-			x.p_carsBenzine = row_data.get(neighborhood_data.a_bst_b);
-			x.p_carsOther = row_data.get(neighborhood_data.a_bst_nb);
-			x.p_motorBikes = row_data.get(neighborhood_data.a_m2w);
+			x.p_cars = row_data.get(neighborhood_data_selection.a_pau);
+			x.p_carsBenzine = row_data.get(neighborhood_data_selection.a_bst_b);
+			x.p_carsOther = row_data.get(neighborhood_data_selection.a_bst_nb);
+			x.p_motorBikes = row_data.get(neighborhood_data_selection.a_m2w);
 			
-			x.p_surfaceArea = row_data.get(neighborhood_data.a_opp_ha);
-			x.p_surfaceAreaLand = row_data.get(neighborhood_data.a_lan_ha);
-			x.p_surfaceAreaWater = row_data.get(neighborhood_data.a_wat_ha);
+			x.p_surfaceArea = row_data.get(neighborhood_data_selection.a_opp_ha);
+			x.p_surfaceAreaLand = row_data.get(neighborhood_data_selection.a_lan_ha);
+			x.p_surfaceAreaWater = row_data.get(neighborhood_data_selection.a_wat_ha);
 			
-			x.p_postalCode = row_data.get(neighborhood_data.pst_mvp);
-			x.p_postalCodeAccuracy = row_data.get(neighborhood_data.pst_dekp);
+			x.p_postalCode = row_data.get(neighborhood_data_selection.pst_mvp);
+			x.p_postalCodeAccuracy = row_data.get(neighborhood_data_selection.pst_dekp);
 			
-			x.p_urbanity = row_data.get(neighborhood_data.ste_mvs);
+			x.p_urbanity = row_data.get(neighborhood_data_selection.ste_mvs);
 			
 			
 			//If missing data in dataset is set to -99999, set to 0
@@ -3294,38 +3389,30 @@ for (Tuple row_data : rows_data){
 					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1715092306741</Id>
 					<Name><![CDATA[f_setHeatingMethodNeighborhoodData]]></Name>
-					<X>-550</X><Y>240</Y>
+					<X>-550</X><Y>260</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
 					<Body><![CDATA[//SET HEATING METHODS
-List<Tuple> rows_heatingMethods = selectFrom(neighborhoods_household_heating)
+List<Tuple> rows_heatingMethods = selectFrom(nbh_household_heating_method2023)
     .list();
     
 for (Tuple row_heatingMethod : rows_heatingMethods){
 	for (GZ_Neighborhood x : pop_GZ_Neighborhoods){
-		if (x.p_neighborhoodCode.equals(row_heatingMethod.get(neighborhoods_household_heating.buurtcode))){
+		if (x.p_neighborhoodCode.equals(row_heatingMethod.get(nbh_household_heating_method2023.buurtcode))){
 	
-			x.p_electricHeating_perc = row_heatingMethod.get(neighborhoods_household_heating.won_hfdverw_allel);
-			x.p_districtHeating_perc = row_heatingMethod.get(neighborhoods_household_heating.won_hfdverw_stvw);
-			x.p_gasHeating_perc = row_heatingMethod.get(neighborhoods_household_heating.won_hfdverw_gas);
-			x.p_gasCV_perc = row_heatingMethod.get(neighborhoods_household_heating.won_hfdverw_cv);
-			x.p_gasBlockHeating_perc = row_heatingMethod.get(neighborhoods_household_heating.won_hfdverw_blkvw);
-			double districtHeatingHighGas_perc = row_heatingMethod.get(neighborhoods_household_heating.won_hfdverw_stvw_hg);
-			double districtHeatingLowGas_perc = row_heatingMethod.get(neighborhoods_household_heating.won_hfdverw_stvw_lg);
-			double districtHeatingNoGas_perc = row_heatingMethod.get(neighborhoods_household_heating.won_hfdverw_stvw_zg);
-			double electricHeatingHighGas_perc = row_heatingMethod.get(neighborhoods_household_heating.won_hfdverw_allel_hg);
-			double electricHeatingLowGas_perc = row_heatingMethod.get(neighborhoods_household_heating.won_hfdverw_allel_lg);
-			double electricHeatingNoGas_perc = row_heatingMethod.get(neighborhoods_household_heating.won_hfdverw_allel_zg);
-			x.p_heatingUnkown_perc = row_heatingMethod.get(neighborhoods_household_heating.won_hfdverw_inst_onb);
+			x.p_gasCV_perc = row_heatingMethod.get(nbh_household_heating_method2023.individuele_cv) / 100;
+			x.p_gasBlockHeating_perc = row_heatingMethod.get(nbh_household_heating_method2023.blok_verwarming) / 100;
+			double districtHeatingHighGas_perc = row_heatingMethod.get(nbh_household_heating_method2023.stadsverwarming_met_hoog_gasverbruik) / 100;
+			double districtHeatingLowGas_perc = row_heatingMethod.get(nbh_household_heating_method2023.stadsverwarming_met_laag_gasverbruik) / 100;
+			double districtHeatingNoGas_perc = row_heatingMethod.get(nbh_household_heating_method2023.stadsverwarming_zonder_gasverbruik) / 100;
+			double electricHeatingHighGas_perc = row_heatingMethod.get(nbh_household_heating_method2023.elektrisch_verwarmd_met_hoog_gasverbruik) / 100;
+			double electricHeatingLowGas_perc = row_heatingMethod.get(nbh_household_heating_method2023.elektrisch_verwarmd_met_laag_gasverbruik) / 100;
+			double electricHeatingNoGas_perc = row_heatingMethod.get(nbh_household_heating_method2023.elektrisch_verwarmd_zonder_gasverbruik) / 100;
+			x.p_heatingUnkown_perc = row_heatingMethod.get(nbh_household_heating_method2023.type_installatie_onbekend) / 100;
 
 			//If missing data in dataset is set to -99999, set to 0
-			x.p_electricHeating_perc = f_returnZeroIfDoubleIsSmallerThanZero(x.p_electricHeating_perc);
-			//x.p_districtHeating_perc = f_returnZeroIfDoubleIsSmallerThanZero(x.p_districtHeating_perc);
-			x.p_gasHeating_perc = f_returnZeroIfDoubleIsSmallerThanZero(x.p_gasHeating_perc);
-			x.p_gasCV_perc = f_returnZeroIfDoubleIsSmallerThanZero(x.p_gasCV_perc);
-			x.p_gasBlockHeating_perc = f_returnZeroIfDoubleIsSmallerThanZero(x.p_gasBlockHeating_perc);
 			districtHeatingHighGas_perc = f_returnZeroIfDoubleIsSmallerThanZero(districtHeatingHighGas_perc);
 			districtHeatingLowGas_perc = f_returnZeroIfDoubleIsSmallerThanZero(districtHeatingLowGas_perc);
 			districtHeatingNoGas_perc = f_returnZeroIfDoubleIsSmallerThanZero(districtHeatingNoGas_perc);
@@ -3345,9 +3432,7 @@ for (Tuple row_heatingMethod : rows_heatingMethods){
 				x.v_hasDistrictHeatingGrid = true;
 			} else {
 				x.v_hasDistrictHeatingGrid = false;
-			}
-			
-			
+			}	
 			break;
 		}
 	}
@@ -3359,7 +3444,7 @@ for (Tuple row_heatingMethod : rows_heatingMethods){
 					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1715688573320</Id>
 					<Name><![CDATA[f_adoptionProces]]></Name>
-					<X>-580</X><Y>900</Y>
+					<X>-580</X><Y>970</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -3506,19 +3591,21 @@ return municipalityCodes;]]></Body>
 					</Parameter>
 					<Body><![CDATA[GZ_Neighborhood x;
 x = add_pop_GZ_Neighborhoods();
-x.p_neighborhoodCode = row.get( neighborhoods_netherlands.statcode);
-x.p_neighborhood = row.get( neighborhoods_netherlands.statnaam);
-x.p_municipalityCode = row.get( neighborhoods_netherlands.gm_code);
-x.p_geometeryCoordinates = row.get( neighborhoods_netherlands.wkt_geom);
+x.p_neighborhoodCode = row.get( neighborhood_shape.buurtcode);
+x.p_neighborhood = row.get( neighborhood_shape.buurtnaam);
+x.p_municipalityCode = row.get( neighborhood_shape.gemeenteco);
+x.p_geometeryCoordinates = row.get( neighborhood_shape.wkt_geom_100);
 	
 //Set neighborhood code
 String replaced = "WK" + x.p_neighborhoodCode.substring(2);
 x.p_districtCode = replaced.substring(0, replaced.length()-2);
 		
 //SET LOCATION
-x.p_longitude = row.get( neighborhoods_netherlands.longitude);
-x.p_latitude = row.get( neighborhoods_netherlands.latitude);	
+/*
+x.p_longitude = row.get( neighborhood_shape.longitude);
+x.p_latitude = row.get( neighborhood_shape.latitude);	
 x.setLatLon(x.p_latitude, x.p_longitude);
+*/
 			
 //SET COORDINATES AND REGION FROM WKT_GEOM STRING
 x.f_drawRegionFromWKTString();]]></Body>
@@ -3528,7 +3615,7 @@ x.f_drawRegionFromWKTString();]]></Body>
 					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1732022834044</Id>
 					<Name><![CDATA[f_setMap]]></Name>
-					<X>-570</X><Y>400</Y>
+					<X>-570</X><Y>530</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -3577,7 +3664,7 @@ map.setMapScale(mapScale);]]></Body>
 					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1732024414878</Id>
 					<Name><![CDATA[f_setHeatingSystemOptions]]></Name>
-					<X>-570</X><Y>670</Y>
+					<X>-570</X><Y>800</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -3643,7 +3730,7 @@ for(J_HeatingSystemOptionsGlobal hso : c_heatingSystemOptions){
 					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1732542357688</Id>
 					<Name><![CDATA[f_countHouseholdHeatingMethods]]></Name>
-					<X>-840</X><Y>520</Y>
+					<X>-560</X><Y>390</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -3721,7 +3808,7 @@ v_districtHeating_perc = v_districtHeating_nb / households;
 					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1732635161531</Id>
 					<Name><![CDATA[f_updateGlobalCostsHeatingMethods]]></Name>
-					<X>-570</X><Y>920</Y>
+					<X>-570</X><Y>990</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -3758,7 +3845,7 @@ v_districtHeating_perc = v_districtHeating_nb / households;
 					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1733243051884</Id>
 					<Name><![CDATA[f_sumDataset]]></Name>
-					<X>-570</X><Y>780</Y>
+					<X>-570</X><Y>910</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -3778,7 +3865,7 @@ return sum;]]></Body>
 					<ReturnType><![CDATA[OL_EnergyCarrier]]></ReturnType>
 					<Id>1733326431825</Id>
 					<Name><![CDATA[f_convertEnergySourceStringToOL]]></Name>
-					<X>-570</X><Y>710</Y>
+					<X>-570</X><Y>840</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -3804,7 +3891,7 @@ return sum;]]></Body>
 					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1733333422693</Id>
 					<Name><![CDATA[f_getEnergySourceCosts]]></Name>
-					<X>-570</X><Y>730</Y>
+					<X>-570</X><Y>860</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -3944,7 +4031,7 @@ ch_barTopRank.addDataItem(d5, v_districtHeatingText, v_districtHeatingColor);
 					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1733765061876</Id>
 					<Name><![CDATA[f_getNormalizedValue]]></Name>
-					<X>-570</X><Y>800</Y>
+					<X>-570</X><Y>930</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -4006,7 +4093,7 @@ ch_barTopRank.addDataItem(d5, v_districtHeatingText, v_districtHeatingColor);
 					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1733904683051</Id>
 					<Name><![CDATA[f_normalizeValuesAndRankHeatingMethods]]></Name>
-					<X>-560</X><Y>310</Y>
+					<X>-560</X><Y>370</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -4051,7 +4138,7 @@ for(J_Household hh : c_households) {
 					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1733904727347</Id>
 					<Name><![CDATA[f_setInitialUnitsInstalledPerHeatingMethod]]></Name>
-					<X>-560</X><Y>330</Y>
+					<X>-560</X><Y>410</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -4082,7 +4169,7 @@ for( J_HeatingSystemOptionsGlobal hso : c_heatingSystemOptions){
 					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1733921586049</Id>
 					<Name><![CDATA[f_setNeighborhoodPolicyPlan]]></Name>
-					<X>-550</X><Y>260</Y>
+					<X>-550</X><Y>280</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -4144,6 +4231,367 @@ if(mapMode == DISTRICT_HEATING_POTENTIAL){
 	}
 }
 		]]></Body>
+				</Function>
+				<Function AccessType="default" StaticFunction="false">
+					<ReturnModificator>VOID</ReturnModificator>
+					<ReturnType><![CDATA[double]]></ReturnType>
+					<Id>1737363294210</Id>
+					<Name><![CDATA[f_setGeneralNeighborhoodData]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
+					<X>-550</X><Y>240</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Body><![CDATA[List<Tuple> rows_data = selectFrom(neighborhood_data)
+    .list();
+    
+for (Tuple row_data : rows_data){
+	for (GZ_Neighborhood x : pop_GZ_Neighborhoods){
+		if (x.p_neighborhoodCode.equals(row_data.get(neighborhood_data.buurtcode))){
+			
+			x.p_inhabitants = row_data.get(neighborhood_data.a_inw);
+			x.p_males = row_data.get(neighborhood_data.a_man);
+			x.p_females = row_data.get(neighborhood_data.a_vrouw);
+			
+			x.p_households = row_data.get(neighborhood_data.a_hh);
+			x.p_singlePersonHouseholds = row_data.get(neighborhood_data.a_1p_hh);
+			x.p_householdsWithoutChildren = row_data.get(neighborhood_data.a_hh_z_k);
+			x.p_householdsWithChildren = row_data.get(neighborhood_data.a_hh_m_k);
+			x.p_averageHouseholdSize = row_data.get(neighborhood_data.g_hhgro);
+			x.p_populationDensity = row_data.get(neighborhood_data.bev_dich);
+			
+			//Living
+			x.p_houses = row_data.get(neighborhood_data.a_woning);
+			x.p_housesAverageWOZValue = row_data.get(neighborhood_data.g_wozbag);
+			x.p_ownerOccupiedHomes = row_data.get(neighborhood_data.p_koopw);
+			x.p_rentalProperties = row_data.get(neighborhood_data.p_huurw);
+			x.p_ownedByHousingAssociation = row_data.get(neighborhood_data.p_wcorpw);
+			x.p_ownedByOtherLandlords = row_data.get(neighborhood_data.p_ov_hw);
+			x.p_ownershipUnknown = row_data.get(neighborhood_data.p_e_o_w);
+			x.p_housesBuildBefore2000 = row_data.get(neighborhood_data.p_bjj2k);
+			x.p_housesBuildAfter2000 = row_data.get(neighborhood_data.p_bjo2k);
+			x.set_p_multiFamilyHouseholds_perc(row_data.get(neighborhood_data.p_mgezw));
+			x.set_p_singleFamilyHouseholds_perc(row_data.get(neighborhood_data.p_1gezw));
+			
+			//Energie
+			x.p_averageElectricityConsumptionTotal = row_data.get(neighborhood_data.g_ele);
+			/*
+			x.p_averageElectricityConsumptionApartment = row_data.get(neighborhood_data.g_ele_ap);
+			x.p_averageElectricityConsumptionTerraced = row_data.get(neighborhood_data.g_ele_tw);
+			x.p_averageElectricityConsumptionCorner = row_data.get(neighborhood_data.g_ele_hw);
+			x.p_averageElectricityConsumptionSemiDetached = row_data.get(neighborhood_data.g_ele_2w);
+			x.p_averageElectricityConsumptionDetached = row_data.get(neighborhood_data.g_ele_vw);
+			*/
+			x.p_averageGasConsumptionTotal = row_data.get(neighborhood_data.g_gas);
+			/*
+			x.p_averageGasConsumptionApartment = row_data.get(neighborhood_data.g_gas_ap);
+			x.p_averageGasConsumptionTerraced = row_data.get(neighborhood_data.g_tw);
+			x.p_averageGasConsumptionCorner = row_data.get(neighborhood_data.g_gas_hw);
+			x.p_averageGasConsumptionSemiDetached = row_data.get(neighborhood_data.g_gas_2w);
+			x.p_averageGasConsumptionDetached = row_data.get(neighborhood_data.g_gas_vw);
+			*/
+			x.p_percHouseholdsWithDistrictHeating = row_data.get(neighborhood_data.p_stadsv);
+			x.p_averageIncomeHousehold = row_data.get(neighborhood_data.g_hh_sti);
+			/*
+			x.p_companyLocations = row_data.get(neighborhood_data.a_bedv);
+			x.p_companyLocationsA = row_data.get(neighborhood_data.a_bed_a);
+			x.p_companyLocationsBF = row_data.get(neighborhood_data.a_bed_bf);
+			x.p_companyLocationsGI = row_data.get(neighborhood_data.a_bed_gi);
+			x.p_companyLocationsHJ = row_data.get(neighborhood_data.a_bed_hj);
+			x.p_companyLocationsKL = row_data.get(neighborhood_data.a_bed_kl);
+			x.p_companyLocationsMN = row_data.get(neighborhood_data.a_bed_mn);
+			x.p_companyLocationsOQ = row_data.get(neighborhood_data.a_bed_oq);
+			x.p_companyLocationsRU = row_data.get(neighborhood_data.a_bed_ru);
+			*/
+			//Motor vehicles
+			x.p_cars = row_data.get(neighborhood_data.a_pau);
+			x.p_carsBenzine = row_data.get(neighborhood_data.a_bst_b);
+			x.p_carsOther = row_data.get(neighborhood_data.a_bst_nb);
+			x.p_motorBikes = row_data.get(neighborhood_data.a_m2w);
+			
+			x.p_surfaceArea = row_data.get(neighborhood_data.a_opp_ha);
+			x.p_surfaceAreaLand = row_data.get(neighborhood_data.a_lan_ha);
+			x.p_surfaceAreaWater = row_data.get(neighborhood_data.a_wat_ha);
+			
+			x.p_postalCode = row_data.get(neighborhood_data.pst_mvp);
+			x.p_postalCodeAccuracy = row_data.get(neighborhood_data.pst_dekp);
+			
+			x.p_urbanity = row_data.get(neighborhood_data.ste_mvs);
+			
+			
+			//If missing data in dataset is set to -99999, set to 0
+			x.p_inhabitants = f_returnZeroIfDoubleIsSmallerThanZero(x.p_inhabitants);
+			x.p_males = f_returnZeroIfDoubleIsSmallerThanZero(x.p_males);
+			x.p_females = f_returnZeroIfDoubleIsSmallerThanZero(x.p_females);
+			x.p_households = f_returnZeroIfDoubleIsSmallerThanZeroInt(x.p_households);
+			x.p_singlePersonHouseholds = f_returnZeroIfDoubleIsSmallerThanZero(x.p_singlePersonHouseholds);
+			x.p_householdsWithoutChildren = f_returnZeroIfDoubleIsSmallerThanZeroInt(x.p_householdsWithoutChildren);
+			x.p_averageHouseholdSize = f_returnZeroIfDoubleIsSmallerThanZero(x.p_averageHouseholdSize);
+			x.p_populationDensity = f_returnZeroIfDoubleIsSmallerThanZero(x.p_populationDensity);
+			x.p_houses = f_returnZeroIfDoubleIsSmallerThanZero(x.p_houses);
+			x.p_ownerOccupiedHomes = f_returnZeroIfDoubleIsSmallerThanZero(x.p_ownerOccupiedHomes);
+			x.p_rentalProperties = f_returnZeroIfDoubleIsSmallerThanZero(x.p_rentalProperties);
+			x.p_ownedByHousingAssociation = f_returnZeroIfDoubleIsSmallerThanZero(x.p_ownedByHousingAssociation);
+			x.p_ownedByOtherLandlords = f_returnZeroIfDoubleIsSmallerThanZero(x.p_ownedByOtherLandlords);
+			x.p_ownershipUnknown = f_returnZeroIfDoubleIsSmallerThanZero(x.p_ownershipUnknown);
+			x.p_housesBuildBefore2000 = f_returnZeroIfDoubleIsSmallerThanZero(x.p_housesBuildBefore2000);
+			x.p_housesBuildAfter2000 = f_returnZeroIfDoubleIsSmallerThanZero(x.p_housesBuildAfter2000);
+			x.p_percHouseholdsWithDistrictHeating = f_returnZeroIfDoubleIsSmallerThanZero(x.p_percHouseholdsWithDistrictHeating);
+			/*
+			x.p_companyLocations = f_returnZeroIfDoubleIsSmallerThanZero(x.p_companyLocations);
+			x.p_companyLocationsBF = f_returnZeroIfDoubleIsSmallerThanZero(x.p_companyLocationsBF);
+			x.p_companyLocationsGI = f_returnZeroIfDoubleIsSmallerThanZero(x.p_companyLocationsGI);
+			x.p_companyLocationsHJ = f_returnZeroIfDoubleIsSmallerThanZero(x.p_companyLocationsHJ);
+			x.p_companyLocationsKL = f_returnZeroIfDoubleIsSmallerThanZero(x.p_companyLocationsKL);
+			x.p_companyLocationsMN = f_returnZeroIfDoubleIsSmallerThanZero(x.p_companyLocationsMN);
+			x.p_companyLocationsOQ = f_returnZeroIfDoubleIsSmallerThanZero(x.p_companyLocationsOQ);
+			x.p_companyLocationsRU = f_returnZeroIfDoubleIsSmallerThanZero(x.p_companyLocationsRU);
+			*/
+			x.p_cars = f_returnZeroIfDoubleIsSmallerThanZeroInt(x.p_cars);
+			x.p_carsBenzine = f_returnZeroIfDoubleIsSmallerThanZero(x.p_carsBenzine);
+			x.p_carsOther = f_returnZeroIfDoubleIsSmallerThanZero(x.p_carsOther);
+			x.p_motorBikes = f_returnZeroIfDoubleIsSmallerThanZero(x.p_motorBikes);
+			x.p_surfaceArea = f_returnZeroIfDoubleIsSmallerThanZero(x.p_surfaceArea);
+			x.p_surfaceAreaLand = f_returnZeroIfDoubleIsSmallerThanZero(x.p_surfaceAreaLand);
+			x.p_surfaceAreaWater = f_returnZeroIfDoubleIsSmallerThanZero(x.p_surfaceAreaWater);
+			x.p_postalCode = f_returnZeroIfDoubleIsSmallerThanZero(x.p_postalCode);
+			x.p_postalCodeAccuracy = f_returnZeroIfDoubleIsSmallerThanZero(x.p_postalCodeAccuracy);
+			x.p_urbanity = f_returnZeroIfDoubleIsSmallerThanZero(x.p_urbanity);
+			break;
+		}
+	}
+}	]]></Body>
+				</Function>
+				<Function AccessType="default" StaticFunction="false">
+					<ReturnModificator>VOID</ReturnModificator>
+					<ReturnType><![CDATA[double]]></ReturnType>
+					<Id>1737379663211</Id>
+					<Name><![CDATA[f_createHouseholds]]></Name>
+					<X>-560</X><Y>330</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Parameter>
+						<Name><![CDATA[rs]]></Name>
+						<Type><![CDATA[ResultSet]]></Type>
+					</Parameter>
+					<Body><![CDATA[int numid = rs.getInt("numid");
+int pid = rs.getInt("pid");
+int vid = rs.getInt("vid");
+String lid = rs.getString("lid");
+String sid = rs.getString("sid");
+String postcode = rs.getString("postcode");
+String straat = rs.getString("straat");
+String woonplaatsnaam = rs.getString("woonplaatsnaam");
+int huisnummer = rs.getInt("huisnummer");
+String huisletter = rs.getString("huisletter");
+String huisnummertoevoeging = rs.getString("huisnummertoevoeging");
+double oppervlakte = rs.getDouble("oppervlakte");
+double woningequivalent = rs.getDouble("woningequivalent");
+String gebruiksdoelen = rs.getString("gebruiksdoelen");
+int pand_bouwjaar = rs.getInt("pand_bouwjaar");
+int pc6_gemiddelde_woz_waarde_woning = rs.getInt("pc6_gemiddelde_woz_waarde_woning");
+int gemiddelde_gemeente_woz = rs.getInt("gemiddelde_gemeente_woz");
+int pc6_eigendomssituatie_perc_koop = rs.getInt("pc6_eigendomssituatie_perc_koop");
+int pc6_eigendomssituatie_perc_huur = rs.getInt("pc6_eigendomssituatie_perc_huur");
+int pc6_eigendomssituatie_aantal_woningen_corporaties = rs.getInt("pc6_eigendomssituatie_aantal_woningen_corporaties");
+String netbeheerder = rs.getString("netbeheerder");
+String energieklasse = rs.getString("energieklasse");
+String woning_type = rs.getString("woning_type");
+String sbicode = rs.getString("sbicode");
+int gas_ean_count = rs.getInt("gas_ean_count");
+int p6_grondbeslag_m2 = rs.getInt("p6_grondbeslag_m2");
+int p6_gasm3_2023 = rs.getInt("p6_gasm3_2023");
+int p6_gas_aansluitingen_2023 = rs.getInt("p6_gas_aansluitingen_2023");
+int p6_kwh_2023 = rs.getInt("p6_kwh_2023");
+int p6_kwh_productie_2023 = rs.getInt("p6_kwh_productie_2023");
+String point = rs.getString("point");
+String buurtcode = rs.getString("buurtcode");
+String buurtnaam = rs.getString("buurtnaam");
+String wijkcode = rs.getString("wijkcode");
+String wijknaam = rs.getString("wijknaam");
+String gemeentecode = rs.getString("gemeentecode");
+String gemeentenaam = rs.getString("gemeentenaam");
+String provincienaam = rs.getString("provincienaam");
+String provinciecode = rs.getString("provinciecode");
+
+OL_HouseholdOwnership ownership = f_getHouseholdOwnership(pc6_eigendomssituatie_aantal_woningen_corporaties, pc6_eigendomssituatie_perc_huur, pc6_eigendomssituatie_perc_koop);
+
+J_Household household = new J_Household(
+	numid,
+	pid,
+	vid,
+	oppervlakte,
+	woningequivalent,
+	pand_bouwjaar,
+	energieklasse,
+	buurtcode,
+	ownership,
+	this,
+	idCounter
+	);
+c_households.add(household);
+idCounter++;
+
+// Add the current household to the list corresponding to the buurtcode
+// Check if the buurtcode exists in the map
+if (c_buurtcodeToHouseholds.containsKey(buurtcode)) {
+    // Add the current household to the list corresponding to the buurtcode
+    c_buurtcodeToHouseholds.get(buurtcode).add(household);
+    //traceln("Household " + vid + " added to nbh " + buurtcode);
+} else {
+    // Handle the case where the buurtcode doesn't exist
+    System.out.println("Buurtcode " + buurtcode + " does not exist in the map.");
+    // Optionally, you can create a new list for this buurtcode if you want to add the household anyway:
+    c_buurtcodeToHouseholds.put(buurtcode, new ArrayList<>());
+    c_buurtcodeToHouseholds.get(buurtcode).add(household);
+}
+
+]]></Body>
+				</Function>
+				<Function AccessType="default" StaticFunction="false">
+					<ReturnModificator>VOID</ReturnModificator>
+					<ReturnType><![CDATA[double]]></ReturnType>
+					<Id>1737379663215</Id>
+					<Name><![CDATA[f_initializeHouseholdsFromDatabase]]></Name>
+					<X>-570</X><Y>310</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Parameter>
+						<Name><![CDATA[myDatabase]]></Name>
+						<Type><![CDATA[Database]]></Type>
+					</Parameter>
+					<Parameter>
+						<Name><![CDATA[modeFullNetherlands]]></Name>
+						<Type><![CDATA[boolean]]></Type>
+					</Parameter>
+					<Body><![CDATA[// Create the query
+String query = "";
+if(modeFullNetherlands){
+	query = "SELECT * FROM households WHERE gebruiksdoelen = 'woonfunctie'";
+}
+else {
+	query = String.format("SELECT * FROM households WHERE gebruiksdoelen = 'woonfunctie' AND provincienaam = '%s'", p_province);
+}
+//traceln(query);
+
+// Execute the query
+ResultSet rs = myDatabase.getResultSet( query );
+traceln("Resultset created, starting household creation");
+
+if (!rs.isBeforeFirst()) {
+    System.out.println("No data found for the query");
+} else {
+	while( rs.next() ) {
+		f_createHouseholds(rs);
+	}
+}
+
+
+rs.close();
+
+]]></Body>
+				</Function>
+				<Function AccessType="default" StaticFunction="false">
+					<ReturnModificator>VOID</ReturnModificator>
+					<ReturnType><![CDATA[double]]></ReturnType>
+					<Id>1737379663217</Id>
+					<Name><![CDATA[f_linkNeighborhoodsToHouseholds]]></Name>
+					<X>-570</X><Y>430</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Body><![CDATA[// Link households to neighborhoods and update data
+for (GZ_Neighborhood neighborhood : pop_GZ_Neighborhoods) {
+    String buurtcode = neighborhood.p_neighborhoodCode;
+	neighborhood.c_households.addAll(c_buurtcodeToHouseholds.get(buurtcode));
+       
+    //Update with nbh data
+    if(neighborhood.c_households.size() > 0){
+    	neighborhood.f_setHouseholdData();
+    }
+}]]></Body>
+				</Function>
+				<Function AccessType="default" StaticFunction="false">
+					<ReturnModificator>VOID</ReturnModificator>
+					<ReturnType><![CDATA[double]]></ReturnType>
+					<Id>1737381552755</Id>
+					<Name><![CDATA[f_setVisuals]]></Name>
+					<X>-570</X><Y>500</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Body><![CDATA[f_setMap(p_modeFullNetherlands);
+f_setText();
+f_setCharts();]]></Body>
+				</Function>
+				<Function AccessType="default" StaticFunction="false">
+					<ReturnModificator>RETURNS_VALUE</ReturnModificator>
+					<ReturnType><![CDATA[OL_HouseholdOwnership]]></ReturnType>
+					<Id>1737382797568</Id>
+					<Name><![CDATA[f_getHouseholdOwnership]]></Name>
+					<Description><![CDATA[#perc should be in 0-1]]></Description>
+					<X>-560</X><Y>350</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Parameter>
+						<Name><![CDATA[pc6_eigendomssituatie_aantal_woningen_corporaties]]></Name>
+						<Type><![CDATA[double]]></Type>
+					</Parameter>
+					<Parameter>
+						<Name><![CDATA[pc6_eigendomssituatie_perc_huur]]></Name>
+						<Type><![CDATA[double]]></Type>
+					</Parameter>
+					<Parameter>
+						<Name><![CDATA[pc6_eigendomssituatie_perc_koop]]></Name>
+						<Type><![CDATA[double]]></Type>
+					</Parameter>
+					<Body><![CDATA[/*
+if(idCounter < 100){
+	traceln("Perc huur: " + pc6_eigendomssituatie_perc_huur + " perc koop: " + pc6_eigendomssituatie_perc_koop + " perc wbv: " + pc6_eigendomssituatie_aantal_woningen_corporaties);
+}
+*/
+double ownedByHousingAssociation_perc = ( pc6_eigendomssituatie_perc_huur - pc6_eigendomssituatie_aantal_woningen_corporaties) / 100;
+double ownedByOtherLandLords_perc = (pc6_eigendomssituatie_perc_huur - ownedByHousingAssociation_perc) / 100;
+double privatelyOwned_perc = pc6_eigendomssituatie_perc_koop / 100;
+
+double rand = uniform(0,1);
+if( rand < ownedByHousingAssociation_perc) {
+	return SOCIAL_HOUSING;
+}
+else if( rand < ownedByHousingAssociation_perc + ownedByOtherLandLords_perc) {
+	return RENTED;  	
+}
+else {
+	return PRIVATELY_OWNED; //All unknown is privately owned
+}]]></Body>
+				</Function>
+				<Function AccessType="default" StaticFunction="false">
+					<ReturnModificator>VOID</ReturnModificator>
+					<ReturnType><![CDATA[double]]></ReturnType>
+					<Id>1737390723807</Id>
+					<Name><![CDATA[f_getInitialHeatingMethods]]></Name>
+					<X>-570</X><Y>450</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Body><![CDATA[//Normalize EAC and preference values
+f_normalizeValuesAndRankHeatingMethods();
+
+//Count heating methods
+f_countHouseholdHeatingMethods();
+
+//Set inital units installed to global heating system options to calculate learning curves
+f_setInitialUnitsInstalledPerHeatingMethod();]]></Body>
 				</Function>
 			</Functions>
 			<TableFunctions>
@@ -5481,6 +5929,23 @@ if(mapMode == DISTRICT_HEATING_POTENTIAL){
 				</HistogramData>
 			</AnalysisData>
 			<Connectivity>
+				<Database>
+					<Id>1737379663219</Id>
+					<Name><![CDATA[db_householdData]]></Name>
+					<X>-790</X><Y>160</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<DatabaseType>OTHER</DatabaseType>
+					<ConnectionURL><![CDATA[jdbc:sqlite:large_files/households.db]]></ConnectionURL>
+					<ConnectOnStartup>true</ConnectOnStartup>
+					<DatabaseName><![CDATA[]]></DatabaseName>
+					<Host><![CDATA[localhost]]></Host>
+					<JdbcDriverClassName><![CDATA[net.sourceforge.jtds.jdbc.Driver]]></JdbcDriverClassName>
+					<Login><![CDATA[]]></Login>
+					<Password><![CDATA[]]></Password>
+				</Database>
 				<ExcelFile>
 					<Id>1693920301159</Id>
 					<Name><![CDATA[ef_residenceObjects]]></Name>
@@ -5525,7 +5990,7 @@ if(mapMode == DISTRICT_HEATING_POTENTIAL){
 				<EmbeddedObject>
 					<Id>1700133527402</Id>
 					<Name><![CDATA[pop_GZ_Neighborhoods]]></Name>
-					<X>-570</X><Y>560</Y>
+					<X>-570</X><Y>690</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -5856,7 +6321,7 @@ if(mapMode == DISTRICT_HEATING_POTENTIAL){
 				<EmbeddedObject>
 					<Id>1708548712823</Id>
 					<Name><![CDATA[pop_DSOs]]></Name>
-					<X>-570</X><Y>610</Y>
+					<X>-570</X><Y>740</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -5914,7 +6379,7 @@ if(mapMode == DISTRICT_HEATING_POTENTIAL){
 				<EmbeddedObject>
 					<Id>1708548749645</Id>
 					<Name><![CDATA[districtHeatingCompany]]></Name>
-					<X>-570</X><Y>630</Y>
+					<X>-570</X><Y>760</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -6584,6 +7049,50 @@ if(mapMode == DISTRICT_HEATING_POTENTIAL){
 					<FillColorCode><![CDATA[v_mixedColor]]></FillColorCode>
 					<FillMaterial>null</FillMaterial>
 				</Oval>
+				<Text>
+					<Id>1737391330957</Id>
+					<Name><![CDATA[t_noHouseholds]]></Name>
+					<X>-5</X><Y>29.5</Y>
+					<Label><X>0</X><Y>-10</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D</DrawMode>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Z>0</Z>
+					<Rotation>0.0</Rotation>
+					<Color>-16777216</Color>
+					<Text><![CDATA[]]></Text>
+					<Font>
+						<Name>SansSerif</Name>
+						<Size>12</Size>
+						<Style>0</Style>
+					</Font>
+					<Alignment>LEFT</Alignment>
+				</Text>
+				<Oval>
+					<Id>1737391330964</Id>
+					<Name><![CDATA[ovalWarmtenetMiddel2]]></Name>
+					<X>-25</X><Y>37</Y>
+					<Label><X>0</X><Y>0</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Z>0</Z>
+					<ZHeight>10</ZHeight>
+					<LineWidth>1</LineWidth>
+					<LineColor>-16777216</LineColor>
+					<LineMaterial>null</LineMaterial>
+					<LineStyle>SOLID</LineStyle>
+					<RadiusX>6.5</RadiusX>
+					<RadiusY>40</RadiusY>
+					<Rotation>0.0</Rotation>
+					<FillColor>-1</FillColor>
+					<FillColorCode><![CDATA[v_noHouseholdsColor]]></FillColorCode>
+					<FillMaterial>null</FillMaterial>
+				</Oval>
 			</Presentation>
 
 				</Group>
@@ -6673,28 +7182,6 @@ if(mapMode == DISTRICT_HEATING_POTENTIAL){
 					</Font>
 					<Alignment>LEFT</Alignment>
 				</Text>
-				<Rectangle>
-					<Id>1715077461488</Id>
-					<Name><![CDATA[rectangle2]]></Name>
-					<X>-600</X><Y>100</Y>
-					<Label><X>10</X><Y>10</Y></Label>
-					<PublicFlag>true</PublicFlag>
-					<PresentationFlag>false</PresentationFlag>
-					<ShowLabel>false</ShowLabel>
-					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
-					<EmbeddedIcon>false</EmbeddedIcon>
-					<Z>0</Z>
-					<ZHeight>10</ZHeight>
-					<LineWidth>1</LineWidth>
-					<LineColor>-16777216</LineColor>
-					<LineMaterial>null</LineMaterial>
-					<LineStyle>SOLID</LineStyle>
-					<Width>340</Width>
-					<Height>280</Height>
-					<Rotation>0.0</Rotation>
-					<FillColor>-1644806</FillColor>
-					<FillMaterial>null</FillMaterial>
-				</Rectangle>
     			<Histogram>
 					<Id>1733387978817</Id>
 					<Name><![CDATA[hist_hsNaturalGasBoilerEAC]]></Name>
@@ -11539,9 +12026,9 @@ GISRegion gisregion = new GISRegion(main.map,regionCoords);
 gisregion.setVisible(true);	
 gisregion.setLineColor( gray );
 gisregion.setLineStyle( LINE_STYLE_SOLID );
-gisregion.setLineWidth( 1 );
+gisregion.setLineWidth( 0.7 );
 //gisregion.setFillColor( new Color(205, 133, 63, 90) );
-gisregion.setFillColor( yellow );
+gisregion.setFillColor( darkGray );
 
 return gisregion;
 
@@ -11562,7 +12049,8 @@ return gisregion;
 p_geometeryCoordinates = p_geometeryCoordinates.replace("MultiPolygon (((","");
 p_geometeryCoordinates = p_geometeryCoordinates.replace(",","");
 p_geometeryCoordinates = p_geometeryCoordinates.replace(")))","");		
-		
+//traceln("Drawing GIS region at nbh " + p_neighborhoodCode + " with index " + this.getIndex() + " with coordiantes " + p_geometeryCoordinates);		
+
 //Split if multiple geom exist
 String separator = "\\)"; // Using "),(" as a separator
 // Splitting the string at the separator
@@ -11712,37 +12200,43 @@ v_hybridHeatPumps_perc = v_hybridHeatPumps_nb / households;
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
-					<Body><![CDATA[
-if (v_gasBoilers_perc > 0.5){
-	for(GISRegion r : c_gisRegions){
-		r.setFillColor(main.v_naturalGasBoilerColor);
+					<Body><![CDATA[if(c_households.size() > 0){
+	if (v_gasBoilers_perc > 0.5){
+		for(GISRegion r : c_gisRegions){
+			r.setFillColor(main.v_naturalGasBoilerColor);
+		}
+	}
+	else if (v_gasBlockHeating_perc > 0.5){
+		for(GISRegion r : c_gisRegions){
+			r.setFillColor(main.v_naturalGasBlockColor);
+		}
+	}
+	else if (v_districtHeating_perc > 0.5){
+		for(GISRegion r : c_gisRegions){
+			r.setFillColor(main.v_districtHeatingColor);
+		}
+	}
+	else if (v_electricHeatPumps_perc > 0.5){
+		for(GISRegion r : c_gisRegions){
+			r.setFillColor(main.v_electricHeatPumpColor);
+		}
+	}
+	else if (v_hybridHeatPumps_perc > 0.5){
+		for(GISRegion r : c_gisRegions){
+			r.setFillColor(main.v_hybridHeatPumpColor);
+		}
+	}
+	else{
+		for(GISRegion r : c_gisRegions){
+			r.setFillColor(main.v_mixedColor);
+		}
 	}
 }
-else if (v_gasBlockHeating_perc > 0.5){
+else {
 	for(GISRegion r : c_gisRegions){
-		r.setFillColor(main.v_naturalGasBlockColor);
+		r.setFillColor(main.v_noHouseholdsColor);
 	}
-}
-else if (v_districtHeating_perc > 0.5){
-	for(GISRegion r : c_gisRegions){
-		r.setFillColor(main.v_districtHeatingColor);
-	}
-}
-else if (v_electricHeatPumps_perc > 0.5){
-	for(GISRegion r : c_gisRegions){
-		r.setFillColor(main.v_electricHeatPumpColor);
-	}
-}
-else if (v_hybridHeatPumps_perc > 0.5){
-	for(GISRegion r : c_gisRegions){
-		r.setFillColor(main.v_hybridHeatPumpColor);
-	}
-}
-else{
-	for(GISRegion r : c_gisRegions){
-		r.setFillColor(main.v_mixedColor);
-	}
-}]]></Body>
+}	]]></Body>
 				</Function>
 				<Function AccessType="default" StaticFunction="false">
 					<ReturnModificator>VOID</ReturnModificator>
@@ -11853,17 +12347,15 @@ else{
 					<ReturnModificator>VOID</ReturnModificator>
 					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1715686279856</Id>
-					<Name><![CDATA[f_householdInitialization]]></Name>
+					<Name><![CDATA[f_setHouseholdData]]></Name>
 					<X>-440</X><Y>70</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
 					<Body><![CDATA[//CREATE HOUSEHOLDS
-for( int i = 0; i < p_households; i++ ){
-	//Set ownership
-	OL_HouseholdOwnership ownership = f_getHouseholdOwnership();
-	
+for( J_Household hh : c_households){
+
 	//Set if hh is in block
 	boolean isInBlock = false;
 	double rand = random();
@@ -11880,53 +12372,11 @@ for( int i = 0; i < p_households; i++ ){
 	
 	//Set default heating method
 	OL_HeatingSystem heatingSystem = f_getHouseholdDefaultHeatingSystem(hasDistrictHeating, isInBlock);
-	double householdAge = uniform_discr(1945, 2020);
-	String energyLabel = "A";
 	
-		
-		//Instantiate Household
-	J_Household household = new J_Household(
-		this,
-		main.c_heatingSystemOptions,
-		ownership,
-		heatingSystem,
-		main.idCounter,
-		hasDistrictHeating,
-		isInBlock,
-		householdAge,
-		main,
-		energyLabel
-	);
-		
-	c_households.add(household);
-	main.c_households.add(household);
-	main.idCounter++;
+	//Set neigborhood data in households
+	hh.f_setHouseholdData(this, main.c_heatingSystemOptions, heatingSystem, hasDistrictHeating, isInBlock);
 }
-
-f_countHouseholdHeatingMethods();
-f_colorGISRegionToHeatMethod();
 ]]></Body>
-				</Function>
-				<Function AccessType="default" StaticFunction="false">
-					<ReturnModificator>RETURNS_VALUE</ReturnModificator>
-					<ReturnType><![CDATA[OL_HouseholdOwnership]]></ReturnType>
-					<Id>1732034725599</Id>
-					<Name><![CDATA[f_getHouseholdOwnership]]></Name>
-					<X>-430</X><Y>90</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<Body><![CDATA[double rand = uniform(0,1);
-if( rand < p_ownedByHousingAssociation) {
-	return SOCIAL_HOUSING;
-}
-else if( rand < p_ownedByHousingAssociation + p_ownedByOtherLandlords) {
-	return RENTED;  	
-}
-else {
-	return PRIVATELY_OWNED; 
-}]]></Body>
 				</Function>
 				<Function AccessType="default" StaticFunction="false">
 					<ReturnModificator>RETURNS_VALUE</ReturnModificator>
@@ -11946,7 +12396,7 @@ else {
 						<Name><![CDATA[isInBlock]]></Name>
 						<Type><![CDATA[boolean]]></Type>
 					</Parameter>
-					<Body><![CDATA[double rand = random();
+					<Body><![CDATA[double rand = uniform(0,1);
 
 if( rand < p_gasBlockHeating_perc){
 	if( isInBlock == true){
@@ -14481,6 +14931,48 @@ for(GZ_Neighborhood neighborhood : main.pop_GZ_Neighborhoods){
 				<Password><![CDATA[]]></Password>
 			</ExternalConnection>
 			<ExternalConnection>
+				<Id>1737362859658</Id>
+				<Name><![CDATA[database]]></Name>
+				<X>0</X><Y>0</Y>
+				<Label><X>10</X><Y>0</Y></Label>
+				<PublicFlag>false</PublicFlag>
+				<PresentationFlag>true</PresentationFlag>
+				<ShowLabel>true</ShowLabel>
+				<DatabaseType>EXCEL_ACCESS</DatabaseType>
+				<ConnectionURL><![CDATA[]]></ConnectionURL>
+				<ConnectOnStartup>true</ConnectOnStartup>
+				<DatabaseName><![CDATA[]]></DatabaseName>
+				<ResourceReference>
+					<PackageName><![CDATA[heat_transition_tipping_pathways]]></PackageName>
+					<ClassName><![CDATA[_neighborhoods_data_2023.xlsx]]></ClassName>
+				</ResourceReference>
+				<Host><![CDATA[localhost]]></Host>
+				<JdbcDriverClassName><![CDATA[net.sourceforge.jtds.jdbc.Driver]]></JdbcDriverClassName>
+				<Login><![CDATA[]]></Login>
+				<Password><![CDATA[]]></Password>
+			</ExternalConnection>
+			<ExternalConnection>
+				<Id>1737362259662</Id>
+				<Name><![CDATA[database]]></Name>
+				<X>0</X><Y>0</Y>
+				<Label><X>10</X><Y>0</Y></Label>
+				<PublicFlag>false</PublicFlag>
+				<PresentationFlag>true</PresentationFlag>
+				<ShowLabel>true</ShowLabel>
+				<DatabaseType>EXCEL_ACCESS</DatabaseType>
+				<ConnectionURL><![CDATA[]]></ConnectionURL>
+				<ConnectOnStartup>true</ConnectOnStartup>
+				<DatabaseName><![CDATA[]]></DatabaseName>
+				<ResourceReference>
+					<PackageName><![CDATA[heat_transition_tipping_pathways]]></PackageName>
+					<ClassName><![CDATA[_neighborhood_shapes_2023.xlsx]]></ClassName>
+				</ResourceReference>
+				<Host><![CDATA[localhost]]></Host>
+				<JdbcDriverClassName><![CDATA[net.sourceforge.jtds.jdbc.Driver]]></JdbcDriverClassName>
+				<Login><![CDATA[]]></Login>
+				<Password><![CDATA[]]></Password>
+			</ExternalConnection>
+			<ExternalConnection>
 				<Id>1700142357559</Id>
 				<Name><![CDATA[database]]></Name>
 				<X>0</X><Y>0</Y>
@@ -14543,6 +15035,27 @@ for(GZ_Neighborhood neighborhood : main.pop_GZ_Neighborhoods){
 				<Login><![CDATA[]]></Login>
 				<Password><![CDATA[]]></Password>
 			</ExternalConnection>
+			<ExternalConnection>
+				<Id>1737392886500</Id>
+				<Name><![CDATA[database]]></Name>
+				<X>0</X><Y>0</Y>
+				<Label><X>10</X><Y>0</Y></Label>
+				<PublicFlag>false</PublicFlag>
+				<PresentationFlag>true</PresentationFlag>
+				<ShowLabel>true</ShowLabel>
+				<DatabaseType>EXCEL_ACCESS</DatabaseType>
+				<ConnectionURL><![CDATA[]]></ConnectionURL>
+				<ConnectOnStartup>true</ConnectOnStartup>
+				<DatabaseName><![CDATA[]]></DatabaseName>
+				<ResourceReference>
+					<PackageName><![CDATA[heat_transition_tipping_pathways]]></PackageName>
+					<ClassName><![CDATA[_neighborhoods_householdHeatingMethods_2023.xlsx]]></ClassName>
+				</ResourceReference>
+				<Host><![CDATA[localhost]]></Host>
+				<JdbcDriverClassName><![CDATA[net.sourceforge.jtds.jdbc.Driver]]></JdbcDriverClassName>
+				<Login><![CDATA[]]></Login>
+				<Password><![CDATA[]]></Password>
+			</ExternalConnection>
 			<TableImportSettings>
 				<TableReference>
 					<PackageName><![CDATA[heat_transition_tipping_pathways]]></PackageName>
@@ -14573,9 +15086,27 @@ for(GZ_Neighborhood neighborhood : main.pop_GZ_Neighborhoods){
 			<TableImportSettings>
 				<TableReference>
 					<PackageName><![CDATA[heat_transition_tipping_pathways]]></PackageName>
-					<ClassName><![CDATA[neighborhood_data]]></ClassName>
+					<ClassName><![CDATA[neighborhood_data_selection]]></ClassName>
 				</TableReference>
 				<ConnectionIndex>3</ConnectionIndex>
+				<ExternalTableName><![CDATA["neighborhood_data_selection"]]></ExternalTableName>
+				<AutoImport>false</AutoImport>
+			</TableImportSettings>
+			<TableImportSettings>
+				<TableReference>
+					<PackageName><![CDATA[heat_transition_tipping_pathways]]></PackageName>
+					<ClassName><![CDATA[neighborhood_shape]]></ClassName>
+				</TableReference>
+				<ConnectionIndex>4</ConnectionIndex>
+				<ExternalTableName><![CDATA["neighborhood_shape"]]></ExternalTableName>
+				<AutoImport>false</AutoImport>
+			</TableImportSettings>
+			<TableImportSettings>
+				<TableReference>
+					<PackageName><![CDATA[heat_transition_tipping_pathways]]></PackageName>
+					<ClassName><![CDATA[neighborhood_data]]></ClassName>
+				</TableReference>
+				<ConnectionIndex>5</ConnectionIndex>
 				<ExternalTableName><![CDATA["neighborhood_data"]]></ExternalTableName>
 				<AutoImport>false</AutoImport>
 			</TableImportSettings>
@@ -14593,7 +15124,7 @@ for(GZ_Neighborhood neighborhood : main.pop_GZ_Neighborhoods){
 					<PackageName><![CDATA[heat_transition_tipping_pathways]]></PackageName>
 					<ClassName><![CDATA[neighborhoods_policy_plan]]></ClassName>
 				</TableReference>
-				<ConnectionIndex>4</ConnectionIndex>
+				<ConnectionIndex>6</ConnectionIndex>
 				<ExternalTableName><![CDATA["neighborhoods_policy_plan"]]></ExternalTableName>
 				<AutoImport>false</AutoImport>
 			</TableImportSettings>
@@ -14602,8 +15133,17 @@ for(GZ_Neighborhood neighborhood : main.pop_GZ_Neighborhoods){
 					<PackageName><![CDATA[heat_transition_tipping_pathways]]></PackageName>
 					<ClassName><![CDATA[neighborhoods_netherlands]]></ClassName>
 				</TableReference>
-				<ConnectionIndex>5</ConnectionIndex>
+				<ConnectionIndex>7</ConnectionIndex>
 				<ExternalTableName><![CDATA["neighborhoods_netherlands"]]></ExternalTableName>
+				<AutoImport>false</AutoImport>
+			</TableImportSettings>
+			<TableImportSettings>
+				<TableReference>
+					<PackageName><![CDATA[heat_transition_tipping_pathways]]></PackageName>
+					<ClassName><![CDATA[nbh_household_heating_method2023]]></ClassName>
+				</TableReference>
+				<ConnectionIndex>8</ConnectionIndex>
+				<ExternalTableName><![CDATA["nbh_householdHeatingMethod2023"]]></ExternalTableName>
 				<AutoImport>false</AutoImport>
 			</TableImportSettings>
 		</ImportSettings>
@@ -15550,12 +16090,17 @@ chart1.addDataSet( , format( root.p_innovationCoefficient ), color, true, Chart.
 
 public class J_Household {
 	//Household characteristics
-	private double householdAge;
+	private int id;
+	private int numid;
+	private int pid;
+	private int vid;
+	private String energyLabel;
+	private int constructionYear;
+	private double surfaceArea_m2;
+	private double householdEquivalent;
+	private String neighborhoodCode;
 	private GZ_Neighborhood neighborhood;
 	private OL_HouseholdOwnership ownership;
-	private int id;
-	private Main main;
-	private String energyLabel;
 	
 	//Heating system characteristics
 	private J_HeatingSystem heatingSystem;
@@ -15568,21 +16113,33 @@ public class J_Household {
 	private double sustainabilityAttitude_norm;
 	private double statusQuoScore;
 
+	private Main main;
 		
     /**
      * Default constructor
      */
-    public J_Household(GZ_Neighborhood neighborhood, List<J_HeatingSystemOptionsGlobal> heatingSystemOptionsInput, OL_HouseholdOwnership ownership, OL_HeatingSystem heatingSystem_OL, int id, boolean hasDistrictHeatingGrid, boolean isPartOfBlock, double householdAge, Main main, String energyLabel) {
-    	this.neighborhood = neighborhood;
-    	this.ownership = ownership;
-    	this.id = id;
-    	this.householdAge = householdAge;
-    	this.energyLabel = energyLabel;
-    	this.main = main;
+	public J_Household(int numid, int pid, int vid, double oppervlakte, double woningequivalent, int pand_bouwjaar, String energieklasse, String buurtcode, OL_HouseholdOwnership ownership, Main main, int idCounter) {
+		this.numid = numid;
+		this.pid = pid;
+		this.vid = vid;
+		this.surfaceArea_m2 = oppervlakte;
+		this.householdEquivalent = woningequivalent;
+		this.constructionYear = pand_bouwjaar;
+		this.energyLabel = energieklasse;
+		this.neighborhoodCode = buurtcode;
+		this.ownership = ownership;
+		this.main = main;
+		this.id = idCounter;
+	}
 
-    	//Get random age of heating system
-    	J_HeatingSystemOptionsGlobal initialHeatingSystem = findFirst(heatingSystemOptionsInput, x->x.getType() == heatingSystem_OL);
-    	int ageHeatingSystem = (int) (Math.random() * (initialHeatingSystem.getLifetime() + 1));
+	public void f_setHouseholdData(GZ_Neighborhood nbh, List<J_HeatingSystemOptionsGlobal> heatingSystemOptionsInput, OL_HeatingSystem heatingSystemType , boolean hasDistrictHeatingGrid,  boolean isInBlock) {
+		this.neighborhood = nbh;
+    	
+    	// Initialize heating system based on type 
+    	
+    	// Get random age for heating systemGive random age to heating system
+    	J_HeatingSystemOptionsGlobal initialHeatingSystem = findFirst(heatingSystemOptionsInput, x->x.getType() == heatingSystemType);
+		int ageHeatingSystem = (int) (Math.random() * (initialHeatingSystem.getLifetime() + 1));
     	
     	//Initalize heating system
     	this.heatingSystem = new J_HeatingSystem(initialHeatingSystem, ageHeatingSystem);
@@ -15603,7 +16160,7 @@ public class J_Household {
     	sustainabilityAttitude = normal(sigma_att, mean_att, main.randomInstance);
     	statusQuoScore = normal(0, 1, 0.5, 0.15, main.randomInstance); 
     	
-    	 f_initializeHeatingSystemOptions(heatingSystemOptionsInput, hasDistrictHeatingGrid, isPartOfBlock, heatingSystem);
+    	 f_initializeHeatingSystemOptions(heatingSystemOptionsInput, hasDistrictHeatingGrid, isInBlock, heatingSystem);
     	
     }
     
@@ -16121,8 +16678,8 @@ public class J_HeatingSystem {
 	// Constructor 2
 	public J_HeatingSystem(J_HeatingSystemOptionsGlobal initialHeatingSystem, int age_years) {
 		this.type = initialHeatingSystem.getType();
-		this.age_years = age_years;
 		this.lifetime_years = initialHeatingSystem.getLifetime();
+		this.age_years = age_years;
 		this.hasLowTemperatureInhouseHeatDistribution = initialHeatingSystem.getRequiresLowTemperatureInhouseHeatDistribution();
 	}
 	
@@ -16570,6 +17127,26 @@ public class J_HeatingSystemOptionsLocal {
 			<ReferencedFromUserCode>false</ReferencedFromUserCode>
 			<Location>FILE_SYSTEM</Location>
 		</Resource>
+		<Resource>
+			<Path><![CDATA[_neighborhood_shapes_2023.xlsx]]></Path>
+			<ReferencedFromUserCode>false</ReferencedFromUserCode>
+			<Location>FILE_SYSTEM</Location>
+		</Resource>
+		<Resource>
+			<Path><![CDATA[_neighborhoods_data_2023.xlsx]]></Path>
+			<ReferencedFromUserCode>false</ReferencedFromUserCode>
+			<Location>FILE_SYSTEM</Location>
+		</Resource>
+		<Resource>
+			<Path><![CDATA[sqlite-jdbc-3.47.1.0.jar]]></Path>
+			<ReferencedFromUserCode>false</ReferencedFromUserCode>
+			<Location>FILE_SYSTEM</Location>
+		</Resource>
+		<Resource>
+			<Path><![CDATA[_neighborhoods_householdHeatingMethods_2023.xlsx]]></Path>
+			<ReferencedFromUserCode>false</ReferencedFromUserCode>
+			<Location>FILE_SYSTEM</Location>
+		</Resource>
 	</ModelResources>
     <RequiredLibraryReference>
 		<LibraryName><![CDATA[com.anylogic.libraries.modules.markup_descriptors]]></LibraryName>
@@ -16587,6 +17164,14 @@ public class J_HeatingSystemOptionsLocal {
 		<ResourceReference>
 			<PackageName><![CDATA[heat_transition_tipping_pathways]]></PackageName>
 			<ClassName><![CDATA[json-20230618.jar]]></ClassName>
+		</ResourceReference>
+		<Imported>true</Imported>
+		<Folder>false</Folder>
+	</ClassPathEntry>
+	<ClassPathEntry>
+		<ResourceReference>
+			<PackageName><![CDATA[heat_transition_tipping_pathways]]></PackageName>
+			<ClassName><![CDATA[sqlite-jdbc-3.47.1.0.jar]]></ClassName>
 		</ResourceReference>
 		<Imported>true</Imported>
 		<Folder>false</Folder>
