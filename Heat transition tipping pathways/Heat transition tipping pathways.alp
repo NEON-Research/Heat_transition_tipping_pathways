@@ -139,7 +139,7 @@ import java.sql.SQLException;
 import java.sql.PreparedStatement;]]></Import>
 			<StartupCode><![CDATA[v_timer = System.currentTimeMillis();
 f_initalizeSettings();
-traceln(roundToDecimal((System.currentTimeMillis() - v_timer)/1000,3) + " seconds to initialize model");
+//traceln(roundToDecimal((System.currentTimeMillis() - v_timer)/1000,3) + " seconds to initialize model");
 pauseSimulation();
 //f_generateTestAgentPopulation();]]></StartupCode>
 			<Generic>false</Generic>
@@ -247,7 +247,8 @@ pauseSimulation();
 				<Variable Class="PlainVariable">
 					<Id>1693914232713</Id>
 					<Name><![CDATA[v_inputLine]]></Name>
-					<X>-570</X><Y>590</Y>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
+					<X>-550</X><Y>-100</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -2243,7 +2244,7 @@ f_initializeNeighborhoods();
 f_setNeighborhoodData();
 double time1 = System.currentTimeMillis();
 double duration = roundToDecimal((time1 - startTime) / 1000, decimals);
-traceln("Created neighborhoods in " + duration + " seconds");
+traceln("Created neighborhoods in: " + duration + " seconds");
 
 //3. Create hashmap for hh -> nbh connection
 for( GZ_Neighborhood nbh : pop_GZ_Neighborhoods ){
@@ -2252,7 +2253,7 @@ for( GZ_Neighborhood nbh : pop_GZ_Neighborhoods ){
 }
 double time2 = System.currentTimeMillis();
 duration = roundToDecimal((time2 - time1) / 1000, decimals);
-traceln("Created hashmap in " + duration + " seconds");
+traceln("Created hashmap in: " + duration + " seconds");
 
 //4. Connect to database
 Database myDatabase = db_householdData;
@@ -2262,22 +2263,19 @@ myDatabase.connect();
 f_initializeHouseholdsFromDatabase(myDatabase, p_modeFullNetherlands);
 double time3 = System.currentTimeMillis();
 duration = roundToDecimal((time3 - time2) / 1000, decimals);
-traceln("Created households in " + duration + " seconds");
+traceln("Created households in: " + duration + " seconds");
 
 //6. Link households to neighborhoods
 f_linkNeighborhoodsToHouseholds();
 double time4 = System.currentTimeMillis();
 duration = roundToDecimal((time4 - time3) / 1000, decimals);
-traceln("Linked households and neighborhoods in " + duration + " seconds");
+traceln("Linked households and neighborhoods in: " + duration + " seconds");
 
 //7. Get initial heating method data, counts and numbers
 f_getInitialHeatingMethods();
-
-//Check total time
-duration = roundToDecimal((time4 - startTime) / 1000, decimals);
-traceln("Total start-up time: " + duration + " seconds");
-
-
+double time5 = System.currentTimeMillis();
+duration = roundToDecimal((time5 - time4) / 1000, decimals);
+traceln("Initialized heating methods in: " + duration + " seconds");
 
 //8. Initialize DSO
 f_initializeDSO();
@@ -2285,11 +2283,7 @@ f_initializeDSO();
 //9. Set visuals
 f_setVisuals();
 
-//f_initializeCosts();
-
-
-
-//Check total values
+//10. Check total values
 int countNeighborhoodsWithDistrictHeating = count(pop_GZ_Neighborhoods, x->x.v_hasDistrictHeatingGrid);
 int countHouseholdsWithDistrictHeatingPotential = 0;
 int countHouseholdsWithBlockHeatingPotential = 0;
@@ -2306,6 +2300,10 @@ for(J_Household hh : c_households){
 
 traceln("Neighborhoods with DH grid = " + countNeighborhoodsWithDistrictHeating + ", households with potential DH = " + countHouseholdsWithDistrictHeatingPotential + ", with block heating potential " + countHouseholdsWithBlockHeatingPotential );
 
+//Check total time
+double time6 = System.currentTimeMillis();
+duration = roundToDecimal((time6 - startTime) / 1000, decimals);
+traceln("Total start-up time: " + duration + " seconds");
 
 ]]></Body>
 				</Function>
@@ -2429,7 +2427,9 @@ traceln("Neighborhoods willingness energy measures: Home owners high = " + willi
 		
 */
 traceln("Descriptive data from neigbhorhoods: Households = " + roundToInt(sum(pop_GZ_Neighborhoods, x->x.p_households)) + ", inhabitants = " + roundToDecimal(sum(pop_GZ_Neighborhoods, x->x.p_inhabitants) / 1000000, 2) + "million");
-]]></Body>
+
+
+traceln("Neighborhoods without set heating methods " + count(pop_GZ_Neighborhoods, x->x.heatingPErcSet == false));]]></Body>
 				</Function>
 				<Function AccessType="default" StaticFunction="false">
 					<ReturnModificator>RETURNS_VALUE</ReturnModificator>
@@ -3038,7 +3038,7 @@ for (Tuple row : rows) {
 					<Id>1708545045651</Id>
 					<Name><![CDATA[f_generateHouseholds]]></Name>
 					<ExcludeFromBuild>true</ExcludeFromBuild>
-					<X>-880</X><Y>280</Y>
+					<X>-550</X><Y>-240</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -3389,7 +3389,7 @@ for (Tuple row_data : rows_data){
 					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1715092306741</Id>
 					<Name><![CDATA[f_setHeatingMethodNeighborhoodData]]></Name>
-					<X>-550</X><Y>260</Y>
+					<X>-550</X><Y>240</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -3401,18 +3401,21 @@ List<Tuple> rows_heatingMethods = selectFrom(nbh_household_heating_method2023)
 for (Tuple row_heatingMethod : rows_heatingMethods){
 	for (GZ_Neighborhood x : pop_GZ_Neighborhoods){
 		if (x.p_neighborhoodCode.equals(row_heatingMethod.get(nbh_household_heating_method2023.buurtcode))){
-	
-			x.p_gasCV_perc = row_heatingMethod.get(nbh_household_heating_method2023.individuele_cv) / 100;
-			x.p_gasBlockHeating_perc = row_heatingMethod.get(nbh_household_heating_method2023.blok_verwarming) / 100;
-			double districtHeatingHighGas_perc = row_heatingMethod.get(nbh_household_heating_method2023.stadsverwarming_met_hoog_gasverbruik) / 100;
-			double districtHeatingLowGas_perc = row_heatingMethod.get(nbh_household_heating_method2023.stadsverwarming_met_laag_gasverbruik) / 100;
-			double districtHeatingNoGas_perc = row_heatingMethod.get(nbh_household_heating_method2023.stadsverwarming_zonder_gasverbruik) / 100;
-			double electricHeatingHighGas_perc = row_heatingMethod.get(nbh_household_heating_method2023.elektrisch_verwarmd_met_hoog_gasverbruik) / 100;
-			double electricHeatingLowGas_perc = row_heatingMethod.get(nbh_household_heating_method2023.elektrisch_verwarmd_met_laag_gasverbruik) / 100;
-			double electricHeatingNoGas_perc = row_heatingMethod.get(nbh_household_heating_method2023.elektrisch_verwarmd_zonder_gasverbruik) / 100;
-			x.p_heatingUnkown_perc = row_heatingMethod.get(nbh_household_heating_method2023.type_installatie_onbekend) / 100;
+			x.heatingPErcSet = true;
+			
+			x.p_gasCV_perc = (double) row_heatingMethod.get(nbh_household_heating_method2023.individuele_cv) / 100;
+			x.p_gasBlockHeating_perc = (double) row_heatingMethod.get(nbh_household_heating_method2023.blok_verwarming) / 100;
+			double districtHeatingHighGas_perc = (double) row_heatingMethod.get(nbh_household_heating_method2023.stadsverwarming_met_hoog_gasverbruik) / 100;
+			double districtHeatingLowGas_perc = (double) row_heatingMethod.get(nbh_household_heating_method2023.stadsverwarming_met_laag_gasverbruik) / 100;
+			double districtHeatingNoGas_perc = (double)row_heatingMethod.get(nbh_household_heating_method2023.stadsverwarming_zonder_gasverbruik) / 100;
+			double electricHeatingHighGas_perc = (double) row_heatingMethod.get(nbh_household_heating_method2023.elektrisch_verwarmd_met_hoog_gasverbruik) / 100;
+			double electricHeatingLowGas_perc = (double) row_heatingMethod.get(nbh_household_heating_method2023.elektrisch_verwarmd_met_laag_gasverbruik) / 100;
+			double electricHeatingNoGas_perc = (double) row_heatingMethod.get(nbh_household_heating_method2023.elektrisch_verwarmd_zonder_gasverbruik) / 100;
+			x.p_heatingUnkown_perc = (double) row_heatingMethod.get(nbh_household_heating_method2023.type_installatie_onbekend) / 100;
 
 			//If missing data in dataset is set to -99999, set to 0
+			x.p_gasCV_perc = f_returnZeroIfDoubleIsSmallerThanZero(x.p_gasCV_perc);
+			x.p_gasBlockHeating_perc = f_returnZeroIfDoubleIsSmallerThanZero(x.p_gasBlockHeating_perc);
 			districtHeatingHighGas_perc = f_returnZeroIfDoubleIsSmallerThanZero(districtHeatingHighGas_perc);
 			districtHeatingLowGas_perc = f_returnZeroIfDoubleIsSmallerThanZero(districtHeatingLowGas_perc);
 			districtHeatingNoGas_perc = f_returnZeroIfDoubleIsSmallerThanZero(districtHeatingNoGas_perc);
@@ -3427,13 +3430,19 @@ for (Tuple row_heatingMethod : rows_heatingMethods){
 			x.p_districtHeating_perc = districtHeatingHighGas_perc + districtHeatingLowGas_perc + districtHeatingNoGas_perc;
 			//x.f_checkDefaultDistrictHeating();
 			//traceln((x.p_gasCV_perc + x.p_gasBlockHeating_perc + x.p_electricHeating_perc + x.p_districtHeating_perc) + " total heating methods, should be 1");
-			
+			/*
+			if(x.getIndex() < 100){
+				traceln("HM setting: Gas cv: " + x.p_gasCV_perc + "perc, gas block: " + x.p_gasBlockHeating_perc + "perc, ehp: " + x.p_electricHeatPump_perc + "perc, hhp: " + x.p_hybridHeatPump_perc + "perc, dh: " + x.p_districtHeating_perc);
+			}
+			*/
 			if(x.p_districtHeating_perc > 0){
 				x.v_hasDistrictHeatingGrid = true;
 			} else {
 				x.v_hasDistrictHeatingGrid = false;
 			}	
 			break;
+			
+			
 		}
 	}
 }
@@ -3730,7 +3739,7 @@ for(J_HeatingSystemOptionsGlobal hso : c_heatingSystemOptions){
 					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1732542357688</Id>
 					<Name><![CDATA[f_countHouseholdHeatingMethods]]></Name>
-					<X>-560</X><Y>390</Y>
+					<X>-560</X><Y>420</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -4093,7 +4102,7 @@ ch_barTopRank.addDataItem(d5, v_districtHeatingText, v_districtHeatingColor);
 					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1733904683051</Id>
 					<Name><![CDATA[f_normalizeValuesAndRankHeatingMethods]]></Name>
-					<X>-560</X><Y>370</Y>
+					<X>-560</X><Y>400</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -4138,7 +4147,7 @@ for(J_Household hh : c_households) {
 					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1733904727347</Id>
 					<Name><![CDATA[f_setInitialUnitsInstalledPerHeatingMethod]]></Name>
-					<X>-560</X><Y>410</Y>
+					<X>-560</X><Y>440</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -4169,7 +4178,7 @@ for( J_HeatingSystemOptionsGlobal hso : c_heatingSystemOptions){
 					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1733921586049</Id>
 					<Name><![CDATA[f_setNeighborhoodPolicyPlan]]></Name>
-					<X>-550</X><Y>280</Y>
+					<X>-550</X><Y>260</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -4238,7 +4247,7 @@ if(mapMode == DISTRICT_HEATING_POTENTIAL){
 					<Id>1737363294210</Id>
 					<Name><![CDATA[f_setGeneralNeighborhoodData]]></Name>
 					<ExcludeFromBuild>true</ExcludeFromBuild>
-					<X>-550</X><Y>240</Y>
+					<X>-550</X><Y>-80</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -4368,7 +4377,7 @@ for (Tuple row_data : rows_data){
 					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1737379663211</Id>
 					<Name><![CDATA[f_createHouseholds]]></Name>
-					<X>-560</X><Y>330</Y>
+					<X>-560</X><Y>320</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -4456,7 +4465,7 @@ if (c_buurtcodeToHouseholds.containsKey(buurtcode)) {
 					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1737379663215</Id>
 					<Name><![CDATA[f_initializeHouseholdsFromDatabase]]></Name>
-					<X>-570</X><Y>310</Y>
+					<X>-570</X><Y>300</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -4501,7 +4510,7 @@ rs.close();
 					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1737379663217</Id>
 					<Name><![CDATA[f_linkNeighborhoodsToHouseholds]]></Name>
-					<X>-570</X><Y>430</Y>
+					<X>-570</X><Y>360</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -4537,7 +4546,7 @@ f_setCharts();]]></Body>
 					<Id>1737382797568</Id>
 					<Name><![CDATA[f_getHouseholdOwnership]]></Name>
 					<Description><![CDATA[#perc should be in 0-1]]></Description>
-					<X>-560</X><Y>350</Y>
+					<X>-550</X><Y>340</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -4579,7 +4588,7 @@ else {
 					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1737390723807</Id>
 					<Name><![CDATA[f_getInitialHeatingMethods]]></Name>
-					<X>-570</X><Y>450</Y>
+					<X>-570</X><Y>380</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -10259,6 +10268,18 @@ else if(p_energyLabelLetter.equals("G")){
 						<Type><![CDATA[boolean]]></Type>        
 					</Properties>
 				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1737472825017</Id>
+					<Name><![CDATA[heatingPErcSet]]></Name>
+					<X>950</X><Y>350</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[boolean]]></Type>        
+					</Properties>
+				</Variable>
 				<Variable Class="Parameter">
 					<Id>1700132371111</Id>
 					<Name><![CDATA[p_householdsWithoutChildren]]></Name>
@@ -12383,7 +12404,7 @@ for( J_Household hh : c_households){
 					<ReturnType><![CDATA[OL_HeatingSystem]]></ReturnType>
 					<Id>1732034742810</Id>
 					<Name><![CDATA[f_getHouseholdDefaultHeatingSystem]]></Name>
-					<X>-430</X><Y>110</Y>
+					<X>-430</X><Y>90</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
