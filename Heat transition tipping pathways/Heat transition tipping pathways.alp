@@ -2369,7 +2369,7 @@ traceln(roundToDecimal((System.currentTimeMillis() - v_timer)/1000,3) + " second
 					<Body><![CDATA[//SET GENERAL DATA
 f_setGeneralNeighborhoodData_2023();
 f_setHeatingMethodNeighborhoodData();
-
+f_setNeighborhoodPolicyPlan();
 
 
 
@@ -4184,27 +4184,37 @@ for( J_HeatingSystemOptionsGlobal hso : c_heatingSystemOptions){
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
 					<Body><![CDATA[//SET HEATING METHODS
-List<Tuple> rows_PolicyPlan = selectFrom(neighborhoods_policy_plan)
+
+int totalPolicyHGHouseholds = 0;
+int totalPolicyHGNeighborhoods = 0;
+List<Tuple> rows_PolicyPlan = selectFrom(nbh_policy_plan_2023)
     .list();
     
 for (Tuple row : rows_PolicyPlan){
 	for (GZ_Neighborhood x : pop_GZ_Neighborhoods){
-		if (x.p_neighborhoodCode.equals(row.get(neighborhoods_policy_plan.buurtcode))){
+		if (x.p_neighborhoodCode.equals(row.get(nbh_policy_plan_2023.buurtcode))){
 	
-			x.p_policyInstallation = row.get(neighborhoods_policy_plan.installatie);
-			x.p_policyInstallationCode = row.get(neighborhoods_policy_plan.installatie_code);
-			x.p_policyInfra = row.get(neighborhoods_policy_plan.infra);
-			x.p_policyInfraCode = row.get(neighborhoods_policy_plan.infra_code);
-			x.p_policyStatus = row.get(neighborhoods_policy_plan.status);
-			x.p_policyStatusCode = row.get(neighborhoods_policy_plan.status_code);
-			x.p_policyInsulation = row.get(neighborhoods_policy_plan.isolatiegraad);
-			x.p_policyInsulationCode = row.get(neighborhoods_policy_plan.isolatiegraad_code);
-			x.p_policyPlanForDistrictHeating = row.get(neighborhoods_policy_plan.district_heating);
+			x.p_policyInstallation = row.get(nbh_policy_plan_2023.installatie);
+			x.p_policyInstallationCode = row.get(nbh_policy_plan_2023.installatie_code);
+			x.p_policyInfra = row.get(nbh_policy_plan_2023.infra);
+			x.p_policyInfraCode = row.get(nbh_policy_plan_2023.infra_code);
+			x.p_policyStatus = row.get(nbh_policy_plan_2023.status);
+			//x.p_policyStatusCode = row.get(nbh_policy_plan_2023.status_code);
+			x.p_policyInsulation = row.get(nbh_policy_plan_2023.isolatiegraad);
+			x.p_policyInsulationCode = row.get(nbh_policy_plan_2023.isolatiegraad_code);
+			x.p_policyPlanForDistrictHeating = row.get(nbh_policy_plan_2023.district_heating);
+			x.p_policyPlanStartYear = row.get(nbh_policy_plan_2023.start_jaar);
+			x.p_policyPlanEndYear = row.get(nbh_policy_plan_2023.eind_jaar);
+			if( x.p_policyInfra.contains("W")){
+				totalPolicyHGNeighborhoods++;
+				totalPolicyHGHouseholds += x.p_households;
+			}
 			break;
 		}
 	}
 }
-]]></Body>
+
+traceln("TVW Policy plans: Total Wnet neighborhoods = " + totalPolicyHGNeighborhoods + ", and households = " + totalPolicyHGHouseholds);]]></Body>
 				</Function>
 				<Function AccessType="default" StaticFunction="false">
 					<ReturnModificator>VOID</ReturnModificator>
@@ -6238,6 +6248,12 @@ f_setInitialUnitsInstalledPerHeatingMethod();]]></Body>
 						</Parameter>
 						<Parameter>
 							<Name><![CDATA[p_singleFamilyHouseholds_perc]]></Name>
+						</Parameter>
+						<Parameter>
+							<Name><![CDATA[p_policyPlanStartYear]]></Name>
+						</Parameter>
+						<Parameter>
+							<Name><![CDATA[p_policyPlanEndYear]]></Name>
 						</Parameter>
 					</Parameters>
 					<ReplicationFlag>true</ReplicationFlag>
@@ -10112,7 +10128,7 @@ else if(p_energyLabelLetter.equals("G")){
 				<Variable Class="PlainVariable">
 					<Id>1700132371014</Id>
 					<Name><![CDATA[v_electricHeatPumps_perc]]></Name>
-					<X>690</X><Y>740</Y>
+					<X>690</X><Y>790</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -10124,7 +10140,7 @@ else if(p_energyLabelLetter.equals("G")){
 				<Variable Class="PlainVariable">
 					<Id>1700132371016</Id>
 					<Name><![CDATA[v_hybridHeatPumps_perc]]></Name>
-					<X>690</X><Y>760</Y>
+					<X>690</X><Y>810</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -10136,7 +10152,7 @@ else if(p_energyLabelLetter.equals("G")){
 				<Variable Class="PlainVariable">
 					<Id>1700132371018</Id>
 					<Name><![CDATA[v_districtHeating_perc]]></Name>
-					<X>690</X><Y>780</Y>
+					<X>690</X><Y>830</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -10148,7 +10164,7 @@ else if(p_energyLabelLetter.equals("G")){
 				<Variable Class="PlainVariable">
 					<Id>1700132371020</Id>
 					<Name><![CDATA[v_gasBoilers_perc]]></Name>
-					<X>690</X><Y>800</Y>
+					<X>690</X><Y>850</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -10160,7 +10176,7 @@ else if(p_energyLabelLetter.equals("G")){
 				<Variable Class="PlainVariable">
 					<Id>1700132371022</Id>
 					<Name><![CDATA[v_gasBlockHeating_perc]]></Name>
-					<X>690</X><Y>820</Y>
+					<X>690</X><Y>870</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -10199,7 +10215,7 @@ else if(p_energyLabelLetter.equals("G")){
 				<Variable Class="PlainVariable">
 					<Id>1704798980833</Id>
 					<Name><![CDATA[v_electricHeatPumps_nb]]></Name>
-					<X>690</X><Y>620</Y>
+					<X>690</X><Y>670</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -10211,7 +10227,7 @@ else if(p_energyLabelLetter.equals("G")){
 				<Variable Class="PlainVariable">
 					<Id>1704798980835</Id>
 					<Name><![CDATA[v_hybridHeatPumps_nb]]></Name>
-					<X>690</X><Y>640</Y>
+					<X>690</X><Y>690</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -10223,7 +10239,7 @@ else if(p_energyLabelLetter.equals("G")){
 				<Variable Class="PlainVariable">
 					<Id>1704798980837</Id>
 					<Name><![CDATA[v_districtHeating_nb]]></Name>
-					<X>690</X><Y>660</Y>
+					<X>690</X><Y>710</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -10235,7 +10251,7 @@ else if(p_energyLabelLetter.equals("G")){
 				<Variable Class="PlainVariable">
 					<Id>1704798980839</Id>
 					<Name><![CDATA[v_gasBoilers_nb]]></Name>
-					<X>690</X><Y>680</Y>
+					<X>690</X><Y>730</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -10247,7 +10263,7 @@ else if(p_energyLabelLetter.equals("G")){
 				<Variable Class="PlainVariable">
 					<Id>1704798980841</Id>
 					<Name><![CDATA[v_gasBlockHeating_nb]]></Name>
-					<X>690</X><Y>700</Y>
+					<X>690</X><Y>750</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -10535,7 +10551,7 @@ else if(p_energyLabelLetter.equals("G")){
 				<Variable Class="Parameter">
 					<Id>1700132371156</Id>
 					<Name><![CDATA[p_districtHeating_perc]]></Name>
-					<X>690</X><Y>505</Y>
+					<X>690</X><Y>555</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -10556,7 +10572,7 @@ else if(p_energyLabelLetter.equals("G")){
 				<Variable Class="Parameter">
 					<Id>1700132371159</Id>
 					<Name><![CDATA[p_gasHeating_perc]]></Name>
-					<X>690</X><Y>560</Y>
+					<X>690</X><Y>610</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -10577,7 +10593,7 @@ else if(p_energyLabelLetter.equals("G")){
 				<Variable Class="Parameter">
 					<Id>1700132371162</Id>
 					<Name><![CDATA[p_gasCV_perc]]></Name>
-					<X>690</X><Y>425</Y>
+					<X>690</X><Y>475</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -10598,7 +10614,7 @@ else if(p_energyLabelLetter.equals("G")){
 				<Variable Class="Parameter">
 					<Id>1700132371165</Id>
 					<Name><![CDATA[p_gasBlockHeating_perc]]></Name>
-					<X>690</X><Y>445</Y>
+					<X>690</X><Y>495</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -10619,7 +10635,7 @@ else if(p_energyLabelLetter.equals("G")){
 				<Variable Class="Parameter">
 					<Id>1700132371177</Id>
 					<Name><![CDATA[p_electricHeating_perc]]></Name>
-					<X>690</X><Y>540</Y>
+					<X>690</X><Y>590</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -11355,7 +11371,7 @@ else if(p_energyLabelLetter.equals("G")){
 				<Variable Class="Parameter">
 					<Id>1700132371339</Id>
 					<Name><![CDATA[p_heatingUnkown_perc]]></Name>
-					<X>690</X><Y>580</Y>
+					<X>690</X><Y>630</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -11419,7 +11435,7 @@ else if(p_energyLabelLetter.equals("G")){
 				<Variable Class="Parameter">
 					<Id>1704920306144</Id>
 					<Name><![CDATA[p_electricHeatPump_perc]]></Name>
-					<X>690</X><Y>465</Y>
+					<X>690</X><Y>515</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -11440,7 +11456,7 @@ else if(p_energyLabelLetter.equals("G")){
 				<Variable Class="Parameter">
 					<Id>1704920328401</Id>
 					<Name><![CDATA[p_hybridHeatPump_perc]]></Name>
-					<X>690</X><Y>485</Y>
+					<X>690</X><Y>535</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -11713,6 +11729,7 @@ else if(p_energyLabelLetter.equals("G")){
 				<Variable Class="Parameter">
 					<Id>1733922837353</Id>
 					<Name><![CDATA[p_policyStatusCode]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>690</X><Y>320</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -11829,6 +11846,48 @@ else if(p_energyLabelLetter.equals("G")){
 						<SdArray>false</SdArray>
 						<ParameterEditor>
 							<Id>1733935157475</Id>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1737647546723</Id>
+					<Name><![CDATA[p_policyPlanStartYear]]></Name>
+					<X>690</X><Y>400</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[int]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<ParameterEditor>
+							<Id>1737647546721</Id>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1737647557505</Id>
+					<Name><![CDATA[p_policyPlanEndYear]]></Name>
+					<X>690</X><Y>420</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[int]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<ParameterEditor>
+							<Id>1737647557503</Id>
 							<EditorContolType>TEXT_BOX</EditorContolType>
 							<MinSliderValue><![CDATA[0]]></MinSliderValue>
 							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
@@ -12595,7 +12654,7 @@ v_districtHeating_perc = v_districtHeating_nb / households;
 				<Text>
 					<Id>1700132371050</Id>
 					<Name><![CDATA[Btext12]]></Name>
-					<X>680</X><Y>390</Y>
+					<X>680</X><Y>440</Y>
 					<Label><X>0</X><Y>-10</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -14910,6 +14969,27 @@ for(GZ_Neighborhood neighborhood : main.pop_GZ_Neighborhoods){
 				<Password><![CDATA[]]></Password>
 			</ExternalConnection>
 			<ExternalConnection>
+				<Id>1737647106315</Id>
+				<Name><![CDATA[database]]></Name>
+				<X>0</X><Y>0</Y>
+				<Label><X>10</X><Y>0</Y></Label>
+				<PublicFlag>false</PublicFlag>
+				<PresentationFlag>true</PresentationFlag>
+				<ShowLabel>true</ShowLabel>
+				<DatabaseType>EXCEL_ACCESS</DatabaseType>
+				<ConnectionURL><![CDATA[]]></ConnectionURL>
+				<ConnectOnStartup>true</ConnectOnStartup>
+				<DatabaseName><![CDATA[]]></DatabaseName>
+				<ResourceReference>
+					<PackageName><![CDATA[heat_transition_tipping_pathways]]></PackageName>
+					<ClassName><![CDATA[_neighborhoods_2023_heatTransitionVision.xlsx]]></ClassName>
+				</ResourceReference>
+				<Host><![CDATA[localhost]]></Host>
+				<JdbcDriverClassName><![CDATA[net.sourceforge.jtds.jdbc.Driver]]></JdbcDriverClassName>
+				<Login><![CDATA[]]></Login>
+				<Password><![CDATA[]]></Password>
+			</ExternalConnection>
+			<ExternalConnection>
 				<Id>1700143168482</Id>
 				<Name><![CDATA[database]]></Name>
 				<X>0</X><Y>0</Y>
@@ -15036,27 +15116,6 @@ for(GZ_Neighborhood neighborhood : main.pop_GZ_Neighborhoods){
 				<Password><![CDATA[]]></Password>
 			</ExternalConnection>
 			<ExternalConnection>
-				<Id>1700132665797</Id>
-				<Name><![CDATA[database]]></Name>
-				<X>0</X><Y>0</Y>
-				<Label><X>10</X><Y>0</Y></Label>
-				<PublicFlag>false</PublicFlag>
-				<PresentationFlag>true</PresentationFlag>
-				<ShowLabel>true</ShowLabel>
-				<DatabaseType>EXCEL_ACCESS</DatabaseType>
-				<ConnectionURL><![CDATA[]]></ConnectionURL>
-				<ConnectOnStartup>true</ConnectOnStartup>
-				<DatabaseName><![CDATA[]]></DatabaseName>
-				<ResourceReference>
-					<PackageName><![CDATA[heat_transition_tipping_pathways]]></PackageName>
-					<ClassName><![CDATA[_neighborhoods_netherlands.xlsx]]></ClassName>
-				</ResourceReference>
-				<Host><![CDATA[localhost]]></Host>
-				<JdbcDriverClassName><![CDATA[net.sourceforge.jtds.jdbc.Driver]]></JdbcDriverClassName>
-				<Login><![CDATA[]]></Login>
-				<Password><![CDATA[]]></Password>
-			</ExternalConnection>
-			<ExternalConnection>
 				<Id>1737392886500</Id>
 				<Name><![CDATA[database]]></Name>
 				<X>0</X><Y>0</Y>
@@ -15077,6 +15136,27 @@ for(GZ_Neighborhood neighborhood : main.pop_GZ_Neighborhoods){
 				<Login><![CDATA[]]></Login>
 				<Password><![CDATA[]]></Password>
 			</ExternalConnection>
+			<ExternalConnection>
+				<Id>1700132665797</Id>
+				<Name><![CDATA[database]]></Name>
+				<X>0</X><Y>0</Y>
+				<Label><X>10</X><Y>0</Y></Label>
+				<PublicFlag>false</PublicFlag>
+				<PresentationFlag>true</PresentationFlag>
+				<ShowLabel>true</ShowLabel>
+				<DatabaseType>EXCEL_ACCESS</DatabaseType>
+				<ConnectionURL><![CDATA[]]></ConnectionURL>
+				<ConnectOnStartup>true</ConnectOnStartup>
+				<DatabaseName><![CDATA[]]></DatabaseName>
+				<ResourceReference>
+					<PackageName><![CDATA[heat_transition_tipping_pathways]]></PackageName>
+					<ClassName><![CDATA[_neighborhoods_netherlands.xlsx]]></ClassName>
+				</ResourceReference>
+				<Host><![CDATA[localhost]]></Host>
+				<JdbcDriverClassName><![CDATA[net.sourceforge.jtds.jdbc.Driver]]></JdbcDriverClassName>
+				<Login><![CDATA[]]></Login>
+				<Password><![CDATA[]]></Password>
+			</ExternalConnection>
 			<TableImportSettings>
 				<TableReference>
 					<PackageName><![CDATA[heat_transition_tipping_pathways]]></PackageName>
@@ -15089,9 +15169,18 @@ for(GZ_Neighborhood neighborhood : main.pop_GZ_Neighborhoods){
 			<TableImportSettings>
 				<TableReference>
 					<PackageName><![CDATA[heat_transition_tipping_pathways]]></PackageName>
-					<ClassName><![CDATA[neighborhoods_household_heating]]></ClassName>
+					<ClassName><![CDATA[nbh_policy_plan_2023]]></ClassName>
 				</TableReference>
 				<ConnectionIndex>1</ConnectionIndex>
+				<ExternalTableName><![CDATA["nbh_policy_plan_2023"]]></ExternalTableName>
+				<AutoImport>false</AutoImport>
+			</TableImportSettings>
+			<TableImportSettings>
+				<TableReference>
+					<PackageName><![CDATA[heat_transition_tipping_pathways]]></PackageName>
+					<ClassName><![CDATA[neighborhoods_household_heating]]></ClassName>
+				</TableReference>
+				<ConnectionIndex>2</ConnectionIndex>
 				<ExternalTableName><![CDATA["neighborhoods_householdHeating"]]></ExternalTableName>
 				<AutoImport>false</AutoImport>
 			</TableImportSettings>
@@ -15100,7 +15189,7 @@ for(GZ_Neighborhood neighborhood : main.pop_GZ_Neighborhoods){
 					<PackageName><![CDATA[heat_transition_tipping_pathways]]></PackageName>
 					<ClassName><![CDATA[heating_system_data]]></ClassName>
 				</TableReference>
-				<ConnectionIndex>2</ConnectionIndex>
+				<ConnectionIndex>3</ConnectionIndex>
 				<ExternalTableName><![CDATA["heating_system_data"]]></ExternalTableName>
 				<AutoImport>true</AutoImport>
 			</TableImportSettings>
@@ -15109,7 +15198,7 @@ for(GZ_Neighborhood neighborhood : main.pop_GZ_Neighborhoods){
 					<PackageName><![CDATA[heat_transition_tipping_pathways]]></PackageName>
 					<ClassName><![CDATA[neighborhood_data_selection]]></ClassName>
 				</TableReference>
-				<ConnectionIndex>3</ConnectionIndex>
+				<ConnectionIndex>4</ConnectionIndex>
 				<ExternalTableName><![CDATA["neighborhood_data_selection"]]></ExternalTableName>
 				<AutoImport>false</AutoImport>
 			</TableImportSettings>
@@ -15118,7 +15207,7 @@ for(GZ_Neighborhood neighborhood : main.pop_GZ_Neighborhoods){
 					<PackageName><![CDATA[heat_transition_tipping_pathways]]></PackageName>
 					<ClassName><![CDATA[neighborhood_shape]]></ClassName>
 				</TableReference>
-				<ConnectionIndex>4</ConnectionIndex>
+				<ConnectionIndex>5</ConnectionIndex>
 				<ExternalTableName><![CDATA["neighborhood_shape"]]></ExternalTableName>
 				<AutoImport>false</AutoImport>
 			</TableImportSettings>
@@ -15127,7 +15216,7 @@ for(GZ_Neighborhood neighborhood : main.pop_GZ_Neighborhoods){
 					<PackageName><![CDATA[heat_transition_tipping_pathways]]></PackageName>
 					<ClassName><![CDATA[neighborhood_data]]></ClassName>
 				</TableReference>
-				<ConnectionIndex>5</ConnectionIndex>
+				<ConnectionIndex>6</ConnectionIndex>
 				<ExternalTableName><![CDATA["neighborhood_data"]]></ExternalTableName>
 				<AutoImport>false</AutoImport>
 			</TableImportSettings>
@@ -15136,7 +15225,7 @@ for(GZ_Neighborhood neighborhood : main.pop_GZ_Neighborhoods){
 					<PackageName><![CDATA[heat_transition_tipping_pathways]]></PackageName>
 					<ClassName><![CDATA[energy_source_data]]></ClassName>
 				</TableReference>
-				<ConnectionIndex>2</ConnectionIndex>
+				<ConnectionIndex>3</ConnectionIndex>
 				<ExternalTableName><![CDATA["energy_source_data"]]></ExternalTableName>
 				<AutoImport>false</AutoImport>
 			</TableImportSettings>
@@ -15145,17 +15234,8 @@ for(GZ_Neighborhood neighborhood : main.pop_GZ_Neighborhoods){
 					<PackageName><![CDATA[heat_transition_tipping_pathways]]></PackageName>
 					<ClassName><![CDATA[neighborhoods_policy_plan]]></ClassName>
 				</TableReference>
-				<ConnectionIndex>6</ConnectionIndex>
-				<ExternalTableName><![CDATA["neighborhoods_policy_plan"]]></ExternalTableName>
-				<AutoImport>false</AutoImport>
-			</TableImportSettings>
-			<TableImportSettings>
-				<TableReference>
-					<PackageName><![CDATA[heat_transition_tipping_pathways]]></PackageName>
-					<ClassName><![CDATA[neighborhoods_netherlands]]></ClassName>
-				</TableReference>
 				<ConnectionIndex>7</ConnectionIndex>
-				<ExternalTableName><![CDATA["neighborhoods_netherlands"]]></ExternalTableName>
+				<ExternalTableName><![CDATA["neighborhoods_policy_plan"]]></ExternalTableName>
 				<AutoImport>false</AutoImport>
 			</TableImportSettings>
 			<TableImportSettings>
@@ -15165,6 +15245,15 @@ for(GZ_Neighborhood neighborhood : main.pop_GZ_Neighborhoods){
 				</TableReference>
 				<ConnectionIndex>8</ConnectionIndex>
 				<ExternalTableName><![CDATA["nbh_householdHeatingMethod2023"]]></ExternalTableName>
+				<AutoImport>false</AutoImport>
+			</TableImportSettings>
+			<TableImportSettings>
+				<TableReference>
+					<PackageName><![CDATA[heat_transition_tipping_pathways]]></PackageName>
+					<ClassName><![CDATA[neighborhoods_netherlands]]></ClassName>
+				</TableReference>
+				<ConnectionIndex>9</ConnectionIndex>
+				<ExternalTableName><![CDATA["neighborhoods_netherlands"]]></ExternalTableName>
 				<AutoImport>false</AutoImport>
 			</TableImportSettings>
 		</ImportSettings>
@@ -17165,6 +17254,11 @@ public class J_HeatingSystemOptionsLocal {
 		</Resource>
 		<Resource>
 			<Path><![CDATA[_neighborhoods_householdHeatingMethods_2023.xlsx]]></Path>
+			<ReferencedFromUserCode>false</ReferencedFromUserCode>
+			<Location>FILE_SYSTEM</Location>
+		</Resource>
+		<Resource>
+			<Path><![CDATA[_neighborhoods_2023_heatTransitionVision.xlsx]]></Path>
 			<ReferencedFromUserCode>false</ReferencedFromUserCode>
 			<Location>FILE_SYSTEM</Location>
 		</Resource>
