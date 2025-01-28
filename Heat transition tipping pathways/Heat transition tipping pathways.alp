@@ -116,6 +116,22 @@
 				<Name><![CDATA[GRID_CONGESTION]]></Name>
 			</Option>
 		</OptionList>
+		<OptionList>
+			<Id>1738058741819</Id>
+			<Name><![CDATA[OL_NetworkStructure]]></Name>
+			<Option>
+				<Id>1738058741821</Id>
+				<Name><![CDATA[RANDOM_NETWORK]]></Name>
+			</Option>
+			<Option>
+				<Id>1738058741823</Id>
+				<Name><![CDATA[SMALL_WORLD_GEOGRAPHICAL]]></Name>
+			</Option>
+			<Option>
+				<Id>1738058741825</Id>
+				<Name><![CDATA[SMALL_WORLD_SIMILAR]]></Name>
+			</Option>
+		</OptionList>
 	</OptionLists>
 	
 	<Folders>
@@ -140,7 +156,10 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 //import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.PreparedStatement;]]></Import>
+import java.sql.PreparedStatement;
+
+//For network
+import java.util.stream.Collectors;]]></Import>
 			<StartupCode><![CDATA[v_timer = System.currentTimeMillis();
 f_initalizeSettings();
 //traceln(roundToDecimal((System.currentTimeMillis() - v_timer)/1000,3) + " seconds to initialize model");
@@ -238,7 +257,7 @@ f_initalizeSettings();
 				<Variable Class="PlainVariable">
 					<Id>1693914229230</Id>
 					<Name><![CDATA[v_timer]]></Name>
-					<X>-650</X><Y>880</Y>
+					<X>-650</X><Y>930</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -600,7 +619,7 @@ f_initalizeSettings();
 				<Variable Class="PlainVariable">
 					<Id>1732035721421</Id>
 					<Name><![CDATA[idCounter]]></Name>
-					<X>-650</X><Y>900</Y>
+					<X>-650</X><Y>950</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -792,7 +811,7 @@ f_initalizeSettings();
 				<Variable Class="PlainVariable">
 					<Id>1733303539959</Id>
 					<Name><![CDATA[randomInstance]]></Name>
-					<X>-650</X><Y>920</Y>
+					<X>-650</X><Y>970</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -942,13 +961,163 @@ f_initalizeSettings();
 				<Variable Class="PlainVariable">
 					<Id>1737995531122</Id>
 					<Name><![CDATA[v_nbhsWithoutDHStartYear]]></Name>
-					<X>-800</X><Y>410</Y>
+					<X>-990</X><Y>350</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
 					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
 						<Type><![CDATA[int]]></Type>        
+					</Properties>
+				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1738058526116</Id>
+					<Name><![CDATA[indexPercentile]]></Name>
+					<X>-761</X><Y>1198</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[int]]></Type>        
+					</Properties>
+				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1738058526118</Id>
+					<Name><![CDATA[cat1]]></Name>
+					<X>-761</X><Y>1218</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[int]]></Type>        
+					</Properties>
+				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1738058526120</Id>
+					<Name><![CDATA[cat2]]></Name>
+					<X>-761</X><Y>1238</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[int]]></Type>        
+					</Properties>
+				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1738058526122</Id>
+					<Name><![CDATA[cat3]]></Name>
+					<X>-761</X><Y>1258</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[int]]></Type>        
+					</Properties>
+				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1738058526124</Id>
+					<Name><![CDATA[cat4]]></Name>
+					<X>-761</X><Y>1278</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[int]]></Type>        
+					</Properties>
+				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1738058526126</Id>
+					<Name><![CDATA[cat5]]></Name>
+					<X>-761</X><Y>1298</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[int]]></Type>        
+					</Properties>
+				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1738058526128</Id>
+					<Name><![CDATA[cat6]]></Name>
+					<X>-761</X><Y>1318</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[int]]></Type>        
+					</Properties>
+				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1738058526130</Id>
+					<Name><![CDATA[v_shareAnnualContacts]]></Name>
+					<X>-310</X><Y>560</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[double]]></Type>        
+					</Properties>
+				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1738058526132</Id>
+					<Name><![CDATA[v_shareSimilarcontactsInNetwork]]></Name>
+					<X>-310</X><Y>580</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[double]]></Type>        
+						<InitialValue Class="CodeValue">
+							<Code><![CDATA[0.8]]></Code>
+						</InitialValue>
+					</Properties>
+				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1738058526134</Id>
+					<Name><![CDATA[v_shareLocalContactsInNetwork]]></Name>
+					<X>-310</X><Y>600</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[double]]></Type>        
+						<InitialValue Class="CodeValue">
+							<Code><![CDATA[0.8]]></Code>
+						</InitialValue>
+					</Properties>
+				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1738058526136</Id>
+					<Name><![CDATA[v_networkSizeMean]]></Name>
+					<X>-310</X><Y>620</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[double]]></Type>        
+					</Properties>
+				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1738058526138</Id>
+					<Name><![CDATA[v_networkSizeSD]]></Name>
+					<X>-310</X><Y>640</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[double]]></Type>        
 					</Properties>
 				</Variable>
 				<Variable Class="Parameter">
@@ -1851,10 +2020,34 @@ f_initalizeSettings();
 						</ParameterEditor>
 					</Properties>                 
 				</Variable>
+				<Variable Class="Parameter">
+					<Id>1738058526141</Id>
+					<Name><![CDATA[p_networkType]]></Name>
+					<X>-310</X><Y>540</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[OL_NetworkStructure]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<DefaultValue Class="CodeValue">
+							<Code><![CDATA[SMALL_WORLD_SIMILAR]]></Code>
+						</DefaultValue>
+						<ParameterEditor>
+							<Id>1738058526139</Id>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
 				<Variable Class="CollectionVariable">
 					<Id>1730389266762</Id>
 					<Name><![CDATA[c_households]]></Name>
-					<X>-650</X><Y>800</Y>
+					<X>-650</X><Y>830</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -1869,7 +2062,7 @@ f_initalizeSettings();
 				<Variable Class="CollectionVariable">
 					<Id>1732024389301</Id>
 					<Name><![CDATA[c_heatingSystemOptions]]></Name>
-					<X>-650</X><Y>840</Y>
+					<X>-650</X><Y>890</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -1884,7 +2077,7 @@ f_initalizeSettings();
 				<Variable Class="CollectionVariable">
 					<Id>1737379663209</Id>
 					<Name><![CDATA[c_buurtcodeToHouseholds]]></Name>
-					<X>-650</X><Y>820</Y>
+					<X>-650</X><Y>850</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -1896,12 +2089,27 @@ f_initalizeSettings();
 					</Properties>
 
 				</Variable>
+				<Variable Class="CollectionVariable">
+					<Id>1738079835569</Id>
+					<Name><![CDATA[c_municipalities]]></Name>
+					<X>-650</X><Y>870</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" AccessType="public" StaticVariable="false">
+						<CollectionClass><![CDATA[ArrayList]]></CollectionClass>
+						<ElementClass><![CDATA[J_Municipality]]></ElementClass>
+						<ValueElementClass><![CDATA[String]]></ValueElementClass>
+					</Properties>
+
+				</Variable>
 			</Variables>
 			<Events>
 				<Event>
 					<Id>1694513336916</Id>
 					<Name><![CDATA[e_adoptionProcess]]></Name>
-					<X>-310</X><Y>610</Y>
+					<X>-310</X><Y>740</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -2162,7 +2370,6 @@ try {
 					<ShowLabel>true</ShowLabel>
 					<Body><![CDATA[traceln("Start initialization");
 double startTime = System.currentTimeMillis();
-int decimals = 2;
 
 //1. Set scenario's and heating methods
 f_setScenarios();
@@ -2172,17 +2379,16 @@ traceln("Heating methods set");
 //2. Create neighbrohoods
 f_initializeNeighborhoods();
 f_setNeighborhoodData();
-double time1 = System.currentTimeMillis();
-double duration = roundToDecimal((time1 - startTime) / 1000, decimals);
+double duration = f_traceFunctionTime(startTime);
 traceln("Created neighborhoods in: " + duration + " seconds");
 
 //3. Create hashmap for hh -> nbh connection
+double timeStartFunction = System.currentTimeMillis();
 for( GZ_Neighborhood nbh : pop_GZ_Neighborhoods ){
 	String buurtcode = nbh.p_neighborhoodCode;
 	c_buurtcodeToHouseholds.put(buurtcode, new ArrayList<>());
 }
-double time2 = System.currentTimeMillis();
-duration = roundToDecimal((time2 - time1) / 1000, decimals);
+duration = f_traceFunctionTime(timeStartFunction);
 traceln("Created hashmap in: " + duration + " seconds");
 
 //4. Connect to database
@@ -2190,22 +2396,34 @@ Database myDatabase = db_householdData;
 myDatabase.connect();
 
 //5. Create households
+timeStartFunction = System.currentTimeMillis();
 f_initializeHouseholdsFromDatabase(myDatabase, p_modeFullNetherlands);
-double time3 = System.currentTimeMillis();
-duration = roundToDecimal((time3 - time2) / 1000, decimals);
+duration = f_traceFunctionTime(timeStartFunction);
 traceln("Created households in: " + duration + " seconds");
 
 //6. Link households to neighborhoods
+timeStartFunction = System.currentTimeMillis();
 f_linkNeighborhoodsToHouseholds();
-double time4 = System.currentTimeMillis();
-duration = roundToDecimal((time4 - time3) / 1000, decimals);
+duration = f_traceFunctionTime(timeStartFunction);
 traceln("Linked households and neighborhoods in: " + duration + " seconds");
 
 //7. Get initial heating method data, counts and numbers
+timeStartFunction = System.currentTimeMillis();
 f_getInitialHeatingMethods();
-double time5 = System.currentTimeMillis();
-duration = roundToDecimal((time5 - time4) / 1000, decimals);
+duration = f_traceFunctionTime(timeStartFunction);
 traceln("Initialized heating methods in: " + duration + " seconds");
+
+//8. Set municipalities
+timeStartFunction = System.currentTimeMillis();
+f_setMunicipalities();
+duration = f_traceFunctionTime(timeStartFunction);
+traceln("Initialized municipalities in: " + duration + " seconds");
+
+//8. Set household networks
+timeStartFunction = System.currentTimeMillis();
+f_setNetwork(p_networkType);
+duration = f_traceFunctionTime(timeStartFunction);
+traceln("Initialized household networks in: " + duration + " seconds");
 
 //8. Initialize DSO
 f_initializeDSO();
@@ -2231,8 +2449,7 @@ for(J_Household hh : c_households){
 traceln("Neighborhoods with DH grid = " + countNeighborhoodsWithDistrictHeating + ", households with potential DH = " + countHouseholdsWithDistrictHeatingPotential + ", with block heating potential " + countHouseholdsWithBlockHeatingPotential );
 
 //Check total time
-double time6 = System.currentTimeMillis();
-duration = roundToDecimal((time6 - startTime) / 1000, decimals);
+duration = f_traceFunctionTime(startTime);
 traceln("Total start-up time: " + duration + " seconds");
 
 ]]></Body>
@@ -2363,7 +2580,7 @@ traceln("Descriptive data from neigbhorhoods: Households = " + roundToInt(sum(po
 					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1700142574123</Id>
 					<Name><![CDATA[f_returnZeroIfDoubleIsSmallerThanZero]]></Name>
-					<X>-310</X><Y>800</Y>
+					<X>-310</X><Y>950</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -2385,7 +2602,7 @@ else {
 					<ReturnType><![CDATA[int]]></ReturnType>
 					<Id>1700142574134</Id>
 					<Name><![CDATA[f_returnZeroIfDoubleIsSmallerThanZeroInt]]></Name>
-					<X>-310</X><Y>820</Y>
+					<X>-310</X><Y>970</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -2466,7 +2683,7 @@ else {
 					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1704722989293</Id>
 					<Name><![CDATA[f_setCharts]]></Name>
-					<X>-640</X><Y>680</Y>
+					<X>-640</X><Y>710</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -2507,7 +2724,7 @@ for (int i = 0; i < avgEACData.length; i++) {
 					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1704723817398</Id>
 					<Name><![CDATA[f_updateDatasets]]></Name>
-					<X>-310</X><Y>920</Y>
+					<X>-310</X><Y>1070</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -2891,7 +3108,7 @@ industrySite.oval.setFillColor(v_industryColor);]]></Body>
 					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1704917508592</Id>
 					<Name><![CDATA[f_setText]]></Name>
-					<X>-640</X><Y>660</Y>
+					<X>-640</X><Y>690</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>false</PresentationFlag>
@@ -3000,7 +3217,7 @@ traceln(roundToDecimal((System.currentTimeMillis() - timer)/1000,3) + " seconds 
 					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1708550035912</Id>
 					<Name><![CDATA[f_initializeDSO]]></Name>
-					<X>-650</X><Y>590</Y>
+					<X>-650</X><Y>620</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -3382,7 +3599,7 @@ for (Tuple row_heatingMethod : rows_heatingMethods){
 					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1715688573320</Id>
 					<Name><![CDATA[f_adoptionProces]]></Name>
-					<X>-310</X><Y>640</Y>
+					<X>-310</X><Y>770</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -3553,7 +3770,7 @@ x.f_drawRegionFromWKTString();]]></Body>
 					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1732022834044</Id>
 					<Name><![CDATA[f_setMap]]></Name>
-					<X>-640</X><Y>640</Y>
+					<X>-640</X><Y>670</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -3746,7 +3963,7 @@ v_districtHeating_perc = v_districtHeating_nb / households;
 					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1732635161531</Id>
 					<Name><![CDATA[f_updateGlobalCostsHeatingMethods]]></Name>
-					<X>-300</X><Y>660</Y>
+					<X>-300</X><Y>790</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -3783,7 +4000,7 @@ v_districtHeating_perc = v_districtHeating_nb / households;
 					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1733243051884</Id>
 					<Name><![CDATA[f_sumDataset]]></Name>
-					<X>-310</X><Y>940</Y>
+					<X>-310</X><Y>1090</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -3857,7 +4074,7 @@ return energySourceCosts_eurPerkWh;		]]></Body>
 					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1733388149607</Id>
 					<Name><![CDATA[f_updateHistogramData]]></Name>
-					<X>-310</X><Y>980</Y>
+					<X>-310</X><Y>1130</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -3919,7 +4136,7 @@ for(J_Household hh : c_households){
 					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1733391445122</Id>
 					<Name><![CDATA[f_updateBarTopRank]]></Name>
-					<X>-310</X><Y>960</Y>
+					<X>-310</X><Y>1110</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -3969,7 +4186,7 @@ ch_barTopRank.addDataItem(d5, v_districtHeatingText, v_districtHeatingColor);
 					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1733765061876</Id>
 					<Name><![CDATA[f_getNormalizedValue]]></Name>
-					<X>-310</X><Y>850</Y>
+					<X>-310</X><Y>1000</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -3993,7 +4210,7 @@ ch_barTopRank.addDataItem(d5, v_districtHeatingText, v_districtHeatingColor);
 					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1733819591070</Id>
 					<Name><![CDATA[f_addDataSetToTimeplot]]></Name>
-					<X>-630</X><Y>700</Y>
+					<X>-630</X><Y>730</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -4153,7 +4370,7 @@ traceln("TVW Policy plans: Total Wnet neighborhoods = " + totalPolicyHGNeighborh
 					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1733937192103</Id>
 					<Name><![CDATA[f_setMapColor]]></Name>
-					<X>-310</X><Y>880</Y>
+					<X>-310</X><Y>1030</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -4489,7 +4706,7 @@ for (GZ_Neighborhood neighborhood : pop_GZ_Neighborhoods) {
 					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1737381552755</Id>
 					<Name><![CDATA[f_setVisuals]]></Name>
-					<X>-650</X><Y>620</Y>
+					<X>-650</X><Y>650</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -4577,6 +4794,376 @@ f_setInitialUnitsInstalledPerHeatingMethod();]]></Body>
 } else {
 	p_DSORenovationCapacity_nbhPerYear = 100;
 }]]></Body>
+				</Function>
+				<Function AccessType="default" StaticFunction="false">
+					<ReturnModificator>VOID</ReturnModificator>
+					<ReturnType><![CDATA[double]]></ReturnType>
+					<Id>1738058526108</Id>
+					<Name><![CDATA[f_setNetwork]]></Name>
+					<X>-761</X><Y>1108</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Parameter>
+						<Name><![CDATA[networkType]]></Name>
+						<Type><![CDATA[OL_NetworkStructure]]></Type>
+					</Parameter>
+					<Body><![CDATA[f_setNetworkAssumptions();
+switch(networkType){
+	case RANDOM_NETWORK:
+		f_setNetworkRandom();
+		break;
+	case SMALL_WORLD_GEOGRAPHICAL:
+		f_setNetworkSmallWorld();
+		break;
+	case SMALL_WORLD_SIMILAR:
+		f_setNetworkSimilar();
+		break;
+}]]></Body>
+				</Function>
+				<Function AccessType="default" StaticFunction="false">
+					<ReturnModificator>VOID</ReturnModificator>
+					<ReturnType><![CDATA[double]]></ReturnType>
+					<Id>1738058526110</Id>
+					<Name><![CDATA[f_setNetworkSimilar]]></Name>
+					<X>-761</X><Y>1168</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Body><![CDATA[// List national
+int nbOfCategories = 6;
+double[] percentileValues = new double[nbOfCategories + 1];
+double maxAtt = max(c_households, x -> x.getSustainabilityAttitudeNormalized());
+double minAtt = min(c_households, x -> x.getSustainabilityAttitudeNormalized());
+double meanAtt = average(c_households, x -> x.getSustainabilityAttitudeNormalized());
+
+// Step 1: Calculate the variance
+double variance = c_households.stream()
+    .mapToDouble(h -> Math.pow(h.getSustainabilityAttitudeNormalized() - meanAtt, 2))
+    .average()
+    .orElse(0.0);
+
+// Step 2: Calculate the standard deviation
+double standardDeviation = Math.sqrt(variance);
+
+//traceln("Max att = " + maxAtt + " min att = " + minAtt + " mean att = " + meanAtt + " variance = " + variance + " SD = " + standardDeviation);
+
+// Step 3: Calculate percentile boundaries
+// Step 3: Define percentile boundaries in descending order
+percentileValues[0] = maxAtt; // Open-ended upper boundary
+percentileValues[1] = meanAtt + 2 * standardDeviation;
+percentileValues[2] = meanAtt + 1 * standardDeviation;
+percentileValues[3] = meanAtt;
+percentileValues[4] = meanAtt - 1 * standardDeviation;
+percentileValues[5] = meanAtt - 2 * standardDeviation;
+percentileValues[6] = minAtt; // Open-ended lower boundary
+
+/*
+double range = maxAtt - minAtt;
+for (int i = 0; i <= nbOfCategories; i++) {
+    percentileValues[i] = maxAtt - i * (range / nbOfCategories);
+}
+*/
+
+// Debug output for percentile values
+/*
+for (int i = 0; i <= nbOfCategories; i++) {
+    traceln("Percentile value [" + i + "] = " + percentileValues[i]);
+}*/
+
+// Step 4: Create category lists for households
+List<J_Household> households1 = c_households.stream()
+    .filter(h -> h.getSustainabilityAttitudeNormalized() <= percentileValues[0] &&
+                 h.getSustainabilityAttitudeNormalized() > percentileValues[1])
+    .collect(Collectors.toList());
+List<J_Household> households2 = c_households.stream()
+    .filter(h -> h.getSustainabilityAttitudeNormalized() <= percentileValues[1] &&
+                 h.getSustainabilityAttitudeNormalized() > percentileValues[2])
+    .collect(Collectors.toList());
+List<J_Household> households3 = c_households.stream()
+    .filter(h -> h.getSustainabilityAttitudeNormalized() <= percentileValues[2] &&
+                 h.getSustainabilityAttitudeNormalized() > percentileValues[3])
+    .collect(Collectors.toList());
+List<J_Household> households4 = c_households.stream()
+    .filter(h -> h.getSustainabilityAttitudeNormalized() <= percentileValues[3] &&
+                 h.getSustainabilityAttitudeNormalized() > percentileValues[4])
+    .collect(Collectors.toList());
+List<J_Household> households5 = c_households.stream()
+    .filter(h -> h.getSustainabilityAttitudeNormalized() <= percentileValues[4] &&
+                 h.getSustainabilityAttitudeNormalized() > percentileValues[5])
+    .collect(Collectors.toList());
+List<J_Household> households6 = c_households.stream()
+    .filter(h -> h.getSustainabilityAttitudeNormalized() <= percentileValues[5] &&
+                 h.getSustainabilityAttitudeNormalized() >= percentileValues[6]) // Use >= for last boundary
+    .collect(Collectors.toList());
+/*
+traceln("List sizes: " +
+        "households1=" + households1.size() + ", " +
+        "households2=" + households2.size() + ", " +
+        "households3=" + households3.size() + ", " +
+        "households4=" + households4.size() + ", " +
+        "households5=" + households5.size() + ", " +
+        "households6=" + households6.size());
+*/
+// Step 5: Process households in each neighborhood
+//for (GZ_Neighborhood nbh : pop_GZ_Neighborhoods) {
+for(J_Municipality mun : c_municipalities) {
+    if (mun.getHouseholds().size() > 0) {
+        // Create district-level lists for each category
+        List<J_Household> householdsDistrict1 = mun.getHouseholds().stream()
+            .filter(h -> h.getSustainabilityAttitudeNormalized() <= percentileValues[0] &&
+                         h.getSustainabilityAttitudeNormalized() > percentileValues[1])
+            .collect(Collectors.toList());
+        List<J_Household> householdsDistrict2 = mun.getHouseholds().stream()
+            .filter(h -> h.getSustainabilityAttitudeNormalized() <= percentileValues[1] &&
+                         h.getSustainabilityAttitudeNormalized() > percentileValues[2])
+            .collect(Collectors.toList());
+        List<J_Household> householdsDistrict3 = mun.getHouseholds().stream()
+            .filter(h -> h.getSustainabilityAttitudeNormalized() <= percentileValues[2] &&
+                         h.getSustainabilityAttitudeNormalized() > percentileValues[3])
+            .collect(Collectors.toList());
+        List<J_Household> householdsDistrict4 = mun.getHouseholds().stream()
+            .filter(h -> h.getSustainabilityAttitudeNormalized() <= percentileValues[3] &&
+                         h.getSustainabilityAttitudeNormalized() > percentileValues[4])
+            .collect(Collectors.toList());
+        List<J_Household> householdsDistrict5 = mun.getHouseholds().stream()
+            .filter(h -> h.getSustainabilityAttitudeNormalized() <= percentileValues[4] &&
+                         h.getSustainabilityAttitudeNormalized() > percentileValues[5])
+            .collect(Collectors.toList());
+        List<J_Household> householdsDistrict6 = mun.getHouseholds().stream()
+            .filter(h -> h.getSustainabilityAttitudeNormalized() <= percentileValues[5] &&
+                         h.getSustainabilityAttitudeNormalized() >= percentileValues[6])
+            .collect(Collectors.toList());
+
+        // Debug output for district lists
+        /*traceln("Neighborhood " + mun.getMunicipalityCode() +
+			": District list sizes: 1=" + householdsDistrict1.size() +
+	        ", 2=" + householdsDistrict2.size() +
+	        ", 3=" + householdsDistrict3.size() +
+	        ", 4=" + householdsDistrict4.size() +
+	        ", 5=" + householdsDistrict5.size() +
+	        ", 6=" + householdsDistrict6.size());
+		*/
+        // Set HH networks
+        for (J_Household x : mun.getHouseholds()) {
+            int ipCopy = 0;
+            while (ipCopy < nbOfCategories && x.getSustainabilityAttitudeNormalized() <= percentileValues[ipCopy]) {
+                ipCopy++;
+            }
+            int category = ipCopy; // Assign the category
+
+            double networkSize = Math.round(normal(0, 1, 0.5, 0.05) * v_networkSizeMean);
+            for (int i = 0; i < networkSize; i++) {
+                J_Household connection;
+                double rand = uniform(0, 1);
+                double rand2 = uniform(0, 1);
+                if (rand < v_shareLocalContactsInNetwork) {
+                    if (rand2 < v_shareSimilarcontactsInNetwork) {
+                        if (category == 1) connection = randomFrom(householdsDistrict1);
+                        else if (category == 2) connection = randomFrom(householdsDistrict2);
+                        else if (category == 3) connection = randomFrom(householdsDistrict3);
+                        else if (category == 4) connection = randomFrom(householdsDistrict4);
+                        else if (category == 5) connection = randomFrom(householdsDistrict5);
+                        else connection = randomFrom(householdsDistrict6);
+                    } else {
+                        connection = randomFrom(mun.getHouseholds());
+                    }
+                } else {
+                    if (rand2 < v_shareSimilarcontactsInNetwork) {
+                        if (category == 1) connection = randomFrom(households1);
+                        else if (category == 2) connection = randomFrom(households2);
+                        else if (category == 3) connection = randomFrom(households3);
+                        else if (category == 4) connection = randomFrom(households4);
+                        else if (category == 5) connection = randomFrom(households5);
+                        else connection = randomFrom(households6);
+                    } else {
+                        connection = randomFrom(c_households);
+                    }
+                }
+                x.householdsInNetwork.add(connection);
+                connection.householdsInNetwork.add(x);
+            }
+            if (x.householdsInNetwork.size() == 0 && x.getId() < 100) {
+                traceln("Error: hh " + x.getId() + " has no households in network");
+            }
+        }
+    }
+}
+
+traceln(average(c_households, x->x.householdsInNetwork.size()) + " average network size");]]></Body>
+				</Function>
+				<Function AccessType="default" StaticFunction="false">
+					<ReturnModificator>VOID</ReturnModificator>
+					<ReturnType><![CDATA[double]]></ReturnType>
+					<Id>1738058526112</Id>
+					<Name><![CDATA[f_setNetworkSmallWorld]]></Name>
+					<X>-761</X><Y>1148</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Body><![CDATA[//int indexPercentile = 0;
+for(GZ_Neighborhood nbh : pop_GZ_Neighborhoods){
+	if(nbh.p_households > 0){
+		//SET HH NETWORKS
+		for(J_Household x : nbh.c_households){
+			double networkSize = Math.round(normal(0,1, 0.5, 0.05) * v_networkSizeMean);
+			for(int i=0; i<networkSize; i++) {
+				J_Household connection;				
+				double rand = uniform(0,1);
+				//Connection from local population
+				if(rand < v_shareLocalContactsInNetwork) {
+					connection = randomFrom(nbh.c_households);	
+				}
+				//Connection from global population
+				else {
+					connection = randomFrom(c_households);	
+				}
+						
+				if(x.householdsInNetwork.contains(connection)){
+					connection = randomFrom(c_households);
+				}
+				x.householdsInNetwork.add(connection);
+				connection.householdsInNetwork.add(x);
+			}
+			if(x.householdsInNetwork.size() == 0) {
+				traceln("Error: hh " + x.getId() + " has no households in network");
+			}/*		
+			if(x.getId() % 1000 == 0) {
+				System.out.println("Household " + x.getId() + " has " + x.householdsInNetwork.size() + " households in network");
+			}*/
+		}
+	}
+}
+]]></Body>
+				</Function>
+				<Function AccessType="default" StaticFunction="false">
+					<ReturnModificator>VOID</ReturnModificator>
+					<ReturnType><![CDATA[double]]></ReturnType>
+					<Id>1738058526114</Id>
+					<Name><![CDATA[f_setNetworkRandom]]></Name>
+					<X>-761</X><Y>1128</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Body><![CDATA[//int indexPercentile = 0;
+for(GZ_Neighborhood nbh : pop_GZ_Neighborhoods){
+	if(nbh.p_households > 0){
+		//SET HH NETWORKS
+		for(J_Household x : nbh.c_households){
+			double networkSize = Math.round(normal(0,1, 0.5, 0.05) * v_networkSizeMean);
+			for(int i=0; i<networkSize; i++) {
+				J_Household connection = randomFrom(c_households);						
+				if(x.householdsInNetwork.contains(connection)){
+					connection = randomFrom(c_households);
+				}
+				x.householdsInNetwork.add(connection);
+				connection.householdsInNetwork.add(x);
+			}
+			if(x.householdsInNetwork.size() == 0) {
+				traceln("Error: hh " + x.getId() + " has no households in network");
+			}/*		
+			if(x.getId() % 1000 == 0) {
+				System.out.println("Household " + x.getId() + " has " + x.householdsInNetwork.size() + " households in network");
+			}*/
+		}
+	}
+}]]></Body>
+				</Function>
+				<Function AccessType="default" StaticFunction="false">
+					<ReturnModificator>VOID</ReturnModificator>
+					<ReturnType><![CDATA[double]]></ReturnType>
+					<Id>1738058629779</Id>
+					<Name><![CDATA[f_setNetworkAssumptions]]></Name>
+					<X>-761</X><Y>1088</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Body><![CDATA[v_networkSizeMean = 25;
+v_networkSizeSD = 2.5;
+v_shareLocalContactsInNetwork = 0.8;
+v_shareAnnualContacts = 0.64;
+
+/*
+v_networkSizeMean = (double) selectFrom(global_assumptions)
+	.where(global_assumptions.assumption.eq("network size mean"))
+	.firstResult(global_assumptions.value);
+v_networkSizeSD = (double) selectFrom(global_assumptions)
+	.where(global_assumptions.assumption.eq("network size standard deviation"))
+	.firstResult(global_assumptions.value);
+v_shareLocalContactsInNetwork = (double) selectFrom(global_assumptions)
+	.where(global_assumptions.assumption.eq("share local contacts"))
+	.firstResult(global_assumptions.value);
+v_shareAnnualContacts = (double) selectFrom(global_assumptions)
+	.where(global_assumptions.assumption.eq("share annual contacts"))
+	.firstResult(global_assumptions.value);	
+*/]]></Body>
+				</Function>
+				<Function AccessType="default" StaticFunction="false">
+					<ReturnModificator>RETURNS_VALUE</ReturnModificator>
+					<ReturnType><![CDATA[double]]></ReturnType>
+					<Id>1738079160135</Id>
+					<Name><![CDATA[f_traceFunctionTime]]></Name>
+					<X>-310</X><Y>930</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Parameter>
+						<Name><![CDATA[timeStartFunction]]></Name>
+						<Type><![CDATA[double]]></Type>
+					</Parameter>
+					<Body><![CDATA[int decimals = 2;
+double timeEndFunction = System.currentTimeMillis();
+return roundToDecimal((timeEndFunction - timeStartFunction) / 1000, decimals);
+]]></Body>
+				</Function>
+				<Function AccessType="default" StaticFunction="false">
+					<ReturnModificator>VOID</ReturnModificator>
+					<ReturnType><![CDATA[double]]></ReturnType>
+					<Id>1738079763086</Id>
+					<Name><![CDATA[f_setMunicipalities]]></Name>
+					<X>-650</X><Y>590</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Body><![CDATA[for(GZ_Neighborhood nbh : pop_GZ_Neighborhoods){
+	boolean hasMunicipality = false;
+	//Add nbh to municipality if it exists
+	if( c_municipalities.size() > 0){
+		J_Municipality mun = findFirst(c_municipalities, x->x.getMunicipalityCode().equals(nbh.p_municipalityCode));
+		if(mun != null){
+			mun.addNeighborhood(nbh);
+			mun.addHouseholds(nbh.c_households);
+			hasMunicipality = true;
+		}
+	}
+	
+	//Create municiaplity if it does not yet exist
+	if( !hasMunicipality ){
+		//traceln("adding mun " + nbh.p_municipalityCode);
+		J_Municipality newMunicipality = new J_Municipality(nbh.p_municipalityCode);
+		c_municipalities.add(newMunicipality);
+		newMunicipality.addNeighborhood(nbh);
+		newMunicipality.addHouseholds(nbh.c_households);
+	}
+}
+
+//Debug
+/*
+int countNeighborhoods = 0;
+int countHouseholds = 0;
+for(J_Municipality x : c_municipalities){
+	countNeighborhoods += x.getNeighborhoods().size();
+	countHouseholds += x.getHouseholds().size();
+}
+traceln("Nbhs in mun = " + countNeighborhoods + ", Hh in mun = " + countHouseholds);
+*/]]></Body>
 				</Function>
 			</Functions>
 			<TableFunctions>
@@ -5975,7 +6562,7 @@ f_setInitialUnitsInstalledPerHeatingMethod();]]></Body>
 				<EmbeddedObject>
 					<Id>1700133527402</Id>
 					<Name><![CDATA[pop_GZ_Neighborhoods]]></Name>
-					<X>-650</X><Y>730</Y>
+					<X>-650</X><Y>760</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -6312,7 +6899,7 @@ f_setInitialUnitsInstalledPerHeatingMethod();]]></Body>
 				<EmbeddedObject>
 					<Id>1708548712823</Id>
 					<Name><![CDATA[pop_DSOs]]></Name>
-					<X>-650</X><Y>750</Y>
+					<X>-650</X><Y>780</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -6370,7 +6957,7 @@ f_setInitialUnitsInstalledPerHeatingMethod();]]></Body>
 				<EmbeddedObject>
 					<Id>1708548749645</Id>
 					<Name><![CDATA[districtHeatingCompany]]></Name>
-					<X>-650</X><Y>770</Y>
+					<X>-650</X><Y>800</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -8750,7 +9337,7 @@ f_setMapColor(mapMode);]]></ActionCode>
 				<Rectangle>
 					<Id>1737987809928</Id>
 					<Name><![CDATA[rectangle3]]></Name>
-					<X>-340</X><Y>550</Y>
+					<X>-340</X><Y>680</Y>
 					<Label><X>10</X><Y>10</Y></Label>
 					<PublicFlag>true</PublicFlag>
 					<PresentationFlag>false</PresentationFlag>
@@ -8772,7 +9359,7 @@ f_setMapColor(mapMode);]]></ActionCode>
 				<Text>
 					<Id>1737987809936</Id>
 					<Name><![CDATA[text3]]></Name>
-					<X>-320</X><Y>560</Y>
+					<X>-320</X><Y>690</Y>
 					<Label><X>0</X><Y>-10</Y></Label>
 					<PublicFlag>true</PublicFlag>
 					<PresentationFlag>false</PresentationFlag>
@@ -8807,7 +9394,7 @@ f_setMapColor(mapMode);]]></ActionCode>
 					<LineMaterial>null</LineMaterial>
 					<LineStyle>SOLID</LineStyle>
 					<Width>340</Width>
-					<Height>350</Height>
+					<Height>480</Height>
 					<Rotation>0.0</Rotation>
 					<FillColor>-2578</FillColor>
 					<FillMaterial>null</FillMaterial>
@@ -8836,7 +9423,7 @@ f_setMapColor(mapMode);]]></ActionCode>
 				<Rectangle>
 					<Id>1737992072888</Id>
 					<Name><![CDATA[rectangle5]]></Name>
-					<X>-340</X><Y>740</Y>
+					<X>-340</X><Y>870</Y>
 					<Label><X>10</X><Y>10</Y></Label>
 					<PublicFlag>true</PublicFlag>
 					<PresentationFlag>false</PresentationFlag>
@@ -8850,7 +9437,7 @@ f_setMapColor(mapMode);]]></ActionCode>
 					<LineMaterial>null</LineMaterial>
 					<LineStyle>SOLID</LineStyle>
 					<Width>340</Width>
-					<Height>280</Height>
+					<Height>310</Height>
 					<Rotation>0.0</Rotation>
 					<FillColor>-32</FillColor>
 					<FillMaterial>null</FillMaterial>
@@ -8858,7 +9445,7 @@ f_setMapColor(mapMode);]]></ActionCode>
 				<Text>
 					<Id>1737992072890</Id>
 					<Name><![CDATA[text5]]></Name>
-					<X>-320</X><Y>750</Y>
+					<X>-320</X><Y>880</Y>
 					<Label><X>0</X><Y>-10</Y></Label>
 					<PublicFlag>true</PublicFlag>
 					<PresentationFlag>false</PresentationFlag>
@@ -8872,6 +9459,48 @@ f_setMapColor(mapMode);]]></ActionCode>
 					<Font>
 						<Name>SansSerif</Name>
 						<Size>20</Size>
+						<Style>1</Style>
+					</Font>
+					<Alignment>LEFT</Alignment>
+				</Text>
+				<Text>
+					<Id>1738058526106</Id>
+					<Name><![CDATA[text8]]></Name>
+					<X>-781</X><Y>1048</Y>
+					<Label><X>0</X><Y>-10</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>false</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D</DrawMode>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Z>0</Z>
+					<Rotation>0.0</Rotation>
+					<Color>-16777216</Color>
+					<Text><![CDATA[Network]]></Text>
+					<Font>
+						<Name>SansSerif</Name>
+						<Size>16</Size>
+						<Style>1</Style>
+					</Font>
+					<Alignment>LEFT</Alignment>
+				</Text>
+				<Text>
+					<Id>1738058559621</Id>
+					<Name><![CDATA[text9]]></Name>
+					<X>-310</X><Y>500</Y>
+					<Label><X>0</X><Y>-10</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>false</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D</DrawMode>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Z>0</Z>
+					<Rotation>0.0</Rotation>
+					<Color>-16777216</Color>
+					<Text><![CDATA[Network]]></Text>
+					<Font>
+						<Name>SansSerif</Name>
+						<Size>16</Size>
 						<Style>1</Style>
 					</Font>
 					<Alignment>LEFT</Alignment>
@@ -13011,6 +13640,21 @@ for(GZ_Neighborhood neighborhood : main.pop_GZ_Neighborhoods){
 						<Type><![CDATA[double]]></Type>        
 					</Properties>
 				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1738060619606</Id>
+					<Name><![CDATA[v_networkType]]></Name>
+					<X>-400</X><Y>440</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[OL_NetworkStructure]]></Type>        
+						<InitialValue Class="CodeValue">
+							<Code><![CDATA[SMALL_WORLD_SIMILAR]]></Code>
+						</InitialValue>
+					</Properties>
+				</Variable>
 			</Variables>
 
 			<Presentation>
@@ -13638,6 +14282,62 @@ switch (districtHeatingRollOutPace){
 					</Font>
 					<Alignment>LEFT</Alignment>
 				</Text>
+				<Control Type="ComboBox">
+				 	<EmbeddedIcon>false</EmbeddedIcon>				
+					<Id>1738060619593</Id>
+					<Name><![CDATA[cb_networkType]]></Name>
+					<X>550</X><Y>180</Y>
+					<Label><X>0</X><Y>-10</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
+					<BasicProperties Width="190" Height="20">
+                        <EmbeddedIcon>false</EmbeddedIcon>	
+						<FillColor/>
+						<TextColor/>
+						<Enabled>true</Enabled>
+						<ActionCode><![CDATA[if(cb_networkType.getValue().equals("Random")){
+	v_networkType = RANDOM_NETWORK;
+}
+else if(cb_networkType.getValue().equals("Small world")){
+	v_networkType = SMALL_WORLD_GEOGRAPHICAL;
+}
+else if(cb_networkType.getValue().equals("Small world similar")){
+	v_networkType = SMALL_WORLD_SIMILAR;
+}]]></ActionCode>
+					</BasicProperties>
+					<ExtendedProperties>
+						<Font Name="Dialog" Size="11" Style="0"/>
+						<DefaultValueCode><![CDATA["Small world similar"]]></DefaultValueCode>
+						<Editable>false</Editable>
+						<Button><![CDATA[Random]]></Button>
+						<Button><![CDATA[Small world]]></Button>
+						<Button><![CDATA[Small world similar]]></Button>
+						<LinkTo>false</LinkTo>
+					</ExtendedProperties>
+				</Control>
+				<Text>
+					<Id>1738060619604</Id>
+					<Name><![CDATA[text33]]></Name>
+					<X>555</X><Y>160</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Z>0</Z>
+					<Rotation>0.0</Rotation>
+					<Color>-12171190</Color>
+					<Text><![CDATA[network structure]]></Text>
+					<Font>
+						<Name>SansSerif</Name>
+						<Size>12</Size>
+						<Style>0</Style>
+					</Font>
+					<Alignment>LEFT</Alignment>
+				</Text>
 			</Presentation>
 
 			<Parameters>			
@@ -13775,6 +14475,9 @@ switch (districtHeatingRollOutPace){
 				</Parameter>
 				<Parameter>
 					<ParameterName><![CDATA[p_PmaxPerHybridHeatPump]]></ParameterName>
+				</Parameter>
+				<Parameter>
+					<ParameterName><![CDATA[p_networkType]]></ParameterName>
 				</Parameter>
 			</Parameters>			
 			<PresentationProperties>
@@ -14244,6 +14947,9 @@ chart1.addDataSet( , format( root.p_innovationCoefficient ), color, true, Chart.
 			<FreeformParamValue>	
 				<Id>1737992510197</Id>
 			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1738058526141</Id>
+			</FreeformParamValue>
 			<RangeVariationParamValue>	
 				<Id>1704719032315</Id>
 				<Type>FIXED</Type>
@@ -14404,6 +15110,10 @@ chart1.addDataSet( , format( root.p_innovationCoefficient ), color, true, Chart.
 				<Id>1737992510197</Id>
 				<Type>FIXED</Type>
 			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1738058526141</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
 			<ModelTimeProperties>
 				<StopOption><![CDATA[Stop at specified date]]></StopOption>
 				<InitialDate><![CDATA[1577836800000]]></InitialDate>	
@@ -14464,6 +15174,9 @@ public class J_Household {
 	private double sustainabilityAttitude_norm;
 	private double statusQuoScore;
 
+	//Social network
+	List<J_Household> householdsInNetwork = new ArrayList<>();
+	
 	private Main main;
 		
     /**
@@ -15011,6 +15724,10 @@ public class J_Household {
     	return sustainabilityAttitude;
     }
     
+    public double getSustainabilityAttitudeNormalized() {
+    	return sustainabilityAttitude_norm;
+    }
+    
 	@Override
 	public String toString() {
 		return "Household (ID: " + id + " heating system, " + heatingSystem + ", ownership " + ownership + ", nbh name " + neighborhood.p_neighborhood + ", nbh index " + neighborhood.getIndex();
@@ -15458,6 +16175,62 @@ public class J_HeatingSystemOptionsLocal {
 
 }
 ]]></Text>
+		</JavaClass>
+		<!--   =========   Java Class   ========  -->
+		<JavaClass>
+			<Id>1738078798179</Id>
+			<Name><![CDATA[J_Municipality]]></Name>
+			<Text><![CDATA[/**
+ * J_Municipality
+ */	
+public class J_Municipality {
+	
+	private String municipalityCode;
+	private List<GZ_Neighborhood> neighborhoods;
+	private List<J_Household> households;
+
+    /**
+     * Default constructor
+     */
+    public J_Municipality(String municipalityCode) {
+    	neighborhoods  = new ArrayList<>();
+    	households  = new ArrayList<>();
+    	this.municipalityCode = municipalityCode;
+    }
+    
+    public void addNeighborhood(GZ_Neighborhood nbh) {
+    	neighborhoods.add(nbh);
+    }
+    
+    public void addHouseholds(List<J_Household> neighborhoodHouseholds) {
+    	households.addAll(neighborhoodHouseholds);
+    }
+    /**Setter methods
+     * 
+     */
+    
+    
+    /**Getter methods
+     * 
+     */
+    public String getMunicipalityCode() {
+        return municipalityCode;
+    }
+    
+    public List<J_Household> getHouseholds() {
+        return households;
+    }
+    
+    public List<GZ_Neighborhood> getNeighborhoods() {
+        return neighborhoods;
+    }
+
+	@Override
+	public String toString() {
+		return super.toString();
+	}
+
+}]]></Text>
 		</JavaClass>
 	</JavaClasses>
 	<ModelResources>
