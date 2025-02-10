@@ -3835,7 +3835,7 @@ for (Tuple row : rows) {
 	double maintenanceCosts =row.get(heating_system_data.maintenance_costs_eur_per_year);											//maintenance costs per year
 	int lifetime = row.get(heating_system_data.lifetime_years);																	//Lifetime
 	double discountRate = row.get(heating_system_data.discount_rate);																//Discount rate
-	double learningRate_perUnit = row.get(heating_system_data.learning_rate_per_unit);												//Learning rate
+	double economicLearningRate_perUnit = row.get(heating_system_data.economic_learning_rate_per_unit);												//Learning rate
 	OL_EnergyCarrier primaryEnergySource = f_convertEnergySourceStringToOL(row.get(heating_system_data.energy_source_primary));
 	OL_EnergyCarrier secondaryEnergySource = f_convertEnergySourceStringToOL(row.get(heating_system_data.energy_source_secondary));
 	double efficiencyPrimaryEnergySource = row.get(heating_system_data.efficiency_primary_source);
@@ -3846,6 +3846,7 @@ for (Tuple row : rows) {
 	double secondaryEnergySourceCosts_eurPerkWh = f_getEnergySourceCosts(secondaryEnergySource);
 	int subsidy_eur = row.get(heating_system_data.subsidy_eur);
 	int sustainability_score = row.get(heating_system_data.sustainability_score);
+	double socialLearningRate = row.get(heating_system_data.social_learning_rate);
 	String requiredHeatDistributionSystem = row.get(heating_system_data.required_distribution_system);
 		
 	J_HeatingSystemOptionsGlobal data = new J_HeatingSystemOptionsGlobal(
@@ -3855,7 +3856,7 @@ for (Tuple row : rows) {
 		maintenanceCosts,
 		lifetime,
 		discountRate,
-		learningRate_perUnit,
+		economicLearningRate_perUnit,
 		primaryEnergySource,
 		secondaryEnergySource,
 		efficiencyPrimaryEnergySource,
@@ -3866,6 +3867,7 @@ for (Tuple row : rows) {
 		secondaryEnergySourceCosts_eurPerkWh,
 		subsidy_eur,
 		sustainability_score,
+		socialLearningRate,
 		requiredHeatDistributionSystem
 	);
 	c_heatingSystemOptions.add(data);
@@ -7667,7 +7669,7 @@ traceln("Nbhs in mun = " + countNeighborhoods + ", Hh in mun = " + countHousehol
 					<LineMaterial>null</LineMaterial>
 					<LineStyle>SOLID</LineStyle>
 					<Width>340</Width>
-					<Height>960</Height>
+					<Height>1000</Height>
 					<Rotation>0.0</Rotation>
 					<FillColor>-133658</FillColor>
 					<FillMaterial>null</FillMaterial>
@@ -15176,6 +15178,8 @@ public class J_Household {
 
 	//Social network
 	List<J_Household> householdsInNetwork = new ArrayList<>();
+	private double shareAnnualContacts;
+	public Random random;						// Use main instance of random
 	
 	private Main main;
 		
@@ -15316,6 +15320,8 @@ public class J_Household {
     	int age = 0;
     	heatingSystem = new J_HeatingSystem(preferredHeatingSystem, age);
     	heatingSystemInstalledThisYear = heatingSystem;
+    	    	
+    	f_spreadSocialLearning(preferredHeatingSystem);
     	
     	
     	//Trace rank
@@ -15345,6 +15351,21 @@ public class J_Household {
     	J_HeatingSystemOptionsLocal requiredHeatingSystem = findFirst(heatingSystemOptions, x->x.getType() == DISTRICT_HEATING);
     	heatingSystem = new J_HeatingSystem(requiredHeatingSystem, age);
     	heatingSystemInstalledThisYear = heatingSystem;
+    }
+    
+    public void f_spreadSocialLearning(J_HeatingSystemOptionsLocal preferredHeatingSystem) {
+    	int networkSize = householdsInNetwork.size();
+    	int annualContacts = (int) Math.round(networkSize * shareAnnualContacts);
+    	double preferenceScore = preferredHeatingSystem.getPreferenceValue();
+    	OL_HeatingSystem heatingSystemType = preferredHeatingSystem.getType();
+    	double socialLearningRate = preferredHeatingSystem.getSocialLearningRate();
+		for(int i=0; i < annualContacts; i++) {
+			int contactIndex = uniform_discr(0, networkSize - 1, random);
+			J_Household contact = householdsInNetwork.get(contactIndex);
+			J_HeatingSystemOptionsLocal contactHeatingSystem = findFirst(contact.getHeatingSystemOptions(), x->x.getType() == heatingSystemType);
+			double subjectiveNorm = contactHeatingSystem.getSubjectiveNorm() + preferenceScore * socialLearningRate;
+			contactHeatingSystem.setSubjectiveNorm(subjectiveNorm);
+    	}
     }
     
     /*
@@ -15819,7 +15840,8 @@ public class J_HeatingSystemOptionsGlobal {
 	private double maintenanceCosts;
 	private int lifetime;
 	private double discountRate;
-	private double learningRate;
+	private double economicLearningRate;
+	private double socialLearningRate;
 	private OL_EnergyCarrier primaryEnergySource;
 	private OL_EnergyCarrier secondaryEnergySource;
 	private double efficiencyPrimarySource;
@@ -15839,11 +15861,12 @@ public class J_HeatingSystemOptionsGlobal {
 	
 	
 	
+	
 	/**
     * Default constructor
     */
 	
-	public J_HeatingSystemOptionsGlobal(OL_HeatingSystem type, double investmentCostsHeatSupplySystem, double investmentCostsHeatDistributionSystem, double maintenanceCosts, int lifetime, double discountRate, double learningRate, OL_EnergyCarrier primaryEnergySource, OL_EnergyCarrier secondaryEnergySource, double efficiencyPrimarySource, double efficiencySecondarySource, double fractionPrimaryEnergySource, double fractionSecondaryEnergySource, double primaryEnergySourceCosts_eurPerkWh, double secondaryEnergySourceCosts_eurPerkWh, int subsidy_eur, int sustainability_score, String requiredHeatDistributionSystem) {
+	public J_HeatingSystemOptionsGlobal(OL_HeatingSystem type, double investmentCostsHeatSupplySystem, double investmentCostsHeatDistributionSystem, double maintenanceCosts, int lifetime, double discountRate, double economicLearningRate, OL_EnergyCarrier primaryEnergySource, OL_EnergyCarrier secondaryEnergySource, double efficiencyPrimarySource, double efficiencySecondarySource, double fractionPrimaryEnergySource, double fractionSecondaryEnergySource, double primaryEnergySourceCosts_eurPerkWh, double secondaryEnergySourceCosts_eurPerkWh, int subsidy_eur, int sustainability_score, double socialLearningRate, String requiredHeatDistributionSystem) {
 		this.type = type;
 		this.investmentCostsHeatSupplySystem = investmentCostsHeatSupplySystem;
 		this.investmentCostsHeatDistributionSystem = investmentCostsHeatDistributionSystem;
@@ -15851,7 +15874,7 @@ public class J_HeatingSystemOptionsGlobal {
 		this.maintenanceCosts = maintenanceCosts;
 		this.lifetime = lifetime;
 		this.discountRate = discountRate;
-		this.learningRate = learningRate;
+		this.economicLearningRate = economicLearningRate;
 		this.primaryEnergySource = primaryEnergySource;
 		this.secondaryEnergySource = secondaryEnergySource;
 		this.efficiencyPrimarySource = efficiencyPrimarySource;
@@ -15862,6 +15885,7 @@ public class J_HeatingSystemOptionsGlobal {
 		this.secondaryEnergySourceCosts_eurPerkWh = secondaryEnergySourceCosts_eurPerkWh;
 		this.subsidy_eur = subsidy_eur;
 		this.sustainability_score = sustainability_score;
+		this.socialLearningRate = socialLearningRate;
 		
 		if( requiredHeatDistributionSystem.contains("HT")) {
 			requiresLowTemperatureInhouseHeatDistribution = false;
@@ -15876,7 +15900,7 @@ public class J_HeatingSystemOptionsGlobal {
 		
 		// Calculate number of doublings (log2 of total production divided by initial production)
 		double doublings = Math.log(unitsInstalled / initialUnitsInstalled) / Math.log(2);
-		double capexLearningFactor = Math.pow(1-learningRate, doublings);
+		double capexLearningFactor = Math.pow(1-economicLearningRate, doublings);
 
 		// Calculate current cost using learning curve formula
 		investmentCostsHeatSupplySystem = initialInvestmentCostsHeatSupplySystem * capexLearningFactor;
@@ -15935,8 +15959,8 @@ public class J_HeatingSystemOptionsGlobal {
         return discountRate;
     }
 
-    public double getLearningRate() {
-        return learningRate;
+    public double getEconomicLearningRate() {
+        return economicLearningRate;
     }
 
     public OL_EnergyCarrier getPrimaryEnergySource() {
@@ -15979,6 +16003,10 @@ public class J_HeatingSystemOptionsGlobal {
         return sustainability_score;
     }
     
+    public double getSocialLearningRate() {
+        return socialLearningRate;
+    }
+    
     public double getSustainabilityScoreNormalized() {
     	return sustainability_score_normalized;
     }
@@ -15990,7 +16018,7 @@ public class J_HeatingSystemOptionsGlobal {
 
 	@Override
 	public String toString() {
-		return type + " (Invest. costs supply sys: " + investmentCostsHeatSupplySystem + ", invest. costs distr sys: " + investmentCostsHeatDistributionSystem + ", Maintenance costs: " + maintenanceCosts + ", Lifetime: " + lifetime + ", Discount rate " + discountRate + ", Learning rate " + learningRate + ")";
+		return type + " (Invest. costs supply sys: " + investmentCostsHeatSupplySystem + ", invest. costs distr sys: " + investmentCostsHeatDistributionSystem + ", Maintenance costs: " + maintenanceCosts + ", Lifetime: " + lifetime + ", Discount rate " + discountRate + ", Econ. Learning rate " + economicLearningRate + ")";
 	}
 
 }
@@ -16017,6 +16045,7 @@ public class J_HeatingSystemOptionsLocal {
 	private double perceivedValue;
 	private double EAC_norm;
 	private double preferenceValue;
+	private double subjectiveNorm;
 	
 	private boolean requiresLowTemperatureInhouseHeatDistribution;
 	
@@ -16126,6 +16155,7 @@ public class J_HeatingSystemOptionsLocal {
 	
 	
 	
+	
 	/**
 	* Setter methods
 	*/
@@ -16135,6 +16165,10 @@ public class J_HeatingSystemOptionsLocal {
 	
 	public void setEACNormalized(double EAC_norm) {
 		this.EAC_norm = EAC_norm;
+	}
+	
+	public void setSubjectiveNorm(double subjectiveNorm) {
+		this.subjectiveNorm = subjectiveNorm;
 	}
 	
 	/**
@@ -16166,6 +16200,14 @@ public class J_HeatingSystemOptionsLocal {
 	
     public boolean getIsPossible() {
     	return isPossible;
+    }
+    
+    public double getSubjectiveNorm() {
+    	return subjectiveNorm;
+    }
+    
+    public double getSocialLearningRate() {
+    	return heatingSystemGlobalData.getSocialLearningRate();
     }
 
 	@Override
