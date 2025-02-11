@@ -65,22 +65,6 @@
 			</Option>
 		</OptionList>
 		<OptionList>
-			<Id>1715090598112</Id>
-			<Name><![CDATA[OL_WillingnessEnergyMeasures]]></Name>
-			<Option>
-				<Id>1715090598113</Id>
-				<Name><![CDATA[LOW]]></Name>
-			</Option>
-			<Option>
-				<Id>1715090598114</Id>
-				<Name><![CDATA[MEDIUM]]></Name>
-			</Option>
-			<Option>
-				<Id>1715090598115</Id>
-				<Name><![CDATA[HIGH]]></Name>
-			</Option>
-		</OptionList>
-		<OptionList>
 			<Id>1733326124838</Id>
 			<Name><![CDATA[OL_EnergyCarrier]]></Name>
 			<Option>
@@ -130,6 +114,34 @@
 			<Option>
 				<Id>1738058741825</Id>
 				<Name><![CDATA[SMALL_WORLD_SIMILAR]]></Name>
+			</Option>
+		</OptionList>
+		<OptionList>
+			<Id>1739269490261</Id>
+			<Name><![CDATA[OL_LowMedHigh]]></Name>
+			<Option>
+				<Id>1739269490262</Id>
+				<Name><![CDATA[LOW]]></Name>
+			</Option>
+			<Option>
+				<Id>1739269490263</Id>
+				<Name><![CDATA[MEDIUM]]></Name>
+			</Option>
+			<Option>
+				<Id>1739269490264</Id>
+				<Name><![CDATA[HIGH]]></Name>
+			</Option>
+		</OptionList>
+		<OptionList>
+			<Id>1739270083863</Id>
+			<Name><![CDATA[OL_ExpansionStrategy]]></Name>
+			<Option>
+				<Id>1739270083864</Id>
+				<Name><![CDATA[COST_BASED]]></Name>
+			</Option>
+			<Option>
+				<Id>1739270083865</Id>
+				<Name><![CDATA[POLICY_BASED]]></Name>
 			</Option>
 		</OptionList>
 	</OptionLists>
@@ -1911,14 +1923,14 @@ f_initalizeSettings();
 				</Variable>
 				<Variable Class="Parameter">
 					<Id>1737987559819</Id>
-					<Name><![CDATA[p_socialHousingPreferredHeating]]></Name>
+					<Name><![CDATA[p_socialHousingStrategy]]></Name>
 					<X>-310</X><Y>100</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
 					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
-						<Type><![CDATA[OL_HeatingSystem]]></Type>
+						<Type><![CDATA[OL_ExpansionStrategy]]></Type>
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<ParameterEditor>
@@ -1932,14 +1944,14 @@ f_initalizeSettings();
 				</Variable>
 				<Variable Class="Parameter">
 					<Id>1737987589149</Id>
-					<Name><![CDATA[p_dhRollOutPace]]></Name>
+					<Name><![CDATA[p_dhExpansionPlans]]></Name>
 					<X>-310</X><Y>140</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
 					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
-						<Type><![CDATA[String]]></Type>
+						<Type><![CDATA[OL_ExpansionStrategy]]></Type>
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<ParameterEditor>
@@ -1960,7 +1972,7 @@ f_initalizeSettings();
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
 					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
-						<Type><![CDATA[String]]></Type>
+						<Type><![CDATA[OL_LowMedHigh]]></Type>
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<ParameterEditor>
@@ -4789,9 +4801,9 @@ f_setInitialUnitsInstalledPerHeatingMethod();]]></Body>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
-					<Body><![CDATA[if( p_gridReinforcementPace.equals("fast")){
+					<Body><![CDATA[if( p_gridReinforcementPace == HIGH ){
 	p_DSORenovationCapacity_nbhPerYear = 150;
-} else if( p_gridReinforcementPace.equals("slow")){
+} else if( p_gridReinforcementPace == LOW ){
 	p_DSORenovationCapacity_nbhPerYear = 50;
 } else {
 	p_DSORenovationCapacity_nbhPerYear = 100;
@@ -11111,7 +11123,7 @@ f_setMapColor(mapMode);]]></ActionCode>
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
 					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
-						<Type><![CDATA[OL_WillingnessEnergyMeasures]]></Type>
+						<Type><![CDATA[OL_LowMedHigh]]></Type>
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<ParameterEditor>
@@ -11258,7 +11270,7 @@ f_setMapColor(mapMode);]]></ActionCode>
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
 					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
-						<Type><![CDATA[OL_WillingnessEnergyMeasures]]></Type>
+						<Type><![CDATA[OL_LowMedHigh]]></Type>
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<ParameterEditor>
@@ -13486,7 +13498,7 @@ for(GZ_Neighborhood neighborhood : main.pop_GZ_Neighborhoods){
 				<Variable Class="PlainVariable">
 					<Id>1736855723455</Id>
 					<Name><![CDATA[v_connectionObligationNewDH]]></Name>
-					<X>-400</X><Y>100</Y>
+					<X>-400</X><Y>320</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -13501,7 +13513,7 @@ for(GZ_Neighborhood neighborhood : main.pop_GZ_Neighborhoods){
 				<Variable Class="PlainVariable">
 					<Id>1737653375087</Id>
 					<Name><![CDATA[v_congestionBlock]]></Name>
-					<X>-400</X><Y>120</Y>
+					<X>-400</X><Y>340</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -13515,53 +13527,53 @@ for(GZ_Neighborhood neighborhood : main.pop_GZ_Neighborhoods){
 				</Variable>
 				<Variable Class="PlainVariable">
 					<Id>1737665585262</Id>
-					<Name><![CDATA[v_socialHousingPreferredHeating]]></Name>
-					<X>-400</X><Y>140</Y>
+					<Name><![CDATA[v_socialHousingStrategy]]></Name>
+					<X>-400</X><Y>285</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
 					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
-						<Type><![CDATA[OL_HeatingSystem]]></Type>        
+						<Type><![CDATA[OL_ExpansionStrategy]]></Type>        
 						<InitialValue Class="CodeValue">
-							<Code><![CDATA[NATURAL_GAS_BOILER]]></Code>
+							<Code><![CDATA[COST_BASED]]></Code>
 						</InitialValue>
 					</Properties>
 				</Variable>
 				<Variable Class="PlainVariable">
 					<Id>1737666712877</Id>
-					<Name><![CDATA[v_dhRollOutPace]]></Name>
-					<X>-400</X><Y>220</Y>
+					<Name><![CDATA[v_dhConstructionTime_years]]></Name>
+					<X>-400</X><Y>245</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
 					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
-						<Type><![CDATA[String]]></Type>        
+						<Type><![CDATA[int]]></Type>        
 						<InitialValue Class="CodeValue">
-							<Code><![CDATA["medium"]]></Code>
+							<Code><![CDATA[5]]></Code>
 						</InitialValue>
 					</Properties>
 				</Variable>
 				<Variable Class="PlainVariable">
 					<Id>1737667631091</Id>
 					<Name><![CDATA[v_gridReinforcementPace]]></Name>
-					<X>-400</X><Y>240</Y>
+					<X>-400</X><Y>220</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
 					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
-						<Type><![CDATA[String]]></Type>        
+						<Type><![CDATA[OL_LowMedHigh]]></Type>        
 						<InitialValue Class="CodeValue">
-							<Code><![CDATA["medium"]]></Code>
+							<Code><![CDATA[MEDIUM]]></Code>
 						</InitialValue>
 					</Properties>
 				</Variable>
 				<Variable Class="PlainVariable">
 					<Id>1737986645228</Id>
 					<Name><![CDATA[v_subsidyEHP]]></Name>
-					<X>-400</X><Y>290</Y>
+					<X>-400</X><Y>420</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -13573,7 +13585,7 @@ for(GZ_Neighborhood neighborhood : main.pop_GZ_Neighborhoods){
 				<Variable Class="PlainVariable">
 					<Id>1737986654642</Id>
 					<Name><![CDATA[v_subsidyHHP]]></Name>
-					<X>-400</X><Y>310</Y>
+					<X>-400</X><Y>440</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -13585,7 +13597,7 @@ for(GZ_Neighborhood neighborhood : main.pop_GZ_Neighborhoods){
 				<Variable Class="PlainVariable">
 					<Id>1737986675393</Id>
 					<Name><![CDATA[v_subsidyDHConnection]]></Name>
-					<X>-400</X><Y>330</Y>
+					<X>-400</X><Y>460</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -13597,7 +13609,7 @@ for(GZ_Neighborhood neighborhood : main.pop_GZ_Neighborhoods){
 				<Variable Class="PlainVariable">
 					<Id>1737986687392</Id>
 					<Name><![CDATA[v_subsidyNaturalGasBoiler]]></Name>
-					<X>-400</X><Y>270</Y>
+					<X>-400</X><Y>400</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -13609,7 +13621,7 @@ for(GZ_Neighborhood neighborhood : main.pop_GZ_Neighborhoods){
 				<Variable Class="PlainVariable">
 					<Id>1737986699962</Id>
 					<Name><![CDATA[v_subsidyElectricity_ctPerKWh]]></Name>
-					<X>-400</X><Y>360</Y>
+					<X>-400</X><Y>490</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -13621,7 +13633,7 @@ for(GZ_Neighborhood neighborhood : main.pop_GZ_Neighborhoods){
 				<Variable Class="PlainVariable">
 					<Id>1737986734575</Id>
 					<Name><![CDATA[v_subsidyNaturalGas_ctPerKWh]]></Name>
-					<X>-400</X><Y>380</Y>
+					<X>-400</X><Y>510</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -13633,7 +13645,7 @@ for(GZ_Neighborhood neighborhood : main.pop_GZ_Neighborhoods){
 				<Variable Class="PlainVariable">
 					<Id>1737986749801</Id>
 					<Name><![CDATA[v_subsidyHeat_ctPerKWh]]></Name>
-					<X>-400</X><Y>400</Y>
+					<X>-400</X><Y>530</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -13645,7 +13657,7 @@ for(GZ_Neighborhood neighborhood : main.pop_GZ_Neighborhoods){
 				<Variable Class="PlainVariable">
 					<Id>1738060619606</Id>
 					<Name><![CDATA[v_networkType]]></Name>
-					<X>-400</X><Y>440</Y>
+					<X>-400</X><Y>570</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -13654,6 +13666,48 @@ for(GZ_Neighborhood neighborhood : main.pop_GZ_Neighborhoods){
 						<Type><![CDATA[OL_NetworkStructure]]></Type>        
 						<InitialValue Class="CodeValue">
 							<Code><![CDATA[SMALL_WORLD_SIMILAR]]></Code>
+						</InitialValue>
+					</Properties>
+				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1739269219139</Id>
+					<Name><![CDATA[v_socialLearningFactor]]></Name>
+					<X>-400</X><Y>200</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[double]]></Type>        
+						<InitialValue Class="CodeValue">
+							<Code><![CDATA[1]]></Code>
+						</InitialValue>
+					</Properties>
+				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1739270101001</Id>
+					<Name><![CDATA[v_DHExpansionPlans]]></Name>
+					<X>-400</X><Y>265</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[OL_ExpansionStrategy]]></Type>        
+					</Properties>
+				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1739270747424</Id>
+					<Name><![CDATA[v_economicLearningFactor]]></Name>
+					<X>-400</X><Y>360</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[double]]></Type>        
+						<InitialValue Class="CodeValue">
+							<Code><![CDATA[1]]></Code>
 						</InitialValue>
 					</Properties>
 				</Variable>
@@ -13685,20 +13739,20 @@ for(GZ_Neighborhood neighborhood : main.pop_GZ_Neighborhoods){
 				 	<EmbeddedIcon>false</EmbeddedIcon>				
 					<Id>1736855638403</Id>
 					<Name><![CDATA[cb_connectionObligationDH]]></Name>
-					<X>60</X><Y>150</Y>
+					<X>271</X><Y>470</Y>
 					<Label><X>0</X><Y>-10</Y></Label>
 					<PublicFlag>true</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>false</ShowLabel>
 					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
-					<BasicProperties Width="280" Height="30">
+					<BasicProperties Width="129" Height="30">
                         <EmbeddedIcon>false</EmbeddedIcon>	
 						<TextColor/>
 						<Enabled>true</Enabled>
 					</BasicProperties>
 					<ExtendedProperties>
 						<Font Name="Dialog" Size="11" Style="0"/>
-						<LabelText><![CDATA[Connection obligation new DH]]></LabelText>
+						<LabelText><![CDATA[]]></LabelText>
 						<LinkTo>true</LinkTo>
 						<Link>v_connectionObligationNewDH</Link>
 	 				</ExtendedProperties>
@@ -13707,116 +13761,28 @@ for(GZ_Neighborhood neighborhood : main.pop_GZ_Neighborhoods){
 				 	<EmbeddedIcon>false</EmbeddedIcon>				
 					<Id>1737653308683</Id>
 					<Name><![CDATA[cb_noAdditionalEHPWithCongestion]]></Name>
-					<X>60</X><Y>300</Y>
+					<X>271</X><Y>500</Y>
 					<Label><X>0</X><Y>-10</Y></Label>
 					<PublicFlag>true</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>false</ShowLabel>
 					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
-					<BasicProperties Width="280" Height="30">
+					<BasicProperties Width="129" Height="30">
                         <EmbeddedIcon>false</EmbeddedIcon>	
 						<TextColor/>
 						<Enabled>true</Enabled>
 					</BasicProperties>
 					<ExtendedProperties>
 						<Font Name="Dialog" Size="11" Style="0"/>
-						<LabelText><![CDATA[Block on electric heat pumps after congestion]]></LabelText>
+						<LabelText><![CDATA[]]></LabelText>
 						<LinkTo>true</LinkTo>
 						<Link>v_connectionObligationNewDH</Link>
 	 				</ExtendedProperties>
 				</Control>
-				<Control Type="RadioButtons">
-				 	<EmbeddedIcon>false</EmbeddedIcon>				
-					<Id>1737653617723</Id>
-					<Name><![CDATA[rb_socialHousingPreferredHeating]]></Name>
-					<X>60</X><Y>480</Y>
-					<Label><X>0</X><Y>-10</Y></Label>
-					<PublicFlag>true</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>false</ShowLabel>
-					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
-					<BasicProperties Width="150" Height="100">
-                        <EmbeddedIcon>false</EmbeddedIcon>	
-						<TextColor/>
-						<Enabled>true</Enabled>
-						<ActionCode><![CDATA[int heatingValue = rb_socialHousingPreferredHeating.getValue();
-
-switch (heatingValue) {
-    case 0:
-        v_socialHousingPreferredHeating = NATURAL_GAS_BOILER;
-        break;
-    case 1:
-        v_socialHousingPreferredHeating = DISTRICT_HEATING;
-        break;
-    case 2:
-        v_socialHousingPreferredHeating = ELECTRIC_HEAT_PUMP;
-        break;
-    case 3:
-        v_socialHousingPreferredHeating = HYBRID_HEAT_PUMP;
-        break;
-    default:
-        System.out.println("Unknown heating preference for social housing.");
-        break;
-}
-]]></ActionCode>
-					</BasicProperties>
-					<ExtendedProperties>
-						<Font Name="Dialog" Size="11" Style="0"/>
-						<Orientation>VERTICAL</Orientation>
-						<Button><![CDATA[Natural gas]]></Button>
-						<Button><![CDATA[District heating]]></Button>
-						<Button><![CDATA[Electric heat pump]]></Button>
-						<Button><![CDATA[Hybrid heat pump]]></Button>
-						<LinkTo>false</LinkTo>
-					</ExtendedProperties>
-				</Control>
-				<Text>
-					<Id>1737666126152</Id>
-					<Name><![CDATA[text1]]></Name>
-					<X>50</X><Y>90</Y>
-					<Label><X>0</X><Y>-10</Y></Label>
-					<PublicFlag>true</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>false</ShowLabel>
-					<DrawMode>SHAPE_DRAW_2D</DrawMode>
-					<EmbeddedIcon>false</EmbeddedIcon>
-					<Z>0</Z>
-					<Rotation>0.0</Rotation>
-					<Color>-16777216</Color>
-					<Text><![CDATA[Strategie:]]></Text>
-					<Font>
-						<Name>SansSerif</Name>
-						<Size>16</Size>
-						<Style>0</Style>
-					</Font>
-					<Alignment>LEFT</Alignment>
-				</Text>
-				<Text>
-					<Id>1737666171705</Id>
-					<Name><![CDATA[text2]]></Name>
-					<X>60</X><Y>130</Y>
-					<Label><X>0</X><Y>-10</Y></Label>
-					<PublicFlag>true</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>false</ShowLabel>
-					<DrawMode>SHAPE_DRAW_2D</DrawMode>
-					<EmbeddedIcon>false</EmbeddedIcon>
-					<Z>0</Z>
-					<Rotation>0.0</Rotation>
-					<Color>-16777216</Color>
-					<Text><![CDATA[District heat perator
-]]></Text>
-					<Font>
-						<Name>SansSerif</Name>
-						<Size>16</Size>
-						<Style>0</Style>
-					</Font>
-					<Alignment>LEFT</Alignment>
-				</Text>
 				<Text>
 					<Id>1737666223864</Id>
 					<Name><![CDATA[text3]]></Name>
-					<X>60</X><Y>280</Y>
+					<X>60</X><Y>230</Y>
 					<Label><X>0</X><Y>-10</Y></Label>
 					<PublicFlag>true</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -13826,7 +13792,7 @@ switch (heatingValue) {
 					<Z>0</Z>
 					<Rotation>0.0</Rotation>
 					<Color>-16777216</Color>
-					<Text><![CDATA[Grid operator
+					<Text><![CDATA[Electricity grid operator
 ]]></Text>
 					<Font>
 						<Name>SansSerif</Name>
@@ -13848,7 +13814,7 @@ switch (heatingValue) {
 					<Z>0</Z>
 					<Rotation>0.0</Rotation>
 					<Color>-16777216</Color>
-					<Text><![CDATA[Social housing preferred heating method
+					<Text><![CDATA[Policy measures
 ]]></Text>
 					<Font>
 						<Name>SansSerif</Name>
@@ -13857,88 +13823,6 @@ switch (heatingValue) {
 					</Font>
 					<Alignment>LEFT</Alignment>
 				</Text>
-				<Control Type="RadioButtons">
-				 	<EmbeddedIcon>false</EmbeddedIcon>				
-					<Id>1737666557517</Id>
-					<Name><![CDATA[rb_gridReinforcementPace]]></Name>
-					<X>60</X><Y>340</Y>
-					<Label><X>0</X><Y>-10</Y></Label>
-					<PublicFlag>true</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>false</ShowLabel>
-					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
-					<BasicProperties Width="150" Height="80">
-                        <EmbeddedIcon>false</EmbeddedIcon>	
-						<TextColor/>
-						<Enabled>true</Enabled>
-						<ActionCode><![CDATA[int gridReinforcementPace = rb_gridReinforcementPace.getValue();
-switch (gridReinforcementPace){
-	case 0 :
-		v_gridReinforcementPace = "slow";
-		break;
-	case 1:
-		v_gridReinforcementPace = "medium";
-		break;
-	case 2:
-		v_gridReinforcementPace = "fast";
-		break;
-	default:
-        System.out.println("Unknown grid reinforcement pace.");
-        break;
-}
-	]]></ActionCode>
-					</BasicProperties>
-					<ExtendedProperties>
-						<Font Name="Dialog" Size="11" Style="0"/>
-						<DefaultValueCode><![CDATA[1]]></DefaultValueCode>
-						<Orientation>VERTICAL</Orientation>
-						<Button><![CDATA[Slow grid reinforcement]]></Button>
-						<Button><![CDATA[Medium grid reinforcement]]></Button>
-						<Button><![CDATA[Rapid grid reinforcement]]></Button>
-						<LinkTo>false</LinkTo>
-					</ExtendedProperties>
-				</Control>
-				<Control Type="RadioButtons">
-				 	<EmbeddedIcon>false</EmbeddedIcon>				
-					<Id>1737667448167</Id>
-					<Name><![CDATA[rb_districtHeatingRollOutPace]]></Name>
-					<X>60</X><Y>180</Y>
-					<Label><X>0</X><Y>-10</Y></Label>
-					<PublicFlag>true</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>false</ShowLabel>
-					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
-					<BasicProperties Width="150" Height="80">
-                        <EmbeddedIcon>false</EmbeddedIcon>	
-						<TextColor/>
-						<Enabled>true</Enabled>
-						<ActionCode><![CDATA[int districtHeatingRollOutPace = rb_districtHeatingRollOutPace.getValue();
-switch (districtHeatingRollOutPace){
-	case 0 :
-		v_dhRollOutPace = "slow";
-		break;
-	case 1:
-		v_dhRollOutPace = "medium";
-		break;
-	case 2:
-		v_dhRollOutPace = "fast";
-		break;
-	default:
-        System.out.println("Unknown district heating roll out speed.");
-        break;
-}
-	]]></ActionCode>
-					</BasicProperties>
-					<ExtendedProperties>
-						<Font Name="Dialog" Size="11" Style="0"/>
-						<DefaultValueCode><![CDATA[1]]></DefaultValueCode>
-						<Orientation>VERTICAL</Orientation>
-						<Button><![CDATA[Slow roll-out district heating]]></Button>
-						<Button><![CDATA[Medium roll-out district heating]]></Button>
-						<Button><![CDATA[Rapid roll-out district heating]]></Button>
-						<LinkTo>false</LinkTo>
-					</ExtendedProperties>
-				</Control>
 				<Control Type="EditBox">
 				 	<EmbeddedIcon>false</EmbeddedIcon>				
 					<Id>1737986587150</Id>
@@ -14288,7 +14172,7 @@ switch (districtHeatingRollOutPace){
 				 	<EmbeddedIcon>false</EmbeddedIcon>				
 					<Id>1738060619593</Id>
 					<Name><![CDATA[cb_networkType]]></Name>
-					<X>550</X><Y>180</Y>
+					<X>660</X><Y>700</Y>
 					<Label><X>0</X><Y>-10</Y></Label>
 					<PublicFlag>true</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -14322,7 +14206,7 @@ else if(cb_networkType.getValue().equals("Small world similar")){
 				<Text>
 					<Id>1738060619604</Id>
 					<Name><![CDATA[text33]]></Name>
-					<X>555</X><Y>160</Y>
+					<X>665</X><Y>680</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>true</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -14340,6 +14224,471 @@ else if(cb_networkType.getValue().equals("Small world similar")){
 					</Font>
 					<Alignment>LEFT</Alignment>
 				</Text>
+				<Text>
+					<Id>1739269167734</Id>
+					<Name><![CDATA[text14]]></Name>
+					<X>60</X><Y>140</Y>
+					<Label><X>0</X><Y>-10</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D</DrawMode>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Z>0</Z>
+					<Rotation>0.0</Rotation>
+					<Color>-16777216</Color>
+					<Text><![CDATA[Households
+]]></Text>
+					<Font>
+						<Name>SansSerif</Name>
+						<Size>16</Size>
+						<Style>0</Style>
+					</Font>
+					<Alignment>LEFT</Alignment>
+				</Text>
+				<Text>
+					<Id>1739269200268</Id>
+					<Name><![CDATA[text15]]></Name>
+					<X>60</X><Y>170</Y>
+					<Label><X>0</X><Y>-10</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D</DrawMode>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Z>0</Z>
+					<Rotation>0.0</Rotation>
+					<Color>-16777216</Color>
+					<Text><![CDATA[Social learning factor]]></Text>
+					<Font>
+						<Name>SansSerif</Name>
+						<Size>12</Size>
+						<Style>0</Style>
+					</Font>
+					<Alignment>LEFT</Alignment>
+				</Text>
+				<Text>
+					<Id>1739269257932</Id>
+					<Name><![CDATA[text16]]></Name>
+					<X>60</X><Y>260</Y>
+					<Label><X>0</X><Y>-10</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D</DrawMode>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Z>0</Z>
+					<Rotation>0.0</Rotation>
+					<Color>-16777216</Color>
+					<Text><![CDATA[Elec. grid reinforcement rate]]></Text>
+					<Font>
+						<Name>SansSerif</Name>
+						<Size>12</Size>
+						<Style>0</Style>
+					</Font>
+					<Alignment>LEFT</Alignment>
+				</Text>
+				<Control Type="ComboBox">
+				 	<EmbeddedIcon>false</EmbeddedIcon>				
+					<Id>1739269296198</Id>
+					<Name><![CDATA[cb_gridReinforcement]]></Name>
+					<X>275</X><Y>255</Y>
+					<Label><X>0</X><Y>-10</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
+					<BasicProperties Width="150" Height="20">
+                        <EmbeddedIcon>false</EmbeddedIcon>	
+						<FillColor/>
+						<TextColor/>
+						<Enabled>true</Enabled>
+						<ActionCode><![CDATA[String gridReinforcementPace = cb_gridReinforcement.getValue();
+switch (gridReinforcementPace){
+	case "LOW" :
+		v_gridReinforcementPace = LOW;
+		break;
+	case "MEDIUM":
+		v_gridReinforcementPace = MEDIUM;
+		break;
+	case "HIGH":
+		v_gridReinforcementPace = HIGH;
+		break;
+	default:
+        System.out.println("Unknown grid reinforcement pace.");
+        break;
+}
+	]]></ActionCode>
+					</BasicProperties>
+					<ExtendedProperties>
+						<Font Name="Dialog" Size="11" Style="0"/>
+						<DefaultValueCode><![CDATA["MEDIUM"]]></DefaultValueCode>
+						<Editable>false</Editable>
+						<Button><![CDATA[LOW]]></Button>
+						<Button><![CDATA[MEDIUM]]></Button>
+						<Button><![CDATA[HIGH]]></Button>
+						<LinkTo>false</LinkTo>
+					</ExtendedProperties>
+				</Control>
+				<Text>
+					<Id>1739269609959</Id>
+					<Name><![CDATA[text17]]></Name>
+					<X>60</X><Y>295</Y>
+					<Label><X>0</X><Y>-10</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D</DrawMode>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Z>0</Z>
+					<Rotation>0.0</Rotation>
+					<Color>-16777216</Color>
+					<Text><![CDATA[District heating grid operator
+]]></Text>
+					<Font>
+						<Name>SansSerif</Name>
+						<Size>16</Size>
+						<Style>0</Style>
+					</Font>
+					<Alignment>LEFT</Alignment>
+				</Text>
+				<Text>
+					<Id>1739269609961</Id>
+					<Name><![CDATA[text18]]></Name>
+					<X>60</X><Y>325</Y>
+					<Label><X>0</X><Y>-10</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D</DrawMode>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Z>0</Z>
+					<Rotation>0.0</Rotation>
+					<Color>-16777216</Color>
+					<Text><![CDATA[DH construction time (years)]]></Text>
+					<Font>
+						<Name>SansSerif</Name>
+						<Size>12</Size>
+						<Style>0</Style>
+					</Font>
+					<Alignment>LEFT</Alignment>
+				</Text>
+				<Control Type="ComboBox">
+				 	<EmbeddedIcon>false</EmbeddedIcon>				
+					<Id>1739269609963</Id>
+					<Name><![CDATA[cb_gridReinforcement1]]></Name>
+					<X>275</X><Y>320</Y>
+					<Label><X>0</X><Y>-10</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
+					<BasicProperties Width="150" Height="20">
+                        <EmbeddedIcon>false</EmbeddedIcon>	
+						<FillColor/>
+						<TextColor/>
+						<Enabled>true</Enabled>
+						<ActionCode><![CDATA[
+	]]></ActionCode>
+					</BasicProperties>
+					<ExtendedProperties>
+						<Font Name="Dialog" Size="11" Style="0"/>
+						<DefaultValueCode><![CDATA[1]]></DefaultValueCode>
+						<Editable>false</Editable>
+						<Button><![CDATA[3]]></Button>
+						<Button><![CDATA[5]]></Button>
+						<Button><![CDATA[8]]></Button>
+						<LinkTo>true</LinkTo>
+						<Link>v_dhConstructionTime_years</Link>
+					</ExtendedProperties>
+				</Control>
+				<Text>
+					<Id>1739269682494</Id>
+					<Name><![CDATA[text19]]></Name>
+					<X>60</X><Y>385</Y>
+					<Label><X>0</X><Y>-10</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D</DrawMode>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Z>0</Z>
+					<Rotation>0.0</Rotation>
+					<Color>-16777216</Color>
+					<Text><![CDATA[Social housing association
+]]></Text>
+					<Font>
+						<Name>SansSerif</Name>
+						<Size>16</Size>
+						<Style>0</Style>
+					</Font>
+					<Alignment>LEFT</Alignment>
+				</Text>
+				<Text>
+					<Id>1739269682496</Id>
+					<Name><![CDATA[text20]]></Name>
+					<X>60</X><Y>415</Y>
+					<Label><X>0</X><Y>-10</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D</DrawMode>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Z>0</Z>
+					<Rotation>0.0</Rotation>
+					<Color>-16777216</Color>
+					<Text><![CDATA[DH grid reinforcement rate]]></Text>
+					<Font>
+						<Name>SansSerif</Name>
+						<Size>12</Size>
+						<Style>0</Style>
+					</Font>
+					<Alignment>LEFT</Alignment>
+				</Text>
+				<Control Type="ComboBox">
+				 	<EmbeddedIcon>false</EmbeddedIcon>				
+					<Id>1739269682498</Id>
+					<Name><![CDATA[cb_socialHousingStrategy]]></Name>
+					<X>275</X><Y>410</Y>
+					<Label><X>0</X><Y>-10</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
+					<BasicProperties Width="150" Height="20">
+                        <EmbeddedIcon>false</EmbeddedIcon>	
+						<FillColor/>
+						<TextColor/>
+						<Enabled>true</Enabled>
+						<ActionCode><![CDATA[String socialHousingStrategy = cb_socialHousingStrategy.getValue();
+switch (socialHousingStrategy){
+	case "COST BASED" :
+		v_socialHousingStrategy = COST_BASED;
+		break;
+	case "POLICY BASED":
+		v_socialHousingStrategy = POLICY_BASED;
+		break;
+	default:
+        System.out.println("Unknown social housing strategy.");
+        break;
+}
+	]]></ActionCode>
+					</BasicProperties>
+					<ExtendedProperties>
+						<Font Name="Dialog" Size="11" Style="0"/>
+						<DefaultValueCode><![CDATA["COST BASED"]]></DefaultValueCode>
+						<Editable>false</Editable>
+						<Button><![CDATA[COST BASED]]></Button>
+						<Button><![CDATA[POLICY BASED]]></Button>
+						<LinkTo>false</LinkTo>
+					</ExtendedProperties>
+				</Control>
+				<Text>
+					<Id>1739269697029</Id>
+					<Name><![CDATA[text21]]></Name>
+					<X>60</X><Y>355</Y>
+					<Label><X>0</X><Y>-10</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D</DrawMode>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Z>0</Z>
+					<Rotation>0.0</Rotation>
+					<Color>-16777216</Color>
+					<Text><![CDATA[DH expansion plans]]></Text>
+					<Font>
+						<Name>SansSerif</Name>
+						<Size>12</Size>
+						<Style>0</Style>
+					</Font>
+					<Alignment>LEFT</Alignment>
+				</Text>
+				<Control Type="ComboBox">
+				 	<EmbeddedIcon>false</EmbeddedIcon>				
+					<Id>1739269697031</Id>
+					<Name><![CDATA[cb_dhExpansionPlans]]></Name>
+					<X>275</X><Y>350</Y>
+					<Label><X>0</X><Y>-10</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
+					<BasicProperties Width="150" Height="20">
+                        <EmbeddedIcon>false</EmbeddedIcon>	
+						<FillColor/>
+						<TextColor/>
+						<Enabled>true</Enabled>
+						<ActionCode><![CDATA[String dhExpansionPlans = cb_dhExpansionPlans.getValue();
+switch (dhExpansionPlans){
+	case "COST BASED" :
+		v_DHExpansionPlans = COST_BASED;
+		break;
+	case "POLICY BASED":
+		v_DHExpansionPlans = POLICY_BASED;
+		break;
+	default:
+        System.out.println("Unknown DH expansion plans.");
+        break;
+}
+	]]></ActionCode>
+					</BasicProperties>
+					<ExtendedProperties>
+						<Font Name="Dialog" Size="11" Style="0"/>
+						<DefaultValueCode><![CDATA["COST BASED"]]></DefaultValueCode>
+						<Editable>false</Editable>
+						<Button><![CDATA[COST BASED]]></Button>
+						<Button><![CDATA[POLICY BASED]]></Button>
+						<LinkTo>false</LinkTo>
+					</ExtendedProperties>
+				</Control>
+				<Control Type="ComboBox">
+				 	<EmbeddedIcon>false</EmbeddedIcon>				
+					<Id>1739270134535</Id>
+					<Name><![CDATA[cb_socialLearningFactor]]></Name>
+					<X>275</X><Y>165</Y>
+					<Label><X>0</X><Y>-10</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
+					<BasicProperties Width="150" Height="20">
+                        <EmbeddedIcon>false</EmbeddedIcon>	
+						<FillColor/>
+						<TextColor/>
+						<Enabled>true</Enabled>
+						<ActionCode><![CDATA[String socialLearningFactor = cb_socialLearningFactor.getValue();
+switch (socialLearningFactor){
+	case "LOW" :
+		v_socialLearningFactor = 0.5;
+		break;
+	case "MEDIUM":
+		v_socialLearningFactor = 1;
+		break;
+	case "HIGH":
+		v_socialLearningFactor = 2;
+		break;
+	default:
+        System.out.println("Unknown social learning factor.");
+        break;
+}
+	]]></ActionCode>
+					</BasicProperties>
+					<ExtendedProperties>
+						<Font Name="Dialog" Size="11" Style="0"/>
+						<DefaultValueCode><![CDATA["MEDIUM"]]></DefaultValueCode>
+						<Editable>false</Editable>
+						<Button><![CDATA[LOW]]></Button>
+						<Button><![CDATA[MEDIUM]]></Button>
+						<Button><![CDATA[HIGH]]></Button>
+						<LinkTo>false</LinkTo>
+						<Link>v_dhConstructionTime_years</Link>
+					</ExtendedProperties>
+				</Control>
+				<Text>
+					<Id>1739270559696</Id>
+					<Name><![CDATA[text22]]></Name>
+					<X>60</X><Y>480</Y>
+					<Label><X>0</X><Y>-10</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D</DrawMode>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Z>0</Z>
+					<Rotation>0.0</Rotation>
+					<Color>-16777216</Color>
+					<Text><![CDATA[DH connection obligation]]></Text>
+					<Font>
+						<Name>SansSerif</Name>
+						<Size>12</Size>
+						<Style>0</Style>
+					</Font>
+					<Alignment>LEFT</Alignment>
+				</Text>
+				<Text>
+					<Id>1739270559704</Id>
+					<Name><![CDATA[text23]]></Name>
+					<X>60</X><Y>510</Y>
+					<Label><X>0</X><Y>-10</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D</DrawMode>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Z>0</Z>
+					<Rotation>0.0</Rotation>
+					<Color>-16777216</Color>
+					<Text><![CDATA[Grid congestion HP ban]]></Text>
+					<Font>
+						<Name>SansSerif</Name>
+						<Size>12</Size>
+						<Style>0</Style>
+					</Font>
+					<Alignment>LEFT</Alignment>
+				</Text>
+				<Text>
+					<Id>1739270640521</Id>
+					<Name><![CDATA[text24]]></Name>
+					<X>60</X><Y>540</Y>
+					<Label><X>0</X><Y>-10</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D</DrawMode>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Z>0</Z>
+					<Rotation>0.0</Rotation>
+					<Color>-16777216</Color>
+					<Text><![CDATA[Economic learning factor]]></Text>
+					<Font>
+						<Name>SansSerif</Name>
+						<Size>12</Size>
+						<Style>0</Style>
+					</Font>
+					<Alignment>LEFT</Alignment>
+				</Text>
+				<Control Type="ComboBox">
+				 	<EmbeddedIcon>false</EmbeddedIcon>				
+					<Id>1739270640528</Id>
+					<Name><![CDATA[cb_economicLearningFactor]]></Name>
+					<X>275</X><Y>535</Y>
+					<Label><X>0</X><Y>-10</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
+					<BasicProperties Width="150" Height="20">
+                        <EmbeddedIcon>false</EmbeddedIcon>	
+						<FillColor/>
+						<TextColor/>
+						<Enabled>true</Enabled>
+						<ActionCode><![CDATA[String economicLearningFactor = cb_economicLearningFactor.getValue();
+switch (economicLearningFactor){
+	case "LOW" :
+		v_economicLearningFactor = 0.5;
+		break;
+	case "MEDIUM":
+		v_economicLearningFactor = 1;
+		break;
+	case "HIGH":
+		v_economicLearningFactor = 2;
+		break;
+	default:
+        System.out.println("Unknown economic learning factor.");
+        break;
+}]]></ActionCode>
+					</BasicProperties>
+					<ExtendedProperties>
+						<Font Name="Dialog" Size="11" Style="0"/>
+						<DefaultValueCode><![CDATA["MEDIUM"]]></DefaultValueCode>
+						<Editable>false</Editable>
+						<Button><![CDATA[LOW]]></Button>
+						<Button><![CDATA[MEDIUM]]></Button>
+						<Button><![CDATA[HIGH]]></Button>
+						<LinkTo>false</LinkTo>
+					</ExtendedProperties>
+				</Control>
 			</Presentation>
 
 			<Parameters>			
@@ -14455,15 +14804,15 @@ else if(cb_networkType.getValue().equals("Small world similar")){
 					</ParameterValue>
 				</Parameter>
 				<Parameter>
-					<ParameterName><![CDATA[p_socialHousingPreferredHeating]]></ParameterName>
+					<ParameterName><![CDATA[p_socialHousingStrategy]]></ParameterName>
 					<ParameterValue Class="CodeValue">
-						<Code><![CDATA[v_socialHousingPreferredHeating]]></Code>
+						<Code><![CDATA[v_socialHousingStrategy]]></Code>
 					</ParameterValue>
 				</Parameter>
 				<Parameter>
-					<ParameterName><![CDATA[p_dhRollOutPace]]></ParameterName>
+					<ParameterName><![CDATA[p_dhExpansionPlans]]></ParameterName>
 					<ParameterValue Class="CodeValue">
-						<Code><![CDATA[v_dhRollOutPace]]></Code>
+						<Code><![CDATA[v_DHExpansionPlans]]></Code>
 					</ParameterValue>
 				</Parameter>
 				<Parameter>
