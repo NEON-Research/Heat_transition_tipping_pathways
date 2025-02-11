@@ -1135,6 +1135,7 @@ f_initalizeSettings();
 				<Variable Class="Parameter">
 					<Id>1704719032315</Id>
 					<Name><![CDATA[p_districtHeatingShortTermYear]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>-310</X><Y>460</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -2056,6 +2057,76 @@ f_initalizeSettings();
 						</ParameterEditor>
 					</Properties>                 
 				</Variable>
+				<Variable Class="Parameter">
+					<Id>1739278576036</Id>
+					<Name><![CDATA[p_requiredHeatDemand_GJPerHa]]></Name>
+					<X>-310</X><Y>440</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[double]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<DefaultValue Class="CodeValue">
+							<Code><![CDATA[600]]></Code>
+						</DefaultValue>
+						<ParameterEditor>
+							<Id>1739278576034</Id>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1739278881563</Id>
+					<Name><![CDATA[p_dhConstructionTime_years]]></Name>
+					<X>-310</X><Y>200</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[double]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<ParameterEditor>
+							<Id>1739278881561</Id>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1739278965501</Id>
+					<Name><![CDATA[p_districtHeatingLongTermYear]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
+					<X>-310</X><Y>480</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[double]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<DefaultValue Class="CodeValue">
+							<Code><![CDATA[2035]]></Code>
+						</DefaultValue>
+						<ParameterEditor>
+							<Id>1739278965499</Id>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
 				<Variable Class="CollectionVariable">
 					<Id>1730389266762</Id>
 					<Name><![CDATA[c_households]]></Name>
@@ -2439,6 +2510,9 @@ traceln("Initialized household networks in: " + duration + " seconds");
 
 //8. Initialize DSO
 f_initializeDSO();
+
+//9. Initialize District heating operator
+f_initializeDistrictHeatingOperator();
 
 //9. Set visuals
 f_setVisuals();
@@ -3229,7 +3303,7 @@ traceln(roundToDecimal((System.currentTimeMillis() - timer)/1000,3) + " seconds 
 					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1708550035912</Id>
 					<Name><![CDATA[f_initializeDSO]]></Name>
-					<X>-650</X><Y>620</Y>
+					<X>-650</X><Y>610</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -3620,7 +3694,7 @@ for (Tuple row_heatingMethod : rows_heatingMethods){
 f_updateGlobalCostsHeatingMethods();
 
 //2. Update district heating company
-districtHeatingCompany.f_updateDistrictHeatingSystemPlans();
+pop_districtHeatingCompanies.get(0).f_DHExpansion(p_dhExpansionPlans);
 
 for(J_Household hh : c_households){
 	//2. Update age to check if new heating system is required
@@ -4801,13 +4875,16 @@ f_setInitialUnitsInstalledPerHeatingMethod();]]></Body>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
-					<Body><![CDATA[if( p_gridReinforcementPace == HIGH ){
+					<Body><![CDATA[//Grid operator - expansion rate
+if( p_gridReinforcementPace == HIGH ){
 	p_DSORenovationCapacity_nbhPerYear = 150;
 } else if( p_gridReinforcementPace == LOW ){
 	p_DSORenovationCapacity_nbhPerYear = 50;
 } else {
 	p_DSORenovationCapacity_nbhPerYear = 100;
-}]]></Body>
+}
+
+]]></Body>
 				</Function>
 				<Function AccessType="default" StaticFunction="false">
 					<ReturnModificator>VOID</ReturnModificator>
@@ -5178,6 +5255,23 @@ for(J_Municipality x : c_municipalities){
 }
 traceln("Nbhs in mun = " + countNeighborhoods + ", Hh in mun = " + countHouseholds);
 */]]></Body>
+				</Function>
+				<Function AccessType="default" StaticFunction="false">
+					<ReturnModificator>VOID</ReturnModificator>
+					<ReturnType><![CDATA[double]]></ReturnType>
+					<Id>1739278690893</Id>
+					<Name><![CDATA[f_initializeDistrictHeatingOperator]]></Name>
+					<X>-650</X><Y>630</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Body><![CDATA[add_pop_districtHeatingCompanies();
+for(DistrictHeatingCompany x : pop_districtHeatingCompanies){
+	x.p_planAndConstructionTime_years = p_dhConstructionTime_years;
+	x.p_requiredHeatDemand_GJPerHa = p_requiredHeatDemand_GJPerHa;
+}
+]]></Body>
 				</Function>
 			</Functions>
 			<TableFunctions>
@@ -6970,7 +7064,7 @@ traceln("Nbhs in mun = " + countNeighborhoods + ", Hh in mun = " + countHousehol
 				</EmbeddedObject>
 				<EmbeddedObject>
 					<Id>1708548749645</Id>
-					<Name><![CDATA[districtHeatingCompany]]></Name>
+					<Name><![CDATA[pop_districtHeatingCompanies]]></Name>
 					<X>-650</X><Y>800</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -6997,8 +7091,11 @@ traceln("Nbhs in mun = " + countNeighborhoods + ", Hh in mun = " + countHousehol
 						<Parameter>
 							<Name><![CDATA[p_planAndConstructionTime_years]]></Name>
 						</Parameter>
+						<Parameter>
+							<Name><![CDATA[p_requiredHeatDemand_GJPerHa]]></Name>
+						</Parameter>
 					</Parameters>
-					<ReplicationFlag>false</ReplicationFlag>
+					<ReplicationFlag>true</ReplicationFlag>
 					<Replication Class="CodeValue">
 						<Code><![CDATA[100]]></Code>
 					</Replication>
@@ -9679,7 +9776,7 @@ f_setMapColor(mapMode);]]></ActionCode>
 					<Id>1700132370970</Id>
 					<Name><![CDATA[v_lengthGasGrid_m]]></Name>
 					<ExcludeFromBuild>true</ExcludeFromBuild>
-					<X>370</X><Y>212</Y>
+					<X>370</X><Y>222</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -9692,7 +9789,7 @@ f_setMapColor(mapMode);]]></ActionCode>
 					<Id>1700132370972</Id>
 					<Name><![CDATA[v_trafoCapcityNeighborhood_kVA]]></Name>
 					<ExcludeFromBuild>true</ExcludeFromBuild>
-					<X>370</X><Y>232</Y>
+					<X>370</X><Y>242</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -9705,7 +9802,7 @@ f_setMapColor(mapMode);]]></ActionCode>
 					<Id>1700132370974</Id>
 					<Name><![CDATA[v_lengthLVElectricityGrid_m]]></Name>
 					<ExcludeFromBuild>true</ExcludeFromBuild>
-					<X>370</X><Y>252</Y>
+					<X>370</X><Y>262</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -9718,7 +9815,7 @@ f_setMapColor(mapMode);]]></ActionCode>
 					<Id>1700132370976</Id>
 					<Name><![CDATA[v_districtHeatingConnections]]></Name>
 					<ExcludeFromBuild>true</ExcludeFromBuild>
-					<X>370</X><Y>282</Y>
+					<X>370</X><Y>292</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -9731,7 +9828,7 @@ f_setMapColor(mapMode);]]></ActionCode>
 					<Id>1700132370978</Id>
 					<Name><![CDATA[v_districtHeatingConnectionPipesLength_m]]></Name>
 					<ExcludeFromBuild>true</ExcludeFromBuild>
-					<X>370</X><Y>302</Y>
+					<X>370</X><Y>312</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -9744,7 +9841,7 @@ f_setMapColor(mapMode);]]></ActionCode>
 					<Id>1700132370980</Id>
 					<Name><![CDATA[v_districtHeatingMainPipesLength_m]]></Name>
 					<ExcludeFromBuild>true</ExcludeFromBuild>
-					<X>370</X><Y>322</Y>
+					<X>370</X><Y>332</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -9934,6 +10031,18 @@ f_setMapColor(mapMode);]]></ActionCode>
 					<ShowLabel>true</ShowLabel>
 					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
 						<Type><![CDATA[boolean]]></Type>        
+					</Properties>
+				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1739282327740</Id>
+					<Name><![CDATA[v_districtHeatYearOfOperation]]></Name>
+					<X>370</X><Y>160</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[double]]></Type>        
 					</Properties>
 				</Variable>
 				<Variable Class="Parameter">
@@ -10318,7 +10427,7 @@ f_setMapColor(mapMode);]]></ActionCode>
 					<Id>1700132371204</Id>
 					<Name><![CDATA[p_myHSMSTrafo]]></Name>
 					<ExcludeFromBuild>true</ExcludeFromBuild>
-					<X>370</X><Y>182</Y>
+					<X>370</X><Y>192</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -12926,6 +13035,7 @@ if(c_neighborhoodsWaitingToBeReinforced.size() > 0){
 				<Variable Class="Parameter">
 					<Id>1733933799645</Id>
 					<Name><![CDATA[year_shortTermPlans]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>50</X><Y>80</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -12935,9 +13045,6 @@ if(c_neighborhoodsWaitingToBeReinforced.size() > 0){
 						<Type><![CDATA[double]]></Type>
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
-						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[2030]]></Code>
-						</DefaultValue>
 						<ParameterEditor>
 							<Id>1733933799643</Id>
 							<EditorContolType>TEXT_BOX</EditorContolType>
@@ -12950,6 +13057,7 @@ if(c_neighborhoodsWaitingToBeReinforced.size() > 0){
 				<Variable Class="Parameter">
 					<Id>1733933799650</Id>
 					<Name><![CDATA[year_longTermPlans]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>50</X><Y>100</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -12959,9 +13067,6 @@ if(c_neighborhoodsWaitingToBeReinforced.size() > 0){
 						<Type><![CDATA[double]]></Type>
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
-						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[2040]]></Code>
-						</DefaultValue>
 						<ParameterEditor>
 							<Id>1733933799648</Id>
 							<EditorContolType>TEXT_BOX</EditorContolType>
@@ -12974,7 +13079,7 @@ if(c_neighborhoodsWaitingToBeReinforced.size() > 0){
 				<Variable Class="Parameter">
 					<Id>1737996048393</Id>
 					<Name><![CDATA[p_planAndConstructionTime_years]]></Name>
-					<X>50</X><Y>150</Y>
+					<X>50</X><Y>140</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -12983,11 +13088,29 @@ if(c_neighborhoodsWaitingToBeReinforced.size() > 0){
 						<Type><![CDATA[double]]></Type>
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
-						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[5]]></Code>
-						</DefaultValue>
 						<ParameterEditor>
 							<Id>1737996048391</Id>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1739278426970</Id>
+					<Name><![CDATA[p_requiredHeatDemand_GJPerHa]]></Name>
+					<X>50</X><Y>120</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[double]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<ParameterEditor>
+							<Id>1739278426968</Id>
 							<EditorContolType>TEXT_BOX</EditorContolType>
 							<MinSliderValue><![CDATA[0]]></MinSliderValue>
 							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
@@ -13001,48 +13124,85 @@ if(c_neighborhoodsWaitingToBeReinforced.size() > 0){
 					<ReturnModificator>VOID</ReturnModificator>
 					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1733933708584</Id>
-					<Name><![CDATA[f_updateDistrictHeatingSystemPlans]]></Name>
-					<X>50</X><Y>50</Y>
+					<Name><![CDATA[f_DHExpansionPlanPolicy]]></Name>
+					<X>50</X><Y>210</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
-					<Body><![CDATA[
-
-
-double changeOfDHBeingInstalled = main.v_nbhsWithoutDHStartYear / main.pop_GZ_Neighborhoods.size();
+					<Body><![CDATA[//DH expasion follows TVW strategy stored in neighborhood.
+//Not all TVW strategies include start years, the nbhs without start year are random
+double chanceOfDHBeingInstalled = main.v_nbhsWithoutDHStartYear / main.pop_GZ_Neighborhoods.size();
 
 
 for(GZ_Neighborhood neighborhood : main.pop_GZ_Neighborhoods){
 	boolean triggerDistrictHeating = false;
 	
-	if(neighborhood.p_policyPlanForDistrictHeating){
-		//If start year is given
-		if(neighborhood.p_policyPlanStartYear > 0){
-			if(neighborhood.p_policyPlanStartYear + p_planAndConstructionTime_years == getYear()){
-				neighborhood.v_hasDistrictHeatingGrid = true;
-				triggerDistrictHeating = true;
-			}
+	if(neighborhood.p_policyPlanStartYear > 0){
+		if(neighborhood.p_policyPlanStartYear + p_planAndConstructionTime_years == getYear()){
+			neighborhood.v_hasDistrictHeatingGrid = true;
+			triggerDistrictHeating = true;
 		}
+	}
 	
-		//If no start year is given
-		else {
-			double rand = uniform(0,1);
-			if( changeOfDHBeingInstalled < rand ){
-				neighborhood.v_hasDistrictHeatingGrid = true;
-				triggerDistrictHeating = true;
+	//If no start year is given
+	else {
+		double rand = uniform(0,1);
+		if( chanceOfDHBeingInstalled < rand ){
+			neighborhood.v_hasDistrictHeatingGrid = true;
+			triggerDistrictHeating = true;
+		}
+	}
+		
+	//If DH is installed
+	if( triggerDistrictHeating == true){
+		for(J_Household hh : neighborhood.c_households){
+			if( main.p_connectionObligationNewDH) {
+				hh.f_setObligedDH();
+			}
+			else {
+				hh.f_setDHPossible();
 			}
 		}
+	}
+}
+
+]]></Body>
+				</Function>
+				<Function AccessType="default" StaticFunction="false">
+					<ReturnModificator>VOID</ReturnModificator>
+					<ReturnType><![CDATA[double]]></ReturnType>
+					<Id>1739277241798</Id>
+					<Name><![CDATA[f_DHExpansionPlanCosts]]></Name>
+					<X>50</X><Y>240</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Body><![CDATA[for(GZ_Neighborhood neighborhood : main.pop_GZ_Neighborhoods){
+	
+	double dhHeatDemandPreference_kWh = sumWhere(neighborhood.c_households, x->x.getHeatDemand_kWh(), y->y.getIsDistrictHeatingPreferred() == true && y.getHeatingSystem().getType() != DISTRICT_HEATING);
+	double dhHeatDemandCurrent_kWh = sumWhere(neighborhood.c_households, x->x.getHeatDemand_kWh(), y->y.getHeatingSystem().getType() == DISTRICT_HEATING);
+	double dhHeatDemandTotal_kWh = dhHeatDemandPreference_kWh + dhHeatDemandCurrent_kWh;
+	double dhHeatDemand_GJperHa = dhHeatDemandTotal_kWh * 3.6 / 1000 / neighborhood.p_surfaceAreaLand;
+	
+	//traceln(dhHeatDemand_GJperHa + "GJ/Ha heat demand households DH preference in nbh " + neighborhood.getIndex());
+	//If DH is installed
+	if( dhHeatDemand_GJperHa >= p_requiredHeatDemand_GJPerHa && neighborhood.v_hasDistrictHeatingGrid == false){
+		traceln("Building DH cost based in nbh " + neighborhood.getIndex() + " with heat demand (GJ/Ha) " + dhHeatDemand_GJperHa + " and required heat demand (GJ/Ha) " + p_requiredHeatDemand_GJPerHa);
 		
-		//If DH is installed
-		if( triggerDistrictHeating == true){
-			for(J_Household hh : neighborhood.c_households){
-				if( main.p_connectionObligationNewDH) {
-					hh.f_setObligedDH();
-				}
-				else {
-					hh.f_setDHPossible();
-				}
+		neighborhood.v_districtHeatYearOfOperation = getYear() + p_planAndConstructionTime_years;
+	}
+	
+	//Takes a couple of years to actually build the grid
+	if(getYear() == neighborhood.v_districtHeatYearOfOperation){		
+		neighborhood.v_hasDistrictHeatingGrid = true;
+		for(J_Household hh : neighborhood.c_households){
+			if( main.p_connectionObligationNewDH) {
+				hh.f_setObligedDH();
+			}
+			else {
+				hh.f_setDHPossible();
 			}
 		}
 	}
@@ -13052,22 +13212,26 @@ for(GZ_Neighborhood neighborhood : main.pop_GZ_Neighborhoods){
 				<Function AccessType="default" StaticFunction="false">
 					<ReturnModificator>VOID</ReturnModificator>
 					<ReturnType><![CDATA[double]]></ReturnType>
-					<Id>1733934438588</Id>
-					<Name><![CDATA[f_setDHPolicy]]></Name>
-					<ExcludeFromBuild>true</ExcludeFromBuild>
-					<X>115</X><Y>116</Y>
+					<Id>1739277258204</Id>
+					<Name><![CDATA[f_DHExpansion]]></Name>
+					<X>50</X><Y>180</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
 					<Parameter>
-						<Name><![CDATA[year]]></Name>
-						<Type><![CDATA[double]]></Type>
+						<Name><![CDATA[expansionStrategy]]></Name>
+						<Type><![CDATA[OL_ExpansionStrategy]]></Type>
 					</Parameter>
-					<Parameter>
-						<Name><![CDATA[planYear]]></Name>
-						<Type><![CDATA[double]]></Type>
-					</Parameter>
+					<Body><![CDATA[if( expansionStrategy == COST_BASED) {
+	f_DHExpansionPlanCosts();
+}
+else if( expansionStrategy == POLICY_BASED) {
+	f_DHExpansionPlanPolicy();
+}
+else {
+	traceln( "Error: No valid DH expansion strategy");
+}]]></Body>
 				</Function>
 			</Functions>
 			<AgentLinks>
@@ -13487,6 +13651,7 @@ for(GZ_Neighborhood neighborhood : main.pop_GZ_Neighborhoods){
 			<Id>1693907397604</Id>
 			<Name><![CDATA[Simulation]]></Name>
 			<CommandLineArguments><![CDATA[]]></CommandLineArguments>
+			<InitialSetupCode><![CDATA[f_initializeScenarioSettings();]]></InitialSetupCode>
 			<MaximumMemory>16384</MaximumMemory>
 			<RandomNumberGenerationType>fixedSeed</RandomNumberGenerationType>
 			<CustomGeneratorCode>new Random()</CustomGeneratorCode>
@@ -13505,9 +13670,6 @@ for(GZ_Neighborhood neighborhood : main.pop_GZ_Neighborhoods){
 					<ShowLabel>true</ShowLabel>
 					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
 						<Type><![CDATA[boolean]]></Type>        
-						<InitialValue Class="CodeValue">
-							<Code><![CDATA[false]]></Code>
-						</InitialValue>
 					</Properties>
 				</Variable>
 				<Variable Class="PlainVariable">
@@ -13520,9 +13682,6 @@ for(GZ_Neighborhood neighborhood : main.pop_GZ_Neighborhoods){
 					<ShowLabel>true</ShowLabel>
 					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
 						<Type><![CDATA[boolean]]></Type>        
-						<InitialValue Class="CodeValue">
-							<Code><![CDATA[false]]></Code>
-						</InitialValue>
 					</Properties>
 				</Variable>
 				<Variable Class="PlainVariable">
@@ -13535,9 +13694,6 @@ for(GZ_Neighborhood neighborhood : main.pop_GZ_Neighborhoods){
 					<ShowLabel>true</ShowLabel>
 					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
 						<Type><![CDATA[OL_ExpansionStrategy]]></Type>        
-						<InitialValue Class="CodeValue">
-							<Code><![CDATA[COST_BASED]]></Code>
-						</InitialValue>
 					</Properties>
 				</Variable>
 				<Variable Class="PlainVariable">
@@ -13550,9 +13706,6 @@ for(GZ_Neighborhood neighborhood : main.pop_GZ_Neighborhoods){
 					<ShowLabel>true</ShowLabel>
 					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
 						<Type><![CDATA[int]]></Type>        
-						<InitialValue Class="CodeValue">
-							<Code><![CDATA[5]]></Code>
-						</InitialValue>
 					</Properties>
 				</Variable>
 				<Variable Class="PlainVariable">
@@ -13565,9 +13718,6 @@ for(GZ_Neighborhood neighborhood : main.pop_GZ_Neighborhoods){
 					<ShowLabel>true</ShowLabel>
 					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
 						<Type><![CDATA[OL_LowMedHigh]]></Type>        
-						<InitialValue Class="CodeValue">
-							<Code><![CDATA[MEDIUM]]></Code>
-						</InitialValue>
 					</Properties>
 				</Variable>
 				<Variable Class="PlainVariable">
@@ -13679,9 +13829,6 @@ for(GZ_Neighborhood neighborhood : main.pop_GZ_Neighborhoods){
 					<ShowLabel>true</ShowLabel>
 					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
 						<Type><![CDATA[double]]></Type>        
-						<InitialValue Class="CodeValue">
-							<Code><![CDATA[1]]></Code>
-						</InitialValue>
 					</Properties>
 				</Variable>
 				<Variable Class="PlainVariable">
@@ -13706,12 +13853,30 @@ for(GZ_Neighborhood neighborhood : main.pop_GZ_Neighborhoods){
 					<ShowLabel>true</ShowLabel>
 					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
 						<Type><![CDATA[double]]></Type>        
-						<InitialValue Class="CodeValue">
-							<Code><![CDATA[1]]></Code>
-						</InitialValue>
 					</Properties>
 				</Variable>
 			</Variables>
+			<Functions>
+				<Function AccessType="default" StaticFunction="false">
+					<ReturnModificator>VOID</ReturnModificator>
+					<ReturnType><![CDATA[double]]></ReturnType>
+					<Id>1739279918274</Id>
+					<Name><![CDATA[f_initializeScenarioSettings]]></Name>
+					<X>-400</X><Y>100</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Body><![CDATA[cb_socialLearningFactor.setValue("MEDIUM", true);
+cb_gridReinforcement.setValue("MEDIUM", true);
+cb_DHConstructionTime.setValue(5, true);
+cb_dhExpansionPlans.setValue("COST BASED", true);
+cb_socialHousingStrategy.setValue("COST BASED", true);
+cb_connectionObligationDH.setSelected(false, true);
+cb_noAdditionalEHPWithCongestion.setSelected(false, true);
+cb_economicLearningFactor.setValue("MEDIUM", true);]]></Body>
+				</Function>
+			</Functions>
 
 			<Presentation>
 				<Text>
@@ -14376,7 +14541,7 @@ switch (gridReinforcementPace){
 				<Control Type="ComboBox">
 				 	<EmbeddedIcon>false</EmbeddedIcon>				
 					<Id>1739269609963</Id>
-					<Name><![CDATA[cb_gridReinforcement1]]></Name>
+					<Name><![CDATA[cb_DHConstructionTime]]></Name>
 					<X>275</X><Y>320</Y>
 					<Label><X>0</X><Y>-10</Y></Label>
 					<PublicFlag>true</PublicFlag>
@@ -14829,6 +14994,18 @@ switch (economicLearningFactor){
 				</Parameter>
 				<Parameter>
 					<ParameterName><![CDATA[p_networkType]]></ParameterName>
+				</Parameter>
+				<Parameter>
+					<ParameterName><![CDATA[p_requiredHeatDemand_GJPerHa]]></ParameterName>
+				</Parameter>
+				<Parameter>
+					<ParameterName><![CDATA[p_dhConstructionTime_years]]></ParameterName>
+					<ParameterValue Class="CodeValue">
+						<Code><![CDATA[v_dhConstructionTime_years]]></Code>
+					</ParameterValue>
+				</Parameter>
+				<Parameter>
+					<ParameterName><![CDATA[p_districtHeatingLongTermYear]]></ParameterName>
 				</Parameter>
 			</Parameters>			
 			<PresentationProperties>
@@ -15301,6 +15478,15 @@ chart1.addDataSet( , format( root.p_innovationCoefficient ), color, true, Chart.
 			<FreeformParamValue>	
 				<Id>1738058526141</Id>
 			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1739278576036</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1739278881563</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1739278965501</Id>
+			</FreeformParamValue>
 			<RangeVariationParamValue>	
 				<Id>1704719032315</Id>
 				<Type>FIXED</Type>
@@ -15465,6 +15651,18 @@ chart1.addDataSet( , format( root.p_innovationCoefficient ), color, true, Chart.
 				<Id>1738058526141</Id>
 				<Type>FIXED</Type>
 			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1739278576036</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1739278881563</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1739278965501</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
 			<ModelTimeProperties>
 				<StopOption><![CDATA[Stop at specified date]]></StopOption>
 				<InitialDate><![CDATA[1577836800000]]></InitialDate>	
@@ -15519,6 +15717,7 @@ public class J_Household {
 	private List<J_HeatingSystemOptionsLocal> heatingSystemOptions = new ArrayList<>();
 	private J_HeatingSystem heatingSystemInstalledThisYear;
 	private double heatDemand_kWh;
+	private boolean isDistrictHeatingPreferred;
 	
 	//Behavioral characteristics
 	private double sustainabilityAttitude;
@@ -15639,6 +15838,12 @@ public class J_Household {
     	}
     	this.heatingSystemOptions.sort(Comparator.comparingDouble(J_HeatingSystemOptionsLocal::getPerceivedValue).reversed());
     	
+    	if(heatingSystemOptions.get(0).getType() == DISTRICT_HEATING) {
+    		isDistrictHeatingPreferred = true;
+    	} else {
+    		isDistrictHeatingPreferred = false;
+    	}
+    	
     	/*
     	if(id < 10) {
         	for( J_HeatingSystemOptions hso : this.heatingSystemOptions) {
@@ -15665,7 +15870,7 @@ public class J_Household {
     //3. Rank and adopt heating method if out of lifetime
     public void f_adoptNewHeatingMethod() { 	
     	//Adopt highest ranked option
-    	J_HeatingSystemOptionsLocal preferredHeatingSystem = this.heatingSystemOptions.get(0);
+    	J_HeatingSystemOptionsLocal preferredHeatingSystem = findFirst(this.heatingSystemOptions, x->x.getIsPossible());
     	int age = 0;
     	heatingSystem = new J_HeatingSystem(preferredHeatingSystem, age);
     	heatingSystemInstalledThisYear = heatingSystem;
@@ -16098,6 +16303,9 @@ public class J_Household {
     	return sustainabilityAttitude_norm;
     }
     
+    public boolean getIsDistrictHeatingPreferred( ) {
+    	return isDistrictHeatingPreferred;
+    }
 	@Override
 	public String toString() {
 		return "Household (ID: " + id + " heating system, " + heatingSystem + ", ownership " + ownership + ", nbh name " + neighborhood.p_neighborhood + ", nbh index " + neighborhood.getIndex();
@@ -16493,9 +16701,8 @@ public class J_HeatingSystemOptionsLocal {
 		//Perceived value is costs (EAC) + personal match + Possible
 		perceivedValue = 0.0;
 		double EAC_norm_reversed = 1 - EAC_norm;		//Reverse from cheapest best to highest best
-		if(isPossible) {
-			perceivedValue = (EAC_norm_reversed * weight_financial + preferenceValue * weight_intention) / (weight_financial + weight_intention);
-		}
+		perceivedValue = (EAC_norm_reversed * weight_financial + preferenceValue * weight_intention) / (weight_financial + weight_intention);
+		
 		/*
 		if(householdID < 3) {
 			traceln("At hh " + householdID + " with HSO " + type + ", Perceived value = " + perceivedValue + ", EAC norm reversed = " + EAC_norm_reversed + ", Pref. value = " + preferenceValue);
