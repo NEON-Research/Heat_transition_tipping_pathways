@@ -157,5 +157,5 @@ cython_debug/
 # Ignore large_files folder in household_data_loader
 household_data_loader/large_files/
 Heat transition tipping pathways/large_files/
-
+Heat transition tipping pathways/households.db
 # End of https://www.toptal.com/developers/gitignore/api/python,jupyternotebooks
