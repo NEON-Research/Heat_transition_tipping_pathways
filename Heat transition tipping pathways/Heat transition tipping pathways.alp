@@ -308,7 +308,7 @@ f_initalizeSettings();
 				<Variable Class="PlainVariable">
 					<Id>1693914229230</Id>
 					<Name><![CDATA[v_timer]]></Name>
-					<X>-650</X><Y>1030</Y>
+					<X>-650</X><Y>1050</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -670,7 +670,7 @@ f_initalizeSettings();
 				<Variable Class="PlainVariable">
 					<Id>1732035721421</Id>
 					<Name><![CDATA[idCounter]]></Name>
-					<X>-650</X><Y>1050</Y>
+					<X>-650</X><Y>1070</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -862,7 +862,7 @@ f_initalizeSettings();
 				<Variable Class="PlainVariable">
 					<Id>1733303539959</Id>
 					<Name><![CDATA[randomInstance]]></Name>
-					<X>-650</X><Y>1070</Y>
+					<X>-650</X><Y>1090</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -1024,7 +1024,7 @@ f_initalizeSettings();
 				<Variable Class="PlainVariable">
 					<Id>1738058526116</Id>
 					<Name><![CDATA[indexPercentile]]></Name>
-					<X>-761</X><Y>1228</Y>
+					<X>-650</X><Y>1290</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -1036,7 +1036,7 @@ f_initalizeSettings();
 				<Variable Class="PlainVariable">
 					<Id>1738058526118</Id>
 					<Name><![CDATA[cat1]]></Name>
-					<X>-761</X><Y>1248</Y>
+					<X>-650</X><Y>1310</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -1048,7 +1048,7 @@ f_initalizeSettings();
 				<Variable Class="PlainVariable">
 					<Id>1738058526120</Id>
 					<Name><![CDATA[cat2]]></Name>
-					<X>-761</X><Y>1268</Y>
+					<X>-650</X><Y>1330</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -1060,7 +1060,7 @@ f_initalizeSettings();
 				<Variable Class="PlainVariable">
 					<Id>1738058526122</Id>
 					<Name><![CDATA[cat3]]></Name>
-					<X>-761</X><Y>1288</Y>
+					<X>-650</X><Y>1350</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -1072,7 +1072,7 @@ f_initalizeSettings();
 				<Variable Class="PlainVariable">
 					<Id>1738058526124</Id>
 					<Name><![CDATA[cat4]]></Name>
-					<X>-761</X><Y>1308</Y>
+					<X>-650</X><Y>1370</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -1084,7 +1084,7 @@ f_initalizeSettings();
 				<Variable Class="PlainVariable">
 					<Id>1738058526126</Id>
 					<Name><![CDATA[cat5]]></Name>
-					<X>-761</X><Y>1328</Y>
+					<X>-650</X><Y>1390</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -1096,7 +1096,7 @@ f_initalizeSettings();
 				<Variable Class="PlainVariable">
 					<Id>1738058526128</Id>
 					<Name><![CDATA[cat6]]></Name>
-					<X>-761</X><Y>1348</Y>
+					<X>-650</X><Y>1410</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -2440,7 +2440,7 @@ f_initalizeSettings();
 				<Variable Class="CollectionVariable">
 					<Id>1732024389301</Id>
 					<Name><![CDATA[c_heatingSystemOptions]]></Name>
-					<X>-650</X><Y>1000</Y>
+					<X>-650</X><Y>1020</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -2455,7 +2455,7 @@ f_initalizeSettings();
 				<Variable Class="CollectionVariable">
 					<Id>1737379663209</Id>
 					<Name><![CDATA[c_buurtcodeToHouseholds]]></Name>
-					<X>-650</X><Y>960</Y>
+					<X>-650</X><Y>980</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -2470,7 +2470,7 @@ f_initalizeSettings();
 				<Variable Class="CollectionVariable">
 					<Id>1738079835569</Id>
 					<Name><![CDATA[c_municipalities]]></Name>
-					<X>-650</X><Y>980</Y>
+					<X>-650</X><Y>1000</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -2656,6 +2656,7 @@ f_initalizeSettings();
 				<Event>
 					<Id>1694513336916</Id>
 					<Name><![CDATA[e_adoptionProcess]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>-310</X><Y>800</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -2922,7 +2923,6 @@ v_year = v_startYear;
 //1. Set scenario's and heating methods
 f_setScenarios();
 f_setHeatingSystemOptions();
-//v_startYear = getYear();
 traceln("Heating methods set");
 
 //2. Create neighbrohoods
@@ -3001,8 +3001,6 @@ f_initializeDSO();
 //12. Initialize District heating operator
 f_initializeDistrictHeatingOperator();
 
-//13. Set visuals
-f_setVisuals();
 
 //14. Check total values
 int countNeighborhoodsWithDistrictHeating = count(pop_GZ_Neighborhoods, x->x.v_hasDistrictHeatingGrid);
@@ -3018,7 +3016,6 @@ for(J_Dwelling x : c_dwellings){
 		}
 	}
 }
-f_updateDatasets();
 
 traceln("Neighborhoods with DH grid = " + countNeighborhoodsWithDistrictHeating + ", dwellings with potential DH = " + countDwellingsWithDistrictHeatingPotential + ", with block heating potential " + countDwellingsWithBlockHeatingPotential );
 
@@ -3269,13 +3266,27 @@ for(Landlord x : pop_landlords){
 	x.f_setCharts();
 }
 
-//Heating method stack charts
-ch_heatingMethodStackChart.removeAll();
-ch_heatingMethodStackChart.addDataSet(data_naturalGasBoilers_nb, v_naturalGasBoilerText, v_naturalGasBoilerColor);
-ch_heatingMethodStackChart.addDataSet(data_naturalGasBlock_nb, v_naturalGasBlockText, v_naturalGasBlockColor);
-ch_heatingMethodStackChart.addDataSet(data_districtHeating_nb, v_districtHeatingText, v_districtHeatingColor);
-ch_heatingMethodStackChart.addDataSet(data_electricHeatPumps_nb, v_electricHeatPumpText, v_electricHeatPumpColor);
-ch_heatingMethodStackChart.addDataSet(data_hybridHeatPumps_nb, v_hybridHeatPumpText, v_hybridHeatPumpColor);
+//Heating methods stack charts
+int datasetSize = data_naturalGasBoilers_nb.size();
+DataSet d1 = new DataSet(datasetSize);
+DataSet d2 = new DataSet(datasetSize);
+DataSet d3 = new DataSet(datasetSize);
+DataSet d4 = new DataSet(datasetSize);
+DataSet d5 = new DataSet(datasetSize);
+
+for(int i=0; i<datasetSize; i++){
+	d1.add(data_naturalGasBoilers_nb.getX(i) - v_startYear, data_naturalGasBoilers_nb.getY(i));
+	d2.add(data_naturalGasBlock_nb.getX(i) - v_startYear, data_naturalGasBlock_nb.getY(i));
+	d3.add(data_districtHeating_nb.getX(i) - v_startYear, data_districtHeating_nb.getY(i));
+	d4.add(data_electricHeatPumps_nb.getX(i) - v_startYear, data_electricHeatPumps_nb.getY(i));
+	d5.add(data_hybridHeatPumps_nb.getX(i) - v_startYear, data_hybridHeatPumps_nb.getY(i));
+}
+
+ch_heatingMethodStackChart.addDataSet(d1, v_naturalGasBoilerText, v_naturalGasBoilerColor);
+ch_heatingMethodStackChart.addDataSet(d2, v_naturalGasBlockText, v_naturalGasBlockColor);
+ch_heatingMethodStackChart.addDataSet(d3, v_districtHeatingText, v_districtHeatingColor);
+ch_heatingMethodStackChart.addDataSet(d4, v_electricHeatPumpText, v_electricHeatPumpColor);
+ch_heatingMethodStackChart.addDataSet(d5, v_hybridHeatPumpText, v_hybridHeatPumpColor);
 
 
 //Colors and labels
@@ -3283,11 +3294,12 @@ String[] labels = {v_naturalGasBoilerText, v_naturalGasBlockText, v_districtHeat
 Color[] colors = {v_naturalGasBoilerColor, v_naturalGasBlockColor, v_districtHeatingColor, v_electricHeatPumpColor, v_hybridHeatPumpColor}; 
 
 // Data arrays
-DataSet[] avgEACData = {data_naturalGasBoilers_avgEAC, data_naturalGasBlock_avgEAC, data_districtHeating_avgEAC, data_electricHeatPumps_avgEAC, data_hybridHeatPumps_avgEAC};
-DataSet[] capexData = {data_naturalGasBoilers_capex, data_naturalGasBlock_capex, data_districtHeating_capex, data_electricHeatPumps_capex, data_hybridHeatPumps_capex};
-DataSet[] SubjectiveNormData = {data_naturalGasBoilers_avgSubjectiveNorm, data_naturalGasBlock_avgSubjectiveNorm, data_districtHeating_avgSubjectiveNorm, data_electricHeatPumps_avgSubjectiveNorm, data_hybridHeatPumps_avgSubjectiveNorm};
-DataSet[] attitudeValueData = {data_naturalGasBoilers_avgAttitudeValue, data_naturalGasBlock_avgAttitudeValue, data_districtHeating_avgAttitudeValue, data_electricHeatPumps_avgAttitudeValue, data_hybridHeatPumps_avgAttitudeValue};
-DataSet[] perceivedUtilityData = {data_naturalGasBoilers_avgPerceivedUtility, data_naturalGasBlock_avgPerceivedUtility, data_districtHeating_avgPerceivedUtility, data_electricHeatPumps_avgPerceivedUtility, data_hybridHeatPumps_avgPerceivedUtility};
+DataSet[] avgEACData = f_combineHeatSystemData(data_naturalGasBoilers_avgEAC, data_naturalGasBlock_avgEAC, data_districtHeating_avgEAC, data_electricHeatPumps_avgEAC, data_hybridHeatPumps_avgEAC);
+DataSet[] capexData = f_combineHeatSystemData(data_naturalGasBoilers_capex, data_naturalGasBlock_capex, data_districtHeating_capex, data_electricHeatPumps_capex, data_hybridHeatPumps_capex);
+DataSet[] SubjectiveNormData = f_combineHeatSystemData(data_naturalGasBoilers_avgSubjectiveNorm, data_naturalGasBlock_avgSubjectiveNorm, data_districtHeating_avgSubjectiveNorm, data_electricHeatPumps_avgSubjectiveNorm, data_hybridHeatPumps_avgSubjectiveNorm);
+DataSet[] attitudeValueData = f_combineHeatSystemData(data_naturalGasBoilers_avgAttitudeValue, data_naturalGasBlock_avgAttitudeValue, data_districtHeating_avgAttitudeValue, data_electricHeatPumps_avgAttitudeValue, data_hybridHeatPumps_avgAttitudeValue);
+DataSet[] perceivedUtilityData = f_combineHeatSystemData(data_naturalGasBoilers_avgPerceivedUtility, data_naturalGasBlock_avgPerceivedUtility, data_districtHeating_avgPerceivedUtility, data_electricHeatPumps_avgPerceivedUtility, data_hybridHeatPumps_avgPerceivedUtility);
+
 
 // Populate AVG EAC chart
 pl_averageEAC.removeAll();
@@ -5106,7 +5118,7 @@ for (Tuple row : rows_PolicyPlan){
 			x.p_policyPlanEndYear = row.get(nbh_policy_plan_2023.eind_jaar);
 			
 			//Set current year as start year and 2050 as end if missing
-			int startYear = (x.p_policyPlanStartYear == 0) ? getYear() : x.p_policyPlanStartYear;
+			int startYear = (x.p_policyPlanStartYear == 0) ? v_year : x.p_policyPlanStartYear;
 			int endYear = (x.p_policyPlanEndYear == 0) ? 2050 : x.p_policyPlanEndYear;
 			x.p_policyPlanYear = (int) uniform_discr(startYear, endYear);
 			
@@ -5581,7 +5593,7 @@ if( p_gridReinforcementPace == HIGH ){
 					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1738058526108</Id>
 					<Name><![CDATA[f_setNetwork]]></Name>
-					<X>-761</X><Y>1138</Y>
+					<X>-650</X><Y>1200</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -5608,7 +5620,7 @@ switch(networkType){
 					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1738058526110</Id>
 					<Name><![CDATA[f_setNetworkSimilar]]></Name>
-					<X>-761</X><Y>1198</Y>
+					<X>-650</X><Y>1260</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -5781,7 +5793,7 @@ traceln(average(c_homeOwners, x->x.getHouseholdsInNetwork().size()) + " average 
 					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1738058526112</Id>
 					<Name><![CDATA[f_setNetworkSmallWorld]]></Name>
-					<X>-761</X><Y>1178</Y>
+					<X>-650</X><Y>1240</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -5826,7 +5838,7 @@ for(GZ_Neighborhood nbh : pop_GZ_Neighborhoods){
 					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1738058526114</Id>
 					<Name><![CDATA[f_setNetworkRandom]]></Name>
-					<X>-761</X><Y>1158</Y>
+					<X>-650</X><Y>1220</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -5860,7 +5872,7 @@ for(GZ_Neighborhood nbh : pop_GZ_Neighborhoods){
 					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1738058629779</Id>
 					<Name><![CDATA[f_setNetworkAssumptions]]></Name>
-					<X>-761</X><Y>1118</Y>
+					<X>-650</X><Y>1180</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -6497,11 +6509,11 @@ return dbValue;]]></Body>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
-					<Body><![CDATA[int year = getYear();
+					<Body><![CDATA[//int year = getYear();
 for(J_Dwelling d : c_dwellings){
 	int currentELabelNumber = d.getEnergyLabelNumber();
 	if(currentELabelNumber > 2 ){
-		if( (year - d.getYearLastRenovation()) > 15 ){
+		if( (v_year - d.getYearLastRenovation()) > 15 ){
 			double rand = randomInstance.nextDouble();
 			if( rand < 0.05){ //Would renovate once every 20 year between 15 and 35 years
 				int renovatedELabelNumber = currentELabelNumber - 2;
@@ -6510,7 +6522,7 @@ for(J_Dwelling d : c_dwellings){
 				d.setEnergyLabelNumber(renovatedELabelNumber);
 				String ELabelLetter = d.f_insulationLabelNumberToLetter(renovatedELabelNumber);
 				d.setEnergyLabel(ELabelLetter);
-				d.setYearLastRenovation(year);
+				d.setYearLastRenovation(v_year);
 				d.setHasLowTemperatureInhouseHeatDistribution(true);
 			}
 		}
@@ -6639,15 +6651,19 @@ for(J_HomeOwner ho : c_homeOwners){
 					<ReturnModificator>VOID</ReturnModificator>
 					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1746539076982</Id>
-					<Name><![CDATA[f_hourlyAdoption]]></Name>
+					<Name><![CDATA[f_runSimulation]]></Name>
 					<X>-310</X><Y>780</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
-					<Body><![CDATA[int simulationYears = v_endYear - v_startYear;
+					<Body><![CDATA[//1. Update data start year
+f_updateDatasets();
 
+//2. Simulate up to end year
+int simulationYears = v_endYear - v_startYear;
 for(int i = 0; i < simulationYears; i++){
+	v_year++;
 	f_adoptionProces();
 	for(GZ_Neighborhood n : pop_GZ_Neighborhoods){
 		n.f_energyCalculations();
@@ -6657,9 +6673,9 @@ for(int i = 0; i < simulationYears; i++){
 	}
 	//f_buildDistrictHeating(p_districtHeatingShortTermYear, p_districtHeatingMediumTermYear, p_districtHeatingLongTermYear, p_districtHeatingThreshold);
 	f_updateDatasets();
-	v_year++;
 }
-]]></Body>
+
+f_setVisuals();]]></Body>
 				</Function>
 				<Function AccessType="default" StaticFunction="false">
 					<ReturnModificator>VOID</ReturnModificator>
@@ -6682,6 +6698,90 @@ startup_agent.data_naturalGasBlock_perc = data_naturalGasBlock_perc;
 startup_agent.data_hybridHeatPumps_perc = data_hybridHeatPumps_perc;
 startup_agent.data_electricHeatPumps_perc = data_electricHeatPumps_perc;
 startup_agent.data_districtHeating_perc = data_districtHeating_perc;]]></Body>
+				</Function>
+				<Function AccessType="default" StaticFunction="false">
+					<ReturnModificator>RETURNS_VALUE</ReturnModificator>
+					<ReturnType><![CDATA[DataSet[]]]></ReturnType>
+					<Id>1747228928176</Id>
+					<Name><![CDATA[f_combineHeatSystemData]]></Name>
+					<X>-630</X><Y>840</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Parameter>
+						<Name><![CDATA[data_naturalGasBoilers]]></Name>
+						<Type><![CDATA[DataSet]]></Type>
+					</Parameter>
+					<Parameter>
+						<Name><![CDATA[data_naturalGasBlock]]></Name>
+						<Type><![CDATA[DataSet]]></Type>
+					</Parameter>
+					<Parameter>
+						<Name><![CDATA[data_districtHeating]]></Name>
+						<Type><![CDATA[DataSet]]></Type>
+					</Parameter>
+					<Parameter>
+						<Name><![CDATA[data_electricHeatPumps]]></Name>
+						<Type><![CDATA[DataSet]]></Type>
+					</Parameter>
+					<Parameter>
+						<Name><![CDATA[data_hybridHeatPumps]]></Name>
+						<Type><![CDATA[DataSet]]></Type>
+					</Parameter>
+					<Body><![CDATA[int datasetSize = data_naturalGasBoilers.size();
+DataSet d1 = new DataSet(datasetSize);
+DataSet d2 = new DataSet(datasetSize);
+DataSet d3 = new DataSet(datasetSize);
+DataSet d4 = new DataSet(datasetSize);
+DataSet d5 = new DataSet(datasetSize);
+
+for(int i=0; i<datasetSize; i++){
+	d1.add(data_naturalGasBoilers.getX(i) - v_startYear, data_naturalGasBoilers.getY(i));
+	d2.add(data_naturalGasBlock.getX(i) - v_startYear, data_naturalGasBlock.getY(i));
+	d3.add(data_districtHeating.getX(i) - v_startYear, data_districtHeating.getY(i));
+	d4.add(data_electricHeatPumps.getX(i) - v_startYear, data_electricHeatPumps.getY(i));
+	d5.add(data_hybridHeatPumps.getX(i) - v_startYear, data_hybridHeatPumps.getY(i));
+}
+
+DataSet[] data = {d1, d2, d3, d4, d5};
+return data;
+]]></Body>
+				</Function>
+				<Function AccessType="default" StaticFunction="false">
+					<ReturnModificator>VOID</ReturnModificator>
+					<ReturnType><![CDATA[double]]></ReturnType>
+					<Id>1747232737285</Id>
+					<Name><![CDATA[f_addDataToTimeStackChart]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
+					<X>-1060</X><Y>1140</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Parameter>
+						<Name><![CDATA[dataset]]></Name>
+						<Type><![CDATA[DataSet]]></Type>
+					</Parameter>
+					<Parameter>
+						<Name><![CDATA[color]]></Name>
+						<Type><![CDATA[Color]]></Type>
+					</Parameter>
+					<Parameter>
+						<Name><![CDATA[label]]></Name>
+						<Type><![CDATA[String]]></Type>
+					</Parameter>
+					<Parameter>
+						<Name><![CDATA[timeStackChart]]></Name>
+						<Type><![CDATA[TimeStackChart]]></Type>
+					</Parameter>
+					<Body><![CDATA[datasetForTimestackChart.reset();
+for(int i=0; i<dataset.size(); i++){
+	datasetForTimestackChart.add(dataset.getX(i) - v_startYear, dataset.getY(i));
+}
+
+timeStackChart.addDataSet(datasetForTimestackChart, label, color);
+]]></Body>
 				</Function>
 			</Functions>
 			<TableFunctions>
@@ -8375,6 +8475,28 @@ startup_agent.data_districtHeating_perc = data_districtHeating_perc;]]></Body>
 					<HighPercent>10</HighPercent>
 					<Title><![CDATA[]]></Title>
 				</HistogramData>
+    			<DataSet>
+					<Id>1747232572475</Id>
+					<Name><![CDATA[datasetForTimestackChart]]></Name>
+					<X>-360</X><Y>2630</Y>
+					<Label><X>15</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<AutoUpdate>false</AutoUpdate>
+					<OccurrenceAtTime>true</OccurrenceAtTime>
+					<OccurrenceDate>1704787200000</OccurrenceDate>
+					<OccurrenceTime Class="CodeUnitValue">
+						<Code><![CDATA[0]]></Code>
+						<Unit Class="TimeUnits"><![CDATA[YEAR]]></Unit>
+					</OccurrenceTime>
+					<RecurrenceCode Class="CodeUnitValue">
+						<Code><![CDATA[1]]></Code>
+						<Unit Class="TimeUnits"><![CDATA[YEAR]]></Unit>
+					</RecurrenceCode>
+					<FreezeXAxis>false</FreezeXAxis>
+					<SamplesToKeep>40</SamplesToKeep>
+				</DataSet>
 			</AnalysisData>
 			<Connectivity>
 				<Database>
@@ -8453,7 +8575,7 @@ startup_agent.data_districtHeating_perc = data_districtHeating_perc;]]></Body>
 				<EmbeddedObject>
 					<Id>1700133527402</Id>
 					<Name><![CDATA[pop_GZ_Neighborhoods]]></Name>
-					<X>-650</X><Y>850</Y>
+					<X>-650</X><Y>870</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -8796,7 +8918,7 @@ startup_agent.data_districtHeating_perc = data_districtHeating_perc;]]></Body>
 				<EmbeddedObject>
 					<Id>1708548712823</Id>
 					<Name><![CDATA[pop_DSOs]]></Name>
-					<X>-650</X><Y>870</Y>
+					<X>-650</X><Y>890</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -8854,7 +8976,7 @@ startup_agent.data_districtHeating_perc = data_districtHeating_perc;]]></Body>
 				<EmbeddedObject>
 					<Id>1708548749645</Id>
 					<Name><![CDATA[pop_districtHeatingCompanies]]></Name>
-					<X>-650</X><Y>890</Y>
+					<X>-650</X><Y>910</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -8921,7 +9043,7 @@ startup_agent.data_districtHeating_perc = data_districtHeating_perc;]]></Body>
 				<EmbeddedObject>
 					<Id>1739796653353</Id>
 					<Name><![CDATA[pop_socialHousingAssociations]]></Name>
-					<X>-650</X><Y>910</Y>
+					<X>-650</X><Y>930</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -8970,7 +9092,7 @@ startup_agent.data_districtHeating_perc = data_districtHeating_perc;]]></Body>
 				<EmbeddedObject>
 					<Id>1739797105564</Id>
 					<Name><![CDATA[pop_landlords]]></Name>
-					<X>-650</X><Y>930</Y>
+					<X>-650</X><Y>950</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -9082,7 +9204,7 @@ startup_agent.data_districtHeating_perc = data_districtHeating_perc;]]></Body>
 					<DrawLine>true</DrawLine>
 					<Interpolation>LINEAR</Interpolation>
 					<SamplesToKeep>100</SamplesToKeep>
-					<TimeWindowExpression><![CDATA[30]]></TimeWindowExpression>
+					<TimeWindowExpression><![CDATA[27]]></TimeWindowExpression>
 					<FillAreaUnderLine>false</FillAreaUnderLine>
 					<LabelFormat>yyyy</LabelFormat>
     			</TimePlot>
@@ -9188,8 +9310,8 @@ startup_agent.data_districtHeating_perc = data_districtHeating_perc;]]></Body>
 					<ShowLegend>true</ShowLegend>
 					<TimeWindowsMovementType>MOVEMENT_WITH_TIME</TimeWindowsMovementType>		
 					<TimeWindowUnits>YEAR</TimeWindowUnits>
-					<TimeWindowExpression><![CDATA[31]]></TimeWindowExpression>
-					<SamplesToKeep>30</SamplesToKeep>
+					<TimeWindowExpression><![CDATA[27]]></TimeWindowExpression>
+					<SamplesToKeep>50</SamplesToKeep>
 					<VerScaleToExpression><![CDATA[1]]></VerScaleToExpression>
 					<VerScaleType>AUTO</VerScaleType>
 					<LabelFormat>yyyy</LabelFormat>
@@ -9662,7 +9784,7 @@ startup_agent.data_districtHeating_perc = data_districtHeating_perc;]]></Body>
 					<LineMaterial>null</LineMaterial>
 					<LineStyle>SOLID</LineStyle>
 					<Width>340</Width>
-					<Height>1080</Height>
+					<Height>1120</Height>
 					<Rotation>0.0</Rotation>
 					<FillColor>-133658</FillColor>
 					<FillMaterial>null</FillMaterial>
@@ -10369,7 +10491,7 @@ startup_agent.data_districtHeating_perc = data_districtHeating_perc;]]></Body>
 					<DrawLine>true</DrawLine>
 					<Interpolation>LINEAR</Interpolation>
 					<SamplesToKeep>100</SamplesToKeep>
-					<TimeWindowExpression><![CDATA[30]]></TimeWindowExpression>
+					<TimeWindowExpression><![CDATA[27]]></TimeWindowExpression>
 					<FillAreaUnderLine>false</FillAreaUnderLine>
 					<LabelFormat>yyyy</LabelFormat>
     			</TimePlot>
@@ -10447,7 +10569,7 @@ startup_agent.data_districtHeating_perc = data_districtHeating_perc;]]></Body>
 					<DrawLine>true</DrawLine>
 					<Interpolation>LINEAR</Interpolation>
 					<SamplesToKeep>100</SamplesToKeep>
-					<TimeWindowExpression><![CDATA[30]]></TimeWindowExpression>
+					<TimeWindowExpression><![CDATA[27]]></TimeWindowExpression>
 					<FillAreaUnderLine>false</FillAreaUnderLine>
 					<LabelFormat>yyyy</LabelFormat>
     			</TimePlot>
@@ -10525,7 +10647,7 @@ startup_agent.data_districtHeating_perc = data_districtHeating_perc;]]></Body>
 					<DrawLine>true</DrawLine>
 					<Interpolation>LINEAR</Interpolation>
 					<SamplesToKeep>100</SamplesToKeep>
-					<TimeWindowExpression><![CDATA[30]]></TimeWindowExpression>
+					<TimeWindowExpression><![CDATA[27]]></TimeWindowExpression>
 					<FillAreaUnderLine>false</FillAreaUnderLine>
 					<LabelFormat>yyyy</LabelFormat>
     			</TimePlot>
@@ -11461,7 +11583,7 @@ f_setMapColor(mapMode);]]></ActionCode>
 				<Text>
 					<Id>1738058526106</Id>
 					<Name><![CDATA[text8]]></Name>
-					<X>-781</X><Y>1078</Y>
+					<X>-670</X><Y>1140</Y>
 					<Label><X>0</X><Y>-10</Y></Label>
 					<PublicFlag>true</PublicFlag>
 					<PresentationFlag>false</PresentationFlag>
@@ -12142,7 +12264,7 @@ f_setMapColor(mapMode);]]></ActionCode>
 					<DrawLine>true</DrawLine>
 					<Interpolation>LINEAR</Interpolation>
 					<SamplesToKeep>100</SamplesToKeep>
-					<TimeWindowExpression><![CDATA[30]]></TimeWindowExpression>
+					<TimeWindowExpression><![CDATA[27]]></TimeWindowExpression>
 					<FillAreaUnderLine>false</FillAreaUnderLine>
 					<LabelFormat>yyyy</LabelFormat>
     			</TimePlot>
@@ -12254,6 +12376,470 @@ this.deleteSelf();]]></ActionCode>
 						<LabelText><![CDATA[End run]]></LabelText>
 					</ExtendedProperties>
 				</Control>
+				<Text>
+					<Id>1747228777777</Id>
+					<Name><![CDATA[t_histrograms_title11]]></Name>
+					<X>880</X><Y>-1255</Y>
+					<Label><X>0</X><Y>-10</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D</DrawMode>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Z>0</Z>
+					<Rotation>0.0</Rotation>
+					<Color>-16777216</Color>
+					<Text><![CDATA[Average subjective norm]]></Text>
+					<Font>
+						<Name>SansSerif</Name>
+						<Size>16</Size>
+						<Style>0</Style>
+					</Font>
+					<Alignment>LEFT</Alignment>
+				</Text>
+				<Text>
+					<Id>1747228777785</Id>
+					<Name><![CDATA[t_histrograms_title12]]></Name>
+					<X>880</X><Y>-975</Y>
+					<Label><X>0</X><Y>-10</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D</DrawMode>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Z>0</Z>
+					<Rotation>0.0</Rotation>
+					<Color>-16777216</Color>
+					<Text><![CDATA[Average EAC (Equivalent Annual Costs) per heating  method]]></Text>
+					<Font>
+						<Name>SansSerif</Name>
+						<Size>16</Size>
+						<Style>0</Style>
+					</Font>
+					<Alignment>LEFT</Alignment>
+				</Text>
+    			<TimePlot>
+					<Id>1747228777794</Id>
+					<Name><![CDATA[pl_averageAttitudeValue1]]></Name>
+					<X>840</X><Y>-440</Y>
+					<Label><X>0</X><Y>-10</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
+					<AutoUpdate>false</AutoUpdate>
+					<OccurrenceAtTime>true</OccurrenceAtTime>
+					<OccurrenceDate>1412150400000</OccurrenceDate>
+					<OccurrenceTime Class="CodeUnitValue">
+						<Code><![CDATA[0]]></Code>
+						<Unit Class="TimeUnits"><![CDATA[YEAR]]></Unit>
+					</OccurrenceTime>
+					<RecurrenceCode Class="CodeUnitValue">
+						<Code><![CDATA[1]]></Code>
+						<Unit Class="TimeUnits"><![CDATA[YEAR]]></Unit>
+					</RecurrenceCode>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Width>640</Width>
+					<Height>230</Height>
+					<BackgroundColor/>
+					<BorderColor/>
+					<ChartArea>
+						<XOffset>50</XOffset>
+						<YOffset>20</YOffset>
+						<Width>570</Width>
+						<Height>150</Height>
+						<BackgroundColor/>
+						<BorderColor>-16777216</BorderColor>
+						<GridColor>-12566464</GridColor>
+					</ChartArea>
+					<Legend>
+						<Place>SOUTH</Place>
+						<TextColor>-16777216</TextColor>
+						<Size>40</Size>
+					</Legend>
+					<Labels>
+						<HorLabelsPosition>DEFAULT</HorLabelsPosition>
+						<VerLabelsPosition>DEFAULT</VerLabelsPosition>
+						<TextColor>-12566464</TextColor>
+					</Labels>
+					<ShowLegend>true</ShowLegend>
+					<TimeWindowsMovementType>MOVEMENT_WITH_DATA</TimeWindowsMovementType>		
+					<TimeWindowUnits>YEAR</TimeWindowUnits>
+					<VerScaleFromExpression><![CDATA[0]]></VerScaleFromExpression>
+					<VerScaleToExpression><![CDATA[p_totalPopulation]]></VerScaleToExpression>
+					<VerScaleType>AUTO</VerScaleType>
+					<DrawLine>true</DrawLine>
+					<Interpolation>LINEAR</Interpolation>
+					<SamplesToKeep>100</SamplesToKeep>
+					<TimeWindowExpression><![CDATA[30]]></TimeWindowExpression>
+					<FillAreaUnderLine>false</FillAreaUnderLine>
+					<LabelFormat>yyyy</LabelFormat>
+    			</TimePlot>
+    			<TimePlot>
+					<Id>1747228777809</Id>
+					<Name><![CDATA[pl_averageSubjectiveNorm1]]></Name>
+					<X>840</X><Y>-1230</Y>
+					<Label><X>0</X><Y>-10</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
+					<AutoUpdate>false</AutoUpdate>
+					<OccurrenceAtTime>true</OccurrenceAtTime>
+					<OccurrenceDate>1412150400000</OccurrenceDate>
+					<OccurrenceTime Class="CodeUnitValue">
+						<Code><![CDATA[0]]></Code>
+						<Unit Class="TimeUnits"><![CDATA[YEAR]]></Unit>
+					</OccurrenceTime>
+					<RecurrenceCode Class="CodeUnitValue">
+						<Code><![CDATA[1]]></Code>
+						<Unit Class="TimeUnits"><![CDATA[YEAR]]></Unit>
+					</RecurrenceCode>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Width>640</Width>
+					<Height>230</Height>
+					<BackgroundColor/>
+					<BorderColor/>
+					<ChartArea>
+						<XOffset>50</XOffset>
+						<YOffset>20</YOffset>
+						<Width>570</Width>
+						<Height>150</Height>
+						<BackgroundColor/>
+						<BorderColor>-16777216</BorderColor>
+						<GridColor>-12566464</GridColor>
+					</ChartArea>
+					<Legend>
+						<Place>SOUTH</Place>
+						<TextColor>-16777216</TextColor>
+						<Size>40</Size>
+					</Legend>
+					<Labels>
+						<HorLabelsPosition>DEFAULT</HorLabelsPosition>
+						<VerLabelsPosition>DEFAULT</VerLabelsPosition>
+						<TextColor>-12566464</TextColor>
+					</Labels>
+					<ShowLegend>true</ShowLegend>
+					<TimeWindowsMovementType>MOVEMENT_WITH_DATA</TimeWindowsMovementType>		
+					<TimeWindowUnits>YEAR</TimeWindowUnits>
+					<VerScaleFromExpression><![CDATA[0]]></VerScaleFromExpression>
+					<VerScaleToExpression><![CDATA[p_totalPopulation]]></VerScaleToExpression>
+					<VerScaleType>AUTO</VerScaleType>
+					<DrawLine>true</DrawLine>
+					<Interpolation>LINEAR</Interpolation>
+					<SamplesToKeep>100</SamplesToKeep>
+					<TimeWindowExpression><![CDATA[30]]></TimeWindowExpression>
+					<FillAreaUnderLine>false</FillAreaUnderLine>
+					<LabelFormat>yyyy</LabelFormat>
+    			</TimePlot>
+				<Text>
+					<Id>1747228777816</Id>
+					<Name><![CDATA[t_histrograms_title13]]></Name>
+					<X>880</X><Y>-705</Y>
+					<Label><X>0</X><Y>-10</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D</DrawMode>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Z>0</Z>
+					<Rotation>0.0</Rotation>
+					<Color>-16777216</Color>
+					<Text><![CDATA[Investment costs per heating  method]]></Text>
+					<Font>
+						<Name>SansSerif</Name>
+						<Size>16</Size>
+						<Style>0</Style>
+					</Font>
+					<Alignment>LEFT</Alignment>
+				</Text>
+    			<TimePlot>
+					<Id>1747228777825</Id>
+					<Name><![CDATA[pl_averagePerceivedUtility1]]></Name>
+					<X>840</X><Y>-1500</Y>
+					<Label><X>0</X><Y>-10</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
+					<AutoUpdate>false</AutoUpdate>
+					<OccurrenceAtTime>true</OccurrenceAtTime>
+					<OccurrenceDate>1412150400000</OccurrenceDate>
+					<OccurrenceTime Class="CodeUnitValue">
+						<Code><![CDATA[0]]></Code>
+						<Unit Class="TimeUnits"><![CDATA[YEAR]]></Unit>
+					</OccurrenceTime>
+					<RecurrenceCode Class="CodeUnitValue">
+						<Code><![CDATA[1]]></Code>
+						<Unit Class="TimeUnits"><![CDATA[YEAR]]></Unit>
+					</RecurrenceCode>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Width>640</Width>
+					<Height>230</Height>
+					<BackgroundColor/>
+					<BorderColor/>
+					<ChartArea>
+						<XOffset>50</XOffset>
+						<YOffset>20</YOffset>
+						<Width>570</Width>
+						<Height>150</Height>
+						<BackgroundColor/>
+						<BorderColor>-16777216</BorderColor>
+						<GridColor>-12566464</GridColor>
+					</ChartArea>
+					<Legend>
+						<Place>SOUTH</Place>
+						<TextColor>-16777216</TextColor>
+						<Size>40</Size>
+					</Legend>
+					<Labels>
+						<HorLabelsPosition>DEFAULT</HorLabelsPosition>
+						<VerLabelsPosition>DEFAULT</VerLabelsPosition>
+						<TextColor>-12566464</TextColor>
+					</Labels>
+					<ShowLegend>true</ShowLegend>
+					<TimeWindowsMovementType>MOVEMENT_WITH_DATA</TimeWindowsMovementType>		
+					<TimeWindowUnits>YEAR</TimeWindowUnits>
+					<VerScaleFromExpression><![CDATA[0]]></VerScaleFromExpression>
+					<VerScaleToExpression><![CDATA[p_totalPopulation]]></VerScaleToExpression>
+					<VerScaleType>AUTO</VerScaleType>
+					<DrawLine>true</DrawLine>
+					<Interpolation>LINEAR</Interpolation>
+					<SamplesToKeep>100</SamplesToKeep>
+					<TimeWindowExpression><![CDATA[30]]></TimeWindowExpression>
+					<FillAreaUnderLine>false</FillAreaUnderLine>
+					<LabelFormat>yyyy</LabelFormat>
+    			</TimePlot>
+				<Text>
+					<Id>1747228777832</Id>
+					<Name><![CDATA[t_histrograms_title14]]></Name>
+					<X>880</X><Y>-460</Y>
+					<Label><X>0</X><Y>-10</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D</DrawMode>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Z>0</Z>
+					<Rotation>0.0</Rotation>
+					<Color>-16777216</Color>
+					<Text><![CDATA[Average attitude value]]></Text>
+					<Font>
+						<Name>SansSerif</Name>
+						<Size>16</Size>
+						<Style>0</Style>
+					</Font>
+					<Alignment>LEFT</Alignment>
+				</Text>
+				<Text>
+					<Id>1747228777837</Id>
+					<Name><![CDATA[t_histrograms_title15]]></Name>
+					<X>880</X><Y>-1525</Y>
+					<Label><X>0</X><Y>-10</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D</DrawMode>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Z>0</Z>
+					<Rotation>0.0</Rotation>
+					<Color>-16777216</Color>
+					<Text><![CDATA[Average perceived value]]></Text>
+					<Font>
+						<Name>SansSerif</Name>
+						<Size>16</Size>
+						<Style>0</Style>
+					</Font>
+					<Alignment>LEFT</Alignment>
+				</Text>
+    			<TimePlot>
+					<Id>1747228777845</Id>
+					<Name><![CDATA[pl_averageEAC1]]></Name>
+					<X>840</X><Y>-950</Y>
+					<Label><X>0</X><Y>-10</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
+					<AutoUpdate>false</AutoUpdate>
+					<OccurrenceAtTime>true</OccurrenceAtTime>
+					<OccurrenceDate>1412150400000</OccurrenceDate>
+					<OccurrenceTime Class="CodeUnitValue">
+						<Code><![CDATA[0]]></Code>
+						<Unit Class="TimeUnits"><![CDATA[YEAR]]></Unit>
+					</OccurrenceTime>
+					<RecurrenceCode Class="CodeUnitValue">
+						<Code><![CDATA[1]]></Code>
+						<Unit Class="TimeUnits"><![CDATA[YEAR]]></Unit>
+					</RecurrenceCode>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Width>640</Width>
+					<Height>230</Height>
+					<BackgroundColor/>
+					<BorderColor/>
+					<ChartArea>
+						<XOffset>50</XOffset>
+						<YOffset>20</YOffset>
+						<Width>570</Width>
+						<Height>150</Height>
+						<BackgroundColor/>
+						<BorderColor>-16777216</BorderColor>
+						<GridColor>-12566464</GridColor>
+					</ChartArea>
+					<Legend>
+						<Place>SOUTH</Place>
+						<TextColor>-16777216</TextColor>
+						<Size>40</Size>
+					</Legend>
+					<Labels>
+						<HorLabelsPosition>DEFAULT</HorLabelsPosition>
+						<VerLabelsPosition>DEFAULT</VerLabelsPosition>
+						<TextColor>-12566464</TextColor>
+					</Labels>
+					<ShowLegend>true</ShowLegend>
+					<TimeWindowsMovementType>MOVEMENT_WITH_DATA</TimeWindowsMovementType>		
+					<TimeWindowUnits>YEAR</TimeWindowUnits>
+					<VerScaleFromExpression><![CDATA[0]]></VerScaleFromExpression>
+					<VerScaleToExpression><![CDATA[p_totalPopulation]]></VerScaleToExpression>
+					<VerScaleType>AUTO</VerScaleType>
+					<DrawLine>true</DrawLine>
+					<Interpolation>LINEAR</Interpolation>
+					<SamplesToKeep>100</SamplesToKeep>
+					<TimeWindowExpression><![CDATA[30]]></TimeWindowExpression>
+					<FillAreaUnderLine>false</FillAreaUnderLine>
+					<LabelFormat>yyyy</LabelFormat>
+    			</TimePlot>
+				<Text>
+					<Id>1747228777852</Id>
+					<Name><![CDATA[t_histrograms_title16]]></Name>
+					<X>880</X><Y>-1795</Y>
+					<Label><X>0</X><Y>-10</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D</DrawMode>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Z>0</Z>
+					<Rotation>0.0</Rotation>
+					<Color>-16777216</Color>
+					<Text><![CDATA[Household heating methods]]></Text>
+					<Font>
+						<Name>SansSerif</Name>
+						<Size>16</Size>
+						<Style>0</Style>
+					</Font>
+					<Alignment>LEFT</Alignment>
+				</Text>
+    			<TimeStackChart>
+					<Id>1747228777859</Id>
+					<Name><![CDATA[ch_heatingMethodStackChart1]]></Name>
+					<X>840</X><Y>-1780</Y>
+					<Label><X>0</X><Y>-10</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
+					<AutoUpdate>false</AutoUpdate>
+					<OccurrenceAtTime>true</OccurrenceAtTime>
+					<OccurrenceDate>1704787200000</OccurrenceDate>
+					<OccurrenceTime Class="CodeUnitValue">
+						<Code><![CDATA[0]]></Code>
+						<Unit Class="TimeUnits"><![CDATA[YEAR]]></Unit>
+					</OccurrenceTime>
+					<RecurrenceCode Class="CodeUnitValue">
+						<Code><![CDATA[1]]></Code>
+						<Unit Class="TimeUnits"><![CDATA[YEAR]]></Unit>
+					</RecurrenceCode>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Width>640</Width>
+					<Height>240</Height>
+					<BackgroundColor/>
+					<BorderColor/>
+					<ChartArea>
+						<XOffset>50</XOffset>
+						<YOffset>30</YOffset>
+						<Width>560</Width>
+						<Height>150</Height>
+						<BackgroundColor>-1</BackgroundColor>
+						<BorderColor>-16777216</BorderColor>
+						<GridColor>-12566464</GridColor>
+					</ChartArea>
+					<Legend>
+						<Place>SOUTH</Place>
+						<TextColor>-16777216</TextColor>
+						<Size>30</Size>
+					</Legend>
+					<Labels>
+						<HorLabelsPosition>DEFAULT</HorLabelsPosition>
+						<VerLabelsPosition>DEFAULT</VerLabelsPosition>
+						<TextColor>-12566464</TextColor>
+					</Labels>
+					<ShowLegend>true</ShowLegend>
+					<TimeWindowsMovementType>MOVEMENT_WITH_TIME</TimeWindowsMovementType>		
+					<TimeWindowUnits>YEAR</TimeWindowUnits>
+					<TimeWindowExpression><![CDATA[30]]></TimeWindowExpression>
+					<SamplesToKeep>50</SamplesToKeep>
+					<VerScaleToExpression><![CDATA[1]]></VerScaleToExpression>
+					<VerScaleType>AUTO</VerScaleType>
+					<LabelFormat>yyyy</LabelFormat>
+    			</TimeStackChart>
+    			<TimePlot>
+					<Id>1747228777867</Id>
+					<Name><![CDATA[pl_investmentCosts1]]></Name>
+					<X>840</X><Y>-680</Y>
+					<Label><X>0</X><Y>-10</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
+					<AutoUpdate>false</AutoUpdate>
+					<OccurrenceAtTime>true</OccurrenceAtTime>
+					<OccurrenceDate>1412150400000</OccurrenceDate>
+					<OccurrenceTime Class="CodeUnitValue">
+						<Code><![CDATA[0]]></Code>
+						<Unit Class="TimeUnits"><![CDATA[YEAR]]></Unit>
+					</OccurrenceTime>
+					<RecurrenceCode Class="CodeUnitValue">
+						<Code><![CDATA[1]]></Code>
+						<Unit Class="TimeUnits"><![CDATA[YEAR]]></Unit>
+					</RecurrenceCode>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Width>640</Width>
+					<Height>230</Height>
+					<BackgroundColor/>
+					<BorderColor/>
+					<ChartArea>
+						<XOffset>50</XOffset>
+						<YOffset>20</YOffset>
+						<Width>570</Width>
+						<Height>150</Height>
+						<BackgroundColor/>
+						<BorderColor>-16777216</BorderColor>
+						<GridColor>-12566464</GridColor>
+					</ChartArea>
+					<Legend>
+						<Place>SOUTH</Place>
+						<TextColor>-16777216</TextColor>
+						<Size>40</Size>
+					</Legend>
+					<Labels>
+						<HorLabelsPosition>DEFAULT</HorLabelsPosition>
+						<VerLabelsPosition>DEFAULT</VerLabelsPosition>
+						<TextColor>-12566464</TextColor>
+					</Labels>
+					<ShowLegend>true</ShowLegend>
+					<TimeWindowsMovementType>MOVEMENT_WITH_DATA</TimeWindowsMovementType>		
+					<TimeWindowUnits>YEAR</TimeWindowUnits>
+					<VerScaleFromExpression><![CDATA[0]]></VerScaleFromExpression>
+					<VerScaleToExpression><![CDATA[p_totalPopulation]]></VerScaleToExpression>
+					<VerScaleType>AUTO</VerScaleType>
+					<DrawLine>true</DrawLine>
+					<Interpolation>LINEAR</Interpolation>
+					<SamplesToKeep>100</SamplesToKeep>
+					<TimeWindowExpression><![CDATA[30]]></TimeWindowExpression>
+					<FillAreaUnderLine>false</FillAreaUnderLine>
+					<LabelFormat>yyyy</LabelFormat>
+    			</TimePlot>
 			</Presentation>
 
 				</Level>
@@ -14551,7 +15137,7 @@ if( v_maxGridLoad_kW > p_gridCapacity_kW ){
 		}
 	}	
 
-	traceln("Grid congestion at neighborhood " + this.getIndex() + " in year " + getYear());
+	traceln("Grid congestion at neighborhood " + this.getIndex() + " in year " + main.v_year);
 }
 
 ]]></Body>
@@ -15786,7 +16372,7 @@ while (c_neighborhoodsBeingReinforced.size() < p_DSORenovationCapacity_nbhPerYea
 }
 
 if(c_neighborhoodsWaitingToBeReinforced.size() > 0){
-	traceln(c_neighborhoodsWaitingToBeReinforced.size() + " neighborhoods with grid congestion in " + getYear());
+	traceln(c_neighborhoodsWaitingToBeReinforced.size() + " neighborhoods with grid congestion in " + main.v_year);
 }
 ]]></Body>
 				</Function>
@@ -16061,7 +16647,7 @@ for(GZ_Neighborhood neighborhood : main.pop_GZ_Neighborhoods){
 	boolean triggerDistrictHeating = false;
 	
 	if(neighborhood.p_policyPlanStartYear > 0){
-		if(neighborhood.p_policyPlanStartYear + p_planAndConstructionTime_years == getYear()){
+		if(neighborhood.p_policyPlanStartYear + p_planAndConstructionTime_years == main.v_year){
 			neighborhood.v_hasDistrictHeatingGrid = true;
 			triggerDistrictHeating = true;
 		}
@@ -16113,11 +16699,11 @@ for(GZ_Neighborhood neighborhood : main.pop_GZ_Neighborhoods){
 	if( dhHeatDemand_GJperHa >= p_requiredHeatDemand_GJPerHa && neighborhood.v_hasDistrictHeatingGrid == false){
 		//traceln("Building DH cost based in nbh " + neighborhood.getIndex() + " with heat demand (GJ/Ha) " + dhHeatDemand_GJperHa + " and required heat demand (GJ/Ha) " + p_requiredHeatDemand_GJPerHa);
 		
-		neighborhood.v_districtHeatYearOfOperation = getYear() + p_planAndConstructionTime_years;
+		neighborhood.v_districtHeatYearOfOperation = main.v_year + p_planAndConstructionTime_years;
 	}
 	
 	//Takes a couple of years to actually build the grid
-	if(getYear() == neighborhood.v_districtHeatYearOfOperation){		
+	if(main.v_year == neighborhood.v_districtHeatYearOfOperation){		
 		neighborhood.v_hasDistrictHeatingGrid = true;
 		for(J_Dwelling x : neighborhood.c_dwellings){
 			if( main.p_connectionObligationNewDH) {
@@ -16395,21 +16981,21 @@ for(GZ_Neighborhood neighborhood : main.pop_GZ_Neighborhoods){
 	//neighborhood.f_executeSocialHousingPolicy();
 	switch(neighborhood.p_policyPlan){
 		case ELECTRIC_HEAT_PUMP:
-			if(neighborhood.p_policyPlanYear == getYear()){
+			if(neighborhood.p_policyPlanYear == main.v_year){
 				for(J_Dwelling dwelling : neighborhood.c_dwellingsSocialHousing){
 					dwelling.f_installNewHeatingMethod(ELECTRIC_HEAT_PUMP);
 				}
 			}
 			break;
 		case HYBRID_HEAT_PUMP:
-			if(neighborhood.p_policyPlanYear == getYear()){
+			if(neighborhood.p_policyPlanYear == main.v_year){
 				for(J_Dwelling dwelling : neighborhood.c_dwellingsSocialHousing){
 					dwelling.f_installNewHeatingMethod(HYBRID_HEAT_PUMP);
 				}
 			}
 			break;
 		case DISTRICT_HEATING:
-			if(neighborhood.p_policyPlanYear == getYear()){
+			if(neighborhood.p_policyPlanYear == main.v_year){
 				if(neighborhood.v_hasDistrictHeatingGrid == true) {
 					for(J_Dwelling dwelling : neighborhood.c_dwellingsSocialHousing){
 						dwelling.f_installNewHeatingMethod(DISTRICT_HEATING);
@@ -16510,24 +17096,24 @@ double districtHeating_avgEAC = main.safeDivide(districtHeating_totEAC, dwelling
 double electricHeatPumps_avgEAC = electricHeatPumps_totEAC / dwellings;
 double hybridHeatPumps_avgEAC = hybridHeatPumps_totEAC / dwellings;
 
-int year = getYear();
-data_naturalGasBoilers_nb.add(v_gasBoilers_nb);
-data_naturalGasBlock_nb.add(v_gasBlockHeating_nb);
-data_districtHeating_nb.add(v_districtHeating_nb);
-data_electricHeatPumps_nb.add(v_electricHeatPumps_nb);
-data_hybridHeatPumps_nb.add(v_hybridHeatPumps_nb);
+int year = main.v_year;
+data_naturalGasBoilers_nb.add(year, v_gasBoilers_nb);
+data_naturalGasBlock_nb.add(year, v_gasBlockHeating_nb);
+data_districtHeating_nb.add(year, v_districtHeating_nb);
+data_electricHeatPumps_nb.add(year, v_electricHeatPumps_nb);
+data_hybridHeatPumps_nb.add(year, v_hybridHeatPumps_nb);
 
-data_naturalGasBoilers_perc.add(v_gasBoilers_perc);
-data_naturalGasBlock_perc.add(v_gasBlockHeating_perc);
-data_districtHeating_perc.add(v_districtHeating_perc);
-data_electricHeatPumps_perc.add(v_electricHeatPumps_perc);
-data_hybridHeatPumps_perc.add(v_hybridHeatPumps_perc);
+data_naturalGasBoilers_perc.add(year, v_gasBoilers_perc);
+data_naturalGasBlock_perc.add(year, v_gasBlockHeating_perc);
+data_districtHeating_perc.add(year, v_districtHeating_perc);
+data_electricHeatPumps_perc.add(year, v_electricHeatPumps_perc);
+data_hybridHeatPumps_perc.add(year, v_hybridHeatPumps_perc);
 
-data_naturalGasBoilers_avgEAC.add(gasBoilers_avgEAC);
-data_naturalGasBlock_avgEAC.add(gasBlockHeating_avgEAC);
-data_districtHeating_avgEAC.add(districtHeating_avgEAC);
-data_electricHeatPumps_avgEAC.add(electricHeatPumps_avgEAC);
-data_hybridHeatPumps_avgEAC.add(hybridHeatPumps_avgEAC);
+data_naturalGasBoilers_avgEAC.add(year, gasBoilers_avgEAC);
+data_naturalGasBlock_avgEAC.add(year, gasBlockHeating_avgEAC);
+data_districtHeating_avgEAC.add(year, districtHeating_avgEAC);
+data_electricHeatPumps_avgEAC.add(year, electricHeatPumps_avgEAC);
+data_hybridHeatPumps_avgEAC.add(year, hybridHeatPumps_avgEAC);
 
 main.f_updateBarTopRank(ch_barTopRank, main.c_dwellingsSocialHousing);
 ]]></Body>
@@ -16542,27 +17128,42 @@ main.f_updateBarTopRank(ch_barTopRank, main.c_dwellingsSocialHousing);
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
-					<Body><![CDATA[//Heating method stack charts
-ch_heatingMethodStackChart.removeAll();
-ch_heatingMethodStackChart.addDataSet(data_naturalGasBoilers_nb, main.v_naturalGasBoilerText, main.v_naturalGasBoilerColor);
-ch_heatingMethodStackChart.addDataSet(data_naturalGasBlock_nb, main.v_naturalGasBlockText, main.v_naturalGasBlockColor);
-ch_heatingMethodStackChart.addDataSet(data_districtHeating_nb, main.v_districtHeatingText, main.v_districtHeatingColor);
-ch_heatingMethodStackChart.addDataSet(data_electricHeatPumps_nb, main.v_electricHeatPumpText, main.v_electricHeatPumpColor);
-ch_heatingMethodStackChart.addDataSet(data_hybridHeatPumps_nb, main.v_hybridHeatPumpText, main.v_hybridHeatPumpColor);
-
-//Colors and labels
-String[] labels = {main.v_naturalGasBoilerText, main.v_naturalGasBlockText, main.v_districtHeatingText, main.v_electricHeatPumpText, main.v_hybridHeatPumpText};
-Color[] colors = {main.v_naturalGasBoilerColor, main.v_naturalGasBlockColor, main.v_districtHeatingColor, main.v_electricHeatPumpColor, main.v_hybridHeatPumpColor}; 
-
-// Data arrays
-DataSet[] avgEACData = {data_naturalGasBoilers_avgEAC, data_naturalGasBlock_avgEAC, data_districtHeating_avgEAC, data_electricHeatPumps_avgEAC, data_hybridHeatPumps_avgEAC};
-
-// Populate AVG EAC chart
-pl_averageEAC.removeAll();
-for (int i = 0; i < avgEACData.length; i++) {
-	main.f_addDataSetToTimeplot(pl_averageEAC, avgEACData[i], labels[i], colors[i]);
+					<Body><![CDATA[if( data_naturalGasBoilers_nb.size() > 0){
+	//Heating methods stack charts
+	int datasetSize = data_naturalGasBoilers_nb.size();
+	DataSet d1 = new DataSet(datasetSize);
+	DataSet d2 = new DataSet(datasetSize);
+	DataSet d3 = new DataSet(datasetSize);
+	DataSet d4 = new DataSet(datasetSize);
+	DataSet d5 = new DataSet(datasetSize);
+	
+	for(int i=0; i<datasetSize; i++){
+		d1.add(data_naturalGasBoilers_nb.getX(i) - main.v_startYear, data_naturalGasBoilers_nb.getY(i));
+		d2.add(data_naturalGasBlock_nb.getX(i) - main.v_startYear, data_naturalGasBlock_nb.getY(i));
+		d3.add(data_districtHeating_nb.getX(i) - main.v_startYear, data_districtHeating_nb.getY(i));
+		d4.add(data_electricHeatPumps_nb.getX(i) - main.v_startYear, data_electricHeatPumps_nb.getY(i));
+		d5.add(data_hybridHeatPumps_nb.getX(i) - main.v_startYear, data_hybridHeatPumps_nb.getY(i));
+	}
+	
+	ch_heatingMethodStackChart.addDataSet(d1, main.v_naturalGasBoilerText, main.v_naturalGasBoilerColor);
+	ch_heatingMethodStackChart.addDataSet(d2, main.v_naturalGasBlockText, main.v_naturalGasBlockColor);
+	ch_heatingMethodStackChart.addDataSet(d3, main.v_districtHeatingText, main.v_districtHeatingColor);
+	ch_heatingMethodStackChart.addDataSet(d4, main.v_electricHeatPumpText, main.v_electricHeatPumpColor);
+	ch_heatingMethodStackChart.addDataSet(d5, main.v_hybridHeatPumpText, main.v_hybridHeatPumpColor);
+	
+	//Colors and labels
+	String[] labels = {main.v_naturalGasBoilerText, main.v_naturalGasBlockText, main.v_districtHeatingText, main.v_electricHeatPumpText, main.v_hybridHeatPumpText};
+	Color[] colors = {main.v_naturalGasBoilerColor, main.v_naturalGasBlockColor, main.v_districtHeatingColor, main.v_electricHeatPumpColor, main.v_hybridHeatPumpColor}; 
+	
+	// Data arrays
+	DataSet[] avgEACData = {data_naturalGasBoilers_avgEAC, data_naturalGasBlock_avgEAC, data_districtHeating_avgEAC, data_electricHeatPumps_avgEAC, data_hybridHeatPumps_avgEAC};
+	
+	// Populate AVG EAC chart
+	pl_averageEAC.removeAll();
+	for (int i = 0; i < avgEACData.length; i++) {
+		main.f_addDataSetToTimeplot(pl_averageEAC, avgEACData[i], labels[i], colors[i]);
+	}
 }
-
 ]]></Body>
 				</Function>
 			</Functions>
@@ -16586,7 +17187,7 @@ for (int i = 0; i < avgEACData.length; i++) {
 						<Code><![CDATA[1]]></Code>
 						<Unit Class="TimeUnits"><![CDATA[YEAR]]></Unit>
 					</RecurrenceCode>
-					<FreezeXAxis>true</FreezeXAxis>
+					<FreezeXAxis>false</FreezeXAxis>
 					<SamplesToKeep>40</SamplesToKeep>
 				</DataSet>
     			<DataSet>
@@ -16608,7 +17209,7 @@ for (int i = 0; i < avgEACData.length; i++) {
 						<Code><![CDATA[1]]></Code>
 						<Unit Class="TimeUnits"><![CDATA[YEAR]]></Unit>
 					</RecurrenceCode>
-					<FreezeXAxis>true</FreezeXAxis>
+					<FreezeXAxis>false</FreezeXAxis>
 					<SamplesToKeep>40</SamplesToKeep>
 				</DataSet>
     			<DataSet>
@@ -16630,7 +17231,7 @@ for (int i = 0; i < avgEACData.length; i++) {
 						<Code><![CDATA[1]]></Code>
 						<Unit Class="TimeUnits"><![CDATA[YEAR]]></Unit>
 					</RecurrenceCode>
-					<FreezeXAxis>true</FreezeXAxis>
+					<FreezeXAxis>false</FreezeXAxis>
 					<SamplesToKeep>40</SamplesToKeep>
 				</DataSet>
     			<DataSet>
@@ -16652,7 +17253,7 @@ for (int i = 0; i < avgEACData.length; i++) {
 						<Code><![CDATA[1]]></Code>
 						<Unit Class="TimeUnits"><![CDATA[YEAR]]></Unit>
 					</RecurrenceCode>
-					<FreezeXAxis>true</FreezeXAxis>
+					<FreezeXAxis>false</FreezeXAxis>
 					<SamplesToKeep>40</SamplesToKeep>
 				</DataSet>
     			<DataSet>
@@ -16674,7 +17275,7 @@ for (int i = 0; i < avgEACData.length; i++) {
 						<Code><![CDATA[1]]></Code>
 						<Unit Class="TimeUnits"><![CDATA[YEAR]]></Unit>
 					</RecurrenceCode>
-					<FreezeXAxis>true</FreezeXAxis>
+					<FreezeXAxis>false</FreezeXAxis>
 					<SamplesToKeep>40</SamplesToKeep>
 				</DataSet>
     			<DataSet>
@@ -16696,7 +17297,7 @@ for (int i = 0; i < avgEACData.length; i++) {
 						<Code><![CDATA[1]]></Code>
 						<Unit Class="TimeUnits"><![CDATA[YEAR]]></Unit>
 					</RecurrenceCode>
-					<FreezeXAxis>true</FreezeXAxis>
+					<FreezeXAxis>false</FreezeXAxis>
 					<SamplesToKeep>40</SamplesToKeep>
 				</DataSet>
     			<DataSet>
@@ -16718,7 +17319,7 @@ for (int i = 0; i < avgEACData.length; i++) {
 						<Code><![CDATA[1]]></Code>
 						<Unit Class="TimeUnits"><![CDATA[YEAR]]></Unit>
 					</RecurrenceCode>
-					<FreezeXAxis>true</FreezeXAxis>
+					<FreezeXAxis>false</FreezeXAxis>
 					<SamplesToKeep>40</SamplesToKeep>
 				</DataSet>
     			<DataSet>
@@ -16740,7 +17341,7 @@ for (int i = 0; i < avgEACData.length; i++) {
 						<Code><![CDATA[1]]></Code>
 						<Unit Class="TimeUnits"><![CDATA[YEAR]]></Unit>
 					</RecurrenceCode>
-					<FreezeXAxis>true</FreezeXAxis>
+					<FreezeXAxis>false</FreezeXAxis>
 					<SamplesToKeep>40</SamplesToKeep>
 				</DataSet>
     			<DataSet>
@@ -16762,7 +17363,7 @@ for (int i = 0; i < avgEACData.length; i++) {
 						<Code><![CDATA[1]]></Code>
 						<Unit Class="TimeUnits"><![CDATA[YEAR]]></Unit>
 					</RecurrenceCode>
-					<FreezeXAxis>true</FreezeXAxis>
+					<FreezeXAxis>false</FreezeXAxis>
 					<SamplesToKeep>40</SamplesToKeep>
 				</DataSet>
     			<DataSet>
@@ -16784,7 +17385,7 @@ for (int i = 0; i < avgEACData.length; i++) {
 						<Code><![CDATA[1]]></Code>
 						<Unit Class="TimeUnits"><![CDATA[YEAR]]></Unit>
 					</RecurrenceCode>
-					<FreezeXAxis>true</FreezeXAxis>
+					<FreezeXAxis>false</FreezeXAxis>
 					<SamplesToKeep>40</SamplesToKeep>
 				</DataSet>
     			<DataSet>
@@ -16806,7 +17407,7 @@ for (int i = 0; i < avgEACData.length; i++) {
 						<Code><![CDATA[1]]></Code>
 						<Unit Class="TimeUnits"><![CDATA[YEAR]]></Unit>
 					</RecurrenceCode>
-					<FreezeXAxis>true</FreezeXAxis>
+					<FreezeXAxis>false</FreezeXAxis>
 					<SamplesToKeep>40</SamplesToKeep>
 				</DataSet>
     			<DataSet>
@@ -16828,7 +17429,7 @@ for (int i = 0; i < avgEACData.length; i++) {
 						<Code><![CDATA[1]]></Code>
 						<Unit Class="TimeUnits"><![CDATA[YEAR]]></Unit>
 					</RecurrenceCode>
-					<FreezeXAxis>true</FreezeXAxis>
+					<FreezeXAxis>false</FreezeXAxis>
 					<SamplesToKeep>40</SamplesToKeep>
 				</DataSet>
     			<DataSet>
@@ -16850,7 +17451,7 @@ for (int i = 0; i < avgEACData.length; i++) {
 						<Code><![CDATA[1]]></Code>
 						<Unit Class="TimeUnits"><![CDATA[YEAR]]></Unit>
 					</RecurrenceCode>
-					<FreezeXAxis>true</FreezeXAxis>
+					<FreezeXAxis>false</FreezeXAxis>
 					<SamplesToKeep>40</SamplesToKeep>
 				</DataSet>
     			<DataSet>
@@ -16872,7 +17473,7 @@ for (int i = 0; i < avgEACData.length; i++) {
 						<Code><![CDATA[1]]></Code>
 						<Unit Class="TimeUnits"><![CDATA[YEAR]]></Unit>
 					</RecurrenceCode>
-					<FreezeXAxis>true</FreezeXAxis>
+					<FreezeXAxis>false</FreezeXAxis>
 					<SamplesToKeep>40</SamplesToKeep>
 				</DataSet>
     			<DataSet>
@@ -16894,7 +17495,7 @@ for (int i = 0; i < avgEACData.length; i++) {
 						<Code><![CDATA[1]]></Code>
 						<Unit Class="TimeUnits"><![CDATA[YEAR]]></Unit>
 					</RecurrenceCode>
-					<FreezeXAxis>true</FreezeXAxis>
+					<FreezeXAxis>false</FreezeXAxis>
 					<SamplesToKeep>40</SamplesToKeep>
 				</DataSet>
 			</AnalysisData>
@@ -17331,27 +17932,42 @@ f_countHeatingMethods();
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
-					<Body><![CDATA[//Heating method stack charts
-ch_heatingMethodStackChart.removeAll();
-ch_heatingMethodStackChart.addDataSet(data_naturalGasBoilers_nb, main.v_naturalGasBoilerText, main.v_naturalGasBoilerColor);
-ch_heatingMethodStackChart.addDataSet(data_naturalGasBlock_nb, main.v_naturalGasBlockText, main.v_naturalGasBlockColor);
-ch_heatingMethodStackChart.addDataSet(data_districtHeating_nb, main.v_districtHeatingText, main.v_districtHeatingColor);
-ch_heatingMethodStackChart.addDataSet(data_electricHeatPumps_nb, main.v_electricHeatPumpText, main.v_electricHeatPumpColor);
-ch_heatingMethodStackChart.addDataSet(data_hybridHeatPumps_nb, main.v_hybridHeatPumpText, main.v_hybridHeatPumpColor);
-
-//Colors and labels
-String[] labels = {main.v_naturalGasBoilerText, main.v_naturalGasBlockText, main.v_districtHeatingText, main.v_electricHeatPumpText, main.v_hybridHeatPumpText};
-Color[] colors = {main.v_naturalGasBoilerColor, main.v_naturalGasBlockColor, main.v_districtHeatingColor, main.v_electricHeatPumpColor, main.v_hybridHeatPumpColor}; 
-
-// Data arrays
-DataSet[] avgEACData = {data_naturalGasBoilers_avgEAC, data_naturalGasBlock_avgEAC, data_districtHeating_avgEAC, data_electricHeatPumps_avgEAC, data_hybridHeatPumps_avgEAC};
-
-// Populate AVG EAC chart
-pl_averageEAC.removeAll();
-for (int i = 0; i < avgEACData.length; i++) {
-	main.f_addDataSetToTimeplot(pl_averageEAC, avgEACData[i], labels[i], colors[i]);
-}
-]]></Body>
+					<Body><![CDATA[if( data_naturalGasBoilers_nb.size() > 0){
+	//Heating methods stack charts
+	int datasetSize = data_naturalGasBoilers_nb.size();
+	DataSet d1 = new DataSet(datasetSize);
+	DataSet d2 = new DataSet(datasetSize);
+	DataSet d3 = new DataSet(datasetSize);
+	DataSet d4 = new DataSet(datasetSize);
+	DataSet d5 = new DataSet(datasetSize);
+	
+	for(int i=0; i<datasetSize; i++){
+		d1.add(data_naturalGasBoilers_nb.getX(i) - main.v_startYear, data_naturalGasBoilers_nb.getY(i));
+		d2.add(data_naturalGasBlock_nb.getX(i) - main.v_startYear, data_naturalGasBlock_nb.getY(i));
+		d3.add(data_districtHeating_nb.getX(i) - main.v_startYear, data_districtHeating_nb.getY(i));
+		d4.add(data_electricHeatPumps_nb.getX(i) - main.v_startYear, data_electricHeatPumps_nb.getY(i));
+		d5.add(data_hybridHeatPumps_nb.getX(i) - main.v_startYear, data_hybridHeatPumps_nb.getY(i));
+	}
+	
+	ch_heatingMethodStackChart.addDataSet(d1, main.v_naturalGasBoilerText, main.v_naturalGasBoilerColor);
+	ch_heatingMethodStackChart.addDataSet(d2, main.v_naturalGasBlockText, main.v_naturalGasBlockColor);
+	ch_heatingMethodStackChart.addDataSet(d3, main.v_districtHeatingText, main.v_districtHeatingColor);
+	ch_heatingMethodStackChart.addDataSet(d4, main.v_electricHeatPumpText, main.v_electricHeatPumpColor);
+	ch_heatingMethodStackChart.addDataSet(d5, main.v_hybridHeatPumpText, main.v_hybridHeatPumpColor);
+	
+	//Colors and labels
+	String[] labels = {main.v_naturalGasBoilerText, main.v_naturalGasBlockText, main.v_districtHeatingText, main.v_electricHeatPumpText, main.v_hybridHeatPumpText};
+	Color[] colors = {main.v_naturalGasBoilerColor, main.v_naturalGasBlockColor, main.v_districtHeatingColor, main.v_electricHeatPumpColor, main.v_hybridHeatPumpColor}; 
+	
+	// Data arrays
+	DataSet[] avgEACData = {data_naturalGasBoilers_avgEAC, data_naturalGasBlock_avgEAC, data_districtHeating_avgEAC, data_electricHeatPumps_avgEAC, data_hybridHeatPumps_avgEAC};
+	
+	// Populate AVG EAC chart
+	pl_averageEAC.removeAll();
+	for (int i = 0; i < avgEACData.length; i++) {
+		main.f_addDataSetToTimeplot(pl_averageEAC, avgEACData[i], labels[i], colors[i]);
+	}
+}]]></Body>
 				</Function>
 				<Function AccessType="default" StaticFunction="false">
 					<ReturnModificator>VOID</ReturnModificator>
@@ -17442,24 +18058,24 @@ double districtHeating_avgEAC = main.safeDivide(districtHeating_totEAC, dwelling
 double electricHeatPumps_avgEAC = electricHeatPumps_totEAC / dwellings;
 double hybridHeatPumps_avgEAC = hybridHeatPumps_totEAC / dwellings;
 
-int year = getYear();
-data_naturalGasBoilers_nb.add(v_gasBoilers_nb);
-data_naturalGasBlock_nb.add(v_gasBlockHeating_nb);
-data_districtHeating_nb.add(v_districtHeating_nb);
-data_electricHeatPumps_nb.add(v_electricHeatPumps_nb);
-data_hybridHeatPumps_nb.add(v_hybridHeatPumps_nb);
+int year = main.v_year;
+data_naturalGasBoilers_nb.add(year, v_gasBoilers_nb);
+data_naturalGasBlock_nb.add(year, v_gasBlockHeating_nb);
+data_districtHeating_nb.add(year, v_districtHeating_nb);
+data_electricHeatPumps_nb.add(year, v_electricHeatPumps_nb);
+data_hybridHeatPumps_nb.add(year, v_hybridHeatPumps_nb);
 
-data_naturalGasBoilers_perc.add(v_gasBoilers_perc);
-data_naturalGasBlock_perc.add(v_gasBlockHeating_perc);
-data_districtHeating_perc.add(v_districtHeating_perc);
-data_electricHeatPumps_perc.add(v_electricHeatPumps_perc);
-data_hybridHeatPumps_perc.add(v_hybridHeatPumps_perc);
+data_naturalGasBoilers_perc.add(year, v_gasBoilers_perc);
+data_naturalGasBlock_perc.add(year, v_gasBlockHeating_perc);
+data_districtHeating_perc.add(year, v_districtHeating_perc);
+data_electricHeatPumps_perc.add(year, v_electricHeatPumps_perc);
+data_hybridHeatPumps_perc.add(year, v_hybridHeatPumps_perc);
 
-data_naturalGasBoilers_avgEAC.add(gasBoilers_avgEAC);
-data_naturalGasBlock_avgEAC.add(gasBlockHeating_avgEAC);
-data_districtHeating_avgEAC.add(districtHeating_avgEAC);
-data_electricHeatPumps_avgEAC.add(electricHeatPumps_avgEAC);
-data_hybridHeatPumps_avgEAC.add(hybridHeatPumps_avgEAC);
+data_naturalGasBoilers_avgEAC.add(year, gasBoilers_avgEAC);
+data_naturalGasBlock_avgEAC.add(year, gasBlockHeating_avgEAC);
+data_districtHeating_avgEAC.add(year, districtHeating_avgEAC);
+data_electricHeatPumps_avgEAC.add(year, electricHeatPumps_avgEAC);
+data_hybridHeatPumps_avgEAC.add(year, hybridHeatPumps_avgEAC);
 
 main.f_updateBarTopRank(ch_barTopRank, main.c_dwellingsLandlords);
 ]]></Body>
@@ -17485,7 +18101,7 @@ main.f_updateBarTopRank(ch_barTopRank, main.c_dwellingsLandlords);
 						<Code><![CDATA[1]]></Code>
 						<Unit Class="TimeUnits"><![CDATA[YEAR]]></Unit>
 					</RecurrenceCode>
-					<FreezeXAxis>true</FreezeXAxis>
+					<FreezeXAxis>false</FreezeXAxis>
 					<SamplesToKeep>40</SamplesToKeep>
 				</DataSet>
     			<DataSet>
@@ -17507,7 +18123,7 @@ main.f_updateBarTopRank(ch_barTopRank, main.c_dwellingsLandlords);
 						<Code><![CDATA[1]]></Code>
 						<Unit Class="TimeUnits"><![CDATA[YEAR]]></Unit>
 					</RecurrenceCode>
-					<FreezeXAxis>true</FreezeXAxis>
+					<FreezeXAxis>false</FreezeXAxis>
 					<SamplesToKeep>40</SamplesToKeep>
 				</DataSet>
     			<DataSet>
@@ -17529,7 +18145,7 @@ main.f_updateBarTopRank(ch_barTopRank, main.c_dwellingsLandlords);
 						<Code><![CDATA[1]]></Code>
 						<Unit Class="TimeUnits"><![CDATA[YEAR]]></Unit>
 					</RecurrenceCode>
-					<FreezeXAxis>true</FreezeXAxis>
+					<FreezeXAxis>false</FreezeXAxis>
 					<SamplesToKeep>40</SamplesToKeep>
 				</DataSet>
     			<DataSet>
@@ -17551,7 +18167,7 @@ main.f_updateBarTopRank(ch_barTopRank, main.c_dwellingsLandlords);
 						<Code><![CDATA[1]]></Code>
 						<Unit Class="TimeUnits"><![CDATA[YEAR]]></Unit>
 					</RecurrenceCode>
-					<FreezeXAxis>true</FreezeXAxis>
+					<FreezeXAxis>false</FreezeXAxis>
 					<SamplesToKeep>40</SamplesToKeep>
 				</DataSet>
     			<DataSet>
@@ -17573,7 +18189,7 @@ main.f_updateBarTopRank(ch_barTopRank, main.c_dwellingsLandlords);
 						<Code><![CDATA[1]]></Code>
 						<Unit Class="TimeUnits"><![CDATA[YEAR]]></Unit>
 					</RecurrenceCode>
-					<FreezeXAxis>true</FreezeXAxis>
+					<FreezeXAxis>false</FreezeXAxis>
 					<SamplesToKeep>40</SamplesToKeep>
 				</DataSet>
     			<DataSet>
@@ -17595,7 +18211,7 @@ main.f_updateBarTopRank(ch_barTopRank, main.c_dwellingsLandlords);
 						<Code><![CDATA[1]]></Code>
 						<Unit Class="TimeUnits"><![CDATA[YEAR]]></Unit>
 					</RecurrenceCode>
-					<FreezeXAxis>true</FreezeXAxis>
+					<FreezeXAxis>false</FreezeXAxis>
 					<SamplesToKeep>40</SamplesToKeep>
 				</DataSet>
     			<DataSet>
@@ -17617,7 +18233,7 @@ main.f_updateBarTopRank(ch_barTopRank, main.c_dwellingsLandlords);
 						<Code><![CDATA[1]]></Code>
 						<Unit Class="TimeUnits"><![CDATA[YEAR]]></Unit>
 					</RecurrenceCode>
-					<FreezeXAxis>true</FreezeXAxis>
+					<FreezeXAxis>false</FreezeXAxis>
 					<SamplesToKeep>40</SamplesToKeep>
 				</DataSet>
     			<DataSet>
@@ -17639,7 +18255,7 @@ main.f_updateBarTopRank(ch_barTopRank, main.c_dwellingsLandlords);
 						<Code><![CDATA[1]]></Code>
 						<Unit Class="TimeUnits"><![CDATA[YEAR]]></Unit>
 					</RecurrenceCode>
-					<FreezeXAxis>true</FreezeXAxis>
+					<FreezeXAxis>false</FreezeXAxis>
 					<SamplesToKeep>40</SamplesToKeep>
 				</DataSet>
     			<DataSet>
@@ -17661,7 +18277,7 @@ main.f_updateBarTopRank(ch_barTopRank, main.c_dwellingsLandlords);
 						<Code><![CDATA[1]]></Code>
 						<Unit Class="TimeUnits"><![CDATA[YEAR]]></Unit>
 					</RecurrenceCode>
-					<FreezeXAxis>true</FreezeXAxis>
+					<FreezeXAxis>false</FreezeXAxis>
 					<SamplesToKeep>40</SamplesToKeep>
 				</DataSet>
     			<DataSet>
@@ -17683,7 +18299,7 @@ main.f_updateBarTopRank(ch_barTopRank, main.c_dwellingsLandlords);
 						<Code><![CDATA[1]]></Code>
 						<Unit Class="TimeUnits"><![CDATA[YEAR]]></Unit>
 					</RecurrenceCode>
-					<FreezeXAxis>true</FreezeXAxis>
+					<FreezeXAxis>false</FreezeXAxis>
 					<SamplesToKeep>40</SamplesToKeep>
 				</DataSet>
     			<DataSet>
@@ -17705,7 +18321,7 @@ main.f_updateBarTopRank(ch_barTopRank, main.c_dwellingsLandlords);
 						<Code><![CDATA[1]]></Code>
 						<Unit Class="TimeUnits"><![CDATA[YEAR]]></Unit>
 					</RecurrenceCode>
-					<FreezeXAxis>true</FreezeXAxis>
+					<FreezeXAxis>false</FreezeXAxis>
 					<SamplesToKeep>40</SamplesToKeep>
 				</DataSet>
     			<DataSet>
@@ -17727,7 +18343,7 @@ main.f_updateBarTopRank(ch_barTopRank, main.c_dwellingsLandlords);
 						<Code><![CDATA[1]]></Code>
 						<Unit Class="TimeUnits"><![CDATA[YEAR]]></Unit>
 					</RecurrenceCode>
-					<FreezeXAxis>true</FreezeXAxis>
+					<FreezeXAxis>false</FreezeXAxis>
 					<SamplesToKeep>40</SamplesToKeep>
 				</DataSet>
     			<DataSet>
@@ -17749,7 +18365,7 @@ main.f_updateBarTopRank(ch_barTopRank, main.c_dwellingsLandlords);
 						<Code><![CDATA[1]]></Code>
 						<Unit Class="TimeUnits"><![CDATA[YEAR]]></Unit>
 					</RecurrenceCode>
-					<FreezeXAxis>true</FreezeXAxis>
+					<FreezeXAxis>false</FreezeXAxis>
 					<SamplesToKeep>40</SamplesToKeep>
 				</DataSet>
     			<DataSet>
@@ -17771,7 +18387,7 @@ main.f_updateBarTopRank(ch_barTopRank, main.c_dwellingsLandlords);
 						<Code><![CDATA[1]]></Code>
 						<Unit Class="TimeUnits"><![CDATA[YEAR]]></Unit>
 					</RecurrenceCode>
-					<FreezeXAxis>true</FreezeXAxis>
+					<FreezeXAxis>false</FreezeXAxis>
 					<SamplesToKeep>40</SamplesToKeep>
 				</DataSet>
     			<DataSet>
@@ -17793,7 +18409,7 @@ main.f_updateBarTopRank(ch_barTopRank, main.c_dwellingsLandlords);
 						<Code><![CDATA[1]]></Code>
 						<Unit Class="TimeUnits"><![CDATA[YEAR]]></Unit>
 					</RecurrenceCode>
-					<FreezeXAxis>true</FreezeXAxis>
+					<FreezeXAxis>false</FreezeXAxis>
 					<SamplesToKeep>40</SamplesToKeep>
 				</DataSet>
 			</AnalysisData>
@@ -18694,6 +19310,8 @@ m.v_endYear = 2050;
 m.f_initalizeSettings();
 m.va_main.navigateTo();
 
+m.f_runSimulation();
+
 ]]></Body>
 				</Function>
 				<Function AccessType="default" StaticFunction="false">
@@ -19388,7 +20006,7 @@ traceln("Finished writing results to excel!");]]></Body>
 						<Enabled>true</Enabled>
 						<ActionCode><![CDATA[f_initializeMain();
 //getExperiment().getEngine().resetBeforeStart();
-getExperiment().getEngine().run();]]></ActionCode>
+//getExperiment().getEngine().run();]]></ActionCode>
 					</BasicProperties>
 					<ExtendedProperties>
 						<Font Name="Dialog" Size="16" Style="0"/>
@@ -22727,10 +23345,10 @@ f_getSelectedMunicipalities();]]></ActionCode>
 			</PresentationProperties>
 			<ModelTimeProperties>
 				<StopOption><![CDATA[Stop at specified date]]></StopOption>
-				<InitialDate><![CDATA[1577836800000]]></InitialDate>	
+				<InitialDate><![CDATA[1672531200000]]></InitialDate>	
 				<InitialTime><![CDATA[0.0]]></InitialTime>	
 				<FinalDate><![CDATA[2524608000000]]></FinalDate>	
-				<FinalTime><![CDATA[30.02191780821918]]></FinalTime>	
+				<FinalTime><![CDATA[27.019178082191782]]></FinalTime>	
 			</ModelTimeProperties>
 			<BypassInitialScreen>true</BypassInitialScreen>
 		</SimulationExperiment>
