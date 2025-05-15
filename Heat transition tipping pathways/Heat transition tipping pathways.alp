@@ -1387,6 +1387,126 @@ f_initalizeSettings();
 						<Type><![CDATA[int]]></Type>        
 					</Properties>
 				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1747315003268</Id>
+					<Name><![CDATA[v_subsidyEHP]]></Name>
+					<X>-650</X><Y>1490</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[double]]></Type>        
+					</Properties>
+				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1747315003273</Id>
+					<Name><![CDATA[v_subsidyHHP]]></Name>
+					<X>-650</X><Y>1510</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[double]]></Type>        
+					</Properties>
+				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1747315003275</Id>
+					<Name><![CDATA[v_subsidyDHConnection]]></Name>
+					<X>-650</X><Y>1530</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[double]]></Type>        
+					</Properties>
+				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1747315003278</Id>
+					<Name><![CDATA[v_subsidyNaturalGasBoiler]]></Name>
+					<X>-650</X><Y>1470</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[double]]></Type>        
+					</Properties>
+				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1747315003281</Id>
+					<Name><![CDATA[v_subsidyElectricity_ctPerKWh]]></Name>
+					<X>-650</X><Y>1560</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[double]]></Type>        
+					</Properties>
+				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1747315003284</Id>
+					<Name><![CDATA[v_subsidyNaturalGas_ctPerKWh]]></Name>
+					<X>-650</X><Y>1580</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[double]]></Type>        
+					</Properties>
+				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1747315003286</Id>
+					<Name><![CDATA[v_subsidyHeat_ctPerKWh]]></Name>
+					<X>-650</X><Y>1600</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[double]]></Type>        
+					</Properties>
+				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1747315533408</Id>
+					<Name><![CDATA[v_rapidRun]]></Name>
+					<X>-810</X><Y>60</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[boolean]]></Type>        
+					</Properties>
+				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1747320674635</Id>
+					<Name><![CDATA[v_startRuntime]]></Name>
+					<X>-810</X><Y>100</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[double]]></Type>        
+					</Properties>
+				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1747320732212</Id>
+					<Name><![CDATA[v_startStartupTime]]></Name>
+					<X>-810</X><Y>80</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[double]]></Type>        
+					</Properties>
+				</Variable>
 				<Variable Class="Parameter">
 					<Id>1704719032315</Id>
 					<Name><![CDATA[p_districtHeatingShortTermYear]]></Name>
@@ -2918,6 +3038,7 @@ try {
 					<ShowLabel>true</ShowLabel>
 					<Body><![CDATA[traceln("Start initialization");
 double startTime = System.currentTimeMillis();
+v_startStartupTime = startTime;
 v_year = v_startYear;
 
 //1. Set scenario's and heating methods
@@ -3022,7 +3143,7 @@ traceln("Neighborhoods with DH grid = " + countNeighborhoodsWithDistrictHeating 
 //Check total time
 duration = f_traceFunctionTime(startTime);
 traceln("Total start-up time: " + duration + " seconds");
-
+v_startRuntime = System.currentTimeMillis();
 ]]></Body>
 				</Function>
 				<Function AccessType="default" StaticFunction="false">
@@ -3536,9 +3657,11 @@ for( J_HeatingSystemOptionsGlobal hso : c_heatingSystemOptions){
 	}
 }
 
-f_updateHistogramData();
-f_updateBarTopRank(ch_barTopRank, c_dwellings);
-f_updateELabelChart();]]></Body>
+if(v_rapidRun == false){
+	f_updateHistogramData();
+	f_updateBarTopRank(ch_barTopRank, c_dwellings);
+	f_updateELabelChart();
+}]]></Body>
 				</Function>
 				<Function AccessType="default" StaticFunction="false">
 					<ReturnModificator>VOID</ReturnModificator>
@@ -4323,7 +4446,9 @@ f_countDwellingHeatingMethods();
 //8. Count totals - per neighborhood
 for(GZ_Neighborhood neighborhood : pop_GZ_Neighborhoods){
 	neighborhood.f_countDwellingHeatingMethods();
-	neighborhood.f_colorGISRegionToHeatMethod();
+	if(v_rapidRun == false){
+		neighborhood.f_colorGISRegionToHeatMethod();
+	}
 }]]></Body>
 				</Function>
 				<Function AccessType="default" StaticFunction="false">
@@ -4454,7 +4579,9 @@ x.setLatLon(x.p_latitude, x.p_longitude);
 */
 			
 //SET COORDINATES AND REGION FROM WKT_GEOM STRING
-x.f_drawRegionFromWKTString();]]></Body>
+if(v_rapidRun == false){
+	x.f_drawRegionFromWKTString();
+}]]></Body>
 				</Function>
 				<Function AccessType="default" StaticFunction="false">
 					<ReturnModificator>VOID</ReturnModificator>
@@ -6675,7 +6802,15 @@ for(int i = 0; i < simulationYears; i++){
 	f_updateDatasets();
 }
 
-f_setVisuals();]]></Body>
+if(v_rapidRun == true){
+	f_endRun();
+} else {
+	f_setVisuals();
+}
+
+double duration = f_traceFunctionTime(v_startRuntime);
+traceln("Total run time: " + duration + " seconds");
+]]></Body>
 				</Function>
 				<Function AccessType="default" StaticFunction="false">
 					<ReturnModificator>VOID</ReturnModificator>
@@ -6782,6 +6917,22 @@ for(int i=0; i<dataset.size(); i++){
 
 timeStackChart.addDataSet(datasetForTimestackChart, label, color);
 ]]></Body>
+				</Function>
+				<Function AccessType="default" StaticFunction="false">
+					<ReturnModificator>VOID</ReturnModificator>
+					<ReturnType><![CDATA[double]]></ReturnType>
+					<Id>1747319707639</Id>
+					<Name><![CDATA[f_endRun]]></Name>
+					<X>-310</X><Y>910</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Body><![CDATA[f_fillDataSetsStartupAgent();
+startup_agent.f_endSimulationRun();
+double duration = f_traceFunctionTime(v_startRuntime);
+traceln("Total simulation time: " + duration + " seconds");
+this.deleteSelf();]]></Body>
 				</Function>
 			</Functions>
 			<TableFunctions>
@@ -12367,9 +12518,7 @@ f_setMapColor(mapMode);]]></ActionCode>
                         <EmbeddedIcon>false</EmbeddedIcon>	
 						<TextColor/>
 						<Enabled>true</Enabled>
-						<ActionCode><![CDATA[f_fillDataSetsStartupAgent();
-startup_agent.f_endSimulationRun();
-this.deleteSelf();]]></ActionCode>
+						<ActionCode><![CDATA[f_endRun();]]></ActionCode>
 					</BasicProperties>
 					<ExtendedProperties>
 						<Font Name="Dialog" Size="16" Style="0"/>
@@ -12840,6 +12989,27 @@ this.deleteSelf();]]></ActionCode>
 					<FillAreaUnderLine>false</FillAreaUnderLine>
 					<LabelFormat>yyyy</LabelFormat>
     			</TimePlot>
+				<Text>
+					<Id>1747315009977</Id>
+					<Name><![CDATA[text10]]></Name>
+					<X>-670</X><Y>1430</Y>
+					<Label><X>0</X><Y>-10</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>false</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D</DrawMode>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Z>0</Z>
+					<Rotation>0.0</Rotation>
+					<Color>-16777216</Color>
+					<Text><![CDATA[Network]]></Text>
+					<Font>
+						<Name>SansSerif</Name>
+						<Size>16</Size>
+						<Style>1</Style>
+					</Font>
+					<Alignment>LEFT</Alignment>
+				</Text>
 			</Presentation>
 
 				</Level>
@@ -19081,6 +19251,18 @@ f_initializeScenarioSettings();
 						<Type><![CDATA[Color]]></Type>        
 					</Properties>
 				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1747315284031</Id>
+					<Name><![CDATA[v_rapidRun]]></Name>
+					<X>-520</X><Y>790</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[boolean]]></Type>        
+					</Properties>
+				</Variable>
 				<Variable Class="CollectionVariable">
 					<Id>1745909948651</Id>
 					<Name><![CDATA[provinceToMunicipality]]></Name>
@@ -19307,9 +19489,32 @@ m.municipalityCodes = ar_selectedMunicipalityCodes;
 m.v_timer = System.currentTimeMillis();
 m.v_startYear = 2023;
 m.v_endYear = 2050;
-m.f_initalizeSettings();
-m.va_main.navigateTo();
 
+//Set scenario settings
+m.p_socialLearningFactor = v_socialLearningFactor;
+m.p_gridReinforcementPace = v_gridReinforcementPace;
+m.p_dhConstructionTime_years = v_dhConstructionTime_years;
+m.p_dhExpansionPlans = v_DHExpansionPlans;
+m.p_socialHousingStrategy = v_socialHousingStrategy;
+
+m.p_connectionObligationNewDH = v_connectionObligationNewDH;
+m.p_congestionBlock = v_congestionBlock;
+m.p_economicLearningFactor = v_economicLearningFactor;
+m.p_networkType = v_networkType;
+
+m.v_subsidyNaturalGasBoiler = v_subsidyNaturalGasBoiler;
+m.v_subsidyEHP = v_subsidyEHP;
+m.v_subsidyHHP = v_subsidyHHP;
+m.v_subsidyDHConnection = v_subsidyDHConnection;
+
+m.v_subsidyElectricity_ctPerKWh = v_subsidyElectricity_ctPerKWh;
+m.v_subsidyHeat_ctPerKWh = v_subsidyHeat_ctPerKWh;
+m.v_subsidyNaturalGas_ctPerKWh = v_subsidyNaturalGas_ctPerKWh;
+
+m.f_initalizeSettings();
+if(v_rapidRun == false){
+	m.va_main.navigateTo();
+}
 m.f_runSimulation();
 
 ]]></Body>
@@ -19400,8 +19605,10 @@ simulationCount++;
 if(simulationCount == 1){
 	fileChooser_exportResults.setEnabled(true);
 }
-viewArea.navigateTo();
-]]></Body>
+if(v_rapidRun == false){
+	viewArea.navigateTo();
+}
+traceln("Finished end simulation run in startup agent");]]></Body>
 				</Function>
 				<Function AccessType="default" StaticFunction="false">
 					<ReturnModificator>VOID</ReturnModificator>
@@ -20129,7 +20336,7 @@ traceln("Finished writing results to excel!");]]></Body>
                         <EmbeddedIcon>false</EmbeddedIcon>	
 						<FillColor/>
 						<TextColor/>
-						<Enabled>true</Enabled>
+						<Enabled>false</Enabled>
 					</BasicProperties>
 					<ExtendedProperties>
 						<Font Name="Dialog" Size="11" Style="0"/>
@@ -20151,7 +20358,7 @@ traceln("Finished writing results to excel!");]]></Body>
                         <EmbeddedIcon>false</EmbeddedIcon>	
 						<FillColor/>
 						<TextColor/>
-						<Enabled>true</Enabled>
+						<Enabled>false</Enabled>
 					</BasicProperties>
 					<ExtendedProperties>
 						<Font Name="Dialog" Size="11" Style="0"/>
@@ -20173,7 +20380,7 @@ traceln("Finished writing results to excel!");]]></Body>
                         <EmbeddedIcon>false</EmbeddedIcon>	
 						<FillColor/>
 						<TextColor/>
-						<Enabled>true</Enabled>
+						<Enabled>false</Enabled>
 					</BasicProperties>
 					<ExtendedProperties>
 						<Font Name="Dialog" Size="11" Style="0"/>
@@ -20195,7 +20402,7 @@ traceln("Finished writing results to excel!");]]></Body>
                         <EmbeddedIcon>false</EmbeddedIcon>	
 						<FillColor/>
 						<TextColor/>
-						<Enabled>true</Enabled>
+						<Enabled>false</Enabled>
 					</BasicProperties>
 					<ExtendedProperties>
 						<Font Name="Dialog" Size="11" Style="0"/>
@@ -20217,7 +20424,7 @@ traceln("Finished writing results to excel!");]]></Body>
                         <EmbeddedIcon>false</EmbeddedIcon>	
 						<FillColor/>
 						<TextColor/>
-						<Enabled>true</Enabled>
+						<Enabled>false</Enabled>
 					</BasicProperties>
 					<ExtendedProperties>
 						<Font Name="Dialog" Size="11" Style="0"/>
@@ -20239,7 +20446,7 @@ traceln("Finished writing results to excel!");]]></Body>
                         <EmbeddedIcon>false</EmbeddedIcon>	
 						<FillColor/>
 						<TextColor/>
-						<Enabled>true</Enabled>
+						<Enabled>false</Enabled>
 					</BasicProperties>
 					<ExtendedProperties>
 						<Font Name="Dialog" Size="11" Style="0"/>
@@ -20261,7 +20468,7 @@ traceln("Finished writing results to excel!");]]></Body>
                         <EmbeddedIcon>false</EmbeddedIcon>	
 						<FillColor/>
 						<TextColor/>
-						<Enabled>true</Enabled>
+						<Enabled>false</Enabled>
 					</BasicProperties>
 					<ExtendedProperties>
 						<Font Name="Dialog" Size="11" Style="0"/>
@@ -20858,7 +21065,7 @@ switch (socialLearningFactor){
 		v_socialLearningFactor = 1;
 		break;
 	case "HIGH":
-		v_socialLearningFactor = 2;
+		v_socialLearningFactor = 1.5;
 		break;
 	default:
         System.out.println("Unknown social learning factor.");
@@ -21578,6 +21785,52 @@ gr_outputs.setVisible(false);]]></ActionCode>
 			</Presentation>
 
 				</Group>
+				<Control Type="CheckBox">
+				 	<EmbeddedIcon>false</EmbeddedIcon>				
+					<Id>1747315237754</Id>
+					<Name><![CDATA[cb_rapidRun]]></Name>
+					<X>360</X><Y>120</Y>
+					<Label><X>0</X><Y>-10</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
+					<BasicProperties Width="190" Height="40">
+                        <EmbeddedIcon>false</EmbeddedIcon>	
+						<TextColor/>
+						<Enabled>true</Enabled>
+					</BasicProperties>
+					<ExtendedProperties>
+						<Font Name="Dialog" Size="16" Style="0"/>
+						<LabelText><![CDATA[Rapid run]]></LabelText>
+						<LinkTo>true</LinkTo>
+						<Link>v_rapidRun</Link>
+	 				</ExtendedProperties>
+				</Control>
+				<Control Type="CheckBox">
+				 	<EmbeddedIcon>false</EmbeddedIcon>				
+					<Id>1747320820897</Id>
+					<Name><![CDATA[cb_rapidRun1]]></Name>
+					<X>360</X><Y>150</Y>
+					<Label><X>0</X><Y>-10</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
+					<BasicProperties Width="190" Height="40">
+                        <EmbeddedIcon>false</EmbeddedIcon>	
+						<TextColor/>
+						<Enabled>true</Enabled>
+						<ActionCode><![CDATA[rb_area.setValue(1, true);
+cb_areaSelection.setValue("Schiermonnikoog", true);]]></ActionCode>
+					</BasicProperties>
+					<ExtendedProperties>
+						<Font Name="Dialog" Size="16" Style="0"/>
+						<LabelText><![CDATA[Test Schiermonnikoog]]></LabelText>
+						<LinkTo>true</LinkTo>
+						<Link>v_rapidRun</Link>
+	 				</ExtendedProperties>
+				</Control>
 			</Presentation>
 
 				</Level>
