@@ -208,7 +208,8 @@ import java.sql.PreparedStatement;
 
 //For network
 import java.util.stream.Collectors;
-]]></Import>
+
+import com.graphhopper.routing.lm.LandmarkSuggestion;]]></Import>
 			<StartupCode><![CDATA[/*
 v_timer = System.currentTimeMillis();
 f_initalizeSettings();
@@ -1507,6 +1508,18 @@ f_initalizeSettings();
 						<Type><![CDATA[double]]></Type>        
 					</Properties>
 				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1750258472364</Id>
+					<Name><![CDATA[v_runCount]]></Name>
+					<X>-810</X><Y>120</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[int]]></Type>        
+					</Properties>
+				</Variable>
 				<Variable Class="Parameter">
 					<Id>1704719032315</Id>
 					<Name><![CDATA[p_districtHeatingShortTermYear]]></Name>
@@ -2541,6 +2554,174 @@ f_initalizeSettings();
 						</ParameterEditor>
 					</Properties>                 
 				</Variable>
+				<Variable Class="Parameter">
+					<Id>1750235094093</Id>
+					<Name><![CDATA[p_weight_affordabilityToPBC]]></Name>
+					<X>-1150</X><Y>100</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[double]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<ParameterEditor>
+							<Id>1750235094091</Id>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1750235105531</Id>
+					<Name><![CDATA[p_weight_effortToPBC]]></Name>
+					<X>-1150</X><Y>120</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[double]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<ParameterEditor>
+							<Id>1750235105529</Id>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1750235111741</Id>
+					<Name><![CDATA[p_weight_controlToPBC]]></Name>
+					<X>-1150</X><Y>140</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[double]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<ParameterEditor>
+							<Id>1750235111739</Id>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1750235118340</Id>
+					<Name><![CDATA[p_weight_intentionToBehavior]]></Name>
+					<X>-1150</X><Y>160</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[double]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<ParameterEditor>
+							<Id>1750235118338</Id>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1750235123943</Id>
+					<Name><![CDATA[p_weight_attitudeToIntention]]></Name>
+					<X>-1150</X><Y>180</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[double]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<ParameterEditor>
+							<Id>1750235123941</Id>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1750235130051</Id>
+					<Name><![CDATA[p_weight_socialNormToIntention]]></Name>
+					<X>-1150</X><Y>200</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[double]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<ParameterEditor>
+							<Id>1750235130049</Id>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1750235135404</Id>
+					<Name><![CDATA[p_weight_PBCToIntention]]></Name>
+					<X>-1150</X><Y>220</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[double]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<ParameterEditor>
+							<Id>1750235135402</Id>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1750235140128</Id>
+					<Name><![CDATA[p_weight_PBCToBehavior]]></Name>
+					<X>-1150</X><Y>240</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[double]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<ParameterEditor>
+							<Id>1750235140126</Id>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
 				<Variable Class="CollectionVariable">
 					<Id>1730389266762</Id>
 					<Name><![CDATA[c_households]]></Name>
@@ -3036,7 +3217,7 @@ try {
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
-					<Body><![CDATA[traceln("Start initialization");
+					<Body><![CDATA[//traceln("Start initialization");
 double startTime = System.currentTimeMillis();
 v_startStartupTime = startTime;
 v_year = v_startYear;
@@ -3044,13 +3225,13 @@ v_year = v_startYear;
 //1. Set scenario's and heating methods
 f_setScenarios();
 f_setHeatingSystemOptions();
-traceln("Heating methods set");
+//traceln("Heating methods set");
 
 //2. Create neighbrohoods
 f_initializeNeighborhoods();
 f_setNeighborhoodData();
 double duration = f_traceFunctionTime(startTime);
-traceln("Created neighborhoods in: " + duration + " seconds");
+//traceln("Created neighborhoods in: " + duration + " seconds");
 
 //3. Create hashmap for hh -> nbh connection
 double timeStartFunction = System.currentTimeMillis();
@@ -3060,7 +3241,7 @@ for( GZ_Neighborhood nbh : pop_GZ_Neighborhoods ){
 	c_buurtcodeToDwellings.put(buurtcode, new ArrayList<>());
 }
 duration = f_traceFunctionTime(timeStartFunction);
-traceln("Created hashmap in: " + duration + " seconds");
+//traceln("Created hashmap in: " + duration + " seconds");
 
 //4. Connect to database
 Database myDatabase = db_householdData;
@@ -3070,8 +3251,10 @@ myDatabase.connect();
 timeStartFunction = System.currentTimeMillis();
 //f_initializeHouseholdsFromDatabase(myDatabase, p_modeFullNetherlands);
 f_initializeDwellingsFromDatabase(myDatabase, p_modeFullNetherlands);
+myDatabase.disconnect();
 duration = f_traceFunctionTime(timeStartFunction);
-traceln("Created households in: " + duration + " seconds");
+//traceln("Created households in: " + duration + " seconds");
+
 
 //5.1. Set energy consumption based on pc6
 /* Now done in dwelling class based on vesta mais
@@ -3084,31 +3267,31 @@ traceln("Set households energy demand in: " + duration + " seconds");
 timeStartFunction = System.currentTimeMillis();
 f_linkNeighborhoodsToDwellings();
 duration = f_traceFunctionTime(timeStartFunction);
-traceln("Linked households and neighborhoods in: " + duration + " seconds");
+//traceln("Linked households and neighborhoods in: " + duration + " seconds");
 
 //7. Get initial heating method data, counts and numbers
 timeStartFunction = System.currentTimeMillis();
 f_getInitialHeatingMethods();
 duration = f_traceFunctionTime(timeStartFunction);
-traceln("Initialized heating methods in: " + duration + " seconds");
+//traceln("Initialized heating methods in: " + duration + " seconds");
 
 //8. Set municipalities
 timeStartFunction = System.currentTimeMillis();
 f_setMunicipalities();
 duration = f_traceFunctionTime(timeStartFunction);
-traceln("Initialized municipalities in: " + duration + " seconds");
+//traceln("Initialized municipalities in: " + duration + " seconds");
 
 //8. Set household networks
 timeStartFunction = System.currentTimeMillis();
 f_setNetwork(p_networkType);
 duration = f_traceFunctionTime(timeStartFunction);
-traceln("Initialized household networks in: " + duration + " seconds");
+//traceln("Initialized household networks in: " + duration + " seconds");
 
 //9. Set initial dwelling and home owner values
 timeStartFunction = System.currentTimeMillis();
 f_setInitialValuesDwellingsAndHomeOwners();
 duration = f_traceFunctionTime(timeStartFunction);
-traceln("Set initial household values in: " + duration + " seconds");
+//traceln("Set initial household values in: " + duration + " seconds");
 
 //9. Initialize District heating operator
 f_initializeSocialHousingAssociation();
@@ -3138,7 +3321,7 @@ for(J_Dwelling x : c_dwellings){
 	}
 }
 
-traceln("Neighborhoods with DH grid = " + countNeighborhoodsWithDistrictHeating + ", dwellings with potential DH = " + countDwellingsWithDistrictHeatingPotential + ", with block heating potential " + countDwellingsWithBlockHeatingPotential );
+//traceln("Neighborhoods with DH grid = " + countNeighborhoodsWithDistrictHeating + ", dwellings with potential DH = " + countDwellingsWithDistrictHeatingPotential + ", with block heating potential " + countDwellingsWithBlockHeatingPotential );
 
 //Check total time
 f_updateDatasets();
@@ -3236,7 +3419,7 @@ int willingToInvestRentersMedium = count(pop_GZ_Neighborhoods, x->x.p_willingnes
 int willingToInvestRentersLow = count(pop_GZ_Neighborhoods, x->x.p_willingnessEnergyMeasuresRenters == LOW);
 int willingToInvestRentersUnkown = count(pop_GZ_Neighborhoods, x->x.p_willingnessEnergyMeasuresRenters == null);
 
-traceln("Neighborhoods willingness energy measures: Home owners high = " + willingToInvestHomeOwnersHigh + " medium = " + willingToInvestHomeOwnersMedium + " low = " + willingToInvestHomeOwnersLow + " unknown = " + willingToInvestHomeOwnersUnkown + ", Renters High = "  + willingToInvestRentersHigh + " medium = " + willingToInvestRentersMedium + " low = " + willingToInvestRentersLow + " unknown = " + willingToInvestRentersUnkown);
+//traceln("Neighborhoods willingness energy measures: Home owners high = " + willingToInvestHomeOwnersHigh + " medium = " + willingToInvestHomeOwnersMedium + " low = " + willingToInvestHomeOwnersLow + " unknown = " + willingToInvestHomeOwnersUnkown + ", Renters High = "  + willingToInvestRentersHigh + " medium = " + willingToInvestRentersMedium + " low = " + willingToInvestRentersLow + " unknown = " + willingToInvestRentersUnkown);
 
 /*		.firstResult(neighborhood_warmtevisie.opgesteld_vermogen_van_zonnepanelen_6);
 		
@@ -3270,7 +3453,9 @@ traceln("Neighborhoods willingness energy measures: Home owners high = " + willi
 
 		
 */
-traceln("Descriptive data from neigbhorhoods: Households = " + roundToInt(sum(pop_GZ_Neighborhoods, x->x.p_households)) + ", inhabitants = " + roundToDecimal(sum(pop_GZ_Neighborhoods, x->x.p_inhabitants) / 1000000, 2) + "million");]]></Body>
+if(v_runCount == 0){
+	traceln("Descriptive data from neigbhorhoods: Households = " + roundToInt(sum(pop_GZ_Neighborhoods, x->x.p_households)) + ", inhabitants = " + roundToDecimal(sum(pop_GZ_Neighborhoods, x->x.p_inhabitants) / 1000000, 2) + "million");
+}]]></Body>
 				</Function>
 				<Function AccessType="default" StaticFunction="false">
 					<ReturnModificator>RETURNS_VALUE</ReturnModificator>
@@ -4463,7 +4648,7 @@ for(J_HomeOwner ho : c_homeOwners){
 		//ho.f_updateSubjectiveNorm(p_socialLearningFactor);
 	//}
 }
-traceln("Has updated triggers, EAC, and SN in year " + v_year);
+//traceln("Has updated triggers, EAC, and SN in year " + v_year);
 //6. After updates EAC, normalize values and rank heating system options
 f_normalizeValues();
 
@@ -5332,8 +5517,7 @@ for (Tuple row : rows_PolicyPlan){
 		}
 	}
 }
-
-traceln("TVW Policy plans: Total Wnet neighborhoods = " + totalPolicyHGNeighborhoods + ", and households = " + totalPolicyHGHouseholds);]]></Body>
+//traceln("TVW Policy plans: Total Wnet neighborhoods = " + totalPolicyHGNeighborhoods + ", and households = " + totalPolicyHGHouseholds);]]></Body>
 				</Function>
 				<Function AccessType="default" StaticFunction="false">
 					<ReturnModificator>VOID</ReturnModificator>
@@ -6233,7 +6417,7 @@ else {
 */
 // Execute the query
 ResultSet rs = myDatabase.getResultSet( query );
-traceln("Resultset created, starting household creation");
+//traceln("Resultset created, starting household creation");
 
 if (!rs.isBeforeFirst()) {
     System.out.println("No data found for the query");
@@ -6511,11 +6695,13 @@ for (J_Dwelling x : c_dwellings) {
 	}
 }
 
-v_gasBoilers_perc = v_gasBoilers_nb / dwellings;
-v_gasBlockHeating_perc = v_gasBlockHeating_nb / dwellings;
-v_hybridHeatPumps_perc = v_hybridHeatPumps_nb / dwellings;
-v_electricHeatPumps_perc = v_electricHeatPumps_nb / dwellings;
-v_districtHeating_perc = v_districtHeating_nb / dwellings;
+v_gasBoilers_perc = (double) v_gasBoilers_nb / dwellings;
+v_gasBlockHeating_perc = (double) v_gasBlockHeating_nb / dwellings;
+v_hybridHeatPumps_perc = (double) v_hybridHeatPumps_nb / dwellings;
+v_electricHeatPumps_perc = (double) v_electricHeatPumps_nb / dwellings;
+v_districtHeating_perc = (double) v_districtHeating_nb / dwellings;
+
+
 
 data_naturalGasBoilers_nb.add(v_year, v_gasBoilers_nb);
 data_naturalGasBlock_nb.add(v_year, v_gasBlockHeating_nb);
@@ -6934,7 +7120,7 @@ for(int i = 0; i < simulationYears; i++){
 f_setCharts();
 
 double duration = f_traceFunctionTime(v_startRuntime);
-traceln("Total run time: " + duration + " seconds");
+//traceln("Total run time: " + duration + " seconds");
 
 if(v_rapidRun == true){
 	f_endRun();
@@ -7065,8 +7251,68 @@ timeStackChart.addDataSet(datasetForTimestackChart, label, color);
 					<Body><![CDATA[f_fillDataSetsStartupAgent();
 startup_agent.f_endSimulationRun();
 double duration = f_traceFunctionTime(v_startRuntime);
-traceln("Total simulation time: " + duration + " seconds");
+f_cleanUp();
+traceln("Run time: " + duration + " seconds");
+
+]]></Body>
+				</Function>
+				<Function AccessType="default" StaticFunction="false">
+					<ReturnModificator>VOID</ReturnModificator>
+					<ReturnType><![CDATA[double]]></ReturnType>
+					<Id>1750323089111</Id>
+					<Name><![CDATA[f_cleanUp]]></Name>
+					<X>-310</X><Y>930</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Body><![CDATA[for (int i = pop_GZ_Neighborhoods.size() - 1; i >= 0; i--) {
+	pop_GZ_Neighborhoods.get(i).f_cleanUp();
+}
+
+// Cleanup for DSO
+for (int i = pop_DSOs.size() - 1; i >= 0; i--) {
+    pop_DSOs.get(i).f_cleanUp();
+}
+
+// Cleanup for DistrictHeatingCompany
+for (int i = pop_districtHeatingCompanies.size() - 1; i >= 0; i--) {
+    pop_districtHeatingCompanies.get(i).f_cleanUp();
+}
+
+// Cleanup for SocialHousingAssociation
+for (int i = pop_socialHousingAssociations.size() - 1; i >= 0; i--) {
+    pop_socialHousingAssociations.get(i).f_cleanUp();
+}
+
+// Cleanup for Landlord
+for (int i = pop_landlords.size() - 1; i >= 0; i--) {
+    pop_landlords.get(i).f_cleanUp();
+}
+
+c_buurtcodeToDwellings.clear();
+c_buurtcodeToHouseholds.clear();
+c_dwellings.clear();
+c_dwellingsLandlords.clear();
+c_heatingSystemOptions.clear();
+c_homeOwners.clear();
+c_municipalities.clear();
+
 this.deleteSelf();]]></Body>
+				</Function>
+				<Function AccessType="default" StaticFunction="false">
+					<ReturnModificator>VOID</ReturnModificator>
+					<ReturnType><![CDATA[double]]></ReturnType>
+					<Id>1750675604569</Id>
+					<Name><![CDATA[f_test]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
+					<X>-850</X><Y>250</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Body><![CDATA[beta(5, 2, 0, 1)
+normal(0, 1, 0.8, 0.3)]]></Body>
 				</Function>
 			</Functions>
 			<TableFunctions>
@@ -16493,6 +16739,24 @@ v_districtHeating_perc = v_districtHeating_nb / dwellings;
 					<Body><![CDATA[v_socialHousing = new J_SocialHousingNeighborhood(this, c_rentersSocialHousing);
 main.c_SHNeighborhoods.add(v_socialHousing);]]></Body>
 				</Function>
+				<Function AccessType="default" StaticFunction="false">
+					<ReturnModificator>VOID</ReturnModificator>
+					<ReturnType><![CDATA[double]]></ReturnType>
+					<Id>1750325991214</Id>
+					<Name><![CDATA[f_cleanUp]]></Name>
+					<X>-180</X><Y>140</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Body><![CDATA[c_dwellings.clear();
+c_dwellingsLandlords.clear();
+c_dwellingsSocialHousing.clear();
+c_gisRegions.clear();
+c_homeOwners.clear();
+
+this.deleteSelf();]]></Body>
+				</Function>
 			</Functions>
 			<AgentLinks>
 				<AgentLink>
@@ -17073,6 +17337,23 @@ if(c_neighborhoodsWaitingToBeReinforced.size() > 0){
 }
 ]]></Body>
 				</Function>
+				<Function AccessType="default" StaticFunction="false">
+					<ReturnModificator>VOID</ReturnModificator>
+					<ReturnType><![CDATA[double]]></ReturnType>
+					<Id>1750325919413</Id>
+					<Name><![CDATA[f_cleanUp]]></Name>
+					<X>50</X><Y>290</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Body><![CDATA[c_neighborhoodsBeingReinforced.clear();
+c_neighborhoodsNotReinforced.clear();
+c_neighborhoodsReinforced.clear();
+c_neighborhoodsWaitingToBeReinforced.clear();
+
+this.deleteSelf();]]></Body>
+				</Function>
 			</Functions>
 			<AgentLinks>
 				<AgentLink>
@@ -17438,6 +17719,18 @@ else {
 	traceln( "Error: No valid DH expansion strategy");
 }]]></Body>
 				</Function>
+				<Function AccessType="default" StaticFunction="false">
+					<ReturnModificator>VOID</ReturnModificator>
+					<ReturnType><![CDATA[double]]></ReturnType>
+					<Id>1750325863722</Id>
+					<Name><![CDATA[f_cleanUp]]></Name>
+					<X>50</X><Y>270</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Body><![CDATA[this.deleteSelf();]]></Body>
+				</Function>
 			</Functions>
 			<AgentLinks>
 				<AgentLink>
@@ -17673,33 +17966,33 @@ f_countHeatingMethods();
 					<Body><![CDATA[//DH expasion follows TVW strategy stored in neighborhood.
 //Not all TVW strategies include start years, the nbhs without start year are random
 
-for(GZ_Neighborhood neighborhood : main.pop_GZ_Neighborhoods){
-	boolean triggerDistrictHeating = false;
-	//neighborhood.f_executeSocialHousingPolicy();
-	switch(neighborhood.p_policyPlan){
+boolean triggerDistrictHeating = false;
+//nbh.f_executeSocialHousingPolicy();
+	
+if(nbh.p_policyPlan != null){
+	switch(nbh.p_policyPlan){
 		case ELECTRIC_HEAT_PUMP:
-			if(neighborhood.p_policyPlanYear == main.v_year){
-				for(J_Dwelling dwelling : neighborhood.c_dwellingsSocialHousing){
+			if(nbh.p_policyPlanYear == main.v_year){
+				for(J_Dwelling dwelling : nbh.c_dwellingsSocialHousing){
 					dwelling.f_installNewHeatingMethod(ELECTRIC_HEAT_PUMP);
 				}
 			}
 			break;
 		case HYBRID_HEAT_PUMP:
-			if(neighborhood.p_policyPlanYear == main.v_year){
-				for(J_Dwelling dwelling : neighborhood.c_dwellingsSocialHousing){
+			if(nbh.p_policyPlanYear == main.v_year){
+				for(J_Dwelling dwelling : nbh.c_dwellingsSocialHousing){
 					dwelling.f_installNewHeatingMethod(HYBRID_HEAT_PUMP);
 				}
 			}
 			break;
 		case DISTRICT_HEATING:
-			if(neighborhood.p_policyPlanYear == main.v_year){
-				if(neighborhood.v_hasDistrictHeatingGrid == true) {
-					for(J_Dwelling dwelling : neighborhood.c_dwellingsSocialHousing){
+			if(nbh.p_policyPlanYear == main.v_year){
+				if(nbh.v_hasDistrictHeatingGrid == true) {
+					for(J_Dwelling dwelling : nbh.c_dwellingsSocialHousing){
 						dwelling.f_installNewHeatingMethod(DISTRICT_HEATING);
 					}
 				}
-			}	
-			break;
+			}
 	}
 }	
 ]]></Body>
@@ -17862,6 +18155,18 @@ main.f_updateBarTopRank(ch_barTopRank, main.c_dwellingsSocialHousing);
 	}
 }
 ]]></Body>
+				</Function>
+				<Function AccessType="default" StaticFunction="false">
+					<ReturnModificator>VOID</ReturnModificator>
+					<ReturnType><![CDATA[double]]></ReturnType>
+					<Id>1750326204230</Id>
+					<Name><![CDATA[f_cleanUp]]></Name>
+					<X>50</X><Y>190</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Body><![CDATA[this.deleteSelf();]]></Body>
 				</Function>
 			</Functions>
 			<AnalysisData>
@@ -18780,6 +19085,18 @@ data_hybridHeatPumps_avgEAC.add(year, hybridHeatPumps_avgEAC);
 
 main.f_updateBarTopRank(ch_barTopRank, main.c_dwellingsLandlords);
 ]]></Body>
+				</Function>
+				<Function AccessType="default" StaticFunction="false">
+					<ReturnModificator>VOID</ReturnModificator>
+					<ReturnType><![CDATA[double]]></ReturnType>
+					<Id>1750326186875</Id>
+					<Name><![CDATA[f_cleanUp]]></Name>
+					<X>50</X><Y>160</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Body><![CDATA[this.deleteSelf();]]></Body>
 				</Function>
 			</Functions>
 			<AnalysisData>
@@ -19713,7 +20030,7 @@ f_initializeScenarioSettings();
 				<Variable Class="PlainVariable">
 					<Id>1745909948696</Id>
 					<Name><![CDATA[ar_municipalities]]></Name>
-					<X>-520</X><Y>860</Y>
+					<X>-520</X><Y>890</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -19725,7 +20042,7 @@ f_initializeScenarioSettings();
 				<Variable Class="PlainVariable">
 					<Id>1745909948698</Id>
 					<Name><![CDATA[ar_RESRegions]]></Name>
-					<X>-520</X><Y>880</Y>
+					<X>-520</X><Y>910</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -19737,7 +20054,7 @@ f_initializeScenarioSettings();
 				<Variable Class="PlainVariable">
 					<Id>1745909948700</Id>
 					<Name><![CDATA[ar_provinces]]></Name>
-					<X>-520</X><Y>900</Y>
+					<X>-520</X><Y>930</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -19749,7 +20066,7 @@ f_initializeScenarioSettings();
 				<Variable Class="PlainVariable">
 					<Id>1745909948702</Id>
 					<Name><![CDATA[ar_selectedMunicipalityCodes]]></Name>
-					<X>-520</X><Y>1060</Y>
+					<X>-520</X><Y>1090</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -19761,19 +20078,22 @@ f_initializeScenarioSettings();
 				<Variable Class="PlainVariable">
 					<Id>1746538889819</Id>
 					<Name><![CDATA[simulationCount]]></Name>
-					<X>-520</X><Y>680</Y>
+					<X>-520</X><Y>710</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
 					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
 						<Type><![CDATA[int]]></Type>        
+						<InitialValue Class="CodeValue">
+							<Code><![CDATA[0]]></Code>
+						</InitialValue>
 					</Properties>
 				</Variable>
 				<Variable Class="PlainVariable">
 					<Id>1746698251142</Id>
 					<Name><![CDATA[v_runColor]]></Name>
-					<X>-520</X><Y>700</Y>
+					<X>-520</X><Y>730</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -19785,7 +20105,7 @@ f_initializeScenarioSettings();
 				<Variable Class="PlainVariable">
 					<Id>1747315284031</Id>
 					<Name><![CDATA[v_rapidRun]]></Name>
-					<X>-520</X><Y>810</Y>
+					<X>-520</X><Y>840</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -19794,10 +20114,118 @@ f_initializeScenarioSettings();
 						<Type><![CDATA[boolean]]></Type>        
 					</Properties>
 				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1750235219726</Id>
+					<Name><![CDATA[v_weight_affordabilityToPBC]]></Name>
+					<X>50</X><Y>1150</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[double]]></Type>        
+					</Properties>
+				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1750235225568</Id>
+					<Name><![CDATA[v_weight_effortToPBC]]></Name>
+					<X>50</X><Y>1170</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[double]]></Type>        
+					</Properties>
+				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1750235232040</Id>
+					<Name><![CDATA[v_weight_controlToPBC]]></Name>
+					<X>50</X><Y>1190</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[double]]></Type>        
+					</Properties>
+				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1750235237151</Id>
+					<Name><![CDATA[v_weight_intentionToBehavior]]></Name>
+					<X>50</X><Y>1290</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[double]]></Type>        
+					</Properties>
+				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1750235241481</Id>
+					<Name><![CDATA[v_weight_attitudeToIntention]]></Name>
+					<X>50</X><Y>1210</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[double]]></Type>        
+					</Properties>
+				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1750235246291</Id>
+					<Name><![CDATA[v_weight_socialNormToIntention]]></Name>
+					<X>50</X><Y>1230</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[double]]></Type>        
+					</Properties>
+				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1750235261823</Id>
+					<Name><![CDATA[v_weight_PBCToIntention]]></Name>
+					<X>50</X><Y>1250</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[double]]></Type>        
+					</Properties>
+				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1750235267795</Id>
+					<Name><![CDATA[v_weight_PBCToBehavior]]></Name>
+					<X>50</X><Y>1270</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[double]]></Type>        
+					</Properties>
+				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1750257534235</Id>
+					<Name><![CDATA[v_runText]]></Name>
+					<X>50</X><Y>1340</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[String]]></Type>        
+					</Properties>
+				</Variable>
 				<Variable Class="CollectionVariable">
 					<Id>1745909948651</Id>
 					<Name><![CDATA[provinceToMunicipality]]></Name>
-					<X>-520</X><Y>960</Y>
+					<X>-520</X><Y>990</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -19812,7 +20240,7 @@ f_initializeScenarioSettings();
 				<Variable Class="CollectionVariable">
 					<Id>1745909948654</Id>
 					<Name><![CDATA[municipalityToCode]]></Name>
-					<X>-520</X><Y>1010</Y>
+					<X>-520</X><Y>1040</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -19827,7 +20255,7 @@ f_initializeScenarioSettings();
 				<Variable Class="CollectionVariable">
 					<Id>1745909948656</Id>
 					<Name><![CDATA[resToMunicipality]]></Name>
-					<X>-520</X><Y>980</Y>
+					<X>-520</X><Y>1010</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -19893,14 +20321,15 @@ cb_socialHousingStrategy.setValue("COST BASED", true);
 cb_connectionObligationDH.setSelected(false, true);
 cb_noAdditionalEHPWithCongestion.setSelected(false, true);
 cb_economicLearningFactor.setValue("MEDIUM", true);
-]]></Body>
+
+f_setDefaultWeights();]]></Body>
 				</Function>
 				<Function AccessType="default" StaticFunction="false">
 					<ReturnModificator>VOID</ReturnModificator>
 					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1745909948660</Id>
 					<Name><![CDATA[f_setHashmaps]]></Name>
-					<X>-520</X><Y>740</Y>
+					<X>-520</X><Y>770</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -19961,7 +20390,7 @@ rb_area.setValue(0, true);]]></Body>
 					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1745909948662</Id>
 					<Name><![CDATA[f_getSelectedMunicipalities]]></Name>
-					<X>-520</X><Y>760</Y>
+					<X>-520</X><Y>790</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -20022,6 +20451,7 @@ m.v_timer = System.currentTimeMillis();
 m.v_startYear = 2023;
 m.v_endYear = 2050;
 m.v_rapidRun = v_rapidRun;
+m.v_runCount = simulationCount;
 
 //Set scenario settings
 m.p_socialLearningFactor = v_socialLearningFactor;
@@ -20044,13 +20474,29 @@ m.v_subsidyElectricity_ctPerKWh = v_subsidyElectricity_ctPerKWh;
 m.v_subsidyHeat_ctPerKWh = v_subsidyHeat_ctPerKWh;
 m.v_subsidyNaturalGas_ctPerKWh = v_subsidyNaturalGas_ctPerKWh;
 
+
+m.p_weight_affordabilityToPBC = v_weight_affordabilityToPBC;
+m.p_weight_controlToPBC = v_weight_controlToPBC;
+m.p_weight_effortToPBC = v_weight_effortToPBC;
+m.p_weight_attitudeToIntention = v_weight_attitudeToIntention;
+m.p_weight_PBCToIntention = v_weight_PBCToIntention;
+m.p_weight_socialNormToIntention = v_weight_socialNormToIntention;
+m.p_weight_intentionToBehavior = v_weight_intentionToBehavior;
+m.p_weight_PBCToBehavior = v_weight_PBCToBehavior;
+
+
 m.f_initalizeSettings();
+
+m.f_runSimulation();
+if(v_rapidRun == false){
+	m.va_main.navigateTo();
+}
+/*
 if(v_rapidRun == true){
 	m.f_runSimulation();
 } else {
 	m.va_main.navigateTo();
-}
-
+}*/
 
 ]]></Body>
 				</Function>
@@ -20069,7 +20515,8 @@ pl_ngblock.addDataSet(data_naturalGasBlock_perc, "run " + simulationCount, v_run
 pl_ehp.addDataSet(data_electricHeatPumps_perc, "run " + simulationCount, v_runColor, true,  Chart.INTERPOLATION_LINEAR, 1, Chart.POINT_NONE);
 pl_hhp.addDataSet(data_hybridHeatPumps_perc, "run " + simulationCount, v_runColor, true,  Chart.INTERPOLATION_LINEAR, 1, Chart.POINT_NONE);
 pl_dh.addDataSet(data_districtHeating_perc, "run " + simulationCount, v_runColor, true,  Chart.INTERPOLATION_LINEAR, 1, Chart.POINT_NONE);
-]]></Body>
+
+//traceln("Run " + simulationCount + " added to plots ");]]></Body>
 				</Function>
 				<Function AccessType="default" StaticFunction="false">
 					<ReturnModificator>VOID</ReturnModificator>
@@ -20102,11 +20549,14 @@ double xText = text31.getX() + 20;
 double yText = text31.getY() + 52 + verticalOffset;
 double z = 0;
 double rotationText = 0;
-String text = "run " + simulationCount;
+//v_runText = "run " + simulationCount;
+v_runText = String.format("Finished run %d, weights: attitudeToIntention=%.2f, PBCToIntention=%.2f, socialNormToIntention=%.2f, intentionToBehavior=%.2f, PBCToBehavior=%.2f",
+	simulationCount, v_weight_attitudeToIntention, v_weight_PBCToIntention, v_weight_socialNormToIntention, v_weight_intentionToBehavior, v_weight_PBCToBehavior);
+traceln(v_runText);
 Font font = new Font("SansSerif", Font.PLAIN, 11);
 TextAlignment alignment = TextAlignment.ALIGNMENT_LEFT;
 
-ShapeText textShape = new ShapeText(drawMode, true, xText, yText, z, rotationText, black, text, font, alignment);
+ShapeText textShape = new ShapeText(drawMode, true, xText, yText, z, rotationText, black, v_runText, font, alignment);
 //presentation.add(textShape);
 
 gr_outputs.add(oval);
@@ -20125,7 +20575,8 @@ gr_outputs.add(textShape);
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
-					<Body><![CDATA[v_runColor = randomColor();
+					<Body><![CDATA[simulationCount++;
+v_runColor = randomColor();
 f_setRunText();
 f_addRunToGraphs();
 f_writeResultsToExcel();
@@ -20133,9 +20584,10 @@ f_writeResultsToExcel();
 gr_inputs.setVisible(false);
 gr_outputs.setVisible(true);
 
-simulationCount++;
+
 if(simulationCount == 1){
 	fileChooser_exportResults.setEnabled(true);
+	fileChooser_exportPivotTable.setEnabled(true);
 }
 if(v_rapidRun == false){
 	viewArea.navigateTo();
@@ -20152,6 +20604,7 @@ if(v_rapidRun == false){
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
 					<Body><![CDATA[//Clear previous contents after firts sim
+/*
 if(simulationCount == 1){ 
 	int lastRow = excel_exportResults.getLastCellNum(1, 1);
 	int lastCol = excel_exportResults.getLastRowNum(1);
@@ -20161,7 +20614,9 @@ if(simulationCount == 1){
 			excel_exportResults.clearCell(1, row, col);
 		}
 	}
-}
+}*/
+int iterations = data_naturalGasBoilers_nb.size();
+int row = 1;
 
 int sheetIndex = 1;
 int columnSimulationRun = 1;
@@ -20172,39 +20627,193 @@ int columnHHP = 5;
 int columnEHP = 6;
 int columnDH = 7;
 
-//Set column names
-int row = 1;
-excel_exportResults.setCellValue("year", sheetIndex, row, columnSimulationRun);
-excel_exportResults.setCellValue("year", sheetIndex, row, columnYear);
-excel_exportResults.setCellValue("Natural gas boiler", sheetIndex, row, columnNGB);
-excel_exportResults.setCellValue("Gas block heating", sheetIndex, row, columnNGBl);
-excel_exportResults.setCellValue("Hybrid heat pump", sheetIndex, row, columnHHP);
-excel_exportResults.setCellValue("Electric heat pump", sheetIndex, row, columnEHP);
-excel_exportResults.setCellValue("District heating", sheetIndex, row, columnDH);
+if(simulationCount == 1){ 
+	//Clear values
+	/*
+	int lastRow = excel_exportResults.getLastRowNum(sheetIndex);
+	if( lastRow >= 1 ){
+		int lastCol = excel_exportResults.getLastCellNum(sheetIndex, 1);
+		for (row = 1; row <= lastRow; row++) {
+			for (int col = 1; col <= lastCol; col++) {
+		        excel_exportResults.clearCell(sheetIndex, row, col);
+		    }
+		}
+	}
+	*/
+	//Set column names
+	row = 1;
+	excel_exportResults.setCellValue("Run", sheetIndex, row, columnSimulationRun);
+	excel_exportResults.setCellValue("year", sheetIndex, row, columnYear);
+	excel_exportResults.setCellValue("Natural gas boiler", sheetIndex, row, columnNGB);
+	excel_exportResults.setCellValue("Gas block heating", sheetIndex, row, columnNGBl);
+	excel_exportResults.setCellValue("Hybrid heat pump", sheetIndex, row, columnHHP);
+	excel_exportResults.setCellValue("Electric heat pump", sheetIndex, row, columnEHP);
+	excel_exportResults.setCellValue("District heating", sheetIndex, row, columnDH);
+}
 
 //Get data
-for( int i=0; i<data_naturalGasBoilers_nb.size(); i++){
-
+int lastFilledRow = excel_exportResults.getLastRowNum(sheetIndex);
+row = lastFilledRow;
+for( int i=0; i<iterations; i++){
+	row++;
 	//Time series
-	excel_exportResults.setCellValue(data_naturalGasBoilers_nb.getX(i), sheetIndex, i+2, columnYear);
-	excel_exportResults.setCellValue(data_naturalGasBoilers_nb.getY(i), sheetIndex, i+2, columnNGB);
-	excel_exportResults.setCellValue(data_naturalGasBlock_nb.getY(i), sheetIndex, i+2, columnNGBl);
-	excel_exportResults.setCellValue(data_hybridHeatPumps_nb.getY(i), sheetIndex, i+2, columnHHP);
-	excel_exportResults.setCellValue(data_electricHeatPumps_nb.getY(i), sheetIndex, i+2, columnEHP);
-	excel_exportResults.setCellValue(data_districtHeating_nb.getY(i), sheetIndex, i+2, columnDH);
+	excel_exportResults.setCellValue(simulationCount, sheetIndex, row, columnSimulationRun);
+	excel_exportResults.setCellValue(data_naturalGasBoilers_nb.getX(i), sheetIndex, row, columnYear);
+	excel_exportResults.setCellValue(data_naturalGasBoilers_nb.getY(i), sheetIndex, row, columnNGB);
+	excel_exportResults.setCellValue(data_naturalGasBlock_nb.getY(i), sheetIndex, row, columnNGBl);
+	excel_exportResults.setCellValue(data_hybridHeatPumps_nb.getY(i), sheetIndex, row, columnHHP);
+	excel_exportResults.setCellValue(data_electricHeatPumps_nb.getY(i), sheetIndex, row, columnEHP);
+	excel_exportResults.setCellValue(data_districtHeating_nb.getY(i), sheetIndex, row, columnDH);
 }
 
 //Write file
 excel_exportResults.writeFile();
 
-traceln("Finished writing results to excel!");]]></Body>
+
+if(simulationCount == 1){
+	/*
+	//Clear values
+	int lastRow = excel_pivotTable.getLastRowNum(sheetIndex);
+	if( lastRow >= 1 ){
+		int lastCol = excel_pivotTable.getLastCellNum(sheetIndex, 1);
+		for (row = 1; row <= lastRow; row++) {
+			for (int col = 1; col <= lastCol; col++) {
+		        excel_pivotTable.clearCell(sheetIndex, row, col);
+		    }
+		}
+	}
+	*/
+	row = 1;
+	// Headers
+	excel_pivotTable.setCellValue("Run", sheetIndex, row, 1);
+	excel_pivotTable.setCellValue("Year", sheetIndex, row, 2);
+	excel_pivotTable.setCellValue("Technology", sheetIndex, row, 3);
+	excel_pivotTable.setCellValue("Adoption", sheetIndex, row, 4);
+}
+
+lastFilledRow = excel_pivotTable.getLastRowNum(sheetIndex);
+
+row = lastFilledRow;
+for(OL_HeatingSystem option : OL_HeatingSystem.values()) {
+	for( int i=0; i<iterations; i++){
+		double value = 0.0;	
+		switch (option) {
+	        case NATURAL_GAS_BOILER:
+	            value = data_naturalGasBoilers_nb.getY(i);
+	            break;
+	        case NATURAL_GAS_BLOCK:
+	           value = data_naturalGasBlock_nb.getY(i);
+	            break;
+	        case HYBRID_HEAT_PUMP:
+	            value = data_hybridHeatPumps_nb.getY(i);
+	            break;
+	        case ELECTRIC_HEAT_PUMP:
+	            value = data_electricHeatPumps_nb.getY(i);
+	            break;
+	        case DISTRICT_HEATING:
+	            value = data_districtHeating_nb.getY(i);
+	            break;
+		}
+    	row++;
+    	excel_pivotTable.setCellValue(simulationCount, sheetIndex, row, 1);
+		excel_pivotTable.setCellValue(data_naturalGasBoilers_nb.getX(i), sheetIndex, row, 2);
+		excel_pivotTable.setCellValue(option.toString(), sheetIndex, row, 3);
+    	excel_pivotTable.setCellValue(value, sheetIndex, row, 4);
+    }
+}
+excel_pivotTable.writeFile();
+
+]]></Body>
+				</Function>
+				<Function AccessType="default" StaticFunction="false">
+					<ReturnModificator>VOID</ReturnModificator>
+					<ReturnType><![CDATA[double]]></ReturnType>
+					<Id>1750235799291</Id>
+					<Name><![CDATA[f_setDefaultWeights]]></Name>
+					<X>350</X><Y>1030</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Body><![CDATA[v_weight_affordabilityToPBC = 0.5;
+v_weight_controlToPBC = 0.5;
+v_weight_effortToPBC = 0.5;
+
+v_weight_attitudeToIntention = 0.5;
+v_weight_PBCToIntention = 0.5;
+v_weight_socialNormToIntention = 0.5;
+
+v_weight_intentionToBehavior = 0.5;
+v_weight_PBCToBehavior = 0.5;
+
+f_setEditBoxWeights();]]></Body>
+				</Function>
+				<Function AccessType="default" StaticFunction="false">
+					<ReturnModificator>VOID</ReturnModificator>
+					<ReturnType><![CDATA[double]]></ReturnType>
+					<Id>1750235813206</Id>
+					<Name><![CDATA[f_varyWeights]]></Name>
+					<X>350</X><Y>1100</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Body><![CDATA[cb_rapidRun.setSelected(true, true);
+
+double w_low = 0.2;// 0.25;
+double w_medium = 0.5;
+double w_high = 0.8; //0.75;
+
+double[] weights = {w_low, w_high};
+
+for (double w1 : weights) {
+	for (double w2 : weights) {
+		for (double w3 : weights) {
+			for (double w4 : weights) {
+				for (double w5 : weights) {
+					v_weight_attitudeToIntention = w1;
+					v_weight_PBCToIntention = w2;
+					v_weight_socialNormToIntention = w3;
+					v_weight_intentionToBehavior = w4;
+					v_weight_PBCToBehavior = w5;
+								
+					f_initializeMain();
+					//Optional: print current combination
+		        	//traceln(String.format("Combo: %.2f, %.2f, %.2f, %.2f, %.2f", w1, w2, w3));//, w4, w5));
+				}
+      		}
+		}
+	}
+}
+]]></Body>
+				</Function>
+				<Function AccessType="default" StaticFunction="false">
+					<ReturnModificator>VOID</ReturnModificator>
+					<ReturnType><![CDATA[double]]></ReturnType>
+					<Id>1750245251761</Id>
+					<Name><![CDATA[f_setEditBoxWeights]]></Name>
+					<X>350</X><Y>1080</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Body><![CDATA[eb_w_affToPBC.setText(v_weight_affordabilityToPBC);
+eb_w_effToPBC.setText(v_weight_effortToPBC);
+eb_w_controlToPBC.setText(v_weight_controlToPBC);
+
+eb_w_attToInt.setText(v_weight_attitudeToIntention);
+eb_w_PBCToInt.setText(v_weight_PBCToIntention);
+eb_w_SNToInt.setText(v_weight_socialNormToIntention);
+
+eb_w_IntToBeh.setText(v_weight_intentionToBehavior);
+eb_w_PBCToBeh.setText(v_weight_PBCToBehavior);]]></Body>
 				</Function>
 			</Functions>
 			<AnalysisData>
     			<DataSet>
 					<Id>1746696592177</Id>
 					<Name><![CDATA[data_naturalGasBoilers_nb]]></Name>
-					<X>-520</X><Y>1140</Y>
+					<X>-520</X><Y>1170</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -20226,7 +20835,7 @@ traceln("Finished writing results to excel!");]]></Body>
     			<DataSet>
 					<Id>1746696592186</Id>
 					<Name><![CDATA[data_districtHeating_nb]]></Name>
-					<X>-520</X><Y>1180</Y>
+					<X>-520</X><Y>1210</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -20248,7 +20857,7 @@ traceln("Finished writing results to excel!");]]></Body>
     			<DataSet>
 					<Id>1746696592194</Id>
 					<Name><![CDATA[data_electricHeatPumps_nb]]></Name>
-					<X>-520</X><Y>1200</Y>
+					<X>-520</X><Y>1230</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -20270,7 +20879,7 @@ traceln("Finished writing results to excel!");]]></Body>
     			<DataSet>
 					<Id>1746696592202</Id>
 					<Name><![CDATA[data_hybridHeatPumps_nb]]></Name>
-					<X>-520</X><Y>1220</Y>
+					<X>-520</X><Y>1250</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -20292,7 +20901,7 @@ traceln("Finished writing results to excel!");]]></Body>
     			<DataSet>
 					<Id>1746696592210</Id>
 					<Name><![CDATA[data_naturalGasBlock_nb]]></Name>
-					<X>-520</X><Y>1160</Y>
+					<X>-520</X><Y>1190</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -20314,7 +20923,7 @@ traceln("Finished writing results to excel!");]]></Body>
     			<DataSet>
 					<Id>1746696592218</Id>
 					<Name><![CDATA[data_naturalGasBoilers_perc]]></Name>
-					<X>-520</X><Y>1260</Y>
+					<X>-520</X><Y>1290</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -20336,7 +20945,7 @@ traceln("Finished writing results to excel!");]]></Body>
     			<DataSet>
 					<Id>1746696592226</Id>
 					<Name><![CDATA[data_districtHeating_perc]]></Name>
-					<X>-520</X><Y>1300</Y>
+					<X>-520</X><Y>1330</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -20358,7 +20967,7 @@ traceln("Finished writing results to excel!");]]></Body>
     			<DataSet>
 					<Id>1746696592233</Id>
 					<Name><![CDATA[data_electricHeatPumps_perc]]></Name>
-					<X>-520</X><Y>1320</Y>
+					<X>-520</X><Y>1350</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -20380,7 +20989,7 @@ traceln("Finished writing results to excel!");]]></Body>
     			<DataSet>
 					<Id>1746696592240</Id>
 					<Name><![CDATA[data_hybridHeatPumps_perc]]></Name>
-					<X>-520</X><Y>1340</Y>
+					<X>-520</X><Y>1370</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -20402,7 +21011,7 @@ traceln("Finished writing results to excel!");]]></Body>
     			<DataSet>
 					<Id>1746696592248</Id>
 					<Name><![CDATA[data_naturalGasBlock_perc]]></Name>
-					<X>-520</X><Y>1280</Y>
+					<X>-520</X><Y>1310</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -20450,6 +21059,22 @@ traceln("Finished writing results to excel!");]]></Body>
 					<ResourceReference>
 						<PackageName><![CDATA[heat_transition_tipping_pathways]]></PackageName>
 						<ClassName><![CDATA[_scenarios.xlsx]]></ClassName>
+					</ResourceReference>
+					<SaveInSnapshot>false</SaveInSnapshot>
+					<LoadOnStartup>true</LoadOnStartup>
+					<SaveOnDispose>true</SaveOnDispose>
+				</ExcelFile>
+				<ExcelFile>
+					<Id>1750255186728</Id>
+					<Name><![CDATA[excel_pivotTable]]></Name>
+					<X>-520</X><Y>670</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<ResourceReference>
+						<PackageName><![CDATA[heat_transition_tipping_pathways]]></PackageName>
+						<ClassName><![CDATA[_export_pivot_table.xlsx]]></ClassName>
 					</ResourceReference>
 					<SaveInSnapshot>false</SaveInSnapshot>
 					<LoadOnStartup>true</LoadOnStartup>
@@ -20638,6 +21263,30 @@ traceln("Finished writing results to excel!");]]></Body>
 						<Parameter>
 							<Name><![CDATA[p_socialLearningFactor]]></Name>
 						</Parameter>
+						<Parameter>
+							<Name><![CDATA[p_weight_affordabilityToPBC]]></Name>
+						</Parameter>
+						<Parameter>
+							<Name><![CDATA[p_weight_effortToPBC]]></Name>
+						</Parameter>
+						<Parameter>
+							<Name><![CDATA[p_weight_controlToPBC]]></Name>
+						</Parameter>
+						<Parameter>
+							<Name><![CDATA[p_weight_intentionToBehavior]]></Name>
+						</Parameter>
+						<Parameter>
+							<Name><![CDATA[p_weight_attitudeToIntention]]></Name>
+						</Parameter>
+						<Parameter>
+							<Name><![CDATA[p_weight_socialNormToIntention]]></Name>
+						</Parameter>
+						<Parameter>
+							<Name><![CDATA[p_weight_PBCToIntention]]></Name>
+						</Parameter>
+						<Parameter>
+							<Name><![CDATA[p_weight_PBCToBehavior]]></Name>
+						</Parameter>
 					</Parameters>
 					<ReplicationFlag>true</ReplicationFlag>
 					<Replication Class="CodeValue">
@@ -20723,7 +21372,7 @@ traceln("Finished writing results to excel!");]]></Body>
 				 	<EmbeddedIcon>false</EmbeddedIcon>				
 					<Id>1746538468626</Id>
 					<Name><![CDATA[fileChooser_exportResults]]></Name>
-					<X>60</X><Y>280</Y>
+					<X>900</X><Y>120</Y>
 					<Label><X>0</X><Y>-10</Y></Label>
 					<PublicFlag>true</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -20734,7 +21383,7 @@ traceln("Finished writing results to excel!");]]></Body>
 						<FillColor/>
 						<TextColor/>
 						<Enabled>false</Enabled>
-						<ActionCode><![CDATA[fileChooser_exportResults.setEnabled(false);]]></ActionCode>
+						<ActionCode><![CDATA[//fileChooser_exportResults.setEnabled(false);]]></ActionCode>
 					</BasicProperties>
 					<ExtendedProperties>
 						<Font Name="Dialog" Size="16" Style="0"/>
@@ -20759,6 +21408,7 @@ traceln("Finished writing results to excel!");]]></Body>
 						<TextColor/>
 						<Enabled>true</Enabled>
 						<ActionCode><![CDATA[f_initializeMain();
+
 //f_writeResultsToExcel();
 //getExperiment().getEngine().resetBeforeStart();
 //getExperiment().getEngine().run();]]></ActionCode>
@@ -21484,7 +22134,7 @@ switch (gridReinforcementPace){
 					<Z>0</Z>
 					<Rotation>0.0</Rotation>
 					<Color>-16777216</Color>
-					<Text><![CDATA[DH grid reinforcement rate]]></Text>
+					<Text><![CDATA[Social housing strategy]]></Text>
 					<Font>
 						<Name>SansSerif</Name>
 						<Size>12</Size>
@@ -21864,6 +22514,394 @@ f_getSelectedMunicipalities();]]></ActionCode>
 					<Font>
 						<Name>SansSerif</Name>
 						<Size>16</Size>
+						<Style>0</Style>
+					</Font>
+					<Alignment>LEFT</Alignment>
+				</Text>
+				<Control Type="EditBox">
+				 	<EmbeddedIcon>false</EmbeddedIcon>				
+					<Id>1750235287193</Id>
+					<Name><![CDATA[eb_w_affToPBC]]></Name>
+					<X>730</X><Y>-190</Y>
+					<Label><X>0</X><Y>-10</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
+					<BasicProperties Width="100" Height="30">
+                        <EmbeddedIcon>false</EmbeddedIcon>	
+						<FillColor/>
+						<TextColor/>
+						<Enabled>true</Enabled>
+					</BasicProperties>
+					<ExtendedProperties>
+						<Font Name="Dialog" Size="11" Style="0"/>
+						<LinkTo>true</LinkTo>
+						<Link>v_weight_affordabilityToPBC</Link>
+					</ExtendedProperties>
+				</Control>
+				<Control Type="EditBox">
+				 	<EmbeddedIcon>false</EmbeddedIcon>				
+					<Id>1750235287196</Id>
+					<Name><![CDATA[eb_w_effToPBC]]></Name>
+					<X>730</X><Y>-150</Y>
+					<Label><X>0</X><Y>-10</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
+					<BasicProperties Width="100" Height="30">
+                        <EmbeddedIcon>false</EmbeddedIcon>	
+						<FillColor/>
+						<TextColor/>
+						<Enabled>true</Enabled>
+					</BasicProperties>
+					<ExtendedProperties>
+						<Font Name="Dialog" Size="11" Style="0"/>
+						<LinkTo>true</LinkTo>
+						<Link>v_weight_effortToPBC</Link>
+					</ExtendedProperties>
+				</Control>
+				<Control Type="EditBox">
+				 	<EmbeddedIcon>false</EmbeddedIcon>				
+					<Id>1750235287198</Id>
+					<Name><![CDATA[eb_w_controlToPBC]]></Name>
+					<X>730</X><Y>-110</Y>
+					<Label><X>0</X><Y>-10</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
+					<BasicProperties Width="100" Height="30">
+                        <EmbeddedIcon>false</EmbeddedIcon>	
+						<FillColor/>
+						<TextColor/>
+						<Enabled>true</Enabled>
+					</BasicProperties>
+					<ExtendedProperties>
+						<Font Name="Dialog" Size="11" Style="0"/>
+						<LinkTo>true</LinkTo>
+						<Link>v_weight_controlToPBC</Link>
+					</ExtendedProperties>
+				</Control>
+				<Control Type="EditBox">
+				 	<EmbeddedIcon>false</EmbeddedIcon>				
+					<Id>1750235287200</Id>
+					<Name><![CDATA[eb_w_attToInt]]></Name>
+					<X>730</X><Y>-70</Y>
+					<Label><X>0</X><Y>-10</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
+					<BasicProperties Width="100" Height="30">
+                        <EmbeddedIcon>false</EmbeddedIcon>	
+						<FillColor/>
+						<TextColor/>
+						<Enabled>true</Enabled>
+					</BasicProperties>
+					<ExtendedProperties>
+						<Font Name="Dialog" Size="11" Style="0"/>
+						<LinkTo>true</LinkTo>
+						<Link>v_weight_attitudeToIntention</Link>
+					</ExtendedProperties>
+				</Control>
+				<Text>
+					<Id>1750235287202</Id>
+					<Name><![CDATA[text32]]></Name>
+					<X>580</X><Y>-180</Y>
+					<Label><X>0</X><Y>-10</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D</DrawMode>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Z>0</Z>
+					<Rotation>0.0</Rotation>
+					<Color>-16777216</Color>
+					<Text><![CDATA[Affordability to PBC
+]]></Text>
+					<Font>
+						<Name>SansSerif</Name>
+						<Size>12</Size>
+						<Style>0</Style>
+					</Font>
+					<Alignment>LEFT</Alignment>
+				</Text>
+				<Text>
+					<Id>1750235287204</Id>
+					<Name><![CDATA[text34]]></Name>
+					<X>580</X><Y>-140</Y>
+					<Label><X>0</X><Y>-10</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D</DrawMode>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Z>0</Z>
+					<Rotation>0.0</Rotation>
+					<Color>-16777216</Color>
+					<Text><![CDATA[Effort to PBC]]></Text>
+					<Font>
+						<Name>SansSerif</Name>
+						<Size>12</Size>
+						<Style>0</Style>
+					</Font>
+					<Alignment>LEFT</Alignment>
+				</Text>
+				<Text>
+					<Id>1750235287206</Id>
+					<Name><![CDATA[text35]]></Name>
+					<X>580</X><Y>-100</Y>
+					<Label><X>0</X><Y>-10</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D</DrawMode>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Z>0</Z>
+					<Rotation>0.0</Rotation>
+					<Color>-16777216</Color>
+					<Text><![CDATA[Control to PBC]]></Text>
+					<Font>
+						<Name>SansSerif</Name>
+						<Size>12</Size>
+						<Style>0</Style>
+					</Font>
+					<Alignment>LEFT</Alignment>
+				</Text>
+				<Text>
+					<Id>1750235287208</Id>
+					<Name><![CDATA[text36]]></Name>
+					<X>580</X><Y>-60</Y>
+					<Label><X>0</X><Y>-10</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D</DrawMode>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Z>0</Z>
+					<Rotation>0.0</Rotation>
+					<Color>-16777216</Color>
+					<Text><![CDATA[Attitude to intention]]></Text>
+					<Font>
+						<Name>SansSerif</Name>
+						<Size>12</Size>
+						<Style>0</Style>
+					</Font>
+					<Alignment>LEFT</Alignment>
+				</Text>
+				<Text>
+					<Id>1750235287210</Id>
+					<Name><![CDATA[text37]]></Name>
+					<X>730</X><Y>-210</Y>
+					<Label><X>0</X><Y>-10</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D</DrawMode>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Z>0</Z>
+					<Rotation>0.0</Rotation>
+					<Color>-16777216</Color>
+					<Text><![CDATA[0-1]]></Text>
+					<Font>
+						<Name>SansSerif</Name>
+						<Size>12</Size>
+						<Style>0</Style>
+					</Font>
+					<Alignment>LEFT</Alignment>
+				</Text>
+				<Text>
+					<Id>1750235287212</Id>
+					<Name><![CDATA[text38]]></Name>
+					<X>580</X><Y>-240</Y>
+					<Label><X>0</X><Y>-10</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D</DrawMode>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Z>0</Z>
+					<Rotation>0.0</Rotation>
+					<Color>-16777216</Color>
+					<Text><![CDATA[Weights individual decision-making]]></Text>
+					<Font>
+						<Name>SansSerif</Name>
+						<Size>16</Size>
+						<Style>0</Style>
+					</Font>
+					<Alignment>LEFT</Alignment>
+				</Text>
+				<Control Type="EditBox">
+				 	<EmbeddedIcon>false</EmbeddedIcon>				
+					<Id>1750235305889</Id>
+					<Name><![CDATA[eb_w_SNToInt]]></Name>
+					<X>730</X><Y>-30</Y>
+					<Label><X>0</X><Y>-10</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
+					<BasicProperties Width="100" Height="30">
+                        <EmbeddedIcon>false</EmbeddedIcon>	
+						<FillColor/>
+						<TextColor/>
+						<Enabled>true</Enabled>
+					</BasicProperties>
+					<ExtendedProperties>
+						<Font Name="Dialog" Size="11" Style="0"/>
+						<LinkTo>true</LinkTo>
+						<Link>v_weight_socialNormToIntention</Link>
+					</ExtendedProperties>
+				</Control>
+				<Text>
+					<Id>1750235305891</Id>
+					<Name><![CDATA[text39]]></Name>
+					<X>580</X><Y>-20</Y>
+					<Label><X>0</X><Y>-10</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D</DrawMode>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Z>0</Z>
+					<Rotation>0.0</Rotation>
+					<Color>-16777216</Color>
+					<Text><![CDATA[Social norm to intention]]></Text>
+					<Font>
+						<Name>SansSerif</Name>
+						<Size>12</Size>
+						<Style>0</Style>
+					</Font>
+					<Alignment>LEFT</Alignment>
+				</Text>
+				<Control Type="EditBox">
+				 	<EmbeddedIcon>false</EmbeddedIcon>				
+					<Id>1750235324161</Id>
+					<Name><![CDATA[eb_w_PBCToInt]]></Name>
+					<X>730</X><Y>10</Y>
+					<Label><X>0</X><Y>-10</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
+					<BasicProperties Width="100" Height="30">
+                        <EmbeddedIcon>false</EmbeddedIcon>	
+						<FillColor/>
+						<TextColor/>
+						<Enabled>true</Enabled>
+					</BasicProperties>
+					<ExtendedProperties>
+						<Font Name="Dialog" Size="11" Style="0"/>
+						<LinkTo>true</LinkTo>
+						<Link>v_weight_PBCToIntention</Link>
+					</ExtendedProperties>
+				</Control>
+				<Text>
+					<Id>1750235324163</Id>
+					<Name><![CDATA[text40]]></Name>
+					<X>580</X><Y>20</Y>
+					<Label><X>0</X><Y>-10</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D</DrawMode>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Z>0</Z>
+					<Rotation>0.0</Rotation>
+					<Color>-16777216</Color>
+					<Text><![CDATA[PBC to intention
+]]></Text>
+					<Font>
+						<Name>SansSerif</Name>
+						<Size>12</Size>
+						<Style>0</Style>
+					</Font>
+					<Alignment>LEFT</Alignment>
+				</Text>
+				<Control Type="EditBox">
+				 	<EmbeddedIcon>false</EmbeddedIcon>				
+					<Id>1750235329773</Id>
+					<Name><![CDATA[eb_w_IntToBeh]]></Name>
+					<X>730</X><Y>50</Y>
+					<Label><X>0</X><Y>-10</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
+					<BasicProperties Width="100" Height="30">
+                        <EmbeddedIcon>false</EmbeddedIcon>	
+						<FillColor/>
+						<TextColor/>
+						<Enabled>true</Enabled>
+					</BasicProperties>
+					<ExtendedProperties>
+						<Font Name="Dialog" Size="11" Style="0"/>
+						<LinkTo>true</LinkTo>
+						<Link>v_weight_intentionToBehavior</Link>
+					</ExtendedProperties>
+				</Control>
+				<Text>
+					<Id>1750235329786</Id>
+					<Name><![CDATA[text41]]></Name>
+					<X>580</X><Y>60</Y>
+					<Label><X>0</X><Y>-10</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D</DrawMode>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Z>0</Z>
+					<Rotation>0.0</Rotation>
+					<Color>-16777216</Color>
+					<Text><![CDATA[Intention to behavior]]></Text>
+					<Font>
+						<Name>SansSerif</Name>
+						<Size>12</Size>
+						<Style>0</Style>
+					</Font>
+					<Alignment>LEFT</Alignment>
+				</Text>
+				<Control Type="EditBox">
+				 	<EmbeddedIcon>false</EmbeddedIcon>				
+					<Id>1750235461595</Id>
+					<Name><![CDATA[eb_w_PBCToBeh]]></Name>
+					<X>730</X><Y>90</Y>
+					<Label><X>0</X><Y>-10</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
+					<BasicProperties Width="100" Height="30">
+                        <EmbeddedIcon>false</EmbeddedIcon>	
+						<FillColor/>
+						<TextColor/>
+						<Enabled>true</Enabled>
+					</BasicProperties>
+					<ExtendedProperties>
+						<Font Name="Dialog" Size="11" Style="0"/>
+						<LinkTo>true</LinkTo>
+						<Link>v_weight_PBCToBehavior</Link>
+					</ExtendedProperties>
+				</Control>
+				<Text>
+					<Id>1750235461598</Id>
+					<Name><![CDATA[text42]]></Name>
+					<X>580</X><Y>100</Y>
+					<Label><X>0</X><Y>-10</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D</DrawMode>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Z>0</Z>
+					<Rotation>0.0</Rotation>
+					<Color>-16777216</Color>
+					<Text><![CDATA[PBC to behavior]]></Text>
+					<Font>
+						<Name>SansSerif</Name>
+						<Size>12</Size>
 						<Style>0</Style>
 					</Font>
 					<Alignment>LEFT</Alignment>
@@ -22383,7 +23421,7 @@ cb_areaSelection.setValue("Schiermonnikoog", true);]]></ActionCode>
 				 	<EmbeddedIcon>false</EmbeddedIcon>				
 					<Id>1747829814481</Id>
 					<Name><![CDATA[b_startSimualtion3]]></Name>
-					<X>60</X><Y>240</Y>
+					<X>620</X><Y>120</Y>
 					<Label><X>0</X><Y>-10</Y></Label>
 					<PublicFlag>true</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -22392,25 +23430,95 @@ cb_areaSelection.setValue("Schiermonnikoog", true);]]></ActionCode>
 					<BasicProperties Width="250" Height="30">
                         <EmbeddedIcon>false</EmbeddedIcon>	
 						<TextColor/>
-						<Enabled>false</Enabled>
-						<ActionCode><![CDATA[/*
-int iterationsPerScenario = 20;
-for(scenario )
-	for(int i=0; i<iterationsPerScenario; i++){
-		f_initializeMain();
-		f_writeResultsScenarioAnalysisToExcel();
-	}
+						<Enabled>true</Enabled>
+						<ActionCode><![CDATA[traceln("Start scenario analysis");
+cb_rapidRun.setSelected(true, true);
+
+int requiredIterations = 30;
+for (int i=0; i<requiredIterations; i++) {
+	f_initializeMain();
 }
 
-
-
-*/
-//getExperiment().getEngine().resetBeforeStart();
-//getExperiment().getEngine().run();]]></ActionCode>
+]]></ActionCode>
 					</BasicProperties>
 					<ExtendedProperties>
 						<Font Name="Dialog" Size="16" Style="0"/>
 						<LabelText><![CDATA[Start scenario analysis]]></LabelText>
+					</ExtendedProperties>
+				</Control>
+				<Control Type="Button">
+				 	<EmbeddedIcon>false</EmbeddedIcon>				
+					<Id>1750247567442</Id>
+					<Name><![CDATA[b_startSimualtion4]]></Name>
+					<X>620</X><Y>160</Y>
+					<Label><X>0</X><Y>-10</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
+					<BasicProperties Width="250" Height="30">
+                        <EmbeddedIcon>false</EmbeddedIcon>	
+						<TextColor/>
+						<Enabled>true</Enabled>
+						<ActionCode><![CDATA[traceln("Start variation weights");
+f_varyWeights();
+]]></ActionCode>
+					</BasicProperties>
+					<ExtendedProperties>
+						<Font Name="Dialog" Size="16" Style="0"/>
+						<LabelText><![CDATA[Start variation weights]]></LabelText>
+					</ExtendedProperties>
+				</Control>
+				<Control Type="Button">
+				 	<EmbeddedIcon>false</EmbeddedIcon>				
+					<Id>1750247595095</Id>
+					<Name><![CDATA[b_startSimualtion5]]></Name>
+					<X>620</X><Y>200</Y>
+					<Label><X>0</X><Y>-10</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
+					<BasicProperties Width="250" Height="30">
+                        <EmbeddedIcon>false</EmbeddedIcon>	
+						<TextColor/>
+						<Enabled>true</Enabled>
+						<ActionCode><![CDATA[cb_rapidRun.setSelected(true, true);
+
+int requiredIterations = 30;
+for (int i=0; i<requiredIterations; i++) {
+	f_initializeMain();
+}
+]]></ActionCode>
+					</BasicProperties>
+					<ExtendedProperties>
+						<Font Name="Dialog" Size="16" Style="0"/>
+						<LabelText><![CDATA[Start monte carlo]]></LabelText>
+					</ExtendedProperties>
+				</Control>
+				<Control Type="FileChooser">
+				 	<EmbeddedIcon>false</EmbeddedIcon>				
+					<Id>1750256866571</Id>
+					<Name><![CDATA[fileChooser_exportPivotTable]]></Name>
+					<X>900</X><Y>160</Y>
+					<Label><X>0</X><Y>-10</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
+					<BasicProperties Width="250" Height="30">
+                        <EmbeddedIcon>false</EmbeddedIcon>	
+						<FillColor/>
+						<TextColor/>
+						<Enabled>false</Enabled>
+						<ActionCode><![CDATA[//fileChooser_exportResults.setEnabled(false);]]></ActionCode>
+					</BasicProperties>
+					<ExtendedProperties>
+						<Font Name="Dialog" Size="16" Style="0"/>
+						<Title><![CDATA[Download results pivot table]]></Title>
+						<Type>DOWNLOAD</Type>
+						<Filters>.xlsx, .xls</Filters>
+						<FileName>_export_pivot_table.xlsx</FileName>
 					</ExtendedProperties>
 				</Control>
 			</Presentation>
@@ -22451,27 +23559,6 @@ for(scenario )
 		<ShutdownCompact>false</ShutdownCompact>
 		<ImportSettings>
 			<ExternalConnection>
-				<Id>1741793579824</Id>
-				<Name><![CDATA[database]]></Name>
-				<X>0</X><Y>0</Y>
-				<Label><X>10</X><Y>0</Y></Label>
-				<PublicFlag>false</PublicFlag>
-				<PresentationFlag>true</PresentationFlag>
-				<ShowLabel>true</ShowLabel>
-				<DatabaseType>EXCEL_ACCESS</DatabaseType>
-				<ConnectionURL><![CDATA[]]></ConnectionURL>
-				<ConnectOnStartup>true</ConnectOnStartup>
-				<DatabaseName><![CDATA[]]></DatabaseName>
-				<ResourceReference>
-					<PackageName><![CDATA[heat_transition_tipping_pathways]]></PackageName>
-					<ClassName><![CDATA[_energy_demand_and_insulation_costs_VestaMAIS.xlsx]]></ClassName>
-				</ResourceReference>
-				<Host><![CDATA[localhost]]></Host>
-				<JdbcDriverClassName><![CDATA[net.sourceforge.jtds.jdbc.Driver]]></JdbcDriverClassName>
-				<Login><![CDATA[]]></Login>
-				<Password><![CDATA[]]></Password>
-			</ExternalConnection>
-			<ExternalConnection>
 				<Id>1737647106315</Id>
 				<Name><![CDATA[database]]></Name>
 				<X>0</X><Y>0</Y>
@@ -22486,6 +23573,27 @@ for(scenario )
 				<ResourceReference>
 					<PackageName><![CDATA[heat_transition_tipping_pathways]]></PackageName>
 					<ClassName><![CDATA[_neighborhoods_2023_heatTransitionVision.xlsx]]></ClassName>
+				</ResourceReference>
+				<Host><![CDATA[localhost]]></Host>
+				<JdbcDriverClassName><![CDATA[net.sourceforge.jtds.jdbc.Driver]]></JdbcDriverClassName>
+				<Login><![CDATA[]]></Login>
+				<Password><![CDATA[]]></Password>
+			</ExternalConnection>
+			<ExternalConnection>
+				<Id>1741793579824</Id>
+				<Name><![CDATA[database]]></Name>
+				<X>0</X><Y>0</Y>
+				<Label><X>10</X><Y>0</Y></Label>
+				<PublicFlag>false</PublicFlag>
+				<PresentationFlag>true</PresentationFlag>
+				<ShowLabel>true</ShowLabel>
+				<DatabaseType>EXCEL_ACCESS</DatabaseType>
+				<ConnectionURL><![CDATA[]]></ConnectionURL>
+				<ConnectOnStartup>true</ConnectOnStartup>
+				<DatabaseName><![CDATA[]]></DatabaseName>
+				<ResourceReference>
+					<PackageName><![CDATA[heat_transition_tipping_pathways]]></PackageName>
+					<ClassName><![CDATA[_energy_demand_and_insulation_costs_VestaMAIS.xlsx]]></ClassName>
 				</ResourceReference>
 				<Host><![CDATA[localhost]]></Host>
 				<JdbcDriverClassName><![CDATA[net.sourceforge.jtds.jdbc.Driver]]></JdbcDriverClassName>
@@ -22600,19 +23708,19 @@ for(scenario )
 			<TableImportSettings>
 				<TableReference>
 					<PackageName><![CDATA[heat_transition_tipping_pathways]]></PackageName>
-					<ClassName><![CDATA[dwellings_demand_insulation]]></ClassName>
+					<ClassName><![CDATA[nbh_policy_plan_2023]]></ClassName>
 				</TableReference>
 				<ConnectionIndex>0</ConnectionIndex>
-				<ExternalTableName><![CDATA["dwellings_demand_insulation"]]></ExternalTableName>
+				<ExternalTableName><![CDATA["nbh_policy_plan_2023"]]></ExternalTableName>
 				<AutoImport>false</AutoImport>
 			</TableImportSettings>
 			<TableImportSettings>
 				<TableReference>
 					<PackageName><![CDATA[heat_transition_tipping_pathways]]></PackageName>
-					<ClassName><![CDATA[nbh_policy_plan_2023]]></ClassName>
+					<ClassName><![CDATA[dwellings_demand_insulation]]></ClassName>
 				</TableReference>
 				<ConnectionIndex>1</ConnectionIndex>
-				<ExternalTableName><![CDATA["nbh_policy_plan_2023"]]></ExternalTableName>
+				<ExternalTableName><![CDATA["dwellings_demand_insulation"]]></ExternalTableName>
 				<AutoImport>false</AutoImport>
 			</TableImportSettings>
 			<TableImportSettings>
@@ -24655,6 +25763,30 @@ chart1.addDataSet( , format( root.p_innovationCoefficient ), color, true, Chart.
 			<FreeformParamValue>	
 				<Id>1739795126344</Id>
 			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1750235094093</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1750235105531</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1750235111741</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1750235118340</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1750235123943</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1750235130051</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1750235135404</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1750235140128</Id>
+			</FreeformParamValue>
 			<RangeVariationParamValue>	
 				<Id>1704719032315</Id>
 				<Type>FIXED</Type>
@@ -24837,6 +25969,38 @@ chart1.addDataSet( , format( root.p_innovationCoefficient ), color, true, Chart.
 			</RangeVariationParamValue>
 			<RangeVariationParamValue>	
 				<Id>1739795126344</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1750235094093</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1750235105531</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1750235111741</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1750235118340</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1750235123943</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1750235130051</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1750235135404</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1750235140128</Id>
 				<Type>FIXED</Type>
 			</RangeVariationParamValue>
 			<ModelTimeProperties>
@@ -25423,16 +26587,16 @@ public class J_HeatingSystemOptionsLocal {
 	public void f_setEffort(J_Dwelling dwelling) {
 		effort = 0.0;
 		if( type == dwelling.getHeatingSystem().getType()) {
-			effort = 1.0; //Standard replacement requires minimal effort
+			effort = 0.6; //Standard replacement requires minimal effort
 		}
 		else if(requiresLowTemperatureInhouseHeatDistribution == true && dwelling.getHasLowTemperatureInhouseHeatDistribution() == false){
-			effort = 0.0; //If also inhouse distribution systems require adaptation, effort is way higher
+			effort = 0.4; //If also inhouse distribution systems require adaptation, effort is way higher
 		}
 		else {
 			effort = 0.5;
 		}
 	}
-	
+	/*
 	public void f_setControl(J_Dwelling dwelling) {
 		control = 0.0;
 		
@@ -25442,15 +26606,15 @@ public class J_HeatingSystemOptionsLocal {
 		else {
 			control = 0.0;
 		}
-	}
+	}*/
 	
 	public void f_setPBC(double weight_EAC, double weight_effort, double weight_control) {
 		double EAC_norm_reversed = 1 - EAC_norm; 	//Reverse from cheapest best to highest best	
-		PBC = (EAC_norm_reversed * weight_EAC + effort * weight_effort + control * weight_control) / (weight_EAC + weight_effort + weight_control);
-		
+		//PBC = (EAC_norm_reversed * weight_EAC + effort * weight_effort + control * weight_control) / (weight_EAC + weight_effort + weight_control);
+		PBC = (EAC_norm_reversed * weight_EAC + effort * weight_effort) / (weight_EAC + weight_effort);
 	}
 	public void f_setIntention(double weight_att, double weight_SN, double weight_PBCToIntention) {
-		intention = (attitudeValue * weight_att + subjectiveNorm * weight_SN + PBC * weight_PBCToIntention) / (weight_att + weight_SN + weight_PBCToIntention);
+		intention = (attitudeValue * weight_att + subjectiveNorm * weight_SN * heatingSystemGlobalData.getSocialLearningRate() + PBC * weight_PBCToIntention) / (weight_att + weight_SN + weight_PBCToIntention);
 	}
 	
 	public void f_setPerceivedUtility(double weight_intentionToBehavior, double weight_PBCToBehavior) {
@@ -26255,12 +27419,13 @@ public class J_HomeOwner extends heat_transition_tipping_pathways.J_Household {
     	//TODO: improve setting attitude
     	double min = 0;
     	double max = 1;
-    	double shift = 0.5;
+    	double shift = 0.8;
     	double stretch = 0.2;
     	//J_Dwelling d = dwelling;
     	//Main main = dwelling.getMain();
     	//Random r = dwelling.getMain().randomInstance;
-    	sustainabilityAttitude = normal(min, max, shift, stretch, getDwelling().getMain().randomInstance);
+    	sustainabilityAttitude = beta(5, 2, 0, 1, getDwelling().getMain().randomInstance);
+    	//sustainabilityAttitude = normal(min, max, shift, stretch, getDwelling().getMain().randomInstance);
     	//statusQuoScore = normal(0, 1, 0.5, 0.15, main.randomInstance); 
     	//f_setInitialAttitude();
     	for(J_HeatingSystemOptionsLocal hsol : getDwelling().getHeatingSystemMap().values()) {
@@ -26272,17 +27437,17 @@ public class J_HomeOwner extends heat_transition_tipping_pathways.J_Household {
 	public void f_setUtilityPerHeatingSystem() {
 		f_setSubjectiveNormAdoptionRate();
 		for(J_HeatingSystemOptionsLocal hso : getDwelling().getHeatingSystemMap().values()) {
-			double weight_affordability = 1;
-			double weight_effort = 0.1;
-			double weight_control = 0.1;
-			double weight_intentionToBehavior = 0.9;	//was 0.9
-			double weight_att = 1;						//was 0.1
-			double weight_SN = 0.3;						//was 0.2
-			double weight_PBCToIntention = 1;
-			double weight_PBCToBehavior = 1;			//was 0.8
+			double weight_affordability = getDwelling().getMain().p_weight_affordabilityToPBC;
+			double weight_effort = getDwelling().getMain().p_weight_effortToPBC;
+			double weight_control = getDwelling().getMain().p_weight_controlToPBC;
+			double weight_intentionToBehavior = getDwelling().getMain().p_weight_intentionToBehavior;
+			double weight_att = getDwelling().getMain().p_weight_attitudeToIntention;
+			double weight_SN = getDwelling().getMain().p_socialLearningFactor * getDwelling().getMain().p_weight_socialNormToIntention;
+			double weight_PBCToIntention = getDwelling().getMain().p_weight_PBCToIntention;
+			double weight_PBCToBehavior = getDwelling().getMain().p_weight_PBCToBehavior;
 			
 			hso.f_setEffort(getDwelling());
-			hso.f_setControl(getDwelling());
+			//hso.f_setControl(getDwelling());
 			hso.f_setPBC(weight_affordability, weight_effort, weight_control) ;
 			hso.f_setIntention(weight_att, weight_SN, weight_PBCToIntention);
 			hso.f_setPerceivedUtility(weight_intentionToBehavior, weight_PBCToBehavior);
@@ -26334,9 +27499,10 @@ public class J_HomeOwner extends heat_transition_tipping_pathways.J_Household {
     */
     
     public void f_setSubjectiveNormAdoptionRate() {
+    	/*
     	if( getDwelling().getId() == 0 ) {
     		traceln("Heating system options values " + getDwelling().getHeatingSystemMap().values());
-    	}
+    	}*/
     	for( J_HeatingSystemOptionsLocal hsol : getDwelling().getHeatingSystemMap().values() ) {
     		OL_HeatingSystem heatingSystemType = hsol.getType();
     		
@@ -26348,10 +27514,10 @@ public class J_HomeOwner extends heat_transition_tipping_pathways.J_Household {
     		}
     		   		
     		double adoptionRateAmongstPeers = (double) adoptersAmongstPeers / householdsInNetwork.size();
-    		
+    		/*
     		if( getDwelling().getId() == 0 ) {
     			traceln("At dwel " + getDwelling().getId() + " and hm " + hsol.getType() + " cur SN = " + adoptionRateAmongstPeers + " adopters amongst peers = " + adoptersAmongstPeers);
-    		}
+    		}*/
     		
     		hsol.setSubjectiveNorm(adoptionRateAmongstPeers);
     	}
@@ -26722,6 +27888,11 @@ public class J_PostalCode6 {
 		</Resource>
 		<Resource>
 			<Path><![CDATA[_scenarios.xlsx]]></Path>
+			<ReferencedFromUserCode>false</ReferencedFromUserCode>
+			<Location>FILE_SYSTEM</Location>
+		</Resource>
+		<Resource>
+			<Path><![CDATA[_export_pivot_table.xlsx]]></Path>
 			<ReferencedFromUserCode>false</ReferencedFromUserCode>
 			<Location>FILE_SYSTEM</Location>
 		</Resource>
