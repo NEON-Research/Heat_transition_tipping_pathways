@@ -4,7 +4,7 @@
 	         AnyLogic Project File
 *************************************************
 -->
-<AnyLogicWorkspace WorkspaceVersion="1.9" AnyLogicVersion="8.9.5.202506190548" AlpVersion="8.9.5">
+<AnyLogicWorkspace WorkspaceVersion="1.9" AnyLogicVersion="8.9.7.202512010500" AlpVersion="8.9.7">
 <Model>
 	<Id>1693907397590</Id>
 	<Name><![CDATA[Heat transition tipping pathways]]></Name>
@@ -32,7 +32,7 @@
 				<Name><![CDATA[NATURAL_GAS_BOILER]]></Name>
 			</Option>
 			<Option>
-				<Id>1704898200143</Id>
+				<Id>1769532722409</Id>
 				<Name><![CDATA[NATURAL_GAS_BLOCK]]></Name>
 			</Option>
 			<Option>
@@ -66,6 +66,10 @@
 			<Option>
 				<Id>1715083950961</Id>
 				<Name><![CDATA[PRIVATELY_RENTED]]></Name>
+			</Option>
+			<Option>
+				<Id>1769530824906</Id>
+				<Name><![CDATA[TOTAL]]></Name>
 			</Option>
 		</OptionList>
 		<OptionList>
@@ -197,6 +201,8 @@ import java.io.IOException;
 import org.json.JSONObject; // for JSON parsing
 import org.json.JSONArray;
 */
+import java.util.EnumMap;
+import java.util.Map;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -1517,6 +1523,42 @@ f_initalizeSettings();
 					<ShowLabel>true</ShowLabel>
 					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
 						<Type><![CDATA[int]]></Type>        
+					</Properties>
+				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1765560679267</Id>
+					<Name><![CDATA[validationMap]]></Name>
+					<X>-890</X><Y>640</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[Map<String, List<J_Dwelling>>]]></Type>        
+					</Properties>
+				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1769529186288</Id>
+					<Name><![CDATA[resultsData]]></Name>
+					<X>-1000</X><Y>1020</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[J_ResultsData]]></Type>        
+					</Properties>
+				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1769590811216</Id>
+					<Name><![CDATA[mapAnnualValues]]></Name>
+					<X>-1000</X><Y>1070</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[Map <OL_HeatingSystem, Map <OL_HouseholdOwnership, J_AnnualValues>>]]></Type>        
 					</Properties>
 				</Variable>
 				<Variable Class="Parameter">
@@ -3321,6 +3363,9 @@ f_initializeDSO();
 //12. Initialize District heating operator
 f_initializeDistrictHeatingOperator();
 
+//13. Initialize annual values map
+f_initializeAnnualValuesMap();
+
 
 //14. Check total values
 int countNeighborhoodsWithDistrictHeating = count(pop_GZ_Neighborhoods, x->x.v_hasDistrictHeatingGrid);
@@ -3337,10 +3382,11 @@ for(J_Dwelling x : c_dwellings){
 	}
 }
 
+f_intializeValidationDwellings();
 //traceln("Neighborhoods with DH grid = " + countNeighborhoodsWithDistrictHeating + ", dwellings with potential DH = " + countDwellingsWithDistrictHeatingPotential + ", with block heating potential " + countDwellingsWithBlockHeatingPotential );
 
 //Check total time
-f_updateDatasets();
+//f_updateDatasets();
 if(v_rapidRun == false){
 	f_setVisuals();
 }
@@ -3581,6 +3627,7 @@ else {
 					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1704722989293</Id>
 					<Name><![CDATA[f_setCharts]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>-640</X><Y>800</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -3719,6 +3766,7 @@ for (int i = 0; i < avgEACData.length; i++) {
 					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1704723817398</Id>
 					<Name><![CDATA[f_updateDatasets]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>-310</X><Y>1130</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -4677,7 +4725,7 @@ for (Tuple row_heatingMethod : rows_heatingMethods){
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
-					<Body><![CDATA[
+					<Body><![CDATA[int yearIndex = v_startYear - v_year;
 
 //2. Update district heating company
 for(DistrictHeatingCompany DHC : pop_districtHeatingCompanies){
@@ -4731,7 +4779,7 @@ for(J_HomeOwner ho : c_homeOwners){
 f_setExogeneousInsulation();
 
 //10. Count totals - main
-f_countDwellingHeatingMethods();
+f_storeAnnualValues(yearIndex);
 
 
 //11. Count totals - per neighborhood
@@ -4743,7 +4791,7 @@ for(GZ_Neighborhood neighborhood : pop_GZ_Neighborhoods){
 }
 
 //12. Update global costs from learning curve and installed units
-f_updateGlobalCostsHeatingMethods();
+f_updateGlobalCostsHeatingMethods(yearIndex);
 //traceln("Finished adoption in year " + v_year);]]></Body>
 				</Function>
 				<Function AccessType="default" StaticFunction="false">
@@ -5077,36 +5125,22 @@ v_districtHeating_perc = v_districtHeating_nb / households;
 					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1732635161531</Id>
 					<Name><![CDATA[f_updateGlobalCostsHeatingMethods]]></Name>
-					<X>-300</X><Y>850</Y>
+					<X>-300</X><Y>860</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
-					<Body><![CDATA[//if(time() > 1){	
-	//Set units installed last year to update learning curve
-	double unitsInstalledCumulative = 0;
-	
-	for( J_HeatingSystemOptionsGlobal hso : c_heatingSystemOptions ){
-		switch (hso.getType()) {
-	        case NATURAL_GAS_BOILER:
-				unitsInstalledCumulative = f_sumDataset(data_naturalGasBoilers_installedPerYear);
-	            break;
-	        case NATURAL_GAS_BLOCK:
-				unitsInstalledCumulative = f_sumDataset(data_naturalGasBlock_installedPerYear);
-	            break;
-	        case HYBRID_HEAT_PUMP:
-				unitsInstalledCumulative = f_sumDataset(data_hybridHeatPumps_installedPerYear);
-	            break;
-	        case ELECTRIC_HEAT_PUMP:
-				unitsInstalledCumulative = f_sumDataset(data_electricHeatPumps_installedPerYear);
-	            break;
-	        case DISTRICT_HEATING:
-				unitsInstalledCumulative = f_sumDataset(data_districtHeating_installedPerYear);
-	            break;
-	    }	
-		hso.f_updateCapexFromLearningCurve(unitsInstalledCumulative, p_economicLearningFactor);
-	}
-//}		
+					<Parameter>
+						<Name><![CDATA[yearIndex]]></Name>
+						<Type><![CDATA[int]]></Type>
+					</Parameter>
+					<Body><![CDATA[for( J_HeatingSystemOptionsGlobal hso : c_heatingSystemOptions ){
+	OL_HeatingSystem hstype = hso.getType();
+	J_ResultsPerOwnerType results = resultsData.getHeatingMethod(hstype).getResultsPerOwnerType(OL_HouseholdOwnership.TOTAL);
+	int unitsInstalledCumulative = results.getCumulativeIndex(yearIndex);
+	hso.f_updateCapexFromLearningCurve(unitsInstalledCumulative, p_economicLearningFactor);
+}
+
 ]]></Body>
 				</Function>
 				<Function AccessType="default" StaticFunction="false">
@@ -5931,7 +5965,7 @@ for (GZ_Neighborhood neighborhood : pop_GZ_Neighborhoods) {
 					<ShowLabel>true</ShowLabel>
 					<Body><![CDATA[f_setMap();
 f_setText();
-f_setCharts();]]></Body>
+//f_setCharts();]]></Body>
 				</Function>
 				<Function AccessType="default" StaticFunction="false">
 					<ReturnModificator>RETURNS_VALUE</ReturnModificator>
@@ -5988,10 +6022,8 @@ else {
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
 					<Body><![CDATA[//Count heating methods
-f_countDwellingHeatingMethods();
-for(GZ_Neighborhood nbh : pop_GZ_Neighborhoods){
-	nbh.f_countDwellingHeatingMethods();
-}
+int yearIndex = 0;
+f_storeAnnualValues(yearIndex);
 
 //Set inital units installed to global heating system options to calculate learning curves
 f_setInitialUnitsInstalledPerHeatingMethod();
@@ -6677,6 +6709,7 @@ for (GZ_Neighborhood neighborhood : pop_GZ_Neighborhoods) {
 					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1741108861623</Id>
 					<Name><![CDATA[f_countDwellingHeatingMethods]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>-310</X><Y>1110</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -6813,6 +6846,20 @@ v_gasBlockHeating_perc = (double) v_gasBlockHeating_nb / dwellings;
 v_hybridHeatPumps_perc = (double) v_hybridHeatPumps_nb / dwellings;
 v_electricHeatPumps_perc = (double) v_electricHeatPumps_nb / dwellings;
 v_districtHeating_perc = (double) v_districtHeating_nb / dwellings;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -7142,6 +7189,7 @@ for (J_Dwelling dwelling : c_dwellings) {
 					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1743497129260</Id>
 					<Name><![CDATA[f_updateELabelChart]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>100</X><Y>2180</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -7271,11 +7319,11 @@ for(int i = 0; i < simulationYears; i++){
 		x.f_reinforceNeighborhoods();
 	}
 	//f_buildDistrictHeating(p_districtHeatingShortTermYear, p_districtHeatingMediumTermYear, p_districtHeatingLongTermYear, p_districtHeatingThreshold);
-	f_updateDatasets();
+	//f_updateDatasets();
 	traceln("Finished year " + v_year);
 }
 
-f_setCharts();
+//f_setCharts();
 
 double duration = f_traceFunctionTime(v_startRuntime);
 //traceln("Total run time: " + duration + " seconds");
@@ -7295,6 +7343,7 @@ if(v_rapidRun == true){
 					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1746696649693</Id>
 					<Name><![CDATA[f_fillDataSetsStartupAgent]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>100</X><Y>-280</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -7317,6 +7366,7 @@ startup_agent.data_districtHeating_perc = data_districtHeating_perc;]]></Body>
 					<ReturnType><![CDATA[DataSet[]]]></ReturnType>
 					<Id>1747228928176</Id>
 					<Name><![CDATA[f_combineHeatSystemData]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>-630</X><Y>840</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -7406,7 +7456,10 @@ timeStackChart.addDataSet(datasetForTimestackChart, label, color);
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
-					<Body><![CDATA[f_fillDataSetsStartupAgent();
+					<Body><![CDATA[if( !v_rapidRun ){
+	f_writeDataToExampleDwellings();
+}
+
 startup_agent.f_endSimulationRun();
 double duration = f_traceFunctionTime(v_startRuntime);
 f_cleanUp();
@@ -7517,6 +7570,231 @@ for(String postcode : c_SHADwellings_by_postcode.keySet()){
 }
 	]]></Body>
 				</Function>
+				<Function AccessType="default" StaticFunction="false">
+					<ReturnModificator>VOID</ReturnModificator>
+					<ReturnType><![CDATA[double]]></ReturnType>
+					<Id>1765559309000</Id>
+					<Name><![CDATA[f_intializeValidationDwellings]]></Name>
+					<X>-900</X><Y>600</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Body><![CDATA[int targetPerCategory = 2;
+int totalRequired = targetPerCategory 
+    * OL_HeatingSystem.values().length
+    * OL_DwellingType.values().length
+    * OL_HouseholdOwnership.values().length
+    * 5; // 5 construction categories
+int totalSelected = 0;
+
+validationMap = new LinkedHashMap<>();
+
+for( J_Dwelling d : c_dwellings ){
+	if (totalSelected >= totalRequired) { break; }
+	
+	else {
+		String key =
+		    String.valueOf(d.getHeatingSystem().getType()) + "_" +
+		    String.valueOf(d.getDwellingType()) + "_" +
+		    String.valueOf(d.getOwnership()) + "_" +
+		    f_getConstructionYearCategory(d.getConstructionYear());
+		
+		//Initialize list
+		validationMap.putIfAbsent(key, new ArrayList<>());
+		List<J_Dwelling> selected = validationMap.get(key);
+		
+		if( selected.size() < targetPerCategory){
+			selected.add(d);
+			d.f_initializeValidationDwellings();
+			totalSelected++;
+			
+			//traceln("Dwelling " + d.getId() + " fits key " + key);
+		}
+	}
+}
+
+
+
+
+
+]]></Body>
+				</Function>
+				<Function AccessType="default" StaticFunction="false">
+					<ReturnModificator>RETURNS_VALUE</ReturnModificator>
+					<ReturnType><![CDATA[int]]></ReturnType>
+					<Id>1765560240243</Id>
+					<Name><![CDATA[f_getConstructionYearCategory]]></Name>
+					<X>-890</X><Y>620</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Parameter>
+						<Name><![CDATA[constructionYear]]></Name>
+						<Type><![CDATA[int]]></Type>
+					</Parameter>
+					<Body><![CDATA[if (constructionYear < 1960) return 0;
+if (constructionYear < 1980) return 1;
+if (constructionYear < 1996) return 2;
+if (constructionYear < 2010) return 3;
+return 4;]]></Body>
+				</Function>
+				<Function AccessType="default" StaticFunction="false">
+					<ReturnModificator>VOID</ReturnModificator>
+					<ReturnType><![CDATA[double]]></ReturnType>
+					<Id>1765882227111</Id>
+					<Name><![CDATA[f_writeDataToExampleDwellings]]></Name>
+					<X>-1149</X><Y>278</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Body><![CDATA[int rowIndex = 2;
+int columnIndex = 1;
+int sheetIndex = 1;
+ef_exampleDwellings.readFile();
+
+for(J_Dwelling d : c_dwellings){
+	if(d.isValidationDwelling()){
+		columnIndex = 1;
+		List<J_AdoptionData> listAdoptionData = d.getAdoptionDataList();
+		//traceln(listAdoptionData.size() + " size adoption data list");
+		int listIndex = 0;
+		for(J_AdoptionData data : listAdoptionData){
+			if(listIndex == 0){
+				ef_exampleDwellings.setCellValue(d.getId(), sheetIndex, rowIndex, columnIndex);
+				columnIndex++;
+				ef_exampleDwellings.setCellValue(d.getDwellingType().toString(), sheetIndex, rowIndex, columnIndex);
+				columnIndex++;
+				ef_exampleDwellings.setCellValue(d.getOwnership().toString(), sheetIndex, rowIndex, columnIndex);
+				columnIndex++;
+				ef_exampleDwellings.setCellValue(d.getConstructionYear(), sheetIndex, rowIndex, columnIndex);
+				columnIndex++;
+				ef_exampleDwellings.setCellValue(d.getHeatingSystem().getType().toString(), sheetIndex, rowIndex, columnIndex);
+				columnIndex++;
+				ef_exampleDwellings.setCellValue(data.getAge(), sheetIndex, rowIndex, columnIndex);
+				columnIndex++;
+			}
+			else {
+				ef_exampleDwellings.setCellValue(data.getType().toString(), sheetIndex, rowIndex, columnIndex);
+				columnIndex++;
+				ef_exampleDwellings.setCellValue(data.getAdoptionCosts(), sheetIndex, rowIndex, columnIndex);
+				columnIndex++;
+				ef_exampleDwellings.setCellValue(data.getPerceivedUtility(), sheetIndex, rowIndex, columnIndex);
+				columnIndex++;
+			}
+			listIndex++;
+		}
+		rowIndex++;
+	}
+}
+ef_exampleDwellings.writeFile();
+//traceln("Has set example dwellings");]]></Body>
+				</Function>
+				<Function AccessType="default" StaticFunction="false">
+					<ReturnModificator>VOID</ReturnModificator>
+					<ReturnType><![CDATA[double]]></ReturnType>
+					<Id>1769529293613</Id>
+					<Name><![CDATA[f_storeAnnualValues]]></Name>
+					<X>-310</X><Y>1240</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Parameter>
+						<Name><![CDATA[yearIndex]]></Name>
+						<Type><![CDATA[int]]></Type>
+					</Parameter>
+					<Body><![CDATA[// 1️ Create aggregation buckets
+Map<OL_HeatingSystem, Map<OL_HouseholdOwnership, Aggregation>> buckets =
+	new EnumMap<>(OL_HeatingSystem.class);
+
+for (OL_HeatingSystem heating_method : OL_HeatingSystem.values()) {
+	Map<OL_HouseholdOwnership, Aggregation> byOwnership =
+		new EnumMap<>(OL_HouseholdOwnership.class);
+
+	for (OL_HouseholdOwnership ownership : OL_HouseholdOwnership.values()) {
+		byOwnership.put(ownership, new Aggregation());
+	}
+	buckets.put(heating_method, byOwnership);
+}
+
+// 2️ Loop over dwellings and aggregate
+for (J_Dwelling d : c_dwellings) {
+	OL_HeatingSystem heating_method = d.getHeatingSystem().getType();
+	OL_HouseholdOwnership ownership = d.getOwnership();
+
+    buckets.get(heating_method).get(ownership).add(d);
+}
+
+// 3️ Write results into ResultsData
+for (OL_HeatingSystem heating_method : OL_HeatingSystem.values()) {
+	for (OL_HouseholdOwnership ownership : OL_HouseholdOwnership.values()) {
+		
+		J_ResultsPerOwnerType resultsPO = resultsData.getHeatingMethod(heating_method).getResultsPerOwnerType(ownership);
+		
+		Aggregation agg = buckets.get(heating_method).get(ownership);
+
+		int installed = agg.count;
+		int perYear = agg.count;
+		
+		//Set cumulative
+		int previousCumulative = 0;
+		if(yearIndex > 0){
+			previousCumulative = resultsPO.getCumulativeIndex(yearIndex - 1);
+		}
+		int cumulative = previousCumulative + perYear;
+
+		double avgAtt = agg.count > 0 ? agg.sumAtt / agg.count : 0;
+		double avgPercUtil = agg.count > 0 ? agg.sumPercUtil / agg.count : 0;
+		double avgSubNorm = agg.count > 0 ? agg.sumSubNorm / agg.count : 0;
+		double avgEAC = agg.count > 0 ? agg.sumEAC / agg.count : 0;
+		double avgPBC = agg.count > 0 ? agg.sumPBC / agg.count : 0;
+
+		resultsPO.setYear(
+				yearIndex,
+				installed,
+				cumulative,
+				perYear,
+				avgAtt,
+				avgPercUtil,
+				avgSubNorm,
+				avgEAC,
+				avgPBC
+			);
+
+		// update cumulative for next year
+		
+		//previousCumulative.get(heating_method).put(ownership, cumulative);
+		
+		
+    }
+}
+]]></Body>
+				</Function>
+				<Function AccessType="default" StaticFunction="false">
+					<ReturnModificator>VOID</ReturnModificator>
+					<ReturnType><![CDATA[double]]></ReturnType>
+					<Id>1769591167137</Id>
+					<Name><![CDATA[f_initializeAnnualValuesMap]]></Name>
+					<X>-1000</X><Y>1100</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Body><![CDATA[Map<OL_HeatingSystem, Map<OL_HouseholdOwnership, J_AnnualValues>> annualValues =
+        new EnumMap<>(OL_HeatingSystem.class);
+
+for (OL_HeatingSystem heating : OL_HeatingSystem.values()) {
+    Map<OL_HouseholdOwnership, J_AnnualValues> byOwnership = new EnumMap<>(OL_HouseholdOwnership.class);
+    for (OL_HouseholdOwnership owner : OL_HouseholdOwnership.values()) {
+        byOwnership.put(owner, new J_AnnualValues());
+    }
+    annualValues.put(heating, byOwnership);
+}
+]]></Body>
+				</Function>
 			</Functions>
 			<TableFunctions>
 				<TableFunction AccessType="public" StaticFunction="false">
@@ -7558,6 +7836,7 @@ for(String postcode : c_SHADwellings_by_postcode.keySet()){
     			<DataSet>
 					<Id>1704723280525</Id>
 					<Name><![CDATA[data_naturalGasBoilers_nb]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>-360</X><Y>1680</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -7583,6 +7862,7 @@ for(String postcode : c_SHADwellings_by_postcode.keySet()){
     			<DataSet>
 					<Id>1704723351057</Id>
 					<Name><![CDATA[data_districtHeating_nb]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>-360</X><Y>1720</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -7608,6 +7888,7 @@ for(String postcode : c_SHADwellings_by_postcode.keySet()){
     			<DataSet>
 					<Id>1704723375249</Id>
 					<Name><![CDATA[data_electricHeatPumps_nb]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>-360</X><Y>1740</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -7633,6 +7914,7 @@ for(String postcode : c_SHADwellings_by_postcode.keySet()){
     			<DataSet>
 					<Id>1704723391035</Id>
 					<Name><![CDATA[data_hybridHeatPumps_nb]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>-360</X><Y>1760</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -7658,6 +7940,7 @@ for(String postcode : c_SHADwellings_by_postcode.keySet()){
     			<DataSet>
 					<Id>1704898582469</Id>
 					<Name><![CDATA[data_naturalGasBlock_nb]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>-360</X><Y>1700</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -7683,6 +7966,7 @@ for(String postcode : c_SHADwellings_by_postcode.keySet()){
     			<DataSet>
 					<Id>1732631016622</Id>
 					<Name><![CDATA[data_naturalGasBoilers_perc]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>-360</X><Y>1800</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -7708,6 +7992,7 @@ for(String postcode : c_SHADwellings_by_postcode.keySet()){
     			<DataSet>
 					<Id>1732631016649</Id>
 					<Name><![CDATA[data_districtHeating_perc]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>-360</X><Y>1840</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -7733,6 +8018,7 @@ for(String postcode : c_SHADwellings_by_postcode.keySet()){
     			<DataSet>
 					<Id>1732631016660</Id>
 					<Name><![CDATA[data_electricHeatPumps_perc]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>-360</X><Y>1860</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -7758,6 +8044,7 @@ for(String postcode : c_SHADwellings_by_postcode.keySet()){
     			<DataSet>
 					<Id>1732631016668</Id>
 					<Name><![CDATA[data_hybridHeatPumps_perc]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>-360</X><Y>1880</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -7783,6 +8070,7 @@ for(String postcode : c_SHADwellings_by_postcode.keySet()){
     			<DataSet>
 					<Id>1732631016675</Id>
 					<Name><![CDATA[data_naturalGasBlock_perc]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>-360</X><Y>1820</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -7808,6 +8096,7 @@ for(String postcode : c_SHADwellings_by_postcode.keySet()){
     			<DataSet>
 					<Id>1732642727824</Id>
 					<Name><![CDATA[data_naturalGasBoilers_avgEAC]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>-360</X><Y>2030</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -7833,6 +8122,7 @@ for(String postcode : c_SHADwellings_by_postcode.keySet()){
     			<DataSet>
 					<Id>1732642727835</Id>
 					<Name><![CDATA[data_districtHeating_avgEAC]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>-360</X><Y>2070</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -7858,6 +8148,7 @@ for(String postcode : c_SHADwellings_by_postcode.keySet()){
     			<DataSet>
 					<Id>1732642727842</Id>
 					<Name><![CDATA[data_electricHeatPumps_avgEAC]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>-360</X><Y>2090</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -7883,6 +8174,7 @@ for(String postcode : c_SHADwellings_by_postcode.keySet()){
     			<DataSet>
 					<Id>1732642727850</Id>
 					<Name><![CDATA[data_hybridHeatPumps_avgEAC]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>-360</X><Y>2110</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -7908,6 +8200,7 @@ for(String postcode : c_SHADwellings_by_postcode.keySet()){
     			<DataSet>
 					<Id>1732642727857</Id>
 					<Name><![CDATA[data_naturalGasBlock_avgEAC]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>-360</X><Y>2050</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -7933,6 +8226,7 @@ for(String postcode : c_SHADwellings_by_postcode.keySet()){
     			<DataSet>
 					<Id>1732721763945</Id>
 					<Name><![CDATA[data_naturalGasBoilers_installedPerYear]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>-360</X><Y>1910</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -7958,6 +8252,7 @@ for(String postcode : c_SHADwellings_by_postcode.keySet()){
     			<DataSet>
 					<Id>1732721763962</Id>
 					<Name><![CDATA[data_districtHeating_installedPerYear]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>-360</X><Y>1950</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -7983,6 +8278,7 @@ for(String postcode : c_SHADwellings_by_postcode.keySet()){
     			<DataSet>
 					<Id>1732721763972</Id>
 					<Name><![CDATA[data_electricHeatPumps_installedPerYear]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>-360</X><Y>1970</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -8008,6 +8304,7 @@ for(String postcode : c_SHADwellings_by_postcode.keySet()){
     			<DataSet>
 					<Id>1732721763982</Id>
 					<Name><![CDATA[data_hybridHeatPumps_installedPerYear]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>-360</X><Y>1990</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -8033,6 +8330,7 @@ for(String postcode : c_SHADwellings_by_postcode.keySet()){
     			<DataSet>
 					<Id>1732721763990</Id>
 					<Name><![CDATA[data_naturalGasBlock_installedPerYear]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>-360</X><Y>1930</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -8058,6 +8356,7 @@ for(String postcode : c_SHADwellings_by_postcode.keySet()){
     			<DataSet>
 					<Id>1733243650414</Id>
 					<Name><![CDATA[data_naturalGasBoilers_capex]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>-360</X><Y>2150</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -8083,6 +8382,7 @@ for(String postcode : c_SHADwellings_by_postcode.keySet()){
     			<DataSet>
 					<Id>1733243650450</Id>
 					<Name><![CDATA[data_districtHeating_capex]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>-360</X><Y>2190</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -8108,6 +8408,7 @@ for(String postcode : c_SHADwellings_by_postcode.keySet()){
     			<DataSet>
 					<Id>1733243650460</Id>
 					<Name><![CDATA[data_electricHeatPumps_capex]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>-360</X><Y>2210</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -8133,6 +8434,7 @@ for(String postcode : c_SHADwellings_by_postcode.keySet()){
     			<DataSet>
 					<Id>1733243650468</Id>
 					<Name><![CDATA[data_hybridHeatPumps_capex]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>-360</X><Y>2230</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -8158,6 +8460,7 @@ for(String postcode : c_SHADwellings_by_postcode.keySet()){
     			<DataSet>
 					<Id>1733243650476</Id>
 					<Name><![CDATA[data_naturalGasBlock_capex]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>-360</X><Y>2170</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -8421,6 +8724,7 @@ for(String postcode : c_SHADwellings_by_postcode.keySet()){
     			<DataSet>
 					<Id>1733817352065</Id>
 					<Name><![CDATA[data_naturalGasBoilers_avgSubjectiveNorm]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>-360</X><Y>2270</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -8446,6 +8750,7 @@ for(String postcode : c_SHADwellings_by_postcode.keySet()){
     			<DataSet>
 					<Id>1733817352077</Id>
 					<Name><![CDATA[data_districtHeating_avgSubjectiveNorm]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>-360</X><Y>2310</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -8471,6 +8776,7 @@ for(String postcode : c_SHADwellings_by_postcode.keySet()){
     			<DataSet>
 					<Id>1733817352088</Id>
 					<Name><![CDATA[data_electricHeatPumps_avgSubjectiveNorm]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>-360</X><Y>2330</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -8496,6 +8802,7 @@ for(String postcode : c_SHADwellings_by_postcode.keySet()){
     			<DataSet>
 					<Id>1733817352100</Id>
 					<Name><![CDATA[data_hybridHeatPumps_avgSubjectiveNorm]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>-360</X><Y>2350</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -8521,6 +8828,7 @@ for(String postcode : c_SHADwellings_by_postcode.keySet()){
     			<DataSet>
 					<Id>1733817352110</Id>
 					<Name><![CDATA[data_naturalGasBlock_avgSubjectiveNorm]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>-360</X><Y>2290</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -8546,6 +8854,7 @@ for(String postcode : c_SHADwellings_by_postcode.keySet()){
     			<DataSet>
 					<Id>1733817356520</Id>
 					<Name><![CDATA[data_naturalGasBoilers_avgPerceivedUtility]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>-360</X><Y>2390</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -8571,6 +8880,7 @@ for(String postcode : c_SHADwellings_by_postcode.keySet()){
     			<DataSet>
 					<Id>1733817356528</Id>
 					<Name><![CDATA[data_districtHeating_avgPerceivedUtility]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>-360</X><Y>2430</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -8596,6 +8906,7 @@ for(String postcode : c_SHADwellings_by_postcode.keySet()){
     			<DataSet>
 					<Id>1733817356538</Id>
 					<Name><![CDATA[data_electricHeatPumps_avgPerceivedUtility]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>-360</X><Y>2450</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -8621,6 +8932,7 @@ for(String postcode : c_SHADwellings_by_postcode.keySet()){
     			<DataSet>
 					<Id>1733817356547</Id>
 					<Name><![CDATA[data_hybridHeatPumps_avgPerceivedUtility]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>-360</X><Y>2470</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -8646,6 +8958,7 @@ for(String postcode : c_SHADwellings_by_postcode.keySet()){
     			<DataSet>
 					<Id>1733817356556</Id>
 					<Name><![CDATA[data_naturalGasBlock_avgPerceivedUtility]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>-360</X><Y>2410</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -9249,6 +9562,7 @@ for(String postcode : c_SHADwellings_by_postcode.keySet()){
     			<DataSet>
 					<Id>1744274545782</Id>
 					<Name><![CDATA[data_naturalGasBoilers_avgAttitudeValue]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>-360</X><Y>2510</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -9274,6 +9588,7 @@ for(String postcode : c_SHADwellings_by_postcode.keySet()){
     			<DataSet>
 					<Id>1744274545808</Id>
 					<Name><![CDATA[data_districtHeating_avgAttitudeValue]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>-360</X><Y>2550</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -9299,6 +9614,7 @@ for(String postcode : c_SHADwellings_by_postcode.keySet()){
     			<DataSet>
 					<Id>1744274545829</Id>
 					<Name><![CDATA[data_electricHeatPumps_avgAttitudeValue]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>-360</X><Y>2570</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -9324,6 +9640,7 @@ for(String postcode : c_SHADwellings_by_postcode.keySet()){
     			<DataSet>
 					<Id>1744274545850</Id>
 					<Name><![CDATA[data_hybridHeatPumps_avgAttitudeValue]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>-360</X><Y>2590</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -9349,6 +9666,7 @@ for(String postcode : c_SHADwellings_by_postcode.keySet()){
     			<DataSet>
 					<Id>1744274545870</Id>
 					<Name><![CDATA[data_naturalGasBlock_avgAttitudeValue]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>-360</X><Y>2530</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -9408,6 +9726,7 @@ for(String postcode : c_SHADwellings_by_postcode.keySet()){
     			<DataSet>
 					<Id>1747232572475</Id>
 					<Name><![CDATA[datasetForTimestackChart]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>-640</X><Y>2500</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -9433,6 +9752,7 @@ for(String postcode : c_SHADwellings_by_postcode.keySet()){
     			<DataSet>
 					<Id>1749131259609</Id>
 					<Name><![CDATA[data_naturalGasBoilers_avgPBC]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>-360</X><Y>2620</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -9458,6 +9778,7 @@ for(String postcode : c_SHADwellings_by_postcode.keySet()){
     			<DataSet>
 					<Id>1749131259618</Id>
 					<Name><![CDATA[data_districtHeating_avgPBC]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>-360</X><Y>2660</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -9483,6 +9804,7 @@ for(String postcode : c_SHADwellings_by_postcode.keySet()){
     			<DataSet>
 					<Id>1749131259625</Id>
 					<Name><![CDATA[data_electricHeatPumps_avgPBC]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>-360</X><Y>2680</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -9508,6 +9830,7 @@ for(String postcode : c_SHADwellings_by_postcode.keySet()){
     			<DataSet>
 					<Id>1749131259633</Id>
 					<Name><![CDATA[data_hybridHeatPumps_avgPBC]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>-360</X><Y>2700</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -9533,6 +9856,7 @@ for(String postcode : c_SHADwellings_by_postcode.keySet()){
     			<DataSet>
 					<Id>1749131259640</Id>
 					<Name><![CDATA[data_naturalGasBlock_avgPBC]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>-360</X><Y>2640</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -9558,6 +9882,7 @@ for(String postcode : c_SHADwellings_by_postcode.keySet()){
     			<DataSet>
 					<Id>1749719245222</Id>
 					<Name><![CDATA[data_ho_naturalGasBoilers_nb]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>-620</X><Y>1680</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -9583,6 +9908,7 @@ for(String postcode : c_SHADwellings_by_postcode.keySet()){
     			<DataSet>
 					<Id>1749719245231</Id>
 					<Name><![CDATA[data_ho_districtHeating_nb]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>-620</X><Y>1720</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -9608,6 +9934,7 @@ for(String postcode : c_SHADwellings_by_postcode.keySet()){
     			<DataSet>
 					<Id>1749719245239</Id>
 					<Name><![CDATA[data_ho_electricHeatPumps_nb]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>-620</X><Y>1740</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -9633,6 +9960,7 @@ for(String postcode : c_SHADwellings_by_postcode.keySet()){
     			<DataSet>
 					<Id>1749719245248</Id>
 					<Name><![CDATA[data_ho_hybridHeatPumps_nb]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>-620</X><Y>1760</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -9658,6 +9986,7 @@ for(String postcode : c_SHADwellings_by_postcode.keySet()){
     			<DataSet>
 					<Id>1749719245257</Id>
 					<Name><![CDATA[data_ho_naturalGasBlock_nb]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>-620</X><Y>1700</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -9683,6 +10012,7 @@ for(String postcode : c_SHADwellings_by_postcode.keySet()){
     			<DataSet>
 					<Id>1750697857590</Id>
 					<Name><![CDATA[data_ll_naturalGasBoilers_nb]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>-620</X><Y>1800</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -9708,6 +10038,7 @@ for(String postcode : c_SHADwellings_by_postcode.keySet()){
     			<DataSet>
 					<Id>1750697857621</Id>
 					<Name><![CDATA[data_ll_districtHeating_nb]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>-620</X><Y>1840</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -9733,6 +10064,7 @@ for(String postcode : c_SHADwellings_by_postcode.keySet()){
     			<DataSet>
 					<Id>1750697857627</Id>
 					<Name><![CDATA[data_ll_electricHeatPumps_nb]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>-620</X><Y>1860</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -9758,6 +10090,7 @@ for(String postcode : c_SHADwellings_by_postcode.keySet()){
     			<DataSet>
 					<Id>1750697857642</Id>
 					<Name><![CDATA[data_ll_hybridHeatPumps_nb]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>-620</X><Y>1880</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -9783,6 +10116,7 @@ for(String postcode : c_SHADwellings_by_postcode.keySet()){
     			<DataSet>
 					<Id>1750697857658</Id>
 					<Name><![CDATA[data_ll_naturalGasBlock_nb]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>-620</X><Y>1820</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -9808,6 +10142,7 @@ for(String postcode : c_SHADwellings_by_postcode.keySet()){
     			<DataSet>
 					<Id>1750697893268</Id>
 					<Name><![CDATA[data_sha_naturalGasBoilers_nb]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>-620</X><Y>1920</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -9833,6 +10168,7 @@ for(String postcode : c_SHADwellings_by_postcode.keySet()){
     			<DataSet>
 					<Id>1750697893278</Id>
 					<Name><![CDATA[data_sha_districtHeating_nb]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>-620</X><Y>1960</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -9858,6 +10194,7 @@ for(String postcode : c_SHADwellings_by_postcode.keySet()){
     			<DataSet>
 					<Id>1750697893288</Id>
 					<Name><![CDATA[data_sha_electricHeatPumps_nb]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>-620</X><Y>1980</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -9883,6 +10220,7 @@ for(String postcode : c_SHADwellings_by_postcode.keySet()){
     			<DataSet>
 					<Id>1750697893294</Id>
 					<Name><![CDATA[data_sha_hybridHeatPumps_nb]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>-620</X><Y>2000</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -9908,6 +10246,7 @@ for(String postcode : c_SHADwellings_by_postcode.keySet()){
     			<DataSet>
 					<Id>1750697893302</Id>
 					<Name><![CDATA[data_sha_naturalGasBlock_nb]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>-620</X><Y>1940</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -9965,6 +10304,22 @@ for(String postcode : c_SHADwellings_by_postcode.keySet()){
 					<SaveInSnapshot>false</SaveInSnapshot>
 					<LoadOnStartup>false</LoadOnStartup>
 					<SaveOnDispose>false</SaveOnDispose>
+				</ExcelFile>
+				<ExcelFile>
+					<Id>1765882227113</Id>
+					<Name><![CDATA[ef_exampleDwellings]]></Name>
+					<X>-1149</X><Y>318</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<ResourceReference>
+						<PackageName><![CDATA[heat_transition_tipping_pathways]]></PackageName>
+						<ClassName><![CDATA[_exampleDwellings.xlsx]]></ClassName>
+					</ResourceReference>
+					<SaveInSnapshot>false</SaveInSnapshot>
+					<LoadOnStartup>true</LoadOnStartup>
+					<SaveOnDispose>true</SaveOnDispose>
 				</ExcelFile>
 			</Connectivity>
 			<AgentLinks>
@@ -10593,6 +10948,7 @@ for(String postcode : c_SHADwellings_by_postcode.keySet()){
     			<TimePlot>
 					<Id>1694513336850</Id>
 					<Name><![CDATA[pl_averageSubjectiveNorm]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>830</X><Y>910</Y>
 					<Label><X>0</X><Y>-10</Y></Label>
 					<PublicFlag>true</PublicFlag>
@@ -10686,12 +11042,10 @@ for(String postcode : c_SHADwellings_by_postcode.keySet()){
 					<BorderColor>-4144960</BorderColor>
 					<FillColor>-1</FillColor>
 					<ShowTiles>true</ShowTiles>
-					<TileURLProvider>ANYLOGIC</TileURLProvider>
 					<CustomTileURL>false</CustomTileURL>
 					<TileURL><![CDATA[https://a.tile.openstreetmap.org/[zoom]/[x]/[y].png]]></TileURL>				
 					<RouteProviderType>WEB_SERVICE</RouteProviderType>
 					<RouteNotFound>CREATE_STRAIGHT_LINE</RouteNotFound>
-					<OnlineRouteProvider>ANYLOGIC</OnlineRouteProvider>
 					<TransportType>CAR</TransportType>
 					<RoutingMethod>FASTEST</RoutingMethod>
 					<PathfindingAlgorithm>DIJKSTRABI</PathfindingAlgorithm>
@@ -10708,6 +11062,7 @@ for(String postcode : c_SHADwellings_by_postcode.keySet()){
     			<TimeStackChart>
 					<Id>1704722943229</Id>
 					<Name><![CDATA[ch_heatingMethodStackChart]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>830</X><Y>60</Y>
 					<Label><X>0</X><Y>-10</Y></Label>
 					<PublicFlag>true</PublicFlag>
@@ -11301,6 +11656,7 @@ for(String postcode : c_SHADwellings_by_postcode.keySet()){
     			<Histogram>
 					<Id>1733387978817</Id>
 					<Name><![CDATA[hist_hsNaturalGasBoilerEAC]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>1740</X><Y>1200</Y>
 					<Label><X>0</X><Y>-10</Y></Label>
 					<PublicFlag>true</PublicFlag>
@@ -11368,6 +11724,7 @@ for(String postcode : c_SHADwellings_by_postcode.keySet()){
     			<Histogram>
 					<Id>1733387981491</Id>
 					<Name><![CDATA[hist_hsAge]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>1740</X><Y>60</Y>
 					<Label><X>0</X><Y>-10</Y></Label>
 					<PublicFlag>true</PublicFlag>
@@ -11435,6 +11792,7 @@ for(String postcode : c_SHADwellings_by_postcode.keySet()){
     			<Histogram>
 					<Id>1733388043081</Id>
 					<Name><![CDATA[hist_hsHeatDemand]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>1970</X><Y>60</Y>
 					<Label><X>0</X><Y>-10</Y></Label>
 					<PublicFlag>true</PublicFlag>
@@ -11502,6 +11860,7 @@ for(String postcode : c_SHADwellings_by_postcode.keySet()){
     			<BarChart>
 					<Id>1733391414771</Id>
 					<Name><![CDATA[ch_barTopRank]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>1510</X><Y>60</Y>
 					<Label><X>0</X><Y>-10</Y></Label>
 					<PublicFlag>true</PublicFlag>
@@ -11558,6 +11917,7 @@ for(String postcode : c_SHADwellings_by_postcode.keySet()){
     			<Histogram>
 					<Id>1733482191638</Id>
 					<Name><![CDATA[hist_hsNaturalGasBlockEAC]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>1970</X><Y>1200</Y>
 					<Label><X>0</X><Y>-10</Y></Label>
 					<PublicFlag>true</PublicFlag>
@@ -11625,6 +11985,7 @@ for(String postcode : c_SHADwellings_by_postcode.keySet()){
     			<Histogram>
 					<Id>1733482228050</Id>
 					<Name><![CDATA[hist_hsEAC_HHP]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>1740</X><Y>1400</Y>
 					<Label><X>0</X><Y>-10</Y></Label>
 					<PublicFlag>true</PublicFlag>
@@ -11692,6 +12053,7 @@ for(String postcode : c_SHADwellings_by_postcode.keySet()){
     			<Histogram>
 					<Id>1733482234787</Id>
 					<Name><![CDATA[hist_hsEAC_EHP]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>1970</X><Y>1400</Y>
 					<Label><X>0</X><Y>-10</Y></Label>
 					<PublicFlag>true</PublicFlag>
@@ -11759,6 +12121,7 @@ for(String postcode : c_SHADwellings_by_postcode.keySet()){
     			<Histogram>
 					<Id>1733482241117</Id>
 					<Name><![CDATA[hist_hsEAC_DH]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>2200</X><Y>1400</Y>
 					<Label><X>0</X><Y>-10</Y></Label>
 					<PublicFlag>true</PublicFlag>
@@ -11826,6 +12189,7 @@ for(String postcode : c_SHADwellings_by_postcode.keySet()){
 				<Text>
 					<Id>1733482540889</Id>
 					<Name><![CDATA[t_ranked_heating_method]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>1550</X><Y>45</Y>
 					<Label><X>0</X><Y>-10</Y></Label>
 					<PublicFlag>true</PublicFlag>
@@ -11847,6 +12211,7 @@ for(String postcode : c_SHADwellings_by_postcode.keySet()){
 				<Text>
 					<Id>1733482577777</Id>
 					<Name><![CDATA[t_histrograms_title]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>1780</X><Y>45</Y>
 					<Label><X>0</X><Y>-10</Y></Label>
 					<PublicFlag>true</PublicFlag>
@@ -11868,6 +12233,7 @@ for(String postcode : c_SHADwellings_by_postcode.keySet()){
 				<Text>
 					<Id>1733482674597</Id>
 					<Name><![CDATA[t_histrograms_title1]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>870</X><Y>885</Y>
 					<Label><X>0</X><Y>-10</Y></Label>
 					<PublicFlag>true</PublicFlag>
@@ -11889,6 +12255,7 @@ for(String postcode : c_SHADwellings_by_postcode.keySet()){
 				<Text>
 					<Id>1733482777809</Id>
 					<Name><![CDATA[t_histrograms_title2]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>870</X><Y>45</Y>
 					<Label><X>0</X><Y>-10</Y></Label>
 					<PublicFlag>true</PublicFlag>
@@ -11910,6 +12277,7 @@ for(String postcode : c_SHADwellings_by_postcode.keySet()){
     			<TimePlot>
 					<Id>1733482833251</Id>
 					<Name><![CDATA[pl_averagePerceivedUtility]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>830</X><Y>640</Y>
 					<Label><X>0</X><Y>-10</Y></Label>
 					<PublicFlag>true</PublicFlag>
@@ -11970,6 +12338,7 @@ for(String postcode : c_SHADwellings_by_postcode.keySet()){
 				<Text>
 					<Id>1733482833253</Id>
 					<Name><![CDATA[t_histrograms_title3]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>870</X><Y>615</Y>
 					<Label><X>0</X><Y>-10</Y></Label>
 					<PublicFlag>true</PublicFlag>
@@ -11991,6 +12360,7 @@ for(String postcode : c_SHADwellings_by_postcode.keySet()){
     			<TimePlot>
 					<Id>1733816675189</Id>
 					<Name><![CDATA[pl_investmentCosts]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>830</X><Y>1730</Y>
 					<Label><X>0</X><Y>-10</Y></Label>
 					<PublicFlag>true</PublicFlag>
@@ -12051,6 +12421,7 @@ for(String postcode : c_SHADwellings_by_postcode.keySet()){
 				<Text>
 					<Id>1733816675200</Id>
 					<Name><![CDATA[t_histrograms_title4]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>870</X><Y>1435</Y>
 					<Label><X>0</X><Y>-10</Y></Label>
 					<PublicFlag>true</PublicFlag>
@@ -12072,6 +12443,7 @@ for(String postcode : c_SHADwellings_by_postcode.keySet()){
     			<TimePlot>
 					<Id>1733816675203</Id>
 					<Name><![CDATA[pl_averageEAC]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>830</X><Y>1460</Y>
 					<Label><X>0</X><Y>-10</Y></Label>
 					<PublicFlag>true</PublicFlag>
@@ -12132,6 +12504,7 @@ for(String postcode : c_SHADwellings_by_postcode.keySet()){
 				<Text>
 					<Id>1733816675205</Id>
 					<Name><![CDATA[t_histrograms_title5]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>870</X><Y>1705</Y>
 					<Label><X>0</X><Y>-10</Y></Label>
 					<PublicFlag>true</PublicFlag>
@@ -12153,6 +12526,7 @@ for(String postcode : c_SHADwellings_by_postcode.keySet()){
     			<Histogram>
 					<Id>1733833419253</Id>
 					<Name><![CDATA[hist_hsPerceivedUtility_NaturalGasBlock]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>1970</X><Y>300</Y>
 					<Label><X>0</X><Y>-10</Y></Label>
 					<PublicFlag>true</PublicFlag>
@@ -12220,6 +12594,7 @@ for(String postcode : c_SHADwellings_by_postcode.keySet()){
     			<Histogram>
 					<Id>1733833419257</Id>
 					<Name><![CDATA[hist_hsPerceivedUtility_HHP]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>1740</X><Y>500</Y>
 					<Label><X>0</X><Y>-10</Y></Label>
 					<PublicFlag>true</PublicFlag>
@@ -12287,6 +12662,7 @@ for(String postcode : c_SHADwellings_by_postcode.keySet()){
     			<Histogram>
 					<Id>1733833419261</Id>
 					<Name><![CDATA[hist_hsPerceivedUtility_DH]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>2200</X><Y>500</Y>
 					<Label><X>0</X><Y>-10</Y></Label>
 					<PublicFlag>true</PublicFlag>
@@ -12354,6 +12730,7 @@ for(String postcode : c_SHADwellings_by_postcode.keySet()){
     			<Histogram>
 					<Id>1733833419265</Id>
 					<Name><![CDATA[hist_hsPerceivedUtility_NaturalGasBoiler]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>1740</X><Y>300</Y>
 					<Label><X>0</X><Y>-10</Y></Label>
 					<PublicFlag>true</PublicFlag>
@@ -12421,6 +12798,7 @@ for(String postcode : c_SHADwellings_by_postcode.keySet()){
     			<Histogram>
 					<Id>1733833419269</Id>
 					<Name><![CDATA[hist_hsPerceivedUtility_EHP]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>1970</X><Y>500</Y>
 					<Label><X>0</X><Y>-10</Y></Label>
 					<PublicFlag>true</PublicFlag>
@@ -12488,6 +12866,7 @@ for(String postcode : c_SHADwellings_by_postcode.keySet()){
     			<Histogram>
 					<Id>1733833710672</Id>
 					<Name><![CDATA[hist_hsSubjectiveNorm_DH]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>2200</X><Y>950</Y>
 					<Label><X>0</X><Y>-10</Y></Label>
 					<PublicFlag>true</PublicFlag>
@@ -12555,6 +12934,7 @@ for(String postcode : c_SHADwellings_by_postcode.keySet()){
     			<Histogram>
 					<Id>1733833710676</Id>
 					<Name><![CDATA[hist_hsSubjectiveNorm_HHP]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>1740</X><Y>950</Y>
 					<Label><X>0</X><Y>-10</Y></Label>
 					<PublicFlag>true</PublicFlag>
@@ -12622,6 +13002,7 @@ for(String postcode : c_SHADwellings_by_postcode.keySet()){
     			<Histogram>
 					<Id>1733833710680</Id>
 					<Name><![CDATA[hist_hsSubjectiveNorm_NaturalGasBlock]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>1970</X><Y>750</Y>
 					<Label><X>0</X><Y>-10</Y></Label>
 					<PublicFlag>true</PublicFlag>
@@ -12689,6 +13070,7 @@ for(String postcode : c_SHADwellings_by_postcode.keySet()){
     			<Histogram>
 					<Id>1733833710684</Id>
 					<Name><![CDATA[hist_hsSubjectiveNorm_EHP]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>1970</X><Y>950</Y>
 					<Label><X>0</X><Y>-10</Y></Label>
 					<PublicFlag>true</PublicFlag>
@@ -12756,6 +13138,7 @@ for(String postcode : c_SHADwellings_by_postcode.keySet()){
     			<Histogram>
 					<Id>1733833710688</Id>
 					<Name><![CDATA[hist_hsSubjectiveNorm_NaturalGasBoiler]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>1740</X><Y>750</Y>
 					<Label><X>0</X><Y>-10</Y></Label>
 					<PublicFlag>true</PublicFlag>
@@ -12823,6 +13206,7 @@ for(String postcode : c_SHADwellings_by_postcode.keySet()){
 				<Text>
 					<Id>1733833746875</Id>
 					<Name><![CDATA[t_histrograms_title6]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>1760</X><Y>1180</Y>
 					<Label><X>0</X><Y>-10</Y></Label>
 					<PublicFlag>true</PublicFlag>
@@ -12844,6 +13228,7 @@ for(String postcode : c_SHADwellings_by_postcode.keySet()){
 				<Text>
 					<Id>1733833758235</Id>
 					<Name><![CDATA[t_histrograms_title7]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>1760</X><Y>740</Y>
 					<Label><X>0</X><Y>-10</Y></Label>
 					<PublicFlag>true</PublicFlag>
@@ -12865,6 +13250,7 @@ for(String postcode : c_SHADwellings_by_postcode.keySet()){
 				<Text>
 					<Id>1733833776282</Id>
 					<Name><![CDATA[t_histrograms_title8]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>1760</X><Y>280</Y>
 					<Label><X>0</X><Y>-10</Y></Label>
 					<PublicFlag>true</PublicFlag>
@@ -13133,6 +13519,7 @@ f_setMapColor(mapMode);]]></ActionCode>
     			<Histogram>
 					<Id>1741789958674</Id>
 					<Name><![CDATA[hist_electricityDemand]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>2450</X><Y>60</Y>
 					<Label><X>0</X><Y>-10</Y></Label>
 					<PublicFlag>true</PublicFlag>
@@ -13200,6 +13587,7 @@ f_setMapColor(mapMode);]]></ActionCode>
     			<Histogram>
 					<Id>1741789966045</Id>
 					<Name><![CDATA[hist_heatDemand]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>2680</X><Y>60</Y>
 					<Label><X>0</X><Y>-10</Y></Label>
 					<PublicFlag>true</PublicFlag>
@@ -13267,6 +13655,7 @@ f_setMapColor(mapMode);]]></ActionCode>
     			<BarChart>
 					<Id>1743494224554</Id>
 					<Name><![CDATA[ch_energyLabel]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>2450</X><Y>320</Y>
 					<Label><X>0</X><Y>-10</Y></Label>
 					<PublicFlag>true</PublicFlag>
@@ -13393,6 +13782,7 @@ f_setMapColor(mapMode);]]></ActionCode>
     			<Histogram>
 					<Id>1744271733977</Id>
 					<Name><![CDATA[hist_hsAttitudeValue_NaturalGasBoiler]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>1740</X><Y>1660</Y>
 					<Label><X>0</X><Y>-10</Y></Label>
 					<PublicFlag>true</PublicFlag>
@@ -13460,6 +13850,7 @@ f_setMapColor(mapMode);]]></ActionCode>
     			<Histogram>
 					<Id>1744271734057</Id>
 					<Name><![CDATA[hist_hsAttitudeValue_DH]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>2200</X><Y>1860</Y>
 					<Label><X>0</X><Y>-10</Y></Label>
 					<PublicFlag>true</PublicFlag>
@@ -13527,6 +13918,7 @@ f_setMapColor(mapMode);]]></ActionCode>
     			<Histogram>
 					<Id>1744271734082</Id>
 					<Name><![CDATA[hist_hsAttitudeValue_HHP]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>1740</X><Y>1860</Y>
 					<Label><X>0</X><Y>-10</Y></Label>
 					<PublicFlag>true</PublicFlag>
@@ -13594,6 +13986,7 @@ f_setMapColor(mapMode);]]></ActionCode>
 				<Text>
 					<Id>1744271734110</Id>
 					<Name><![CDATA[t_histrograms_title9]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>1760</X><Y>1650</Y>
 					<Label><X>0</X><Y>-10</Y></Label>
 					<PublicFlag>true</PublicFlag>
@@ -13615,6 +14008,7 @@ f_setMapColor(mapMode);]]></ActionCode>
     			<Histogram>
 					<Id>1744271734114</Id>
 					<Name><![CDATA[hist_hsAttitudeValue_NaturalGasBlock]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>1970</X><Y>1660</Y>
 					<Label><X>0</X><Y>-10</Y></Label>
 					<PublicFlag>true</PublicFlag>
@@ -13682,6 +14076,7 @@ f_setMapColor(mapMode);]]></ActionCode>
     			<Histogram>
 					<Id>1744271734143</Id>
 					<Name><![CDATA[hist_hsAttitudeValue_EHP]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>1970</X><Y>1860</Y>
 					<Label><X>0</X><Y>-10</Y></Label>
 					<PublicFlag>true</PublicFlag>
@@ -13749,6 +14144,7 @@ f_setMapColor(mapMode);]]></ActionCode>
     			<TimePlot>
 					<Id>1744274611541</Id>
 					<Name><![CDATA[pl_averageAttitudeValue]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>830</X><Y>1970</Y>
 					<Label><X>0</X><Y>-10</Y></Label>
 					<PublicFlag>true</PublicFlag>
@@ -13809,6 +14205,7 @@ f_setMapColor(mapMode);]]></ActionCode>
 				<Text>
 					<Id>1744274623003</Id>
 					<Name><![CDATA[t_histrograms_title10]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>870</X><Y>1950</Y>
 					<Label><X>0</X><Y>-10</Y></Label>
 					<PublicFlag>true</PublicFlag>
@@ -13830,6 +14227,7 @@ f_setMapColor(mapMode);]]></ActionCode>
     			<Histogram>
 					<Id>1744280352850</Id>
 					<Name><![CDATA[hist_hsSustainabilityAttitude]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>2200</X><Y>60</Y>
 					<Label><X>0</X><Y>-10</Y></Label>
 					<PublicFlag>true</PublicFlag>
@@ -14442,6 +14840,7 @@ f_setMapColor(mapMode);]]></ActionCode>
     			<TimePlot>
 					<Id>1749130847364</Id>
 					<Name><![CDATA[pl_averagePBC]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>830</X><Y>1200</Y>
 					<Label><X>0</X><Y>-10</Y></Label>
 					<PublicFlag>true</PublicFlag>
@@ -14502,6 +14901,7 @@ f_setMapColor(mapMode);]]></ActionCode>
 				<Text>
 					<Id>1749130847370</Id>
 					<Name><![CDATA[t_histrograms_title17]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>870</X><Y>1175</Y>
 					<Label><X>0</X><Y>-10</Y></Label>
 					<PublicFlag>true</PublicFlag>
@@ -14523,6 +14923,7 @@ f_setMapColor(mapMode);]]></ActionCode>
     			<TimeStackChart>
 					<Id>1749719041704</Id>
 					<Name><![CDATA[ch_hoHeatingMethodStackChart]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>830</X><Y>360</Y>
 					<Label><X>0</X><Y>-10</Y></Label>
 					<PublicFlag>true</PublicFlag>
@@ -14579,6 +14980,7 @@ f_setMapColor(mapMode);]]></ActionCode>
 				<Text>
 					<Id>1749719041709</Id>
 					<Name><![CDATA[t_histrograms_title18]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>870</X><Y>345</Y>
 					<Label><X>0</X><Y>-10</Y></Label>
 					<PublicFlag>true</PublicFlag>
@@ -14600,6 +15002,7 @@ f_setMapColor(mapMode);]]></ActionCode>
     			<TimeStackChart>
 					<Id>1750697602664</Id>
 					<Name><![CDATA[ch_shaHeatingMethodStackChart]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>840</X><Y>-260</Y>
 					<Label><X>0</X><Y>-10</Y></Label>
 					<PublicFlag>true</PublicFlag>
@@ -14656,6 +15059,7 @@ f_setMapColor(mapMode);]]></ActionCode>
 				<Text>
 					<Id>1750697602671</Id>
 					<Name><![CDATA[t_histrograms_title19]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>880</X><Y>-275</Y>
 					<Label><X>0</X><Y>-10</Y></Label>
 					<PublicFlag>true</PublicFlag>
@@ -14677,6 +15081,7 @@ f_setMapColor(mapMode);]]></ActionCode>
     			<TimeStackChart>
 					<Id>1750697606979</Id>
 					<Name><![CDATA[ch_llHeatingMethodStackChart]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>840</X><Y>-580</Y>
 					<Label><X>0</X><Y>-10</Y></Label>
 					<PublicFlag>true</PublicFlag>
@@ -14733,6 +15138,7 @@ f_setMapColor(mapMode);]]></ActionCode>
 				<Text>
 					<Id>1750697606985</Id>
 					<Name><![CDATA[t_histrograms_title20]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>880</X><Y>-595</Y>
 					<Label><X>0</X><Y>-10</Y></Label>
 					<PublicFlag>true</PublicFlag>
@@ -18835,6 +19241,7 @@ for(GZ_Neighborhood neighborhood : main.pop_GZ_Neighborhoods){
 			else {
 				x.f_setDHPossible();
 			}
+			traceln("District heating is expanded to NBH " + neighborhood.getId());
 		}
 	}
 }
@@ -19091,7 +19498,7 @@ else {
 }
 	
 //Count
-f_countHeatingMethods();	
+//f_countHeatingMethods();	
 	]]></Body>
 				</Function>
 				<Function AccessType="default" StaticFunction="false">
@@ -19147,6 +19554,7 @@ if(nbh.p_policyPlan != null){
 					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1741688626400</Id>
 					<Name><![CDATA[f_countHeatingMethods]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>50</X><Y>170</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -19258,6 +19666,7 @@ main.f_updateBarTopRank(ch_barTopRank, main.c_dwellingsSocialHousing);
 					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1741698645184</Id>
 					<Name><![CDATA[f_setCharts]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>50</X><Y>50</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -19330,7 +19739,7 @@ for(String postcode : main.c_SHADwellings_by_postcode.keySet()){
 	
 	double averageHMAge = average(SHADwellingsInPostcode, x->x.getHeatingSystem().getAge());
 	int countDH = count(SHADwellingsInPostcode, x->x.getHeatingSystem().getType() == DISTRICT_HEATING);
-	
+	/*
 	if(postcode.equals("2591TX")){
 		
 		Map<OL_HeatingSystem, Long> heatingSystemCounts = SHADwellingsInPostcode.stream()
@@ -19339,15 +19748,15 @@ for(String postcode : main.c_SHADwellings_by_postcode.keySet()){
 		        Function.identity(),
 		        Collectors.counting()
 		    ));
-		    
+		/*    
 		for (Map.Entry<OL_HeatingSystem, Long> entry : heatingSystemCounts.entrySet()) {
 			System.out.println("Heating type: " + entry.getKey() + " → Count: " + entry.getValue());
-		} 
+		} */
 				
-		
+		/*
 		traceln("PC 2591TX age = " + averageHMAge + " count DH = " + countDH);
 	}
-	
+	*/
 	
 	
 	int lifetime = 15;
@@ -19394,6 +19803,7 @@ for(String postcode : main.c_SHADwellings_by_postcode.keySet()){
 		
 		//3.Adopt
 		for(J_Dwelling d : SHADwellingsInPostcode){
+			
 			d.f_installSelectedHeatingMethod(rankedHeatingTypes);
 		}
 		/*
@@ -19423,6 +19833,7 @@ for(String postcode : main.c_SHADwellings_by_postcode.keySet()){
     			<DataSet>
 					<Id>1741688557349</Id>
 					<Name><![CDATA[data_naturalGasBoilers_nb]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>53</X><Y>233</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -19448,6 +19859,7 @@ for(String postcode : main.c_SHADwellings_by_postcode.keySet()){
     			<DataSet>
 					<Id>1741688557360</Id>
 					<Name><![CDATA[data_districtHeating_nb]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>53</X><Y>273</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -19473,6 +19885,7 @@ for(String postcode : main.c_SHADwellings_by_postcode.keySet()){
     			<DataSet>
 					<Id>1741688557369</Id>
 					<Name><![CDATA[data_electricHeatPumps_nb]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>53</X><Y>293</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -19498,6 +19911,7 @@ for(String postcode : main.c_SHADwellings_by_postcode.keySet()){
     			<DataSet>
 					<Id>1741688557379</Id>
 					<Name><![CDATA[data_hybridHeatPumps_nb]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>53</X><Y>313</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -19523,6 +19937,7 @@ for(String postcode : main.c_SHADwellings_by_postcode.keySet()){
     			<DataSet>
 					<Id>1741688557389</Id>
 					<Name><![CDATA[data_naturalGasBlock_nb]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>53</X><Y>253</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -19548,6 +19963,7 @@ for(String postcode : main.c_SHADwellings_by_postcode.keySet()){
     			<DataSet>
 					<Id>1741688557399</Id>
 					<Name><![CDATA[data_naturalGasBoilers_perc]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>53</X><Y>353</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -19573,6 +19989,7 @@ for(String postcode : main.c_SHADwellings_by_postcode.keySet()){
     			<DataSet>
 					<Id>1741688557407</Id>
 					<Name><![CDATA[data_districtHeating_perc]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>53</X><Y>393</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -19598,6 +20015,7 @@ for(String postcode : main.c_SHADwellings_by_postcode.keySet()){
     			<DataSet>
 					<Id>1741688557415</Id>
 					<Name><![CDATA[data_electricHeatPumps_perc]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>53</X><Y>413</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -19623,6 +20041,7 @@ for(String postcode : main.c_SHADwellings_by_postcode.keySet()){
     			<DataSet>
 					<Id>1741688557423</Id>
 					<Name><![CDATA[data_hybridHeatPumps_perc]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>53</X><Y>433</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -19648,6 +20067,7 @@ for(String postcode : main.c_SHADwellings_by_postcode.keySet()){
     			<DataSet>
 					<Id>1741688557431</Id>
 					<Name><![CDATA[data_naturalGasBlock_perc]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>53</X><Y>373</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -19673,6 +20093,7 @@ for(String postcode : main.c_SHADwellings_by_postcode.keySet()){
     			<DataSet>
 					<Id>1741699847456</Id>
 					<Name><![CDATA[data_naturalGasBoilers_avgEAC]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>50</X><Y>470</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -19698,6 +20119,7 @@ for(String postcode : main.c_SHADwellings_by_postcode.keySet()){
     			<DataSet>
 					<Id>1741699847464</Id>
 					<Name><![CDATA[data_districtHeating_avgEAC]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>50</X><Y>510</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -19723,6 +20145,7 @@ for(String postcode : main.c_SHADwellings_by_postcode.keySet()){
     			<DataSet>
 					<Id>1741699847470</Id>
 					<Name><![CDATA[data_electricHeatPumps_avgEAC]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>50</X><Y>530</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -19748,6 +20171,7 @@ for(String postcode : main.c_SHADwellings_by_postcode.keySet()){
     			<DataSet>
 					<Id>1741699847531</Id>
 					<Name><![CDATA[data_hybridHeatPumps_avgEAC]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>50</X><Y>550</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -19773,6 +20197,7 @@ for(String postcode : main.c_SHADwellings_by_postcode.keySet()){
     			<DataSet>
 					<Id>1741699847538</Id>
 					<Name><![CDATA[data_naturalGasBlock_avgEAC]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>50</X><Y>490</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -19864,6 +20289,7 @@ for(String postcode : main.c_SHADwellings_by_postcode.keySet()){
     			<TimeStackChart>
 					<Id>1741689005505</Id>
 					<Name><![CDATA[ch_heatingMethodStackChart]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>410</X><Y>60</Y>
 					<Label><X>0</X><Y>-10</Y></Label>
 					<PublicFlag>true</PublicFlag>
@@ -19962,6 +20388,7 @@ for(String postcode : main.c_SHADwellings_by_postcode.keySet()){
     			<TimePlot>
 					<Id>1741689005512</Id>
 					<Name><![CDATA[pl_averageEAC]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>410</X><Y>420</Y>
 					<Label><X>0</X><Y>-10</Y></Label>
 					<PublicFlag>true</PublicFlag>
@@ -20022,6 +20449,7 @@ for(String postcode : main.c_SHADwellings_by_postcode.keySet()){
     			<BarChart>
 					<Id>1741701549862</Id>
 					<Name><![CDATA[ch_barTopRank]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>1140</X><Y>60</Y>
 					<Label><X>0</X><Y>-10</Y></Label>
 					<PublicFlag>true</PublicFlag>
@@ -20226,7 +20654,7 @@ for(J_Dwelling dwelling : main.c_dwellingsLandlords){
 }
 	
 //Count
-f_countHeatingMethods();	
+//f_countHeatingMethods();	
 	]]></Body>
 				</Function>
 				<Function AccessType="default" StaticFunction="false">
@@ -20234,6 +20662,7 @@ f_countHeatingMethods();
 					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1741699365740</Id>
 					<Name><![CDATA[f_setCharts]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>50</X><Y>50</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -20281,6 +20710,7 @@ f_countHeatingMethods();
 					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1741701713915</Id>
 					<Name><![CDATA[f_countHeatingMethods]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>50</X><Y>120</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -20408,6 +20838,7 @@ main.f_updateBarTopRank(ch_barTopRank, main.c_dwellingsLandlords);
     			<DataSet>
 					<Id>1741699365743</Id>
 					<Name><![CDATA[data_naturalGasBoilers_nb]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>53</X><Y>223</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -20433,6 +20864,7 @@ main.f_updateBarTopRank(ch_barTopRank, main.c_dwellingsLandlords);
     			<DataSet>
 					<Id>1741699365747</Id>
 					<Name><![CDATA[data_districtHeating_nb]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>53</X><Y>263</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -20458,6 +20890,7 @@ main.f_updateBarTopRank(ch_barTopRank, main.c_dwellingsLandlords);
     			<DataSet>
 					<Id>1741699365754</Id>
 					<Name><![CDATA[data_electricHeatPumps_nb]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>53</X><Y>283</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -20483,6 +20916,7 @@ main.f_updateBarTopRank(ch_barTopRank, main.c_dwellingsLandlords);
     			<DataSet>
 					<Id>1741699365761</Id>
 					<Name><![CDATA[data_hybridHeatPumps_nb]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>53</X><Y>303</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -20508,6 +20942,7 @@ main.f_updateBarTopRank(ch_barTopRank, main.c_dwellingsLandlords);
     			<DataSet>
 					<Id>1741699365767</Id>
 					<Name><![CDATA[data_naturalGasBlock_nb]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>53</X><Y>243</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -20533,6 +20968,7 @@ main.f_updateBarTopRank(ch_barTopRank, main.c_dwellingsLandlords);
     			<DataSet>
 					<Id>1741699365773</Id>
 					<Name><![CDATA[data_naturalGasBoilers_perc]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>53</X><Y>343</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -20558,6 +20994,7 @@ main.f_updateBarTopRank(ch_barTopRank, main.c_dwellingsLandlords);
     			<DataSet>
 					<Id>1741699365780</Id>
 					<Name><![CDATA[data_districtHeating_perc]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>53</X><Y>383</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -20583,6 +21020,7 @@ main.f_updateBarTopRank(ch_barTopRank, main.c_dwellingsLandlords);
     			<DataSet>
 					<Id>1741699365797</Id>
 					<Name><![CDATA[data_electricHeatPumps_perc]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>53</X><Y>403</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -20608,6 +21046,7 @@ main.f_updateBarTopRank(ch_barTopRank, main.c_dwellingsLandlords);
     			<DataSet>
 					<Id>1741699365804</Id>
 					<Name><![CDATA[data_hybridHeatPumps_perc]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>53</X><Y>423</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -20633,6 +21072,7 @@ main.f_updateBarTopRank(ch_barTopRank, main.c_dwellingsLandlords);
     			<DataSet>
 					<Id>1741699365811</Id>
 					<Name><![CDATA[data_naturalGasBlock_perc]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>53</X><Y>363</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -20658,6 +21098,7 @@ main.f_updateBarTopRank(ch_barTopRank, main.c_dwellingsLandlords);
     			<DataSet>
 					<Id>1741700391743</Id>
 					<Name><![CDATA[data_naturalGasBoilers_avgEAC]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>55</X><Y>470</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -20683,6 +21124,7 @@ main.f_updateBarTopRank(ch_barTopRank, main.c_dwellingsLandlords);
     			<DataSet>
 					<Id>1741700391760</Id>
 					<Name><![CDATA[data_districtHeating_avgEAC]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>55</X><Y>510</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -20708,6 +21150,7 @@ main.f_updateBarTopRank(ch_barTopRank, main.c_dwellingsLandlords);
     			<DataSet>
 					<Id>1741700391763</Id>
 					<Name><![CDATA[data_electricHeatPumps_avgEAC]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>55</X><Y>530</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -20733,6 +21176,7 @@ main.f_updateBarTopRank(ch_barTopRank, main.c_dwellingsLandlords);
     			<DataSet>
 					<Id>1741700391766</Id>
 					<Name><![CDATA[data_hybridHeatPumps_avgEAC]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>55</X><Y>550</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -20758,6 +21202,7 @@ main.f_updateBarTopRank(ch_barTopRank, main.c_dwellingsLandlords);
     			<DataSet>
 					<Id>1741700391776</Id>
 					<Name><![CDATA[data_naturalGasBlock_avgEAC]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>55</X><Y>490</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -20849,6 +21294,7 @@ main.f_updateBarTopRank(ch_barTopRank, main.c_dwellingsLandlords);
     			<TimePlot>
 					<Id>1741699365726</Id>
 					<Name><![CDATA[pl_averageEAC]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>410</X><Y>360</Y>
 					<Label><X>0</X><Y>-10</Y></Label>
 					<PublicFlag>true</PublicFlag>
@@ -20909,6 +21355,7 @@ main.f_updateBarTopRank(ch_barTopRank, main.c_dwellingsLandlords);
     			<TimeStackChart>
 					<Id>1741699365732</Id>
 					<Name><![CDATA[ch_heatingMethodStackChart]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>410</X><Y>40</Y>
 					<Label><X>0</X><Y>-10</Y></Label>
 					<PublicFlag>true</PublicFlag>
@@ -21007,6 +21454,7 @@ main.f_updateBarTopRank(ch_barTopRank, main.c_dwellingsLandlords);
     			<BarChart>
 					<Id>1741701713911</Id>
 					<Name><![CDATA[ch_barTopRank]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>1140</X><Y>40</Y>
 					<Label><X>0</X><Y>-10</Y></Label>
 					<PublicFlag>true</PublicFlag>
@@ -21627,6 +22075,21 @@ f_initializeScenarioSettings();
 					</Properties>
 
 				</Variable>
+				<Variable Class="CollectionVariable">
+					<Id>1769533789298</Id>
+					<Name><![CDATA[c_resultsPerRun]]></Name>
+					<X>-520</X><Y>1460</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" AccessType="public" StaticVariable="false">
+						<CollectionClass><![CDATA[ArrayList]]></CollectionClass>
+						<ElementClass><![CDATA[J_ResultsData]]></ElementClass>
+						<ValueElementClass><![CDATA[String]]></ValueElementClass>
+					</Properties>
+
+				</Variable>
 			</Variables>
 			<Events>
 				<Event>
@@ -21809,7 +22272,7 @@ ar_selectedMunicipalityCodes = codesList.toArray(new String[0]);]]></Body>
 
 m.municipalityCodes = ar_selectedMunicipalityCodes;
 m.v_timer = System.currentTimeMillis();
-m.v_startYear = 2023;
+m.v_startYear = 2025;
 m.v_endYear = 2050;
 m.v_rapidRun = v_rapidRun;
 m.v_runCount = simulationCount;
@@ -21939,6 +22402,9 @@ gr_outputs.add(textShape);
 					<Body><![CDATA[simulationCount++;
 v_runColor = randomColor();
 f_setRunText();
+
+c_resultsPerRun.add(main.get(0).resultsData);
+
 f_addRunToGraphs();
 f_writeResultsToExcel();
 
@@ -21959,7 +22425,7 @@ if(v_rapidRun == false){
 					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1746719681063</Id>
 					<Name><![CDATA[f_writeResultsToExcel]]></Name>
-					<X>50</X><Y>1100</Y>
+					<X>50</X><Y>1110</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -21987,6 +22453,7 @@ int columnNGBl = 4;
 int columnHHP = 5;
 int columnEHP = 6;
 int columnDH = 7;
+
 
 if(simulationCount == 1){ 
 	//Clear values
@@ -22168,6 +22635,18 @@ eb_w_SNToInt.setText(v_weight_socialNormToIntention);
 
 eb_w_IntToBeh.setText(v_weight_intentionToBehavior);
 eb_w_PBCToBeh.setText(v_weight_PBCToBehavior);]]></Body>
+				</Function>
+				<Function AccessType="default" StaticFunction="false">
+					<ReturnModificator>VOID</ReturnModificator>
+					<ReturnType><![CDATA[double]]></ReturnType>
+					<Id>1769533436321</Id>
+					<Name><![CDATA[f_getRunResults]]></Name>
+					<X>50</X><Y>1090</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Body><![CDATA[c_resultsPerRun.add(main.get(0).resultsData);]]></Body>
 				</Function>
 			</Functions>
 			<AnalysisData>
@@ -24956,6 +25435,7 @@ for (int i=0; i<requiredIterations; i++) {
 	<FixedTimeStep>0.001</FixedTimeStep>
 	<RelativeAccuracy>1.0E-5</RelativeAccuracy>
 	<TimeAccuracy>1.0E-5</TimeAccuracy>
+	<InspectionWindowColorTheme>DEFAULT</InspectionWindowColorTheme>
 	<Frame>
 		<Id>1693907379985</Id>
 		<Width>1500</Width>
@@ -28253,7 +28733,7 @@ public class J_Dwelling {
 	private J_HeatingSystem heatingSystem;
 	//private Map<OL_HeatingSystem, J_HeatingSystemOptionsLocal> heatingSystemMap = new HashMap<>();
 	private LinkedHashMap<OL_HeatingSystem, J_HeatingSystemOptionsLocal> heatingSystemMap = new LinkedHashMap<>();
-	private J_HeatingSystem heatingSystemInstalledThisYear;
+	private boolean hasInstalledHeatingSystemThisYear;
 	private double electricityDemand_kWh;
 	private double naturalGasDemand_kWh;
 	private double heatDemand_kWh;
@@ -28263,6 +28743,9 @@ public class J_Dwelling {
 	
 	private int yearLastRenovation;
 	private boolean hasLowTemperatureInhouseHeatDistribution;
+	
+	private boolean validationDwelling;
+	private List<J_AdoptionData> adoptionDataList;
 	
 	private Main main;
     
@@ -28290,6 +28773,7 @@ public class J_Dwelling {
 		f_setDwellingType(dwellingType);
 		f_setDefaultEnergyLabel(energieklasse);
 		f_setAnnualEnergyDemandFromVestaMAIS();
+		
 	}
     
     public void f_setDwellingData(GZ_Neighborhood nbh, List<J_HeatingSystemOptionsGlobal> heatingSystemOptionsInput, OL_HeatingSystem heatingSystemType , boolean hasDistrictHeatingGrid,  boolean isInBlock) {
@@ -28306,7 +28790,7 @@ public class J_Dwelling {
     	
     	//Initalize heating system
     	this.heatingSystem = new J_HeatingSystem(initialHeatingSystem, ageHeatingSystem);
-    	this.heatingSystemInstalledThisYear = heatingSystem;
+    	//this.heatingSystemInstalledThisYear = heatingSystem;
     	this.hasLowTemperatureInhouseHeatDistribution = initialHeatingSystem.getRequiresLowTemperatureInhouseHeatDistribution();
     	
     	f_initializeHeatingSystemOptions(heatingSystemOptionsInput, hasDistrictHeatingGrid, isInBlock, heatingSystem);
@@ -28350,7 +28834,7 @@ public class J_Dwelling {
     
     //4. Update heating system age
     public void f_updateHeatingSystemAge() {
-    	heatingSystemInstalledThisYear = null;
+    	if(hasInstalledHeatingSystemThisYear) { hasInstalledHeatingSystemThisYear = false; }
     	heatingSystem.updateAge();
 	}
     
@@ -28418,27 +28902,30 @@ public class J_Dwelling {
     
 
     //Adopt highest ranked option
-	public void f_installNewHeatingMethod() {
+	public void f_getPreferredHeatingSystem(List<OL_HeatingSystem> rankedList) {
 		J_HeatingSystemOptionsLocal preferredHeatingSystem = this.heatingSystemMap.values().stream()
 				.filter(J_HeatingSystemOptionsLocal::getIsPossible)
 				.findFirst()
 				.orElse(null);
-
-		//findFirst(this.heatingSystemOptions, x->x.getIsPossible());
-		int age = 0;
-		double perceivedUtility = preferredHeatingSystem.getPerceivedUtility();
-		heatingSystem = new J_HeatingSystem(preferredHeatingSystem, age, perceivedUtility);
-		heatingSystemInstalledThisYear = heatingSystem;
-	}
-	//Option two adopt new heating system
-	public void f_installNewHeatingMethod(OL_HeatingSystem heatingSystemType) {
-		J_HeatingSystemOptionsLocal preferredHeatingSystem = heatingSystemMap.get(heatingSystemType);
-		int age = 0;
-		double perceivedUtility = preferredHeatingSystem.getPerceivedUtility();
-		heatingSystem = new J_HeatingSystem(preferredHeatingSystem, age, perceivedUtility);
-		heatingSystemInstalledThisYear = heatingSystem;
 	}
 	
+	
+	//Option two adopt new heating system
+	public void f_installSelectedHeatingMethod(J_HeatingSystemOptionsLocal selectedHeatingSystemOption) {
+		int age = 0;
+		double perceivedUtility = selectedHeatingSystemOption.getPerceivedUtility();
+		heatingSystem = new J_HeatingSystem(selectedHeatingSystemOption, age, perceivedUtility);
+		hasInstalledHeatingSystemThisYear = true;
+		
+		if( validationDwelling ) {
+			adoptionDataList.add(f_addAdoptionToExcel(heatingSystem));
+		}
+		OL_HeatingSystem oldSys, J_HeatingSystemOptionsLocal newSys
+		f_updateAnnualAggregationLists(oldSys, newSys);
+	}
+	
+	//Get top preffered heating method
+	/*
 	public void f_installSelectedHeatingMethod(List<OL_HeatingSystem> rankedList) {
 		//Get top ranked HM which is possible
 		
@@ -28457,7 +28944,11 @@ public class J_Dwelling {
 		}
 				
 		//Install HM
-		f_installNewHeatingMethod(selectedHeatingSystem);
+		f_installSelectedHeatingMethod(selectedHeatingSystem);
+	}*/
+	
+	public void f_updateAnnualAggregationLists(OL_HeatingSystem oldSys, J_HeatingSystemOptionsLocal newSys) {
+		main.f_updateAggregationListFromDwelling(this, oldSys, newSys);
 	}
 	
 	
@@ -28472,12 +28963,9 @@ public class J_Dwelling {
     	heatingSystemMap.values().forEach(x->x.f_setPossible(false));
     	f_setDHPossible();
     	
-    	//Set new heating system to DH
-    	int age = 0;
     	J_HeatingSystemOptionsLocal requiredHeatingSystem = heatingSystemMap.get(DISTRICT_HEATING);
-    	double perceivedUtility = requiredHeatingSystem.getPerceivedUtility();
-    	heatingSystem = new J_HeatingSystem(requiredHeatingSystem, age, perceivedUtility);
-    	heatingSystemInstalledThisYear = heatingSystem;
+    	f_installSelectedHeatingMethod(requiredHeatingSystem);
+ 
     }
     
     
@@ -28705,6 +29193,28 @@ public class J_Dwelling {
     	}
     	return labelLetter;
     } 
+    
+    public J_AdoptionData f_addAdoptionToExcel(J_HeatingSystem heatingSystem) {
+    	OL_HeatingSystem type = heatingSystem.getType();
+    	int age = heatingSystem.getAge();
+    	double perceivedUtility = heatingSystem.getPerceivedUtility();
+    	if(perceivedUtility < 0.05 && ownership == PRIVATELY_OWNED) {
+    		traceln("Perceived util " + perceivedUtility);
+    	}
+    	double costs = heatingSystemMap.get(type).getEAC();
+    	J_AdoptionData adoptionData = new J_AdoptionData(type, age, perceivedUtility, costs);
+    	return adoptionData;
+    }
+    
+    public void f_initializeValidationDwellings() {
+    	validationDwelling = true;
+		adoptionDataList = new ArrayList<J_AdoptionData>();
+		adoptionDataList.add(f_addAdoptionToExcel(heatingSystem));
+    }
+    
+    public boolean isValidationDwelling() {
+    	return this.validationDwelling;
+    }
  
    
     
@@ -28765,8 +29275,8 @@ public class J_Dwelling {
     	return rankedHeatingSystemOptions;
     }
     */
-    public J_HeatingSystem getHeatingSystemInstalledThisYear() {
-    	return heatingSystemInstalledThisYear;
+    public boolean hasInstalledHeatingSystemThisYear() {
+    	return hasInstalledHeatingSystemThisYear;
     }
     
     public double getHeatDemand_kWh() {
@@ -28817,6 +29327,10 @@ public class J_Dwelling {
     
     public int getConstructionYear() {
     	return constructionYear;
+    }
+    
+    public List<J_AdoptionData> getAdoptionDataList(){
+    	return adoptionDataList;
     }
     
 	@Override
@@ -29302,6 +29816,362 @@ public class J_SocialHousingBlock {
 
 }]]></Text>
 		</JavaClass>
+		<!--   =========   Java Class   ========  -->
+		<JavaClass>
+			<Id>1765556935824</Id>
+			<Name><![CDATA[J_AdoptionData]]></Name>
+			<Text><![CDATA[/**
+ * J_ExcelData
+ */	
+public class J_AdoptionData {
+	
+	private OL_HeatingSystem type;
+	private int age_years;		
+	private double perceivedUtility;
+	private double adoptionCosts;
+	
+    /**
+     * Default constructor
+     */
+    public J_AdoptionData(OL_HeatingSystem type, int age_years, double perceivedUtility, double adoptionCosts) {
+    	this.type = type;
+    	this.age_years = age_years;
+    	this.perceivedUtility = perceivedUtility;
+    	this.adoptionCosts = adoptionCosts;
+    }
+    
+    public OL_HeatingSystem getType() {
+    	return type;
+    	
+    }
+    
+    public int getAge() {
+    	return age_years;
+    }
+    
+    public double getPerceivedUtility() {
+    	return perceivedUtility;
+    }
+    
+    public double getAdoptionCosts() {
+    	return adoptionCosts;
+    }
+
+	@Override
+	public String toString() {
+		return super.toString();
+	}
+
+}]]></Text>
+		</JavaClass>
+		<!--   =========   Java Class   ========  -->
+		<JavaClass>
+			<Id>1769523907152</Id>
+			<Name><![CDATA[J_ResultsData]]></Name>
+			<Text><![CDATA[import java.io.Serializable;
+import java.util.EnumMap;
+import java.util.Map;
+
+public class J_ResultsData implements Serializable {
+    private static final long serialVersionUID = 1L;
+
+    private String scenario;
+    private int iteration;
+    private final int[] years;
+
+    private final Map<OL_HeatingSystem, J_ResultsPerHeatingMethod> heating_methods;
+
+    public J_ResultsData(int numberOfYears) {
+        this.years = new int[numberOfYears];
+        this.heating_methods = new EnumMap<>(OL_HeatingSystem.class);
+
+        for (OL_HeatingSystem tech : OL_HeatingSystem.values()) {
+        	heating_methods.put(tech, new J_ResultsPerHeatingMethod(numberOfYears));
+        }
+    }
+
+    public J_ResultsPerHeatingMethod getHeatingMethod(OL_HeatingSystem hm) {
+        return heating_methods.get(hm);
+    }
+
+    // metadata getters/setters
+    public String getScenario() {
+    	return scenario;
+    }
+    
+    public int getIteration() {
+    	return iteration;
+    }
+}
+]]></Text>
+		</JavaClass>
+		<!--   =========   Java Class   ========  -->
+		<JavaClass>
+			<Id>1769530639374</Id>
+			<Name><![CDATA[J_ResultsPerOwnerType]]></Name>
+			<Text><![CDATA[/**
+ * J_ResultsPerOwnerType
+ */	
+public class J_ResultsPerOwnerType {
+
+    /**
+     * Default constructor
+     */ 
+	private final int[] installed;
+	private final int[] cumulative;
+    private final int[] perYear;
+    private final double[] avgAtt;
+    private final double[] avgPercUtil;
+    private final double[] avgSubNorm;
+    private final double[] avgEAC;
+    private final double[] avgPBC;
+
+    public J_ResultsPerOwnerType(int years) {
+        this.installed = new int[years];
+    	this.cumulative = new int[years];
+        this.perYear = new int[years];
+        this.avgAtt = new double[years];
+        this.avgPercUtil = new double[years];
+        this.avgSubNorm = new double[years];
+        this.avgEAC = new double[years];
+        this.avgPBC = new double[years];
+    }
+
+    public void setYear(int index, int installed, int cumulative, int perYear,
+                        double avgAtt, double avgPercUtil,
+                        double avgSubNorm, double avgEAC, double avgPBC) {
+        this.installed[index] = installed;
+    	this.cumulative[index] = cumulative;
+        this.perYear[index] = perYear;
+        this.avgAtt[index] = avgAtt;
+        this.avgPercUtil[index] = avgPercUtil;
+        this.avgSubNorm[index] = avgSubNorm;
+        this.avgEAC[index] = avgEAC;
+        this.avgPBC[index] = avgPBC;
+    }
+
+
+    // -----------------------------
+    // Array getters (defensive copies)
+    // -----------------------------
+    public int[] getInstalled()         { return installed.clone(); }
+    public int[] getCumulative()        { return cumulative.clone(); }
+    public int[] getPerYear()           { return perYear.clone(); }
+
+    public double[] getAvgAtt()         { return avgAtt.clone(); }
+    public double[] getAvgPercUtil()    { return avgPercUtil.clone(); }
+    public double[] getAvgSubNorm()     { return avgSubNorm.clone(); }
+    public double[] getAvgEAC()         { return avgEAC.clone(); }
+    public double[] getAvgPBC()         { return avgPBC.clone(); }
+
+    // --------------------------------------
+    // Single-value getters with "Index" name
+    // and bounds checking
+    // --------------------------------------
+    public int getInstalledIndex(int index) {
+    	checkIndex(index, installed.length, "installed");
+        return installed[index];
+    }
+
+    public int getCumulativeIndex(int index) {
+        checkIndex(index, cumulative.length, "cumulative");
+        return cumulative[index];
+    }
+
+    public int getPerYearIndex(int index) {
+        checkIndex(index, perYear.length, "perYear");
+        return perYear[index];
+    }
+
+    public double getAvgAttIndex(int index) {
+        checkIndex(index, avgAtt.length, "avgAtt");
+        return avgAtt[index];
+    }
+
+    public double getAvgPercUtilIndex(int index) {
+        checkIndex(index, avgPercUtil.length, "avgPercUtil");
+        return avgPercUtil[index];
+    }
+
+    public double getAvgSubNormIndex(int index) {
+        checkIndex(index, avgSubNorm.length, "avgSubNorm");
+        return avgSubNorm[index];
+    }
+
+    public double getAvgEACIndex(int index) {
+        checkIndex(index, avgEAC.length, "avgEAC");
+        return avgEAC[index];
+    }
+
+    public double getAvgPBCIndex(int index) {
+        checkIndex(index, avgPBC.length, "avgPBC");
+        return avgPBC[index];
+    }
+
+    // -----------------------------
+    // Optional: length helpers
+    // -----------------------------
+    public int getInstalledLength()   { return installed.length; }
+    public int getCumulativeLength()  { return cumulative.length; }
+    public int getPerYearLength()     { return perYear.length; }
+    public int getAvgAttLength()      { return avgAtt.length; }
+    public int getAvgPercUtilLength() { return avgPercUtil.length; }
+    public int getAvgSubNormLength()  { return avgSubNorm.length; }
+    public int getAvgEACLength()      { return avgEAC.length; }
+    public int getAvgPBCLength()      { return avgPBC.length; }
+
+    // --------------------------------------
+    // Private helper: bounds checking
+    // --------------------------------------
+    private static void checkIndex(int index, int length, String fieldName) {
+        if (index < 0 || index >= length) {
+            throw new IndexOutOfBoundsException(
+                "Index " + index + " out of bounds for '" + fieldName + "' with length " + length
+            );
+        }
+    }
+     
+
+	@Override
+	public String toString() {
+		return super.toString();
+	}
+
+}]]></Text>
+		</JavaClass>
+		<!--   =========   Java Class   ========  -->
+		<JavaClass>
+			<Id>1769531042509</Id>
+			<Name><![CDATA[J_ResultsPerHeatingMethod]]></Name>
+			<Text><![CDATA[/**
+ * J_ResultsPerHeatingMethod
+ */	
+import java.io.Serializable;
+import java.util.EnumMap;
+import java.util.Map;
+
+public class J_ResultsPerHeatingMethod{
+
+	 private final Map<OL_HouseholdOwnership, J_ResultsPerOwnerType> results;
+    /**
+     * Default constructor
+     */
+    public J_ResultsPerHeatingMethod(int years) {
+        results = new EnumMap<>(OL_HouseholdOwnership.class);
+        for (OL_HouseholdOwnership type : OL_HouseholdOwnership.values()) {
+            results.put(type, new J_ResultsPerOwnerType(years));
+        }
+    }
+
+    public J_ResultsPerOwnerType getResultsPerOwnerType(OL_HouseholdOwnership type) {
+        return results.get(type);
+    }
+
+	@Override
+	public String toString() {
+		return super.toString();
+	}
+
+}]]></Text>
+		</JavaClass>
+		<!--   =========   Java Class   ========  -->
+		<JavaClass>
+			<Id>1769592103940</Id>
+			<Name><![CDATA[J_AnnualValues]]></Name>
+			<Text><![CDATA[/**
+ * J_AnnualValues
+ */	
+public class J_AnnualValues {
+
+	// ========== COUNT / INSTALLED ==========
+    private int installedCurrent = 0;
+    private int installedThisYear = 0;
+    private int installedCumulative = 0;
+
+    // ========== SUMS FOR AVERAGES ==========
+    private double sumAtt = 0.0;
+    private double sumPercUtil = 0.0;
+    private double sumSubNorm = 0.0;
+    private double sumEAC = 0.0;
+    private double sumPBC = 0.0;
+
+    /**
+     * Default constructor
+     */
+    public J_AnnualValues() {
+    }
+    
+ // ================= METHODS ==================
+
+    /**
+     * Add a dwelling to this bucket.
+     * @param d The dwelling to include
+     */
+    public void addDwelling(J_Dwelling d) {
+        installedCurrent++;
+        installedThisYear++;
+
+        sumAtt += d.getAttitude();
+        sumPercUtil += d.getPercUtil();
+        sumSubNorm += d.getSubNormFactor();
+        sumEAC += d.getEAC();
+        sumPBC += d.getPBC();
+    }
+
+    /**
+     * Remove a dwelling from this bucket (e.g., on change of system or ownership)
+     * @param d The dwelling to remove
+     */
+    public void removeDwelling(J_Dwelling d) {
+        installedTotal--;
+    }
+
+    /**
+     * Compute averages for this bucket (0 if no units)
+     */
+    public double getAvgAtt() {
+        return installedTotal > 0 ? sumAtt / installedTotal : 0.0;
+    }
+
+    public double getAvgPercUtil() {
+        return installedTotal > 0 ? sumPercUtil / installedTotal : 0.0;
+    }
+
+    public double getAvgSubNorm() {
+        return installedTotal > 0 ? sumSubNorm / installedTotal : 0.0;
+    }
+
+    public double getAvgEAC() {
+        return installedTotal > 0 ? sumEAC / installedTotal : 0.0;
+    }
+
+    public double getAvgPBC() {
+        return installedTotal > 0 ? sumPBC / installedTotal : 0.0;
+    }
+
+    /**
+     * Reset the per-year counter (call at year end)
+     */
+    public void resetYearly() {
+        installedThisYear = 0;
+    }
+
+    // ========== GETTERS ==========
+    public int getInstalledTotal() { return installedTotal; }
+    public int getInstalledThisYear() { return installedThisYear; }
+    public double getSumAtt() { return sumAtt; }
+    public double getSumPercUtil() { return sumPercUtil; }
+    public double getSumSubNorm() { return sumSubNorm; }
+    public double getSumEAC() { return sumEAC; }
+    public double getSumPBC() { return sumPBC; }
+
+	@Override
+	public String toString() {
+		return super.toString();
+	}
+
+}]]></Text>
+		</JavaClass>
 	</JavaClasses>
 	<ModelResources>
 		<Resource>
@@ -29388,6 +30258,12 @@ public class J_SocialHousingBlock {
 			<ReferencedFromUserCode>false</ReferencedFromUserCode>
 			<Location>FILE_SYSTEM</Location>
 		</Resource>
+		<Resource>
+			<Id>1765882121564</Id>
+			<Path><![CDATA[_exampleDwellings.xlsx]]></Path>
+			<ReferencedFromUserCode>false</ReferencedFromUserCode>
+			<Location>FILE_SYSTEM</Location>
+		</Resource>
 	</ModelResources>
     <RequiredLibraryReference>
 		<LibraryName><![CDATA[com.anylogic.libraries.modules.markup_descriptors]]></LibraryName>
@@ -29400,12 +30276,6 @@ public class J_SocialHousingBlock {
 		<VersionMajor>8</VersionMajor>
 		<VersionMinor>0</VersionMinor>
 		<VersionBuild>5</VersionBuild>
-    </RequiredLibraryReference>
-    <RequiredLibraryReference>
-		<LibraryName><![CDATA[social_charging_model]]></LibraryName>
-		<VersionMajor>0</VersionMajor>
-		<VersionMinor>0</VersionMinor>
-		<VersionBuild>0</VersionBuild>
     </RequiredLibraryReference>
 	<ClassPathEntry>
 		<ResourceReference>
@@ -29482,5 +30352,8 @@ public class J_SocialHousingBlock {
 	<Uuid>e6625695-25a2-43d0-9056-1e9a1a594b1e</Uuid>
 	<Uuid>91990287-4edf-4e38-aa6c-66d0e906807b</Uuid>
 	<Uuid>2216cdd0-177c-5678-9e88-dd8b95312234</Uuid>
+	<Uuid>1737c8c6-b526-4dd8-589e-ee4e205b06f4</Uuid>
+	<Uuid>6a43bef6-8b70-4253-a828-82c3ab399655</Uuid>
+	<Uuid>0a27038a-0f3a-48bb-b235-4a44066a1402</Uuid>
 </ConvertersApplied>
 </AnyLogicWorkspace>
