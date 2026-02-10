@@ -1,0 +1,14 @@
+﻿scen_id,scen_name,social_learning_factor,economic_learning_factor,grid_reinforcement_rate,DH_construction_time,DH_expansion_strategy,SHA_strategy,DH_connection_obligation,Grid_congestion_HP_ban
+1,baseline,MEDIUM,MEDIUM,MEDIUM,5,COST_BASED,COST_BASED,FALSE,FALSE
+2,social_learning_factor_low,LOW,MEDIUM,MEDIUM,5,COST_BASED,COST_BASED,FALSE,FALSE
+3,social_learning_factor_high,HIGH,MEDIUM,MEDIUM,5,COST_BASED,COST_BASED,FALSE,FALSE
+4,economic_learning_factor_low,MEDIUM,LOW,MEDIUM,5,COST_BASED,COST_BASED,FALSE,FALSE
+5,economic_learning_factor_high,MEDIUM,HIGH,MEDIUM,5,COST_BASED,COST_BASED,FALSE,FALSE
+6,policy_driven_dh_strategy,MEDIUM,MEDIUM,MEDIUM,5,POLICY_BASED,COST_BASED,FALSE,FALSE
+7,policy_driven_sha_strategy,MEDIUM,MEDIUM,MEDIUM,5,COST_BASED,POLICY_BASED,FALSE,FALSE
+8,grid_congestion_HP_ban,MEDIUM,MEDIUM,MEDIUM,5,COST_BASED,COST_BASED,FALSE,FALSE
+9,actor_allignment_strategy,MEDIUM,MEDIUM,MEDIUM,5,POLICY_BASED,POLICY_BASED,FALSE,FALSE
+10,dh_connection_obligation,MEDIUM,MEDIUM,MEDIUM,5,COST_BASED,COST_BASED,TRUE,FALSE
+11,dh_connection_obligation,MEDIUM,MEDIUM,MEDIUM,5,COST_BASED,COST_BASED,FALSE,TRUE
+12,individual_technologies,HIGH,HIGH,MEDIUM,5,COST_BASED,COST_BASED,FALSE,FALSE
+13,collective_technologies,LOW,LOW,MEDIUM,5,POLICY_BASED,POLICY_BASED,FALSE,FALSE

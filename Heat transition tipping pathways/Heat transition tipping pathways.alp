@@ -47,10 +47,6 @@
 				<Id>1704719597956</Id>
 				<Name><![CDATA[HYBRID_HEAT_PUMP]]></Name>
 			</Option>
-			<Option>
-				<Id>1741624834865</Id>
-				<Name><![CDATA[UNKNOWN]]></Name>
-			</Option>
 		</OptionList>
 		<OptionList>
 			<Id>1715083950958</Id>
@@ -66,10 +62,6 @@
 			<Option>
 				<Id>1715083950961</Id>
 				<Name><![CDATA[PRIVATELY_RENTED]]></Name>
-			</Option>
-			<Option>
-				<Id>1769530824906</Id>
-				<Name><![CDATA[TOTAL]]></Name>
 			</Option>
 		</OptionList>
 		<OptionList>
@@ -314,7 +306,7 @@ f_initalizeSettings();
 				<Variable Class="PlainVariable">
 					<Id>1693914229230</Id>
 					<Name><![CDATA[v_timer]]></Name>
-					<X>-650</X><Y>1050</Y>
+					<X>-650</X><Y>1070</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -676,7 +668,7 @@ f_initalizeSettings();
 				<Variable Class="PlainVariable">
 					<Id>1732035721421</Id>
 					<Name><![CDATA[idCounter]]></Name>
-					<X>-650</X><Y>1070</Y>
+					<X>-650</X><Y>1090</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -868,7 +860,7 @@ f_initalizeSettings();
 				<Variable Class="PlainVariable">
 					<Id>1733303539959</Id>
 					<Name><![CDATA[randomInstance]]></Name>
-					<X>-650</X><Y>1090</Y>
+					<X>-650</X><Y>1110</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -1552,13 +1544,51 @@ f_initalizeSettings();
 				<Variable Class="PlainVariable">
 					<Id>1769590811216</Id>
 					<Name><![CDATA[mapAnnualValues]]></Name>
-					<X>-1000</X><Y>1070</Y>
+					<X>-1000</X><Y>1100</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
 					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
-						<Type><![CDATA[Map <OL_HeatingSystem, Map <OL_HouseholdOwnership, J_AnnualValues>>]]></Type>        
+						<Type><![CDATA[EnumMap <OL_HeatingSystem, EnumMap <OL_HouseholdOwnership, J_AnnualValues>>]]></Type>        
+					</Properties>
+				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1770304678967</Id>
+					<Name><![CDATA[mapHeatingSystemsRemoved]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
+					<X>-1000</X><Y>1080</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[EnumMap <OL_HeatingSystem, EnumMap <OL_HouseholdOwnership, Integer>>]]></Type>        
+					</Properties>
+				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1770310664585</Id>
+					<Name><![CDATA[mapInitialHeatingSystemCount]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
+					<X>-1000</X><Y>1060</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[EnumMap <OL_HeatingSystem, EnumMap <OL_HouseholdOwnership, Integer>>]]></Type>        
+					</Properties>
+				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1770383498624</Id>
+					<Name><![CDATA[c_heatingSystemOptions]]></Name>
+					<X>-650</X><Y>1040</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[EnumMap<OL_HeatingSystem, J_HeatingSystemOptionsGlobal>]]></Type>        
 					</Properties>
 				</Variable>
 				<Variable Class="Parameter">
@@ -2781,7 +2811,8 @@ f_initalizeSettings();
 				</Variable>
 				<Variable Class="CollectionVariable">
 					<Id>1732024389301</Id>
-					<Name><![CDATA[c_heatingSystemOptions]]></Name>
+					<Name><![CDATA[_heatingSystemOptions]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>-650</X><Y>1020</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -2950,6 +2981,7 @@ f_initalizeSettings();
 				<Variable Class="CollectionVariable">
 					<Id>1741709993301</Id>
 					<Name><![CDATA[avgElectricityDemandByPostalCode]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>-1000</X><Y>910</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -2965,6 +2997,7 @@ f_initalizeSettings();
 				<Variable Class="CollectionVariable">
 					<Id>1741710095697</Id>
 					<Name><![CDATA[avgGasDemandByPostalCode]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>-1000</X><Y>930</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -3279,6 +3312,10 @@ double startTime = System.currentTimeMillis();
 v_startStartupTime = startTime;
 v_year = v_startYear;
 
+//Initialize results data
+resultsData = new J_ResultsData( v_endYear - v_startYear +1);
+f_initializeAnnualValuesMap();
+
 //1. Set scenario's and heating methods
 f_setScenarios();
 f_setHeatingSystemOptions();
@@ -3363,8 +3400,7 @@ f_initializeDSO();
 //12. Initialize District heating operator
 f_initializeDistrictHeatingOperator();
 
-//13. Initialize annual values map
-f_initializeAnnualValuesMap();
+
 
 
 //14. Check total values
@@ -4725,7 +4761,7 @@ for (Tuple row_heatingMethod : rows_heatingMethods){
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
-					<Body><![CDATA[int yearIndex = v_startYear - v_year;
+					<Body><![CDATA[int yearIndex = v_year - v_startYear;
 
 //2. Update district heating company
 for(DistrictHeatingCompany DHC : pop_districtHeatingCompanies){
@@ -4980,8 +5016,11 @@ rb_mapMode.setValue(0,true);]]></Body>
 List<Tuple> rows = selectFrom(heating_system_data)
     .list();
 
+c_heatingSystemOptions = new EnumMap<>(OL_HeatingSystem.class);
+        
 for (Tuple row : rows) {
 	OL_HeatingSystem type = OL_HeatingSystem.valueOf(row.get(heating_system_data.type));
+
 	double investmentCostsHeatSupplySystem_small = row.get(heating_system_data.investment_costs_eur_per_unit_small);				//Capex
 	double investmentCostsHeatSupplySystem_medium = row.get(heating_system_data.investment_costs_eur_per_unit_medium);				//Capex
 	double investmentCostsHeatSupplySystem_large = row.get(heating_system_data.investment_costs_eur_per_unit_high);				//Capex
@@ -5028,15 +5067,24 @@ for (Tuple row : rows) {
 		requiredHeatDistributionSystem,
 		requiredEnergyLabel
 	);
-	c_heatingSystemOptions.add(data);
+	c_heatingSystemOptions.put(type, data);
 }
 
 //Set normalized sustainability score
-double min = min(c_heatingSystemOptions, x->x.getSustainabilityScore());
-double max = max(c_heatingSystemOptions, x->x.getSustainabilityScore());
-for(J_HeatingSystemOptionsGlobal hso : c_heatingSystemOptions){
-	double normalizedValue = f_getNormalizedValue(hso.getSustainabilityScore(), min, max);
-	hso.setSustainabilityScoreNormalized(normalizedValue);
+double minValue = Double.MAX_VALUE;
+double maxValue = Double.MIN_VALUE;
+for (J_HeatingSystemOptionsGlobal option : c_heatingSystemOptions.values()) {
+	double sustScore = option.getSustainabilityScore();
+	if( sustScore < minValue) {
+		minValue = sustScore;
+	} else if( sustScore > maxValue ){
+		maxValue = sustScore;
+	}
+}
+
+for (J_HeatingSystemOptionsGlobal option : c_heatingSystemOptions.values()) {
+	double normalizedValue = f_getNormalizedValue(option.getSustainabilityScore(), minValue, maxValue);
+	option.setSustainabilityScoreNormalized(normalizedValue);
 	//traceln("Norm sus score for heating system " + hso.getType() + " = " + normalizedValue);
 }
 ]]></Body>
@@ -5134,11 +5182,11 @@ v_districtHeating_perc = v_districtHeating_nb / households;
 						<Name><![CDATA[yearIndex]]></Name>
 						<Type><![CDATA[int]]></Type>
 					</Parameter>
-					<Body><![CDATA[for( J_HeatingSystemOptionsGlobal hso : c_heatingSystemOptions ){
-	OL_HeatingSystem hstype = hso.getType();
-	J_ResultsPerOwnerType results = resultsData.getHeatingMethod(hstype).getResultsPerOwnerType(OL_HouseholdOwnership.TOTAL);
-	int unitsInstalledCumulative = results.getCumulativeIndex(yearIndex);
-	hso.f_updateCapexFromLearningCurve(unitsInstalledCumulative, p_economicLearningFactor);
+					<Body><![CDATA[// Or manually iterate if you need per-method breakdown
+for (OL_HeatingSystem system : OL_HeatingSystem.values()) {
+    
+    int installedCumulative = resultsData.getHeatingMethod(system).getInstalledCumulativeIndex(yearIndex);   
+    c_heatingSystemOptions.get(system).f_updateCapexFromLearningCurve(installedCumulative, p_economicLearningFactor);
 }
 
 ]]></Body>
@@ -5529,24 +5577,9 @@ for(J_HomeOwner ho : c_homeOwners) {
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
 					<Body><![CDATA[//Set initial units installed per heating method
-for( J_HeatingSystemOptionsGlobal hso : c_heatingSystemOptions){
-	switch (hso.getType()) {
-		case NATURAL_GAS_BOILER:
-			hso.setInitialUnitsInstalled(v_gasBoilers_nb);
-			break;
-		case NATURAL_GAS_BLOCK:
-			hso.setInitialUnitsInstalled(v_gasBlockHeating_nb);
-			break;
-		case HYBRID_HEAT_PUMP:
-			hso.setInitialUnitsInstalled(v_hybridHeatPumps_nb);
-			break;
-		case ELECTRIC_HEAT_PUMP:
-			hso.setInitialUnitsInstalled(v_electricHeatPumps_nb);
-			break;
-		case DISTRICT_HEATING:
-			hso.setInitialUnitsInstalled(v_districtHeating_nb);
-			break;
-	}
+for( OL_HeatingSystem hs : OL_HeatingSystem.values()){
+	int initialUnitsInstalled = resultsData.getHeatingMethod(hs).getInstalledCurrentIndex(0);
+	c_heatingSystemOptions.get(hs).setInitialUnitsInstalled(initialUnitsInstalled);
 }
 ]]></Body>
 				</Function>
@@ -6606,8 +6639,8 @@ c_dwellings.add(dwelling);
 idCounter++;
 
 // Store average gas and electricity demand per unique postal code
-avgGasDemandByPostalCode.putIfAbsent(postcode, avgGasDemandPerDwelling_kWh );
-avgElectricityDemandByPostalCode.putIfAbsent(postcode, p6_kwh_2023 );
+//avgGasDemandByPostalCode.putIfAbsent(postcode, avgGasDemandPerDwelling_kWh );
+//avgElectricityDemandByPostalCode.putIfAbsent(postcode, p6_kwh_2023 );
 
 //Make list of SHA dwellings per postal code
 if(ownership == SOCIAL_HOUSING){
@@ -7320,7 +7353,7 @@ for(int i = 0; i < simulationYears; i++){
 	}
 	//f_buildDistrictHeating(p_districtHeatingShortTermYear, p_districtHeatingMediumTermYear, p_districtHeatingLongTermYear, p_districtHeatingThreshold);
 	//f_updateDatasets();
-	traceln("Finished year " + v_year);
+	//traceln("Finished year " + v_year);
 }
 
 //f_setCharts();
@@ -7417,7 +7450,7 @@ return data;
 					<Id>1747232737285</Id>
 					<Name><![CDATA[f_addDataToTimeStackChart]]></Name>
 					<ExcludeFromBuild>true</ExcludeFromBuild>
-					<X>-1060</X><Y>1140</Y>
+					<X>-1100</X><Y>1270</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -7505,9 +7538,17 @@ c_buurtcodeToDwellings.clear();
 c_buurtcodeToHouseholds.clear();
 c_dwellings.clear();
 c_dwellingsLandlords.clear();
+c_dwellingsSocialHousing.clear();
 c_heatingSystemOptions.clear();
 c_homeOwners.clear();
 c_municipalities.clear();
+
+c_SHADwellings_by_postcode.clear();
+validationMap.clear();
+
+
+resultsData = null;
+mapAnnualValues = null;
 
 this.deleteSelf();]]></Body>
 				</Function>
@@ -7697,7 +7738,7 @@ ef_exampleDwellings.writeFile();
 					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1769529293613</Id>
 					<Name><![CDATA[f_storeAnnualValues]]></Name>
-					<X>-310</X><Y>1240</Y>
+					<X>-1000</X><Y>1210</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -7706,94 +7747,79 @@ ef_exampleDwellings.writeFile();
 						<Name><![CDATA[yearIndex]]></Name>
 						<Type><![CDATA[int]]></Type>
 					</Parameter>
-					<Body><![CDATA[// 1️ Create aggregation buckets
-Map<OL_HeatingSystem, Map<OL_HouseholdOwnership, Aggregation>> buckets =
-	new EnumMap<>(OL_HeatingSystem.class);
-
-for (OL_HeatingSystem heating_method : OL_HeatingSystem.values()) {
-	Map<OL_HouseholdOwnership, Aggregation> byOwnership =
-		new EnumMap<>(OL_HouseholdOwnership.class);
-
-	for (OL_HouseholdOwnership ownership : OL_HouseholdOwnership.values()) {
-		byOwnership.put(ownership, new Aggregation());
-	}
-	buckets.put(heating_method, byOwnership);
-}
-
-// 2️ Loop over dwellings and aggregate
-for (J_Dwelling d : c_dwellings) {
-	OL_HeatingSystem heating_method = d.getHeatingSystem().getType();
-	OL_HouseholdOwnership ownership = d.getOwnership();
-
-    buckets.get(heating_method).get(ownership).add(d);
-}
-
-// 3️ Write results into ResultsData
-for (OL_HeatingSystem heating_method : OL_HeatingSystem.values()) {
+					<Body><![CDATA[for (OL_HeatingSystem heating_method : OL_HeatingSystem.values()) {
 	for (OL_HouseholdOwnership ownership : OL_HouseholdOwnership.values()) {
 		
+		//Add annual values to resultsData		
 		J_ResultsPerOwnerType resultsPO = resultsData.getHeatingMethod(heating_method).getResultsPerOwnerType(ownership);
+		J_AnnualValues anVal = mapAnnualValues.get(heating_method).get(ownership);
 		
-		Aggregation agg = buckets.get(heating_method).get(ownership);
-
-		int installed = agg.count;
-		int perYear = agg.count;
-		
-		//Set cumulative
-		int previousCumulative = 0;
-		if(yearIndex > 0){
-			previousCumulative = resultsPO.getCumulativeIndex(yearIndex - 1);
+		//Get cumulative and total installed
+		int installedCumulative;
+		int installedCurrent;
+		int installedThisYear = anVal.getInstalledThisYear();
+		int removedThisYear = anVal.getRemovedThisYear();
+		if(yearIndex == 0){
+			installedCumulative = installedThisYear;
+			installedCurrent = installedThisYear;
 		}
-		int cumulative = previousCumulative + perYear;
-
-		double avgAtt = agg.count > 0 ? agg.sumAtt / agg.count : 0;
-		double avgPercUtil = agg.count > 0 ? agg.sumPercUtil / agg.count : 0;
-		double avgSubNorm = agg.count > 0 ? agg.sumSubNorm / agg.count : 0;
-		double avgEAC = agg.count > 0 ? agg.sumEAC / agg.count : 0;
-		double avgPBC = agg.count > 0 ? agg.sumPBC / agg.count : 0;
-
+		else {
+			installedCumulative = resultsPO.getInstalledCumulativeIndex(yearIndex - 1) + installedThisYear;
+			installedCurrent = resultsPO.getInstalledCurrentIndex(yearIndex - 1) + installedThisYear - removedThisYear;
+		}
 		resultsPO.setYear(
 				yearIndex,
-				installed,
-				cumulative,
-				perYear,
-				avgAtt,
-				avgPercUtil,
-				avgSubNorm,
-				avgEAC,
-				avgPBC
+				installedThisYear,
+				removedThisYear,
+				installedCumulative,
+				installedCurrent,
+				anVal.getAvgAtt(),
+				anVal.getAvgPercUtil(),
+				anVal.getAvgSubNorm(),
+				anVal.getAvgEAC(),
+				anVal.getAvgPBC()
 			);
-
-		// update cumulative for next year
-		
-		//previousCumulative.get(heating_method).put(ownership, cumulative);
-		
-		
     }
+    resultsData.getHeatingMethod(heating_method).sumAnnualTotals(yearIndex);
 }
-]]></Body>
+//Clears this year, ready for the next
+f_initializeAnnualValuesMap();]]></Body>
 				</Function>
 				<Function AccessType="default" StaticFunction="false">
 					<ReturnModificator>VOID</ReturnModificator>
 					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1769591167137</Id>
 					<Name><![CDATA[f_initializeAnnualValuesMap]]></Name>
-					<X>-1000</X><Y>1100</Y>
+					<X>-1000</X><Y>1140</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
-					<Body><![CDATA[Map<OL_HeatingSystem, Map<OL_HouseholdOwnership, J_AnnualValues>> annualValues =
-        new EnumMap<>(OL_HeatingSystem.class);
-
-for (OL_HeatingSystem heating : OL_HeatingSystem.values()) {
-    Map<OL_HouseholdOwnership, J_AnnualValues> byOwnership = new EnumMap<>(OL_HouseholdOwnership.class);
-    for (OL_HouseholdOwnership owner : OL_HouseholdOwnership.values()) {
-        byOwnership.put(owner, new J_AnnualValues());
-    }
-    annualValues.put(heating, byOwnership);
+					<Body><![CDATA[mapAnnualValues = new EnumMap<>(OL_HeatingSystem.class);
+        
+for (OL_HeatingSystem heatingSystem : OL_HeatingSystem.values()) {
+	EnumMap<OL_HouseholdOwnership, J_AnnualValues> innerMap = new EnumMap<>(OL_HouseholdOwnership.class);
+            
+	for (OL_HouseholdOwnership ownership : OL_HouseholdOwnership.values()) {
+		innerMap.put(ownership, new J_AnnualValues());
+	}
+            
+	mapAnnualValues.put(heatingSystem, innerMap);
 }
+
+
 ]]></Body>
+				</Function>
+				<Function AccessType="default" StaticFunction="false">
+					<ReturnModificator>VOID</ReturnModificator>
+					<ReturnType><![CDATA[double]]></ReturnType>
+					<Id>1770303540500</Id>
+					<Name><![CDATA[f_annualStatsOnNewHeatingMethods]]></Name>
+					<X>-1000</X><Y>1180</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
 				</Function>
 			</Functions>
 			<TableFunctions>
@@ -19526,14 +19552,16 @@ if(nbh.p_policyPlan != null){
 		case ELECTRIC_HEAT_PUMP:
 			if(nbh.p_policyPlanYear == main.v_year){
 				for(J_Dwelling dwelling : nbh.c_dwellingsSocialHousing){
-					dwelling.f_installNewHeatingMethod(ELECTRIC_HEAT_PUMP);
+					J_HeatingSystemOptionsLocal hs = dwelling.f_getHeatingSystemOptionsLocalFromType(ELECTRIC_HEAT_PUMP);
+					dwelling.f_installSelectedHeatingMethod(hs);
 				}
 			}
 			break;
 		case HYBRID_HEAT_PUMP:
 			if(nbh.p_policyPlanYear == main.v_year){
 				for(J_Dwelling dwelling : nbh.c_dwellingsSocialHousing){
-					dwelling.f_installNewHeatingMethod(HYBRID_HEAT_PUMP);
+					J_HeatingSystemOptionsLocal hs = dwelling.f_getHeatingSystemOptionsLocalFromType(HYBRID_HEAT_PUMP);
+					dwelling.f_installSelectedHeatingMethod(hs);
 				}
 			}
 			break;
@@ -19541,7 +19569,8 @@ if(nbh.p_policyPlan != null){
 			if(nbh.p_policyPlanYear == main.v_year){
 				if(nbh.v_hasDistrictHeatingGrid == true) {
 					for(J_Dwelling dwelling : nbh.c_dwellingsSocialHousing){
-						dwelling.f_installNewHeatingMethod(DISTRICT_HEATING);
+						J_HeatingSystemOptionsLocal hs = dwelling.f_getHeatingSystemOptionsLocalFromType(DISTRICT_HEATING);
+						dwelling.f_installSelectedHeatingMethod(hs);
 					}
 				}
 			}
@@ -19787,24 +19816,24 @@ for(String postcode : main.c_SHADwellings_by_postcode.keySet()){
 		//2. Rank costs heating method
 		// Create a list from the entries of the map
 		List<OL_HeatingSystem> rankedHeatingTypes = totalHeatingSystemCosts.entrySet().stream()
-		    .filter(entry -> entry.getKey() != OL_HeatingSystem.UNKNOWN) // filter out UNKNOWN
 		    .sorted(Map.Entry.comparingByValue()) 						// sort by cost (ascending)
 		    .map(Map.Entry::getKey)               						// extract the type only
 		    .collect(Collectors.toList());
 		
 		// Optional: print or use the sorted list
+		/*
 		if(postcode.equals("2591TX")){
 			for (OL_HeatingSystem type : rankedHeatingTypes) {
 		     traceln("Heating type ranked list PC6 2591TX: " + type + " | Cost: " + totalHeatingSystemCosts.get(type));
 		     
 			}
-		}
+		}*/
 
 		
 		//3.Adopt
 		for(J_Dwelling d : SHADwellingsInPostcode){
-			
-			d.f_installSelectedHeatingMethod(rankedHeatingTypes);
+			J_HeatingSystemOptionsLocal hsol = d.f_getFirstPossibleHeatingSystemOption(rankedHeatingTypes);
+			d.f_installSelectedHeatingMethod(hsol);
 		}
 		/*
 		OL_HeatingSystem cheapestType = null;
@@ -20646,10 +20675,11 @@ for(GZ_Neighborhood nbh : main.pop_GZ_Neighborhoods){
 */
 //Cost based
 for(J_Dwelling dwelling : main.c_dwellingsLandlords){
-	if(dwelling.f_hasEndOfLifeTrigger() && dwelling.getHeatingSystemInstalledThisYear() == null){
+	if(dwelling.f_hasEndOfLifeTrigger() && dwelling.hasInstalledHeatingSystemThisYear() == false){
 		dwelling.f_calculateHeatingSystemOptionsEAC();
 		dwelling.f_rankHeatingSystemOptionsByEAC();
-		dwelling.f_installNewHeatingMethod();
+		J_HeatingSystemOptionsLocal selectedHeatingSystemOption = dwelling.f_getTopRankedHeatingSystemOption();
+		dwelling.f_installSelectedHeatingMethod(selectedHeatingSystemOption);
 	}
 }
 	
@@ -21539,7 +21569,17 @@ main.f_updateBarTopRank(ch_barTopRank, main.c_dwellingsLandlords);
 		<ActiveObjectClass>
 			<Id>1745909887783</Id>
 			<Name><![CDATA[Startup_agent]]></Name>
-			<Import><![CDATA[import com.bbn.openmap.proj.DrawUtil;]]></Import>
+			<Import><![CDATA[import com.bbn.openmap.proj.DrawUtil;
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;]]></Import>
 			<StartupCode><![CDATA[gr_inputs.setPos(740, 580);
 gr_outputs.setPos(680, 560);
 gr_inputs.setVisible(true);
@@ -21808,7 +21848,7 @@ f_initializeScenarioSettings();
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
 					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
-						<Type><![CDATA[double]]></Type>        
+						<Type><![CDATA[OL_LowMedHigh]]></Type>        
 					</Properties>
 				</Variable>
 				<Variable Class="PlainVariable">
@@ -21832,7 +21872,7 @@ f_initializeScenarioSettings();
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
 					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
-						<Type><![CDATA[double]]></Type>        
+						<Type><![CDATA[OL_LowMedHigh]]></Type>        
 					</Properties>
 				</Variable>
 				<Variable Class="PlainVariable">
@@ -21886,7 +21926,7 @@ f_initializeScenarioSettings();
 				<Variable Class="PlainVariable">
 					<Id>1746538889819</Id>
 					<Name><![CDATA[simulationCount]]></Name>
-					<X>-520</X><Y>710</Y>
+					<X>-520</X><Y>730</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -21901,7 +21941,7 @@ f_initializeScenarioSettings();
 				<Variable Class="PlainVariable">
 					<Id>1746698251142</Id>
 					<Name><![CDATA[v_runColor]]></Name>
-					<X>-520</X><Y>730</Y>
+					<X>-520</X><Y>750</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -22030,6 +22070,147 @@ f_initializeScenarioSettings();
 						<Type><![CDATA[String]]></Type>        
 					</Properties>
 				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1770645319680</Id>
+					<Name><![CDATA[v_scenarioKey]]></Name>
+					<X>-520</X><Y>710</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[int]]></Type>        
+					</Properties>
+				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1770645339058</Id>
+					<Name><![CDATA[v_iteration]]></Name>
+					<X>-370</X><Y>710</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[int]]></Type>        
+					</Properties>
+				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1770645451332</Id>
+					<Name><![CDATA[v_run]]></Name>
+					<X>-250</X><Y>710</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[int]]></Type>        
+					</Properties>
+				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1770646739691</Id>
+					<Name><![CDATA[v_startYear]]></Name>
+					<X>-200</X><Y>100</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[int]]></Type>        
+						<InitialValue Class="CodeValue">
+							<Code><![CDATA[2023]]></Code>
+						</InitialValue>
+					</Properties>
+				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1770646752166</Id>
+					<Name><![CDATA[v_endYear]]></Name>
+					<X>-200</X><Y>120</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[int]]></Type>        
+						<InitialValue Class="CodeValue">
+							<Code><![CDATA[2050]]></Code>
+						</InitialValue>
+					</Properties>
+				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1770647346378</Id>
+					<Name><![CDATA[fileName]]></Name>
+					<X>40</X><Y>1440</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[String]]></Type>        
+					</Properties>
+				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1770647485174</Id>
+					<Name><![CDATA[headerWritten]]></Name>
+					<X>40</X><Y>1460</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[boolean]]></Type>        
+					</Properties>
+				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1770647981114</Id>
+					<Name><![CDATA[resultsDir]]></Name>
+					<X>40</X><Y>1480</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[File]]></Type>        
+					</Properties>
+				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1770649810959</Id>
+					<Name><![CDATA[v_nbOfIterations]]></Name>
+					<X>-160</X><Y>710</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[int]]></Type>        
+						<InitialValue Class="CodeValue">
+							<Code><![CDATA[3]]></Code>
+						</InitialValue>
+					</Properties>
+				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1770653097004</Id>
+					<Name><![CDATA[scenarios]]></Name>
+					<X>360</X><Y>1180</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[Map<Integer, J_ScenarioConfig>]]></Type>        
+					</Properties>
+				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1770655296894</Id>
+					<Name><![CDATA[v_scenarioName]]></Name>
+					<X>-290</X><Y>740</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[String]]></Type>        
+					</Properties>
+				</Variable>
 				<Variable Class="CollectionVariable">
 					<Id>1745909948651</Id>
 					<Name><![CDATA[provinceToMunicipality]]></Name>
@@ -22146,6 +22327,7 @@ cb_connectionObligationDH.setSelected(false, true);
 cb_noAdditionalEHPWithCongestion.setSelected(false, true);
 cb_economicLearningFactor.setValue("MEDIUM", true);
 
+f_createNewResultsFile();
 f_setDefaultWeights();]]></Body>
 				</Function>
 				<Function AccessType="default" StaticFunction="false">
@@ -22219,9 +22401,7 @@ rb_area.setValue(0, true);]]></Body>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
-					<Body><![CDATA[
-
-String[] selectedMunicipalities = new String[0];
+					<Body><![CDATA[String[] selectedMunicipalities = new String[0];
 String selectedArea = cb_areaSelection.getValue();
 if (rb_area.getValue() == 0) {
     List<Tuple> rows = selectFrom(municipalities).list();
@@ -22272,13 +22452,13 @@ ar_selectedMunicipalityCodes = codesList.toArray(new String[0]);]]></Body>
 
 m.municipalityCodes = ar_selectedMunicipalityCodes;
 m.v_timer = System.currentTimeMillis();
-m.v_startYear = 2025;
-m.v_endYear = 2050;
+m.v_startYear = v_startYear;
+m.v_endYear = v_endYear;
 m.v_rapidRun = v_rapidRun;
 m.v_runCount = simulationCount;
 
 //Set scenario settings
-m.p_socialLearningFactor = v_socialLearningFactor;
+m.p_socialLearningFactor = f_learningFactorToMultiplier(v_socialLearningFactor);
 m.p_gridReinforcementPace = v_gridReinforcementPace;
 m.p_dhConstructionTime_years = v_dhConstructionTime_years;
 m.p_dhExpansionPlans = v_DHExpansionPlans;
@@ -22286,7 +22466,7 @@ m.p_socialHousingStrategy = v_socialHousingStrategy;
 
 m.p_connectionObligationNewDH = v_connectionObligationNewDH;
 m.p_congestionBlock = v_congestionBlock;
-m.p_economicLearningFactor = v_economicLearningFactor;
+m.p_economicLearningFactor = f_learningFactorToMultiplier(v_economicLearningFactor);
 m.p_networkType = v_networkType;
 
 m.v_subsidyNaturalGasBoiler = v_subsidyNaturalGasBoiler;
@@ -22329,6 +22509,7 @@ if(v_rapidRun == true){
 					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1746698017129</Id>
 					<Name><![CDATA[f_addRunToGraphs]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>50</X><Y>1070</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -22403,10 +22584,12 @@ gr_outputs.add(textShape);
 v_runColor = randomColor();
 f_setRunText();
 
-c_resultsPerRun.add(main.get(0).resultsData);
+J_ResultsData results = main.get(0).resultsData;
+c_resultsPerRun.add(results);
+f_writeResultsToCSV(results);
 
-f_addRunToGraphs();
-f_writeResultsToExcel();
+//f_addRunToGraphs();
+//f_writeResultsToExcel();
 
 gr_inputs.setVisible(false);
 gr_outputs.setVisible(true);
@@ -22425,6 +22608,7 @@ if(v_rapidRun == false){
 					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1746719681063</Id>
 					<Name><![CDATA[f_writeResultsToExcel]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>50</X><Y>1110</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -22442,9 +22626,10 @@ if(simulationCount == 1){
 		}
 	}
 }*/
-int iterations = data_naturalGasBoilers_nb.size();
-int row = 1;
 
+J_ResultsData results = c_resultsPerRun.get(c_resultsPerRun.size() - 1);
+
+int row = 1;
 int sheetIndex = 1;
 int columnSimulationRun = 1;
 int columnYear = 2;
@@ -22648,11 +22833,262 @@ eb_w_PBCToBeh.setText(v_weight_PBCToBehavior);]]></Body>
 					<ShowLabel>true</ShowLabel>
 					<Body><![CDATA[c_resultsPerRun.add(main.get(0).resultsData);]]></Body>
 				</Function>
+				<Function AccessType="default" StaticFunction="false">
+					<ReturnModificator>VOID</ReturnModificator>
+					<ReturnType><![CDATA[double]]></ReturnType>
+					<Id>1770391630024</Id>
+					<Name><![CDATA[f_writeResultsToCSV]]></Name>
+					<X>40</X><Y>1380</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Parameter>
+						<Name><![CDATA[results]]></Name>
+						<Type><![CDATA[J_ResultsData]]></Type>
+					</Parameter>
+					<Body><![CDATA[// Create results directory if it doesn't exist
+  
+try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName, true))) {
+	StringBuilder sb = new StringBuilder();
+    
+	// Write header only if file doesn't exist
+	if (!headerWritten) {
+		sb.append("scenario,scenario_name,iteration,year,heating_system,ownership,")
+			.append("installed_current,installed_annually,removed_annually,installed_cumulative,")
+			.append("avg_att,avg_util,avg_sub_norm,avg_eac,avg_pbc\n");
+		headerWritten = true;
+	}
+        
+	// Write data - one row per year/heating/ownership combination
+	int nbOfYears = results.getHeatingMethod(NATURAL_GAS_BOILER).getInstalledCurrentLength();
+	int countRows = 0;
+	for (OL_HeatingSystem system : OL_HeatingSystem.values()) {
+	
+		J_ResultsPerHeatingMethod resultsPHM = results.getHeatingMethod(system);
+		//Iterate for totals
+		for(int year = 0; year < nbOfYears; year++){
+			sb.append(v_scenarioKey).append(',')
+				.append(v_scenarioName).append(',')
+				.append(v_iteration).append(',')
+				.append(year + v_startYear).append(',')
+				.append(system.name()).append(',')
+				.append("TOTAL").append(',')
+				.append(resultsPHM.getInstalledCurrentIndex(year)).append(',')
+				.append(resultsPHM.getInstalledThisYearIndex(year)).append(',')
+				.append(resultsPHM.getRemovedThisYearIndex(year)).append(',')
+				.append(resultsPHM.getInstalledCumulativeIndex(year)).append(',')
+				.append(resultsPHM.getAvgAttIndex(year)).append(',')
+				.append(resultsPHM.getAvgPercUtilIndex(year)).append(',')
+				.append(resultsPHM.getAvgSubNormIndex(year)).append(',')
+				.append(resultsPHM.getAvgEACIndex(year)).append(',')
+				.append(resultsPHM.getAvgPBCIndex(year)).append('\n');
+				countRows++;
+		}
+		
+		for (OL_HouseholdOwnership ownership : OL_HouseholdOwnership.values()) {
+			
+			J_ResultsPerOwnerType resultsPO = results.getHeatingMethod(system).getResultsPerOwnerType(ownership);
+			
+			for(int year = 0; year < nbOfYears; year++){
+
+				sb.append(v_scenarioKey).append(',')
+					.append(v_scenarioName).append(',')
+					.append(v_iteration).append(',')
+					.append(year  + v_startYear).append(',')
+					.append(system.name()).append(',')
+					.append(ownership.name()).append(',')
+					.append(resultsPO.getInstalledCurrentIndex(year)).append(',')
+					.append(resultsPO.getInstalledThisYearIndex(year)).append(',')
+					.append(resultsPO.getRemovedThisYearIndex(year)).append(',')
+					.append(resultsPO.getInstalledCumulativeIndex(year)).append(',')
+					.append(resultsPO.getAvgAttIndex(year)).append(',')
+					.append(resultsPO.getAvgPercUtilIndex(year)).append(',')
+					.append(resultsPO.getAvgSubNormIndex(year)).append(',')
+					.append(resultsPO.getAvgEACIndex(year)).append(',')
+					.append(resultsPO.getAvgPBCIndex(year)).append('\n');
+					countRows++;
+			}
+		}
+	}
+        
+	writer.write(sb.toString());
+	traceln("Appended " + countRows + " rows for iteration " + v_iteration);
+        
+} catch (IOException e) {
+	error("Error writing results: " + e.getMessage());
+}
+]]></Body>
+				</Function>
+				<Function AccessType="default" StaticFunction="false">
+					<ReturnModificator>VOID</ReturnModificator>
+					<ReturnType><![CDATA[double]]></ReturnType>
+					<Id>1770647041223</Id>
+					<Name><![CDATA[f_createNewResultsFile]]></Name>
+					<X>40</X><Y>1400</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Body><![CDATA[// Initialize filename once per experiment (first iteration only)
+if (fileName == null) {
+	String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+	fileName = "results/simulation_results_" + timestamp + ".csv";
+            
+	// Create results directory if it doesn't exist
+	resultsDir = new File("results");
+	if (!resultsDir.exists()) {
+		resultsDir.mkdirs();
+	}
+    
+	traceln("Results will be written to: " + fileName);
+}]]></Body>
+				</Function>
+				<Function AccessType="default" StaticFunction="false">
+					<ReturnModificator>VOID</ReturnModificator>
+					<ReturnType><![CDATA[double]]></ReturnType>
+					<Id>1770652956642</Id>
+					<Name><![CDATA[f_getAndRunScenarios]]></Name>
+					<X>350</X><Y>1140</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Body><![CDATA[traceln("Start scenario analysis");
+
+int startTime = System.currentTimeMillis();
+int duration = 0;
+cb_rapidRun.setSelected(true, true);
+
+// Load scenarios once (first iteration only)
+if (scenarios == null || scenarios.isEmpty()) {
+	f_loadScenarios();
+}
+
+v_iteration = 0;
+v_run = 0;
+
+for (Map.Entry<Integer, J_ScenarioConfig> entry : scenarios.entrySet()) {
+	int startTimeScenario = System.currentTimeMillis();
+	v_iteration = 0;
+	v_scenarioKey = entry.getKey();
+	J_ScenarioConfig currentScenario = entry.getValue();
+    v_scenarioName = currentScenario.scenName;	
+
+	//Set variables for scenario        
+	v_socialLearningFactor = currentScenario.socialLearningFactor;
+	v_economicLearningFactor = currentScenario.economicLearningFactor;
+	v_gridReinforcementPace = currentScenario.gridReinforcementRate;
+	v_dhConstructionTime_years = currentScenario.dhConstructionTime;
+	v_DHExpansionPlans = currentScenario.dhExpansionStrategy;
+	v_socialHousingStrategy = currentScenario.shaStrategy;
+	v_connectionObligationNewDH = currentScenario.dhConnectionObligation;
+	v_congestionBlock = currentScenario.gridCongestionHPBan;
+	traceln("Scenario " + v_scenarioKey + ": " + currentScenario.scenName);
+
+	for (int i=0; i<v_nbOfIterations; i++) {
+		v_run++;
+		v_iteration++;
+		f_initializeMain();
+	}
+	duration = f_traceFunctionTime(startTimeScenario);
+	traceln("Total time last scenario " + duration + " seconds");
+}
+
+
+duration = f_traceFunctionTime(startTime);
+traceln("Total start-up time: " + duration + " seconds");
+
+
+
+
+
+	
+]]></Body>
+				</Function>
+				<Function AccessType="default" StaticFunction="false">
+					<ReturnModificator>VOID</ReturnModificator>
+					<ReturnType><![CDATA[double]]></ReturnType>
+					<Id>1770653069825</Id>
+					<Name><![CDATA[f_loadScenarios]]></Name>
+					<X>360</X><Y>1160</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Body><![CDATA[scenarios = new HashMap<>();
+String csvFile = "_scenario_settings.csv"; // Or full path: "data/scenarios.csv"
+        
+try (BufferedReader br = new BufferedReader(new FileReader(csvFile))) {
+	String line;
+	boolean isHeader = true;
+	            
+	while ((line = br.readLine()) != null) {
+		if (isHeader) {
+			isHeader = false;
+			continue; // Skip header
+		}
+	
+		String[] values = line.split(",");
+		
+		int scenId = Integer.parseInt(values[0]);
+		String scenName = values[1];
+		OL_LowMedHigh socialLearning = OL_LowMedHigh.valueOf(values[2]);
+		OL_LowMedHigh economicLearning = OL_LowMedHigh.valueOf(values[3]);
+		OL_LowMedHigh gridReinforcementRate = OL_LowMedHigh.valueOf(values[4]);
+		int dhConstructionTime = Integer.parseInt(values[5]);
+		OL_ExpansionStrategy dhStrategy = OL_ExpansionStrategy.valueOf(values[6]);
+		OL_ExpansionStrategy shaStrategy = OL_ExpansionStrategy.valueOf(values[7]);
+		boolean dhConnectionObligation = Boolean.parseBoolean(values[8]);
+		boolean gridCongestionHPBan = Boolean.parseBoolean(values[9]);
+		                
+		J_ScenarioConfig config = new J_ScenarioConfig(
+			scenId, scenName, socialLearning, economicLearning,
+			gridReinforcementRate, dhConstructionTime,
+			dhStrategy, shaStrategy, dhConnectionObligation, gridCongestionHPBan
+		);                
+		
+		scenarios.put(scenId, config);	
+	}
+	traceln("Loaded " + scenarios.size() + " scenarios");
+} catch (IOException e) {
+	error("Error reading scenarios CSV: " + e.getMessage());
+	e.printStackTrace();
+}
+]]></Body>
+				</Function>
+				<Function AccessType="default" StaticFunction="false">
+					<ReturnModificator>RETURNS_VALUE</ReturnModificator>
+					<ReturnType><![CDATA[double]]></ReturnType>
+					<Id>1770654139342</Id>
+					<Name><![CDATA[f_learningFactorToMultiplier]]></Name>
+					<X>1750</X><Y>700</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Parameter>
+						<Name><![CDATA[learningFactor]]></Name>
+						<Type><![CDATA[OL_LowMedHigh]]></Type>
+					</Parameter>
+					<Body><![CDATA[switch (learningFactor){
+	case LOW :
+		return 0.5;
+	case MEDIUM:
+		return 1;
+	case HIGH:
+		return 2;
+	default:
+        System.out.println("Unknown grid reinforcement pace.");
+        return 1;
+}]]></Body>
+				</Function>
 			</Functions>
 			<AnalysisData>
     			<DataSet>
 					<Id>1746696592177</Id>
 					<Name><![CDATA[data_naturalGasBoilers_nb]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>-520</X><Y>1170</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -22678,6 +23114,7 @@ eb_w_PBCToBeh.setText(v_weight_PBCToBehavior);]]></Body>
     			<DataSet>
 					<Id>1746696592186</Id>
 					<Name><![CDATA[data_districtHeating_nb]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>-520</X><Y>1210</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -22703,6 +23140,7 @@ eb_w_PBCToBeh.setText(v_weight_PBCToBehavior);]]></Body>
     			<DataSet>
 					<Id>1746696592194</Id>
 					<Name><![CDATA[data_electricHeatPumps_nb]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>-520</X><Y>1230</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -22728,6 +23166,7 @@ eb_w_PBCToBeh.setText(v_weight_PBCToBehavior);]]></Body>
     			<DataSet>
 					<Id>1746696592202</Id>
 					<Name><![CDATA[data_hybridHeatPumps_nb]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>-520</X><Y>1250</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -22753,6 +23192,7 @@ eb_w_PBCToBeh.setText(v_weight_PBCToBehavior);]]></Body>
     			<DataSet>
 					<Id>1746696592210</Id>
 					<Name><![CDATA[data_naturalGasBlock_nb]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>-520</X><Y>1190</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -22778,6 +23218,7 @@ eb_w_PBCToBeh.setText(v_weight_PBCToBehavior);]]></Body>
     			<DataSet>
 					<Id>1746696592218</Id>
 					<Name><![CDATA[data_naturalGasBoilers_perc]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>-520</X><Y>1290</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -22803,6 +23244,7 @@ eb_w_PBCToBeh.setText(v_weight_PBCToBehavior);]]></Body>
     			<DataSet>
 					<Id>1746696592226</Id>
 					<Name><![CDATA[data_districtHeating_perc]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>-520</X><Y>1330</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -22828,6 +23270,7 @@ eb_w_PBCToBeh.setText(v_weight_PBCToBehavior);]]></Body>
     			<DataSet>
 					<Id>1746696592233</Id>
 					<Name><![CDATA[data_electricHeatPumps_perc]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>-520</X><Y>1350</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -22853,6 +23296,7 @@ eb_w_PBCToBeh.setText(v_weight_PBCToBehavior);]]></Body>
     			<DataSet>
 					<Id>1746696592240</Id>
 					<Name><![CDATA[data_hybridHeatPumps_perc]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>-520</X><Y>1370</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -22878,6 +23322,7 @@ eb_w_PBCToBeh.setText(v_weight_PBCToBehavior);]]></Body>
     			<DataSet>
 					<Id>1746696592248</Id>
 					<Name><![CDATA[data_naturalGasBlock_perc]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>-520</X><Y>1310</Y>
 					<Label><X>15</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -23955,7 +24400,7 @@ switch (gridReinforcementPace){
                         <EmbeddedIcon>false</EmbeddedIcon>	
 						<FillColor>-1</FillColor>
 						<TextColor>-16777216</TextColor>
-						<Enabled>true</Enabled>
+						<Enabled>false</Enabled>
 						<ActionCode><![CDATA[
 	]]></ActionCode>
 					</BasicProperties>
@@ -24128,13 +24573,13 @@ switch (dhExpansionPlans){
 						<ActionCode><![CDATA[String socialLearningFactor = cb_socialLearningFactor.getValue();
 switch (socialLearningFactor){
 	case "LOW" :
-		v_socialLearningFactor = 0.5;
+		v_socialLearningFactor = LOW;
 		break;
 	case "MEDIUM":
-		v_socialLearningFactor = 1;
+		v_socialLearningFactor = MEDIUM;
 		break;
 	case "HIGH":
-		v_socialLearningFactor = 2;
+		v_socialLearningFactor = HIGH;
 		break;
 	default:
         System.out.println("Unknown social learning factor.");
@@ -24234,13 +24679,13 @@ switch (socialLearningFactor){
 						<ActionCode><![CDATA[String economicLearningFactor = cb_economicLearningFactor.getValue();
 switch (economicLearningFactor){
 	case "LOW" :
-		v_economicLearningFactor = 0.5;
+		v_economicLearningFactor = LOW;
 		break;
 	case "MEDIUM":
-		v_economicLearningFactor = 1;
+		v_economicLearningFactor = MEDIUM;
 		break;
 	case "HIGH":
-		v_economicLearningFactor = 2;
+		v_economicLearningFactor = HIGH;
 		break;
 	default:
         System.out.println("Unknown economic learning factor.");
@@ -25317,15 +25762,7 @@ cb_areaSelection.setValue("Schiermonnikoog", true);]]></ActionCode>
                         <EmbeddedIcon>false</EmbeddedIcon>	
 						<TextColor>-16777216</TextColor>
 						<Enabled>true</Enabled>
-						<ActionCode><![CDATA[traceln("Start scenario analysis");
-cb_rapidRun.setSelected(true, true);
-
-int requiredIterations = 30;
-for (int i=0; i<requiredIterations; i++) {
-	f_initializeMain();
-}
-
-]]></ActionCode>
+						<ActionCode><![CDATA[f_getAndRunScenarios();]]></ActionCode>
 					</BasicProperties>
 					<ExtendedProperties>
 						<Font Name="Dialog" Size="16" Style="0"/>
@@ -25371,8 +25808,9 @@ f_varyWeights();
 						<Enabled>true</Enabled>
 						<ActionCode><![CDATA[cb_rapidRun.setSelected(true, true);
 
-int requiredIterations = 30;
-for (int i=0; i<requiredIterations; i++) {
+v_iteration = 0;
+for (int i=0; i<v_nbOfIterations; i++) {
+	v_iteration++;
 	f_initializeMain();
 }
 ]]></ActionCode>
@@ -28709,7 +29147,8 @@ public class J_Municipality {
  * J_Dwelling
  */	
 import com.anylogic.engine.database.*;
-
+import java.util.EnumMap;
+import java.util.Map;
 
 
 public class J_Dwelling {
@@ -28776,13 +29215,13 @@ public class J_Dwelling {
 		
 	}
     
-    public void f_setDwellingData(GZ_Neighborhood nbh, List<J_HeatingSystemOptionsGlobal> heatingSystemOptionsInput, OL_HeatingSystem heatingSystemType , boolean hasDistrictHeatingGrid,  boolean isInBlock) {
+    public void f_setDwellingData(GZ_Neighborhood nbh, EnumMap<OL_HeatingSystem, J_HeatingSystemOptionsGlobal> heatingSystemOptionsInput, OL_HeatingSystem heatingSystemType , boolean hasDistrictHeatingGrid,  boolean isInBlock) {
 		this.neighborhood = nbh;
     	
     	// Initialize heating system based on type 
     	
     	// Get random age for heating systemGive random age to heating system
-    	J_HeatingSystemOptionsGlobal initialHeatingSystem = findFirst(heatingSystemOptionsInput, x->x.getType() == heatingSystemType);
+    	J_HeatingSystemOptionsGlobal initialHeatingSystem = heatingSystemOptionsInput.get(heatingSystemType);
 		int ageHeatingSystem = main.v_year - yearLastRenovation;
 		if(ageHeatingSystem >= initialHeatingSystem.getLifetime()) {
 			ageHeatingSystem = (int) (Math.random() * (initialHeatingSystem.getLifetime() + 1));
@@ -28790,6 +29229,8 @@ public class J_Dwelling {
     	
     	//Initalize heating system
     	this.heatingSystem = new J_HeatingSystem(initialHeatingSystem, ageHeatingSystem);
+    	//Add to count
+    	main.mapAnnualValues.get(heatingSystemType).get(ownership).addInstalledThisYear();
     	//this.heatingSystemInstalledThisYear = heatingSystem;
     	this.hasLowTemperatureInhouseHeatDistribution = initialHeatingSystem.getRequiresLowTemperatureInhouseHeatDistribution();
     	
@@ -28798,11 +29239,11 @@ public class J_Dwelling {
 
 
     //1. Initalize heating system options
-    public void f_initializeHeatingSystemOptions(List<J_HeatingSystemOptionsGlobal> heatingSystemOptionsInput, boolean hasDistrictHeatingGrid, boolean isPartOfBlock, J_HeatingSystem heatingSystem) {
-    	for( J_HeatingSystemOptionsGlobal hso_input : heatingSystemOptionsInput) {
+    public void f_initializeHeatingSystemOptions(EnumMap<OL_HeatingSystem, J_HeatingSystemOptionsGlobal> heatingSystemOptionsInput, boolean hasDistrictHeatingGrid, boolean isPartOfBlock, J_HeatingSystem heatingSystem) {
+    	for (J_HeatingSystemOptionsGlobal option : heatingSystemOptionsInput.values()) {
     		
     		//Set input
-    		OL_HeatingSystem type = hso_input.getType();
+    		OL_HeatingSystem type = option.getType();
     		boolean isPossible = true;
     		if( type == DISTRICT_HEATING) {
     				isPossible = hasDistrictHeatingGrid;
@@ -28815,7 +29256,7 @@ public class J_Dwelling {
     		J_HeatingSystemOptionsLocal hso_household = new J_HeatingSystemOptionsLocal(
     				type,
     				isPossible,
-    				hso_input,
+    				option,
     				heatingSystem,
     				this
     		);
@@ -28896,22 +29337,39 @@ public class J_Dwelling {
     	setDistrictHeatingPreferred(f_getTopRankedHeatingSystemOption().getType() == OL_HeatingSystem.DISTRICT_HEATING);
     }
     
-    public J_HeatingSystemOptionsLocal f_getTopRankedHeatingSystemOption() {
-    	return getHeatingSystemMap().values().iterator().next();
+    public J_HeatingSystemOptionsLocal f_getHeatingSystemOptionsLocalFromType(OL_HeatingSystem heatingSystemType) {
+    	J_HeatingSystemOptionsLocal hsol = heatingSystemMap.get(heatingSystemType);
+    	return hsol;
     }
     
 
-    //Adopt highest ranked option
-	public void f_getPreferredHeatingSystem(List<OL_HeatingSystem> rankedList) {
+    //Get highest ranked option
+	public J_HeatingSystemOptionsLocal f_getTopRankedHeatingSystemOption() {
 		J_HeatingSystemOptionsLocal preferredHeatingSystem = this.heatingSystemMap.values().stream()
 				.filter(J_HeatingSystemOptionsLocal::getIsPossible)
 				.findFirst()
 				.orElse(null);
+		return preferredHeatingSystem;
+	}
+	
+	//Get first possible option from ranked list
+	public J_HeatingSystemOptionsLocal f_getFirstPossibleHeatingSystemOption(List<OL_HeatingSystem> rankedHeatingTypes) {
+	    for(OL_HeatingSystem heatingSystem : rankedHeatingTypes) {
+	        J_HeatingSystemOptionsLocal option = this.heatingSystemMap.get(heatingSystem);
+	        if(option != null && option.getIsPossible()) {
+	            return option;
+	        }
+	    }
+	    return null;  // No possible option found
 	}
 	
 	
-	//Option two adopt new heating system
+	//Install selected heating method
 	public void f_installSelectedHeatingMethod(J_HeatingSystemOptionsLocal selectedHeatingSystemOption) {
+		//Remove old heating system
+		main.mapAnnualValues.get(heatingSystem.getType()).get(ownership).addRemovedThisYear();
+		
+		//Set new
 		int age = 0;
 		double perceivedUtility = selectedHeatingSystemOption.getPerceivedUtility();
 		heatingSystem = new J_HeatingSystem(selectedHeatingSystemOption, age, perceivedUtility);
@@ -28920,8 +29378,8 @@ public class J_Dwelling {
 		if( validationDwelling ) {
 			adoptionDataList.add(f_addAdoptionToExcel(heatingSystem));
 		}
-		OL_HeatingSystem oldSys, J_HeatingSystemOptionsLocal newSys
-		f_updateAnnualAggregationLists(oldSys, newSys);
+		f_addToAnnualValues(selectedHeatingSystemOption);
+		
 	}
 	
 	//Get top preffered heating method
@@ -28946,10 +29404,6 @@ public class J_Dwelling {
 		//Install HM
 		f_installSelectedHeatingMethod(selectedHeatingSystem);
 	}*/
-	
-	public void f_updateAnnualAggregationLists(OL_HeatingSystem oldSys, J_HeatingSystemOptionsLocal newSys) {
-		main.f_updateAggregationListFromDwelling(this, oldSys, newSys);
-	}
 	
 	
 	//Set DH possible
@@ -29198,9 +29652,10 @@ public class J_Dwelling {
     	OL_HeatingSystem type = heatingSystem.getType();
     	int age = heatingSystem.getAge();
     	double perceivedUtility = heatingSystem.getPerceivedUtility();
+    	/*
     	if(perceivedUtility < 0.05 && ownership == PRIVATELY_OWNED) {
     		traceln("Perceived util " + perceivedUtility);
-    	}
+    	}*/
     	double costs = heatingSystemMap.get(type).getEAC();
     	J_AdoptionData adoptionData = new J_AdoptionData(type, age, perceivedUtility, costs);
     	return adoptionData;
@@ -29215,7 +29670,22 @@ public class J_Dwelling {
     public boolean isValidationDwelling() {
     	return this.validationDwelling;
     }
- 
+
+    public void f_addToAnnualValues (J_HeatingSystemOptionsLocal hsol) {
+    	OL_HeatingSystem heatingSystemType = hsol.getType();
+    	//add heating system to annual values
+    	J_AnnualValues anVal = main.mapAnnualValues.get(heatingSystemType).get(ownership);
+    	anVal.addHeatingSystem(hsol);
+    }
+    /*
+    public void f_addToCount(OL_HeatingSystem heatingSystemType) {
+    	main.mapAnnualCount.get(heatingSystemType).merge(ownership, 1, Integer::sum);
+    }
+	
+    public void f_countRemoval(OL_HeatingSystem heatingSystemType) {
+    	main.mapHeatingSystemsRemoved.get(heatingSystemType).merge(ownership, 1, Integer::sum);
+    }*/
+
    
     
  
@@ -29437,7 +29907,8 @@ public class J_HomeOwner extends heat_transition_tipping_pathways.J_Household {
     public void f_adoptNewHeatingMethod() {   	
     	if(isTriggered) {
     		getDwelling().f_rankHeatingSystemOptionsByUtility();
-    		getDwelling().f_installNewHeatingMethod();
+    		J_HeatingSystemOptionsLocal selectedHS = getDwelling().f_getTopRankedHeatingSystemOption();
+    		getDwelling().f_installSelectedHeatingMethod(selectedHS);
     		isTriggered = false;
     	}
     }	
@@ -29917,9 +30388,10 @@ public class J_ResultsPerOwnerType {
     /**
      * Default constructor
      */ 
-	private final int[] installed;
-	private final int[] cumulative;
-    private final int[] perYear;
+	private final int[] installedThisYear;
+	private final int[] installedCumulative;
+    private final int[] installedCurrent;
+    private final int[] removedThisYear;
     private final double[] avgAtt;
     private final double[] avgPercUtil;
     private final double[] avgSubNorm;
@@ -29927,9 +30399,10 @@ public class J_ResultsPerOwnerType {
     private final double[] avgPBC;
 
     public J_ResultsPerOwnerType(int years) {
-        this.installed = new int[years];
-    	this.cumulative = new int[years];
-        this.perYear = new int[years];
+        this.installedThisYear = new int[years];
+    	this.installedCumulative = new int[years];
+        this.installedCurrent = new int[years];
+        this.removedThisYear = new int[years];
         this.avgAtt = new double[years];
         this.avgPercUtil = new double[years];
         this.avgSubNorm = new double[years];
@@ -29937,12 +30410,14 @@ public class J_ResultsPerOwnerType {
         this.avgPBC = new double[years];
     }
 
-    public void setYear(int index, int installed, int cumulative, int perYear,
-                        double avgAtt, double avgPercUtil,
+    public void setYear(int index, int installedThisYear, int removedThisYear, 
+    					int installedCumulative, int installedCurrent,                        
+    					double avgAtt, double avgPercUtil,
                         double avgSubNorm, double avgEAC, double avgPBC) {
-        this.installed[index] = installed;
-    	this.cumulative[index] = cumulative;
-        this.perYear[index] = perYear;
+        this.installedThisYear[index] = installedThisYear;
+        this.removedThisYear[index] = removedThisYear;
+    	this.installedCumulative[index] = installedCumulative;
+    	this.installedCurrent[index] = installedCurrent;
         this.avgAtt[index] = avgAtt;
         this.avgPercUtil[index] = avgPercUtil;
         this.avgSubNorm[index] = avgSubNorm;
@@ -29954,9 +30429,10 @@ public class J_ResultsPerOwnerType {
     // -----------------------------
     // Array getters (defensive copies)
     // -----------------------------
-    public int[] getInstalled()         { return installed.clone(); }
-    public int[] getCumulative()        { return cumulative.clone(); }
-    public int[] getPerYear()           { return perYear.clone(); }
+    public int[] getInstalledThisYear()          { return installedThisYear.clone(); }
+    public int[] getRemovedThisYear()       	 { return removedThisYear.clone(); }
+    public int[] getInstalledCumulative()        { return installedCumulative.clone(); }
+    public int[] getInstalledCurrent()           { return installedCurrent.clone(); }
 
     public double[] getAvgAtt()         { return avgAtt.clone(); }
     public double[] getAvgPercUtil()    { return avgPercUtil.clone(); }
@@ -29968,19 +30444,24 @@ public class J_ResultsPerOwnerType {
     // Single-value getters with "Index" name
     // and bounds checking
     // --------------------------------------
-    public int getInstalledIndex(int index) {
-    	checkIndex(index, installed.length, "installed");
-        return installed[index];
+    public int getInstalledThisYearIndex(int index) {
+    	checkIndex(index, installedThisYear.length, "installed this year");
+        return installedThisYear[index];
     }
 
-    public int getCumulativeIndex(int index) {
-        checkIndex(index, cumulative.length, "cumulative");
-        return cumulative[index];
+    public int getInstalledCumulativeIndex(int index) {
+        checkIndex(index, installedCumulative.length, "installed cumulative");
+        return installedCumulative[index];
     }
 
-    public int getPerYearIndex(int index) {
-        checkIndex(index, perYear.length, "perYear");
-        return perYear[index];
+    public int getInstalledCurrentIndex(int index) {
+        checkIndex(index, installedCurrent.length, "installed current");
+        return installedCurrent[index];
+    }
+    
+    public int getRemovedThisYearIndex(int index) {
+    	checkIndex(index, removedThisYear.length, "removed this year");
+        return removedThisYear[index];
     }
 
     public double getAvgAttIndex(int index) {
@@ -30011,9 +30492,9 @@ public class J_ResultsPerOwnerType {
     // -----------------------------
     // Optional: length helpers
     // -----------------------------
-    public int getInstalledLength()   { return installed.length; }
-    public int getCumulativeLength()  { return cumulative.length; }
-    public int getPerYearLength()     { return perYear.length; }
+    public int getInstalledThisYearLength()    { return installedThisYear.length; }
+    public int getInstalledCumulativeLength()  { return installedCumulative.length; }
+    public int getInstalledCurrentLength()     { return installedCurrent.length; }
     public int getAvgAttLength()      { return avgAtt.length; }
     public int getAvgPercUtilLength() { return avgPercUtil.length; }
     public int getAvgSubNormLength()  { return avgSubNorm.length; }
@@ -30050,9 +30531,20 @@ import java.io.Serializable;
 import java.util.EnumMap;
 import java.util.Map;
 
-public class J_ResultsPerHeatingMethod{
 
-	 private final Map<OL_HouseholdOwnership, J_ResultsPerOwnerType> results;
+public class J_ResultsPerHeatingMethod{
+	
+	private final int[] installedThisYear;
+	private final int[] installedCumulative;
+    private final int[] installedCurrent;
+    private final int[] removedThisYear;
+    private final double[] avgAtt;
+    private final double[] avgPercUtil;
+    private final double[] avgSubNorm;
+    private final double[] avgEAC;
+    private final double[] avgPBC;
+    private final Map<OL_HouseholdOwnership, J_ResultsPerOwnerType> results;
+    
     /**
      * Default constructor
      */
@@ -30061,10 +30553,141 @@ public class J_ResultsPerHeatingMethod{
         for (OL_HouseholdOwnership type : OL_HouseholdOwnership.values()) {
             results.put(type, new J_ResultsPerOwnerType(years));
         }
+        
+        //For totals
+        this.installedThisYear = new int[years];
+    	this.installedCumulative = new int[years];
+        this.installedCurrent = new int[years];
+        this.removedThisYear = new int[years];
+        this.avgAtt = new double[years];
+        this.avgPercUtil = new double[years];
+        this.avgSubNorm = new double[years];
+        this.avgEAC = new double[years];
+        this.avgPBC = new double[years];
     }
 
     public J_ResultsPerOwnerType getResultsPerOwnerType(OL_HouseholdOwnership type) {
         return results.get(type);
+    }
+    
+    public void sumAnnualTotals(int yearIndex) {
+    	int installedThisYear = 0;
+    	int installedCumulative = 0;
+    	int installedCurrent = 0;
+    	int removedThisYear = 0;
+    	int avgAtt = 0;
+    	int avgPercUtil = 0;
+    	int avgSubNorm = 0;
+    	int avgEAC = 0;
+    	int avgPBC = 0;
+    	
+    	for (OL_HouseholdOwnership type : OL_HouseholdOwnership.values()) {
+            installedThisYear += results.get(type).getInstalledThisYearIndex(yearIndex);
+            installedCumulative += results.get(type).getInstalledCumulativeIndex(yearIndex);
+            installedCurrent += results.get(type).getInstalledCurrentIndex(yearIndex);
+            removedThisYear += results.get(type).getRemovedThisYearIndex(yearIndex);
+            avgAtt += results.get(type).getAvgAttIndex(yearIndex);
+            avgPercUtil += results.get(type).getAvgPercUtilIndex(yearIndex);
+            avgSubNorm += results.get(type).getAvgSubNormIndex(yearIndex);
+            avgEAC += results.get(type).getAvgEACIndex(yearIndex);
+            avgPBC += results.get(type).getAvgPBCIndex(yearIndex);
+        }
+    	
+    	this.installedThisYear[yearIndex] = installedThisYear;
+    	this.installedCumulative[yearIndex] = installedCumulative;
+    	this.installedCurrent[yearIndex] = installedCurrent;
+    	this.removedThisYear[yearIndex] = removedThisYear;
+    	this.avgAtt[yearIndex] = avgAtt;
+    	this.avgPercUtil[yearIndex] = avgPercUtil;
+    	this.avgSubNorm[yearIndex] = avgSubNorm;
+    	this.avgEAC[yearIndex] = avgEAC;
+    	this.avgPBC[yearIndex] = avgPBC;
+    }
+    
+ // -----------------------------
+    // Array getters (defensive copies)
+    // -----------------------------
+    public int[] getInstalledThisYear()          { return installedThisYear.clone(); }
+    public int[] getRemovedThisYear()       	 { return removedThisYear.clone(); }
+    public int[] getInstalledCumulative()        { return installedCumulative.clone(); }
+    public int[] getInstalledCurrent()           { return installedCurrent.clone(); }
+
+    public double[] getAvgAtt()         { return avgAtt.clone(); }
+    public double[] getAvgPercUtil()    { return avgPercUtil.clone(); }
+    public double[] getAvgSubNorm()     { return avgSubNorm.clone(); }
+    public double[] getAvgEAC()         { return avgEAC.clone(); }
+    public double[] getAvgPBC()         { return avgPBC.clone(); }
+
+    // --------------------------------------
+    // Single-value getters with "Index" name
+    // and bounds checking
+    // --------------------------------------
+    public int getInstalledThisYearIndex(int index) {
+    	checkIndex(index, installedThisYear.length, "installed this year");
+        return installedThisYear[index];
+    }
+
+    public int getInstalledCumulativeIndex(int index) {
+        checkIndex(index, installedCumulative.length, "installed cumulative");
+        return installedCumulative[index];
+    }
+
+    public int getInstalledCurrentIndex(int index) {
+        checkIndex(index, installedCurrent.length, "installed current");
+        return installedCurrent[index];
+    }
+    
+    public int getRemovedThisYearIndex(int index) {
+    	checkIndex(index, removedThisYear.length, "removed this year");
+        return removedThisYear[index];
+    }
+
+    public double getAvgAttIndex(int index) {
+        checkIndex(index, avgAtt.length, "avgAtt");
+        return avgAtt[index];
+    }
+
+    public double getAvgPercUtilIndex(int index) {
+        checkIndex(index, avgPercUtil.length, "avgPercUtil");
+        return avgPercUtil[index];
+    }
+
+    public double getAvgSubNormIndex(int index) {
+        checkIndex(index, avgSubNorm.length, "avgSubNorm");
+        return avgSubNorm[index];
+    }
+
+    public double getAvgEACIndex(int index) {
+        checkIndex(index, avgEAC.length, "avgEAC");
+        return avgEAC[index];
+    }
+
+    public double getAvgPBCIndex(int index) {
+        checkIndex(index, avgPBC.length, "avgPBC");
+        return avgPBC[index];
+    }
+    
+ // -----------------------------
+    // Optional: length helpers
+    // -----------------------------
+    public int getInstalledThisYearLength()    { return installedThisYear.length; }
+    public int getInstalledCumulativeLength()  { return installedCumulative.length; }
+    public int getInstalledCurrentLength()     { return installedCurrent.length; }
+    public int getAvgAttLength()      { return avgAtt.length; }
+    public int getAvgPercUtilLength() { return avgPercUtil.length; }
+    public int getAvgSubNormLength()  { return avgSubNorm.length; }
+    public int getAvgEACLength()      { return avgEAC.length; }
+    public int getAvgPBCLength()      { return avgPBC.length; }
+
+    // --------------------------------------
+    // Private helper: bounds checking
+    // --------------------------------------
+    private static void checkIndex(int index, int length, String fieldName) {
+        if (index < 0 || index >= length) {
+            throw new IndexOutOfBoundsException(
+                "Index " + index + " out of bounds for '" + fieldName + "' with length " + length
+            );
+        }
     }
 
 	@Override
@@ -30084,9 +30707,8 @@ public class J_ResultsPerHeatingMethod{
 public class J_AnnualValues {
 
 	// ========== COUNT / INSTALLED ==========
-    private int installedCurrent = 0;
     private int installedThisYear = 0;
-    private int installedCumulative = 0;
+    private int removedThisYear = 0;
 
     // ========== SUMS FOR AVERAGES ==========
     private double sumAtt = 0.0;
@@ -30107,46 +30729,45 @@ public class J_AnnualValues {
      * Add a dwelling to this bucket.
      * @param d The dwelling to include
      */
-    public void addDwelling(J_Dwelling d) {
-        installedCurrent++;
-        installedThisYear++;
-
-        sumAtt += d.getAttitude();
-        sumPercUtil += d.getPercUtil();
-        sumSubNorm += d.getSubNormFactor();
-        sumEAC += d.getEAC();
-        sumPBC += d.getPBC();
+    public void addHeatingSystem(J_HeatingSystemOptionsLocal heatingSystem) {
+    	installedThisYear++;
+    	sumAtt += heatingSystem.getAttitudeValue();
+    	sumPercUtil += heatingSystem.getPerceivedUtility();
+        sumSubNorm += heatingSystem.getSubjectiveNorm();
+        sumEAC += heatingSystem.getEAC();
+        sumPBC += heatingSystem.getPBC();
     }
-
-    /**
-     * Remove a dwelling from this bucket (e.g., on change of system or ownership)
-     * @param d The dwelling to remove
-     */
-    public void removeDwelling(J_Dwelling d) {
-        installedTotal--;
+    
+    public void addInstalledThisYear() {
+    	installedThisYear++;
     }
+    
+    public void addRemovedThisYear() {
+    	removedThisYear++;
+    }
+    
 
     /**
      * Compute averages for this bucket (0 if no units)
      */
     public double getAvgAtt() {
-        return installedTotal > 0 ? sumAtt / installedTotal : 0.0;
+        return installedThisYear > 0 ? sumAtt / installedThisYear : 0.0;
     }
 
     public double getAvgPercUtil() {
-        return installedTotal > 0 ? sumPercUtil / installedTotal : 0.0;
+        return installedThisYear > 0 ? sumPercUtil / installedThisYear : 0.0;
     }
 
     public double getAvgSubNorm() {
-        return installedTotal > 0 ? sumSubNorm / installedTotal : 0.0;
+        return installedThisYear > 0 ? sumSubNorm / installedThisYear : 0.0;
     }
 
     public double getAvgEAC() {
-        return installedTotal > 0 ? sumEAC / installedTotal : 0.0;
+        return installedThisYear > 0 ? sumEAC / installedThisYear : 0.0;
     }
 
     public double getAvgPBC() {
-        return installedTotal > 0 ? sumPBC / installedTotal : 0.0;
+        return installedThisYear > 0 ? sumPBC / installedThisYear : 0.0;
     }
 
     /**
@@ -30157,8 +30778,8 @@ public class J_AnnualValues {
     }
 
     // ========== GETTERS ==========
-    public int getInstalledTotal() { return installedTotal; }
     public int getInstalledThisYear() { return installedThisYear; }
+    public int getRemovedThisYear() { return removedThisYear; }
     public double getSumAtt() { return sumAtt; }
     public double getSumPercUtil() { return sumPercUtil; }
     public double getSumSubNorm() { return sumSubNorm; }
@@ -30168,6 +30789,57 @@ public class J_AnnualValues {
 	@Override
 	public String toString() {
 		return super.toString();
+	}
+
+}]]></Text>
+		</JavaClass>
+		<!--   =========   Java Class   ========  -->
+		<JavaClass>
+			<Id>1770653565819</Id>
+			<Name><![CDATA[J_ScenarioConfig]]></Name>
+			<Text><![CDATA[/**
+ * J_ScenarioConfig
+ */	
+public class J_ScenarioConfig{
+
+	int scenId;
+    String scenName;
+    OL_LowMedHigh socialLearningFactor;
+    OL_LowMedHigh economicLearningFactor;
+    OL_LowMedHigh gridReinforcementRate;
+    int dhConstructionTime;
+    OL_ExpansionStrategy dhExpansionStrategy;
+    OL_ExpansionStrategy shaStrategy;
+    boolean dhConnectionObligation;
+    boolean gridCongestionHPBan;
+    /**
+     * Default constructor
+     */
+    public J_ScenarioConfig(int scenId, String scenName, 
+    		OL_LowMedHigh socialLearningFactor,
+    		OL_LowMedHigh economicLearningFactor,
+    		OL_LowMedHigh gridReinforcementRate,
+    		int dhConstructionTime,
+    		OL_ExpansionStrategy dhExpansionStrategy,
+    		OL_ExpansionStrategy shaStrategy,
+    		boolean dhConnectionObligation,
+    		boolean gridCongestionHPBan) {
+    	this.scenId = scenId;
+    	this.scenName = scenName;
+    	this.socialLearningFactor = socialLearningFactor;
+    	this.economicLearningFactor = economicLearningFactor;
+    	this.gridReinforcementRate = gridReinforcementRate;
+    	this.dhConstructionTime = dhConstructionTime;
+    	this.dhExpansionStrategy = dhExpansionStrategy;
+    	this.shaStrategy = shaStrategy;
+    	this.dhConnectionObligation = dhConnectionObligation;
+    	this.gridCongestionHPBan = gridCongestionHPBan;
+    }
+
+
+	@Override
+	public String toString() {
+		return scenName;
 	}
 
 }]]></Text>
