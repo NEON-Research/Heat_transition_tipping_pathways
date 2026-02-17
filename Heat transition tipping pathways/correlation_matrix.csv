@@ -1,0 +1,5 @@
+﻿;norms;trust;reputational_concern;perceived_social_interdepence
+norms;1;0,531;0,191;0,214
+trust;0,531;1;0,212;0,217
+reputational_concern;0,191;0,212;1;0,198
+perceived_social_interdepence;0,214;0,217;0,198;1
