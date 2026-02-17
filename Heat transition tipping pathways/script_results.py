@@ -606,13 +606,22 @@ def create_installed_current_grid_plot(
         
         for col_idx, scen in enumerate(scenarios):
             ax = axes[row_idx, col_idx]
-            
+
             # Filter data
             df_filtered = df[
                 (df["ownership"] == ownership) & 
                 (df["scenario_name"] == scen) & 
                 (df["year"] != 2023)
             ].copy()
+
+            df_trace = df_filtered[df_filtered["year"] == 2050]
+
+            cols = ["SLF", "ELF", "GRR", "DHCT", "DHES", "SHAES", "DHCO", "GCHPB"]
+
+            if not df_trace.empty:
+                values = df_trace.iloc[0][cols].to_dict()
+                print(f"Scenario '{scen}' → {values}")
+
             
             # Guard: nothing to do
             if df_filtered.empty:
@@ -720,11 +729,11 @@ if __name__ == "__main__":
     # print("\nCreating combined scenario comparison plots for each scenario...")
     # create_combined_plot(df, output_file="plots/combined_ownership_plot.png")
 
-    print("\nCreating scenario comparison plot for TOTAL ownership...")
-    create_total_ownership_scenario_comparison(df, output_file="plots/scenario_comparison_TOTAL.png")
+    # print("\nCreating scenario comparison plot for TOTAL ownership...")
+    # create_total_ownership_scenario_comparison(df, output_file="plots/scenario_comparison_TOTAL.png")
 
-    print("\nCreating detail values per heating method plot for baseline scenario (privately owned)...")
-    create_detail_values_per_hm_per_scenario_plot(df, scen="baseline", output_file="plots/detail_values_per_hm_baseline_privately_owned.png")
+    # print("\nCreating detail values per heating method plot for baseline scenario (privately owned)...")
+    # create_detail_values_per_hm_per_scenario_plot(df, scen="baseline", output_file="plots/detail_values_per_hm_baseline_privately_owned.png")
     
     create_installed_current_grid_plot(df, ownership="TOTAL",
     output_file="plots/installed_current_all.png")

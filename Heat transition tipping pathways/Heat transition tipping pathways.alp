@@ -205,7 +205,8 @@ import java.sql.PreparedStatement;
 //For network
 import java.util.stream.Collectors;
 
-import com.graphhopper.routing.lm.LandmarkSuggestion;]]></Import>
+//import com.graphhopper.routing.lm.LandmarkSuggestion;
+]]></Import>
 			<StartupCode><![CDATA[/*
 v_timer = System.currentTimeMillis();
 f_initalizeSettings();
@@ -3428,7 +3429,7 @@ if(v_rapidRun == false){
 }
 
 duration = f_traceFunctionTime(startTime);
-traceln("Total start-up time: " + duration + " seconds");
+//traceln("Total start-up time: " + duration + " seconds");
 v_startRuntime = System.currentTimeMillis();
 ]]></Body>
 				</Function>
@@ -7489,14 +7490,10 @@ timeStackChart.addDataSet(datasetForTimestackChart, label, color);
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
-					<Body><![CDATA[if( !v_rapidRun ){
-	f_writeDataToExampleDwellings();
-}
-
-startup_agent.f_endSimulationRun();
+					<Body><![CDATA[startup_agent.f_endSimulationRun();
 double duration = f_traceFunctionTime(v_startRuntime);
 f_cleanUp();
-traceln("Run time: " + duration + " seconds");
+//traceln("Run time: " + duration + " seconds");
 
 ]]></Body>
 				</Function>
@@ -7686,6 +7683,7 @@ return 4;]]></Body>
 					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1765882227111</Id>
 					<Name><![CDATA[f_writeDataToExampleDwellings]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>-1149</X><Y>278</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -10334,6 +10332,7 @@ for (OL_HeatingSystem heatingSystem : OL_HeatingSystem.values()) {
 				<ExcelFile>
 					<Id>1765882227113</Id>
 					<Name><![CDATA[ef_exampleDwellings]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>-1149</X><Y>318</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -22183,7 +22182,7 @@ f_initializeScenarioSettings();
 					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
 						<Type><![CDATA[int]]></Type>        
 						<InitialValue Class="CodeValue">
-							<Code><![CDATA[3]]></Code>
+							<Code><![CDATA[1]]></Code>
 						</InitialValue>
 					</Properties>
 				</Variable>
@@ -22209,6 +22208,42 @@ f_initializeScenarioSettings();
 					<ShowLabel>true</ShowLabel>
 					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
 						<Type><![CDATA[String]]></Type>        
+					</Properties>
+				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1771236217066</Id>
+					<Name><![CDATA[currentScenario]]></Name>
+					<X>360</X><Y>1200</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[J_ScenarioConfig]]></Type>        
+					</Properties>
+				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1771324462795</Id>
+					<Name><![CDATA[fileNameExampleDwellings]]></Name>
+					<X>300</X><Y>1440</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[String]]></Type>        
+					</Properties>
+				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1771324853846</Id>
+					<Name><![CDATA[headerWrittenExampleDwellings]]></Name>
+					<X>300</X><Y>1460</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[boolean]]></Type>        
 					</Properties>
 				</Variable>
 				<Variable Class="CollectionVariable">
@@ -22469,6 +22504,19 @@ m.p_congestionBlock = v_congestionBlock;
 m.p_economicLearningFactor = f_learningFactorToMultiplier(v_economicLearningFactor);
 m.p_networkType = v_networkType;
 
+System.out.println(
+    "Model Inputs scen " + v_scenarioName + " → " +
+    "SocialLearningFactor: " + m.p_socialLearningFactor + ", " +
+    "GridReinforcementPace: " + m.p_gridReinforcementPace + ", " +
+    "DHConstructionTime: " + m.p_dhConstructionTime_years + ", " +
+    "DHExpansionPlans: " + m.p_dhExpansionPlans + ", " +
+    "SocialHousingStrategy: " + m.p_socialHousingStrategy + ", " +
+    "ConnectionObligationNewDH: " + m.p_connectionObligationNewDH + ", " +
+    "CongestionBlock: " + m.p_congestionBlock + ", " +
+    "EconomicLearningFactor: " + m.p_economicLearningFactor
+);
+
+
 m.v_subsidyNaturalGasBoiler = v_subsidyNaturalGasBoiler;
 m.v_subsidyEHP = v_subsidyEHP;
 m.v_subsidyHHP = v_subsidyHHP;
@@ -22557,7 +22605,7 @@ double rotationText = 0;
 //v_runText = "run " + simulationCount;
 v_runText = String.format("Finished run %d, weights: attitudeToIntention=%.2f, PBCToIntention=%.2f, socialNormToIntention=%.2f, intentionToBehavior=%.2f, PBCToBehavior=%.2f",
 	simulationCount, v_weight_attitudeToIntention, v_weight_PBCToIntention, v_weight_socialNormToIntention, v_weight_intentionToBehavior, v_weight_PBCToBehavior);
-traceln(v_runText);
+//traceln(v_runText);
 Font font = new Font("SansSerif", Font.PLAIN, 11);
 TextAlignment alignment = TextAlignment.ALIGNMENT_LEFT;
 
@@ -22587,6 +22635,10 @@ f_setRunText();
 J_ResultsData results = main.get(0).resultsData;
 c_resultsPerRun.add(results);
 f_writeResultsToCSV(results);
+if( !v_rapidRun && v_iteration == 1){
+	f_writeExampleDwellingsToCSV(main.get(0).validationMap);
+}
+
 
 //f_addRunToGraphs();
 //f_writeResultsToExcel();
@@ -22856,7 +22908,8 @@ try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName, true)))
 	if (!headerWritten) {
 		sb.append("scenario,scenario_name,iteration,year,heating_system,ownership,")
 			.append("installed_current,installed_annually,removed_annually,installed_cumulative,")
-			.append("avg_att,avg_util,avg_sub_norm,avg_eac,avg_pbc\n");
+			.append("avg_att,avg_util,avg_sub_norm,avg_eac,avg_pbc,")
+			.append("SLF,ELF,GRR,DHCT,DHES,SHAES,DHCO,GCHPB\n");
 		headerWritten = true;
 	}
         
@@ -22882,7 +22935,16 @@ try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName, true)))
 				.append(resultsPHM.getAvgPercUtilIndex(year)).append(',')
 				.append(resultsPHM.getAvgSubNormIndex(year)).append(',')
 				.append(resultsPHM.getAvgEACIndex(year)).append(',')
-				.append(resultsPHM.getAvgPBCIndex(year)).append('\n');
+				.append(resultsPHM.getAvgPBCIndex(year)).append(',')
+				.append(currentScenario.socialLearningFactor).append(',')
+				.append(currentScenario.economicLearningFactor).append(',')
+				.append(currentScenario.gridReinforcementRate).append(',')
+				.append(currentScenario.dhConstructionTime).append(',')
+				.append(currentScenario.dhExpansionStrategy).append(',')
+				.append(currentScenario.shaStrategy).append(',')
+				.append(currentScenario.dhConnectionObligation).append(',')
+				.append(currentScenario.gridCongestionHPBan).append('\n');
+				
 				countRows++;
 		}
 		
@@ -22906,14 +22968,22 @@ try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName, true)))
 					.append(resultsPO.getAvgPercUtilIndex(year)).append(',')
 					.append(resultsPO.getAvgSubNormIndex(year)).append(',')
 					.append(resultsPO.getAvgEACIndex(year)).append(',')
-					.append(resultsPO.getAvgPBCIndex(year)).append('\n');
+					.append(resultsPO.getAvgPBCIndex(year)).append(',')
+					.append(currentScenario.socialLearningFactor).append(',')
+					.append(currentScenario.economicLearningFactor).append(',')
+					.append(currentScenario.gridReinforcementRate).append(',')
+					.append(currentScenario.dhConstructionTime).append(',')
+					.append(currentScenario.dhExpansionStrategy).append(',')
+					.append(currentScenario.shaStrategy).append(',')
+					.append(currentScenario.dhConnectionObligation).append(',')
+					.append(currentScenario.gridCongestionHPBan).append('\n');
 					countRows++;
 			}
 		}
 	}
         
 	writer.write(sb.toString());
-	traceln("Appended " + countRows + " rows for iteration " + v_iteration);
+	//traceln("Appended " + countRows + " rows for iteration " + v_iteration);
         
 } catch (IOException e) {
 	error("Error writing results: " + e.getMessage());
@@ -22956,8 +23026,8 @@ if (fileName == null) {
 					<ShowLabel>true</ShowLabel>
 					<Body><![CDATA[traceln("Start scenario analysis");
 
-int startTime = System.currentTimeMillis();
-int duration = 0;
+double startTime = System.currentTimeMillis();
+double duration = 0;
 cb_rapidRun.setSelected(true, true);
 
 // Load scenarios once (first iteration only)
@@ -22969,10 +23039,11 @@ v_iteration = 0;
 v_run = 0;
 
 for (Map.Entry<Integer, J_ScenarioConfig> entry : scenarios.entrySet()) {
-	int startTimeScenario = System.currentTimeMillis();
+	double startTimeScenario = System.currentTimeMillis();
 	v_iteration = 0;
 	v_scenarioKey = entry.getKey();
-	J_ScenarioConfig currentScenario = entry.getValue();
+	//J_ScenarioConfig currentScenario = entry.getValue();
+    currentScenario = entry.getValue();
     v_scenarioName = currentScenario.scenName;	
 
 	//Set variables for scenario        
@@ -22984,7 +23055,7 @@ for (Map.Entry<Integer, J_ScenarioConfig> entry : scenarios.entrySet()) {
 	v_socialHousingStrategy = currentScenario.shaStrategy;
 	v_connectionObligationNewDH = currentScenario.dhConnectionObligation;
 	v_congestionBlock = currentScenario.gridCongestionHPBan;
-	traceln("Scenario " + v_scenarioKey + ": " + currentScenario.scenName);
+	//traceln("Scenario " + v_scenarioKey + ": " + currentScenario.scenName);
 
 	for (int i=0; i<v_nbOfIterations; i++) {
 		v_run++;
@@ -22997,7 +23068,7 @@ for (Map.Entry<Integer, J_ScenarioConfig> entry : scenarios.entrySet()) {
 
 
 duration = f_traceFunctionTime(startTime);
-traceln("Total start-up time: " + duration + " seconds");
+traceln("Total runtime scenario analysis: " + duration + " seconds");
 
 
 
@@ -23050,7 +23121,7 @@ try (BufferedReader br = new BufferedReader(new FileReader(csvFile))) {
 		
 		scenarios.put(scenId, config);	
 	}
-	traceln("Loaded " + scenarios.size() + " scenarios");
+	//traceln("Loaded " + scenarios.size() + " scenarios");
 } catch (IOException e) {
 	error("Error reading scenarios CSV: " + e.getMessage());
 	e.printStackTrace();
@@ -23082,6 +23153,105 @@ try (BufferedReader br = new BufferedReader(new FileReader(csvFile))) {
         System.out.println("Unknown grid reinforcement pace.");
         return 1;
 }]]></Body>
+				</Function>
+				<Function AccessType="default" StaticFunction="false">
+					<ReturnModificator>RETURNS_VALUE</ReturnModificator>
+					<ReturnType><![CDATA[double]]></ReturnType>
+					<Id>1771236725586</Id>
+					<Name><![CDATA[f_traceFunctionTime]]></Name>
+					<X>350</X><Y>1270</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Parameter>
+						<Name><![CDATA[timeStartFunction]]></Name>
+						<Type><![CDATA[double]]></Type>
+					</Parameter>
+					<Body><![CDATA[int decimals = 2;
+double timeEndFunction = System.currentTimeMillis();
+return roundToDecimal((timeEndFunction - timeStartFunction) / 1000, decimals);
+]]></Body>
+				</Function>
+				<Function AccessType="default" StaticFunction="false">
+					<ReturnModificator>VOID</ReturnModificator>
+					<ReturnType><![CDATA[double]]></ReturnType>
+					<Id>1771324423689</Id>
+					<Name><![CDATA[f_writeExampleDwellingsToCSV]]></Name>
+					<X>300</X><Y>1400</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Parameter>
+						<Name><![CDATA[validationMap]]></Name>
+						<Type><![CDATA[Map<String, List<J_Dwelling>>]]></Type>
+					</Parameter>
+					<Body><![CDATA[// Create results directory if it doesn't exist
+if( fileNameExampleDwellings == null ){
+	String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+	String fileNameExampleDwellings = "results/example_dwellings_" + timestamp + ".csv";
+	            
+	// Create results directory if it doesn't exist
+	File resultsDir = new File("results");
+	if (!resultsDir.exists()) {
+		resultsDir.mkdirs();
+	}
+	//traceln("Example dwellings will be written to: " + fileName);
+}    
+
+  
+try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName, true))) {
+	StringBuilder sb = new StringBuilder();
+    
+    if (!headerWrittenExampleDwellings) {
+		// Write header only if file doesn't exist
+		sb.append("scenario,scenario_name,iteration,dwelling_id,type,ownership,construction_year,heating_system, hs_age,")
+			.append("hs1_type,hs1_costs,hs1_percUtil,")
+			.append("hs2_type,hs2_costs,hs2_percUtil,")
+			.append("hs3_type,hs3_costs,hs3_percUtil,")
+			.append("hs4_type,hs4_costs,hs4_percUtil\n");
+		headerWrittenExampleDwellings = true;
+	}	
+	
+	for(List<J_Dwelling> dwellingList : validationMap.values()){
+		for( J_Dwelling d : dwellingList ){
+			List<J_AdoptionData> listAdoptionData = d.getAdoptionDataList();
+			//traceln(listAdoptionData.size() + " size adoption data list");
+			for(int i=0; i<4; i++){
+				J_AdoptionData data = listAdoptionData.get(i);
+				if(i == 0){
+					sb.append(d.getId()).append(",")
+					.append(v_scenarioKey).append(",")
+					.append(v_scenarioName).append(",")
+					.append(v_iteration).append(",")
+					.append(d.getId()).append(",")
+					.append(d.getDwellingType()).append(",")
+					.append(d.getOwnership()).append(",")
+					.append(d.getConstructionYear()).append(",")
+					.append(d.getHeatingSystem()).append(",")
+					.append(data.getAge()).append(",");
+				}
+				else if(listAdoptionData.get(i) == null){
+					sb.append(",")
+					.append(",")
+					.append(",/n");
+				}
+				else{
+					sb.append(data.getType()).append(",")
+					.append(data.getAdoptionCosts()).append(",")
+					.append(data.getPerceivedUtility()).append(",/n");
+				}
+			}
+		}
+		writer.write(sb.toString());
+	}
+}
+
+catch (IOException e) {
+	error("Error writing example dwelling results: " + e.getMessage());
+}
+]]></Body>
 				</Function>
 			</Functions>
 			<AnalysisData>
