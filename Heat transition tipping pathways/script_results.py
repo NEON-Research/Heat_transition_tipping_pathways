@@ -726,14 +726,18 @@ if __name__ == "__main__":
     # print("Creating stacked percentage plots for each scenario and ownership type...")
     # create_stacked_percentage_plots(df, output_dir="plots/stacked_percentage_plots")
 
-    # print("\nCreating combined scenario comparison plots for each scenario...")
-    # create_combined_plot(df, output_file="plots/combined_ownership_plot.png")
+    print("\nCreating combined scenario comparison plots for each scenario...")
+    create_combined_plot(df, output_file="plots/combined_ownership_plot.png")
 
-    # print("\nCreating scenario comparison plot for TOTAL ownership...")
-    # create_total_ownership_scenario_comparison(df, output_file="plots/scenario_comparison_TOTAL.png")
+    print("\nCreating scenario comparison plot for TOTAL ownership...")
+    create_total_ownership_scenario_comparison(df, output_file="plots/scenario_comparison_TOTAL.png")
 
-    # print("\nCreating detail values per heating method plot for baseline scenario (privately owned)...")
-    # create_detail_values_per_hm_per_scenario_plot(df, scen="baseline", output_file="plots/detail_values_per_hm_baseline_privately_owned.png")
+    print("\nCreating detail values per heating method plot for baseline scenario (privately owned)...")
+    create_detail_values_per_hm_per_scenario_plot(df, scen="baseline", output_file="plots/detail_values_per_hm_baseline_privately_owned.png")
     
+    print("\nCreating detail values per heating method plot for individual technologies scenario (privately owned)...")
+    create_detail_values_per_hm_per_scenario_plot(df, scen="individual_technologies", output_file="plots/detail_values_per_hm_individual_technologies_privately_owned.png")
+   
+
     create_installed_current_grid_plot(df, ownership="TOTAL",
     output_file="plots/installed_current_all.png")
