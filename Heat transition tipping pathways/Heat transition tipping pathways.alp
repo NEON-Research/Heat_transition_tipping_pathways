@@ -1588,7 +1588,7 @@ f_initalizeSettings();
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
-					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="default" StaticVariable="false">
 						<Type><![CDATA[EnumMap<OL_HeatingSystem, J_HeatingSystemOptionsGlobal>]]></Type>        
 					</Properties>
 				</Variable>
@@ -4473,6 +4473,9 @@ for (Tuple row_heatingMethod : rows_heatingMethods){
 
 listDwellingsToAdopt = null;
 listDwellingsToAdopt = new ArrayList<>(1000000); //Estimated size at full NL scale
+for(J_HeatingSystemOptionsGlobal hsog : c_heatingSystemOptions.values()){
+	hsog.resetMinMaxEAC();
+}
 
 //3. Update heating system age
 for(J_Dwelling x : c_dwellings){
@@ -4497,25 +4500,14 @@ for(Landlord x : pop_landlords){
 //5. Homeowners - if home owners have triggered heating method, calculate EACs
 for(J_HomeOwner ho : c_homeOwners){	
 	if(ho.f_hasTrigger()){
-		ho.getDwelling().f_calculateHeatingSystemOptionsEAC();
+		ho.getHeatingSystemOptionsEAC();
 	}	
 }
 
-//6. After updates EAC, normalize values and rank heating system options
-f_normalizeValues();
-
-//7 Set utility from normalized values
+//7 Set utility in a next loop for normalized values
 for(J_HomeOwner ho : c_homeOwners){	
-	//if( ho.isTriggered() ){
-		ho.f_setUtilityPerHeatingSystem();
-	//}
-}
-
-//8. Actually adopt the top ranked heating method
-for(J_HomeOwner ho : c_homeOwners){
-	if( ho.isTriggered() ){
-		ho.f_adoptNewHeatingMethod();
-	}
+	ho.f_getHeatingSystemOptionsUtility();
+	ho.f_adoptNewHeatingSystem();
 }
 
 //9. Update exogenous home renovation and insulation
@@ -5218,6 +5210,7 @@ barChart.addDataItem(d5, v_districtHeatingText, v_districtHeatingColor);
 					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1733904683051</Id>
 					<Name><![CDATA[f_normalizeValues]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>-640</X><Y>610</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -19052,34 +19045,12 @@ boolean triggerDistrictHeating = false;
 //nbh.f_executeSocialHousingPolicy();
 	
 if(nbh.p_policyPlan != null){
-	switch(nbh.p_policyPlan){
-		case ELECTRIC_HEAT_PUMP:
-			if(nbh.p_policyPlanYear == main.v_year){
-				for(J_Dwelling dwelling : nbh.c_dwellingsSocialHousing){
-					J_HeatingSystemOptionsLocal hs = dwelling.f_getHeatingSystemOptionsLocalFromType(ELECTRIC_HEAT_PUMP);
-					dwelling.f_installSelectedHeatingMethod(hs);
-				}
-			}
-			break;
-		case HYBRID_HEAT_PUMP:
-			if(nbh.p_policyPlanYear == main.v_year){
-				for(J_Dwelling dwelling : nbh.c_dwellingsSocialHousing){
-					J_HeatingSystemOptionsLocal hs = dwelling.f_getHeatingSystemOptionsLocalFromType(HYBRID_HEAT_PUMP);
-					dwelling.f_installSelectedHeatingMethod(hs);
-				}
-			}
-			break;
-		case DISTRICT_HEATING:
-			if(nbh.p_policyPlanYear == main.v_year){
-				if(nbh.v_hasDistrictHeatingGrid == true) {
-					for(J_Dwelling dwelling : nbh.c_dwellingsSocialHousing){
-						J_HeatingSystemOptionsLocal hs = dwelling.f_getHeatingSystemOptionsLocalFromType(DISTRICT_HEATING);
-						dwelling.f_installSelectedHeatingMethod(hs);
-					}
-				}
-			}
+	if(nbh.p_policyPlanYear == main.v_year){
+		for(J_Household renterSHA : nbh.c_rentersSocialHousing){
+			ho.getDwelling().f_installSelectedHeatingMethod(p_policyPlan);
+		}
 	}
-}	
+}
 ]]></Body>
 				</Function>
 				<Function AccessType="default" StaticFunction="false">
@@ -19479,7 +19450,7 @@ for(ArrayList<J_Dwelling> SHADwellingsInPostcode : main.c_SHADwellings_by_postco
 					<Id>1741701549862</Id>
 					<Name><![CDATA[ch_barTopRank]]></Name>
 					<ExcludeFromBuild>true</ExcludeFromBuild>
-					<X>1140</X><Y>60</Y>
+					<X>1050</X><Y>60</Y>
 					<Label><X>0</X><Y>-10</Y></Label>
 					<PublicFlag>true</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -19675,7 +19646,7 @@ for(GZ_Neighborhood nbh : main.pop_GZ_Neighborhoods){
 */
 //Cost based
 for(J_Dwelling dwelling : main.c_dwellingsLandlords){
-	if(dwelling.f_hasEndOfLifeTrigger() && dwelling.hasInstalledHeatingSystemThisYear() == false){
+	if(dwelling.f_hasEndOfLifeTrigger()){
 		dwelling.f_calculateHeatingSystemOptionsEAC();
 		dwelling.f_rankHeatingSystemOptionsByEAC();
 		J_HeatingSystemOptionsLocal selectedHeatingSystemOption = dwelling.f_getTopRankedHeatingSystemOption();
@@ -27044,25 +27015,133 @@ chart1.addDataSet( , format( root.p_innovationCoefficient ), color, true, Chart.
 			<Text><![CDATA[/**
  * J_Household
  */	
-
+import java.util.EnumMap;
 
 public class J_Household {
 	//Household characteristics
 	private J_Dwelling dwelling;	
 	public Random random;						// Use main instance of random
 	private Main main;
-	private boolean newHeatingMethodTriggered;
-		
+	private OL_HouseholdOwnership ownership;
+    private Map<OL_HeatingSystem, J_HeatingSystemOption> heatingSystemOptions;
+	
     /**
      * Default constructor
      */
+	
 	public J_Household(J_Dwelling dwelling) {
 		this.dwelling = dwelling;
 	}
 	
+	public void getHeatingSystemOptionsEAC() { //Note this only works because never storing this for more than a year, recalculting EAC every year anyway
+		if(heatingSystemOptions == null) {
+			heatingSystemOptions = new EnumMap<>(OL_HeatingSystem.class);
+			
+			for (OL_HeatingSystem type : OL_HeatingSystem.values()) {
+				double EAC = f_getEAC(this.dwelling, type);
+			    heatingSystemOptions.put(type, new J_HeatingSystemOption(EAC));
+			}
+		}
+	}
+	
+	//Get best EAC option
+  	public OL_HeatingSystem getTopRankedEACOption() {
+  	    //Select top option
+  		OL_HeatingSystem bestType = null;
+  		double bestEAC = Double.NEGATIVE_INFINITY;
+  		for (Map.Entry<OL_HeatingSystem, J_HeatingSystemOption> entry : heatingSystemOptions.entrySet()) {
+  			J_HeatingSystemOption hso = entry.getValue();
+  		    double EAC = hso.getEAC();
+  		    if (EAC > bestEAC) {
+  		    	bestEAC = EAC;
+  		        bestType = entry.getKey();
+  		    }
+  		}
+  		return bestType;
+  	}
+    
+    
+    public double f_getEAC(J_Dwelling dwelling, OL_HeatingSystem type) {
+		
+    	J_HeatingSystemOptionsGlobal heatingSystemGlobalData = dwelling.getMain().c_heatingSystemOptions.get(type);
+    	
+    	//Get global values
+		double investmentCostsHeatDistributionSystem = heatingSystemGlobalData.getInvestmentCostsHeatDistributionSystem();
+		double investmentCostsHeatSupplySystem = 0.0;
+		if(dwelling.getHeatDemand_kWh() < 6000) {
+			investmentCostsHeatSupplySystem = heatingSystemGlobalData.getInvestmentCostsHeatSupplySystem_small();
+		} else if(dwelling.getHeatDemand_kWh() > 10000) {
+			investmentCostsHeatSupplySystem = heatingSystemGlobalData.getInvestmentCostsHeatSupplySystem_large();
+		} else {
+			investmentCostsHeatSupplySystem = heatingSystemGlobalData.getInvestmentCostsHeatSupplySystem_medium();
+		}
+		double lifetime = heatingSystemGlobalData.getLifetime();
+		double maintenanceCosts = heatingSystemGlobalData.getMaintenanceCosts();
+		double discountRate = heatingSystemGlobalData.getDiscountRate();
+		OL_EnergyCarrier primaryEnergySource = heatingSystemGlobalData.getPrimaryEnergySource();
+		OL_EnergyCarrier secondaryEnergySource = heatingSystemGlobalData.getSecondaryEnergySource();
+		double primaryEnergySourceCosts_eurPerkWh = heatingSystemGlobalData.getPrimaryEnergySourceCostsEurPerKWh();
+		double secondaryEnergySourceCosts_eurPerkWh = heatingSystemGlobalData.getSecondaryEnergySourceCostsEurPerKWh();
+		double fractionPrimaryEnergySource = heatingSystemGlobalData.getFractionPrimaryEnergySource();
+		double fractionSecondaryEnergySource = heatingSystemGlobalData.getFractionSecondaryEnergySource();
+		double efficiencyPrimarySource = heatingSystemGlobalData.getEfficiencyPrimarySource();
+		double efficiencySecondarySource = heatingSystemGlobalData.getEfficiencySecondarySource();
+		double subsidy = heatingSystemGlobalData.getSubsidy();
+		
+		double TCO = 0;
+		double energyCosts_eurPerYear = 0.0;
+		double investmentCosts = investmentCostsHeatSupplySystem;
+		if(heatingSystemGlobalData.getRequiresLowTemperatureInhouseHeatDistribution() == true && dwelling.getHasLowTemperatureInhouseHeatDistribution() == false) {
+			investmentCosts += investmentCostsHeatDistributionSystem;
+		}
+		String requiredInsulationLabel = heatingSystemGlobalData.getRequiredEnergyLabel();
+		if( !requiredInsulationLabel.equals("no")) {
+			int requiredInsulationLabelNumber = dwelling.f_insulationLabelLetterToNumber(requiredInsulationLabel);
+			if( requiredInsulationLabelNumber < dwelling.getEnergyLabelNumber()) {
+				double requiredInsulationCosts = dwelling.f_getInsulationCosts(requiredInsulationLabel);
+				investmentCosts += requiredInsulationCosts;
+				/*if( dwelling.getId() < 20) {
+					traceln("Required insulation costs at dwelling " + dwelling.getId() + " for label from " + dwelling.getEnergyLabel() + " to " + requiredInsulationLabel + " = " + requiredInsulationCosts);
+				}*/
+			}
+		}
+		
+		//1. Calculate energy source costs per year
+		energyCosts_eurPerYear += (primaryEnergySourceCosts_eurPerkWh * dwelling.getHeatDemand_kWh() * fractionPrimaryEnergySource / efficiencyPrimarySource);
+		if(secondaryEnergySource != NOT_APPLICABLE) {
+			energyCosts_eurPerYear += (secondaryEnergySourceCosts_eurPerkWh * dwelling.getHeatDemand_kWh() * fractionSecondaryEnergySource / efficiencySecondarySource);
+		}
+		
+	    for(int t=0; t<lifetime; t++) {
+	    	if(t==0) {		
+	    		//investment costs in 1st year
+	    		TCO += (investmentCosts - subsidy);
+	    	}
+	    	//annual discounted opex in all years
+	    	TCO += (maintenanceCosts + energyCosts_eurPerYear) / pow((1 + discountRate), t);
+	    }
+		
+		double annuityFactor = (1 - Math.pow(1 + discountRate, -lifetime)) / discountRate;
+		double EAC = roundToInt(TCO / annuityFactor);
+		TCO = roundToInt(TCO);
+		/*
+		if(type == ELECTRIC_HEAT_PUMP && householdID < 2) {
+			traceln("Heating system type: " + type + ", EAC = " + EAC + ", TCO = " + TCO + ", CAPEX = " + CAPEX + ", annual energy costs = " + energyCosts_eurPerYear + ", heat demand = " + heatDemand_kWh + ", hh ID = " + householdID);
+		}*/
+		//EquivalentAnnualCosts (EAC) = TCO / Annuity factor
+				//TCO = CAPEX + sum_over_time(OPEXt / (1+r)^t)	  
+				//Annuity Factor = 1 - (1 + r)^-n / r
+		
+		/*if(EAC < 0) {
+			traceln("EAC = " + EAC + " at dwelling " + householdID + " of type " + type );
+		}*/
+		
+		//Set min max
+		heatingSystemGlobalData.setMinMaxEAC(EAC);
+		return EAC;
+	}
 
-
-
+    
     
     /*
     public void f_calculateNormalizedPreference() {
@@ -27098,6 +27177,10 @@ public class J_Household {
     public J_Dwelling getDwelling() {
     	return dwelling;
     }
+    
+    public Main getMain() {
+    	return main;
+    }
     /*
     public boolean f_isNewHeatingMethodTriggered() {
     	return newHeatingMethodTriggered;
@@ -27125,7 +27208,9 @@ public class J_Household {
     }
     */
     
-
+    public Map<OL_HeatingSystem, J_HeatingSystemOption> getHeatingSystemOptions() {
+        return heatingSystemOptions;
+    }
     
 
 	@Override
@@ -27147,26 +27232,21 @@ public class J_Household {
 public class J_HeatingSystem {
 
 	private OL_HeatingSystem type;
-	private int age_years;		
-	private int lifetime_years;
-	private double perceivedUtility;
+	private int age_years;
 	
 	/**
     * Default constructor
     */
-	
-	public J_HeatingSystem(J_HeatingSystemOptionsLocal preferredHeatingSystem, int age_years, double perceivedUtility) {
-		this.type = preferredHeatingSystem.getType();
+	//Initial heating system
+	public J_HeatingSystem(OL_HeatingSystem type, int age_years) {
+		this.type = type;
 		this.age_years = age_years;
-		this.lifetime_years = preferredHeatingSystem.getHeatingSystemGlobalData().getLifetime();
-		this.perceivedUtility = perceivedUtility;
 	}
 	
-	// Constructor 2
-	public J_HeatingSystem(J_HeatingSystemOptionsGlobal initialHeatingSystem, int age_years) {
-		this.type = initialHeatingSystem.getType();
-		this.lifetime_years = initialHeatingSystem.getLifetime();
-		this.age_years = age_years;
+	//New heating system
+	public J_HeatingSystem(OL_HeatingSystem type) {
+		this.type = type;
+		this.age_years = 0;
 	}
 		
 	/**
@@ -27174,9 +27254,6 @@ public class J_HeatingSystem {
 	*/
 	public void updateAge() {
 		age_years++;
-	}
-	public void setPerceivedUtility(double value) {
-		perceivedUtility = value;
 	}
 	
 	/**
@@ -27191,11 +27268,9 @@ public class J_HeatingSystem {
     }
     
     public int getLifetime() {
-    	return lifetime_years;
-    }
-    
-    public double getPerceivedUtility() {
-    	return perceivedUtility;
+        return main.c_heatingSystemOptions
+                .get(this.type)
+                .getLifetime();
     }
 	
 
@@ -27244,6 +27319,9 @@ public class J_HeatingSystemOptionsGlobal {
 	private double initialInvestmentCostsHeatSupplySystem_small;
 	private double initialInvestmentCostsHeatSupplySystem_medium;
 	private double initialInvestmentCostsHeatSupplySystem_large;
+	
+	private double minEAC;
+	private double maxEAC;
 	
 	
 	/**
@@ -27315,6 +27393,20 @@ public class J_HeatingSystemOptionsGlobal {
 	    nn: Cumulative production quantity.
 	    learningRatelearningRate: Percentage by which cost reduces every time cumulative production doubles.
 	*/
+	}
+	
+	public void resetMinMaxEAC() {
+		minEAC = Double.MAX_VALUE;
+		maxEAC = -Double.MAX_VALUE;
+	}
+	
+	public void setMinMaxEAC(double EAC) {
+		if(EAC < minEAC) {
+			minEAC = EAC;
+		}
+		else if (EAC > maxEAC) {
+			maxEAC = EAC;
+		}
 	}
 	
 	
@@ -27428,6 +27520,14 @@ public class J_HeatingSystemOptionsGlobal {
     public String getRequiredEnergyLabel() {
     	return requiredEnergyLabel;
     }
+    
+    public double getMinEAC() {
+    	return minEAC;
+    }
+    
+    public double getMaxEAC() {
+    	return maxEAC;
+    }
 
 	@Override
 	public String toString() {
@@ -27445,189 +27545,6 @@ public class J_HeatingSystemOptionsGlobal {
 
 
 
-]]></Text>
-		</JavaClass>
-		<!--   =========   Java Class   ========  -->
-		<JavaClass>
-			<Id>1733478786810</Id>
-			<Name><![CDATA[J_HeatingSystemOptionsLocal]]></Name>
-			<Text><![CDATA[/**
- * J_HeatingSystemOptionsLocal
- */	
-public class J_HeatingSystemOptionsLocal {
-	private OL_HeatingSystem type;
-	private double investmentCosts;
-	private double TCO;					//Total Costs of Ownership
-	private double EAC;					//Equivalent Annual Costs - TCO / annuity factor to compare discounted costs per year
-	private boolean isPossible;			//Is this heating method possible in this household
-	private double PBC;					//Perceived behavioral control
-	//private int householdID;
-	private J_HeatingSystemOptionsGlobal heatingSystemGlobalData;
-	//private double sustainabilityScore_norm;
-	private String requiredInsulationLabel;
-	
-	//private double perceivedValue;
-	//private double control;
-	private double EAC_norm;
-	//private double investmentCosts_norm;
-		
-	protected boolean requiresLowTemperatureInhouseHeatDistribution;
-	
-	/**
-    * Default constructor
-    */
-	
-	public J_HeatingSystemOptionsLocal(OL_HeatingSystem type, boolean isPossible, J_HeatingSystemOptionsGlobal heatingSystemGlobalData, J_Dwelling dwelling) {
-		//this.householdID = dwelling.getId();
-		this.type = type;
-		this.isPossible = isPossible;
-		this.heatingSystemGlobalData = heatingSystemGlobalData;
-		this.requiresLowTemperatureInhouseHeatDistribution = heatingSystemGlobalData.getRequiresLowTemperatureInhouseHeatDistribution();
-		this.requiredInsulationLabel = heatingSystemGlobalData.getRequiredEnergyLabel();
-	}
-		
-	
-	public void f_calculateEAC(J_Dwelling dwelling) {
-		//Get global values
-		double investmentCostsHeatDistributionSystem = heatingSystemGlobalData.getInvestmentCostsHeatDistributionSystem();
-		double investmentCostsHeatSupplySystem = 0.0;
-		if(dwelling.getHeatDemand_kWh() < 6000) {
-			investmentCostsHeatSupplySystem = heatingSystemGlobalData.getInvestmentCostsHeatSupplySystem_small();
-		} else if(dwelling.getHeatDemand_kWh() > 10000) {
-			investmentCostsHeatSupplySystem = heatingSystemGlobalData.getInvestmentCostsHeatSupplySystem_large();
-		} else {
-			investmentCostsHeatSupplySystem = heatingSystemGlobalData.getInvestmentCostsHeatSupplySystem_medium();
-		}
-		double lifetime = heatingSystemGlobalData.getLifetime();
-		double maintenanceCosts = heatingSystemGlobalData.getMaintenanceCosts();
-		double discountRate = heatingSystemGlobalData.getDiscountRate();
-		OL_EnergyCarrier primaryEnergySource = heatingSystemGlobalData.getPrimaryEnergySource();
-		OL_EnergyCarrier secondaryEnergySource = heatingSystemGlobalData.getSecondaryEnergySource();
-		double primaryEnergySourceCosts_eurPerkWh = heatingSystemGlobalData.getPrimaryEnergySourceCostsEurPerKWh();
-		double secondaryEnergySourceCosts_eurPerkWh = heatingSystemGlobalData.getSecondaryEnergySourceCostsEurPerKWh();
-		double fractionPrimaryEnergySource = heatingSystemGlobalData.getFractionPrimaryEnergySource();
-		double fractionSecondaryEnergySource = heatingSystemGlobalData.getFractionSecondaryEnergySource();
-		double efficiencyPrimarySource = heatingSystemGlobalData.getEfficiencyPrimarySource();
-		double efficiencySecondarySource = heatingSystemGlobalData.getEfficiencySecondarySource();
-		double subsidy = heatingSystemGlobalData.getSubsidy();
-		
-		TCO = 0;
-		double energyCosts_eurPerYear = 0.0;
-		investmentCosts = investmentCostsHeatSupplySystem;
-		if(requiresLowTemperatureInhouseHeatDistribution == true && dwelling.getHasLowTemperatureInhouseHeatDistribution() == false) {
-			investmentCosts += investmentCostsHeatDistributionSystem;
-		}
-		if( !requiredInsulationLabel.equals("no")) {
-			int requiredInsulationLabelNumber = dwelling.f_insulationLabelLetterToNumber(requiredInsulationLabel);
-			if( requiredInsulationLabelNumber < dwelling.getEnergyLabelNumber()) {
-				double requiredInsulationCosts = dwelling.f_getInsulationCosts(requiredInsulationLabel);
-				investmentCosts += requiredInsulationCosts;
-				/*if( dwelling.getId() < 20) {
-					traceln("Required insulation costs at dwelling " + dwelling.getId() + " for label from " + dwelling.getEnergyLabel() + " to " + requiredInsulationLabel + " = " + requiredInsulationCosts);
-				}*/
-			}
-		}
-		
-		//1. Calculate energy source costs per year
-		energyCosts_eurPerYear += (primaryEnergySourceCosts_eurPerkWh * dwelling.getHeatDemand_kWh() * fractionPrimaryEnergySource / efficiencyPrimarySource);
-		if(secondaryEnergySource != NOT_APPLICABLE) {
-			energyCosts_eurPerYear += (secondaryEnergySourceCosts_eurPerkWh * dwelling.getHeatDemand_kWh() * fractionSecondaryEnergySource / efficiencySecondarySource);
-		}
-		
-	    for(int t=0; t<lifetime; t++) {
-	    	if(t==0) {		
-	    		//investment costs in 1st year
-	    		TCO += (investmentCosts - subsidy);
-	    	}
-	    	//annual discounted opex in all years
-	    	TCO += (maintenanceCosts + energyCosts_eurPerYear) / pow((1 + discountRate), t);
-	    }
-		
-		double annuityFactor = (1 - Math.pow(1 + discountRate, -lifetime)) / discountRate;
-		EAC = roundToInt(TCO / annuityFactor);
-		TCO = roundToInt(TCO);
-		/*
-		if(type == ELECTRIC_HEAT_PUMP && householdID < 2) {
-			traceln("Heating system type: " + type + ", EAC = " + EAC + ", TCO = " + TCO + ", CAPEX = " + CAPEX + ", annual energy costs = " + energyCosts_eurPerYear + ", heat demand = " + heatDemand_kWh + ", hh ID = " + householdID);
-		}*/
-		//EquivalentAnnualCosts (EAC) = TCO / Annuity factor
-				//TCO = CAPEX + sum_over_time(OPEXt / (1+r)^t)	  
-				//Annuity Factor = 1 - (1 + r)^-n / r
-		
-		/*if(EAC < 0) {
-			traceln("EAC = " + EAC + " at dwelling " + householdID + " of type " + type );
-		}*/
-	}
-		
-	
-	/**
-	* Setter methods
-	*/
-	public void f_setPossible(boolean isPossible) {
-		this.isPossible = isPossible;
-	}
-	
-	public void setEACNormalized(double EAC_norm) {
-		this.EAC_norm = EAC_norm;
-	}
-	/*
-	public void setInvestmentCostsNormalized(double IC_norm) {
-		this.investmentCosts_norm = IC_norm;
-	}
-	*/
-	
-	
-	/**
-	* Getter methods
-	*/
-    public OL_HeatingSystem getType() {
-    	return type;
-    }
-	
-    public double getTCO() {
-        return TCO;
-    }
-    
-    public double getEAC() {
-        return EAC;
-    }
-    
-    public double getEAC_norm() {
-        return EAC_norm;
-    }
-    
-    public double getInvestmentCosts() {
-    	return investmentCosts;
-    }
-    
-   
-    
-    public J_HeatingSystemOptionsGlobal getHeatingSystemGlobalData() {
-    	return heatingSystemGlobalData;
-    }
-	
-    public boolean getIsPossible() {
-    	return isPossible;
-    }
-    
-    public double getPBC() {
-    	return PBC;
-    }
-    
-    public double getSocialLearningRate() {
-    	return heatingSystemGlobalData.getSocialLearningRate();
-    }
-    
-    public boolean requiresLowTemperatureInhouseHeatDistribution() {
-    	return requiresLowTemperatureInhouseHeatDistribution;
-    }
-
-	@Override
-	public String toString() {
-		return type + " (EAC: " + EAC + ", TCO: " + TCO + ")";
-	}
-
-}
 ]]></Text>
 		</JavaClass>
 		<!--   =========   Java Class   ========  -->
@@ -27739,8 +27656,7 @@ public class J_Dwelling {
 	//Heating system characteristics
 	private J_HeatingSystem heatingSystem;
 	//private Map<OL_HeatingSystem, J_HeatingSystemOptionsLocal> heatingSystemMap = new HashMap<>();
-	private LinkedHashMap<OL_HeatingSystem, J_HeatingSystemOptionsLocal> heatingSystemMap; // = new LinkedHashMap<>();
-	private boolean hasInstalledHeatingSystemThisYear;
+	//private LinkedHashMap<OL_HeatingSystem, J_HeatingSystemOptionsLocal> heatingSystemMap; // = new LinkedHashMap<>();
 	private double electricityDemand_kWh;
 	private double naturalGasDemand_kWh;
 	private double heatDemand_kWh;
@@ -27784,31 +27700,32 @@ public class J_Dwelling {
 		f_setAnnualEnergyDemandFromVestaMAIS();
 	}
     
-    public void f_setDwellingData(GZ_Neighborhood nbh, EnumMap<OL_HeatingSystem, J_HeatingSystemOptionsGlobal> heatingSystemOptionsInput, OL_HeatingSystem heatingSystemType , boolean hasDistrictHeatingGrid,  boolean isInBlock) {
+    public void f_setDwellingData(GZ_Neighborhood nbh, OL_HeatingSystem heatingSystemType , boolean hasDistrictHeatingGrid,  boolean isInBlock) {
 		this.neighborhood = nbh;
 		this.isInBlock = isInBlock;
     	
     	// Initialize heating system based on type 
     	
     	// Get random age for heating systemGive random age to heating system
-    	J_HeatingSystemOptionsGlobal initialHeatingSystem = heatingSystemOptionsInput.get(heatingSystemType);
 		int ageHeatingSystem = main.v_year - yearLastRenovation;
-		if(ageHeatingSystem >= initialHeatingSystem.getLifetime()) {
-			ageHeatingSystem = (int) (Math.random() * (initialHeatingSystem.getLifetime() + 1));
+		int heatingSystemLifetime = main.c_heatingSystemOptions.get(heatingSystemType).getLifetime();
+		if(ageHeatingSystem >= heatingSystemLifetime) {
+			ageHeatingSystem = (int) (Math.random() * (heatingSystemLifetime + 1));
 		}
     	
     	//Initalize heating system
-    	this.heatingSystem = new J_HeatingSystem(initialHeatingSystem, ageHeatingSystem);
+    	this.heatingSystem = new J_HeatingSystem(heatingSystemType, ageHeatingSystem);
     	//Add to count
     	main.mapAnnualValues.get(heatingSystemType).get(ownership).addInstalledThisYear();
     	//this.heatingSystemInstalledThisYear = heatingSystem;
-    	this.hasLowTemperatureInhouseHeatDistribution = initialHeatingSystem.getRequiresLowTemperatureInhouseHeatDistribution();
+    	this.hasLowTemperatureInhouseHeatDistribution = main.c_heatingSystemOptions.get(heatingSystemType).getRequiresLowTemperatureInhouseHeatDistribution();
     	
     	//f_initializeHeatingSystemOptions(heatingSystemOptionsInput, hasDistrictHeatingGrid, isInBlock, heatingSystem);
     }
 
 
     //1. Initalize heating system options
+    /*
     public void f_setHeatingSystemOptions(EnumMap<OL_HeatingSystem, J_HeatingSystemOptionsGlobal> heatingSystemOptionsInput) {
     	for (J_HeatingSystemOptionsGlobal option : heatingSystemOptionsInput.values()) {
     		
@@ -27831,152 +27748,36 @@ public class J_Dwelling {
     		);
     		heatingSystemMap.put(type, hso_household);
     	}
-	}        	
-        	 
-        	
-    //2. Calcualte EAC
-    public void f_calculateHeatingSystemOptionsEAC() {
-    	for (J_HeatingSystemOptionsLocal hso : heatingSystemMap.values()) {
-    	    hso.f_calculateEAC(this);
-    	}
-    }
+	} */
     
-    //4. Update heating system age
+  //4. Update heating system age
     public void f_updateHeatingSystemAge() {
-    	if(hasInstalledHeatingSystemThisYear) { hasInstalledHeatingSystemThisYear = false; }
     	heatingSystem.updateAge();
-	}
+	}   
     
     //2. Check if end of lifetime trigger
     public boolean f_hasEndOfLifeTrigger() {   	
     	//Adopt only if end of lifetime
-    	if(heatingSystem.getAge() >= heatingSystem.getLifetime()) {
+    	if(heatingSystem.getAge() >= main.c_heatingSystemOptions.get(heatingSystem.getType()).getLifetime()) {
     		f_checkOrCreateHeatingSytemMap();
     		return true;
     	}
     	return false;
     }
     
-    public void f_calculateEAC(J_Dwelling dwelling) {
-		//Get global values
-		double investmentCostsHeatDistributionSystem = heatingSystemGlobalData.getInvestmentCostsHeatDistributionSystem();
-		double investmentCostsHeatSupplySystem = 0.0;
-		if(dwelling.getHeatDemand_kWh() < 6000) {
-			investmentCostsHeatSupplySystem = heatingSystemGlobalData.getInvestmentCostsHeatSupplySystem_small();
-		} else if(dwelling.getHeatDemand_kWh() > 10000) {
-			investmentCostsHeatSupplySystem = heatingSystemGlobalData.getInvestmentCostsHeatSupplySystem_large();
-		} else {
-			investmentCostsHeatSupplySystem = heatingSystemGlobalData.getInvestmentCostsHeatSupplySystem_medium();
-		}
-		double lifetime = heatingSystemGlobalData.getLifetime();
-		double maintenanceCosts = heatingSystemGlobalData.getMaintenanceCosts();
-		double discountRate = heatingSystemGlobalData.getDiscountRate();
-		OL_EnergyCarrier primaryEnergySource = heatingSystemGlobalData.getPrimaryEnergySource();
-		OL_EnergyCarrier secondaryEnergySource = heatingSystemGlobalData.getSecondaryEnergySource();
-		double primaryEnergySourceCosts_eurPerkWh = heatingSystemGlobalData.getPrimaryEnergySourceCostsEurPerKWh();
-		double secondaryEnergySourceCosts_eurPerkWh = heatingSystemGlobalData.getSecondaryEnergySourceCostsEurPerKWh();
-		double fractionPrimaryEnergySource = heatingSystemGlobalData.getFractionPrimaryEnergySource();
-		double fractionSecondaryEnergySource = heatingSystemGlobalData.getFractionSecondaryEnergySource();
-		double efficiencyPrimarySource = heatingSystemGlobalData.getEfficiencyPrimarySource();
-		double efficiencySecondarySource = heatingSystemGlobalData.getEfficiencySecondarySource();
-		double subsidy = heatingSystemGlobalData.getSubsidy();
-		
-		TCO = 0;
-		double energyCosts_eurPerYear = 0.0;
-		investmentCosts = investmentCostsHeatSupplySystem;
-		if(requiresLowTemperatureInhouseHeatDistribution == true && dwelling.getHasLowTemperatureInhouseHeatDistribution() == false) {
-			investmentCosts += investmentCostsHeatDistributionSystem;
-		}
-		if( !requiredInsulationLabel.equals("no")) {
-			int requiredInsulationLabelNumber = dwelling.f_insulationLabelLetterToNumber(requiredInsulationLabel);
-			if( requiredInsulationLabelNumber < dwelling.getEnergyLabelNumber()) {
-				double requiredInsulationCosts = dwelling.f_getInsulationCosts(requiredInsulationLabel);
-				investmentCosts += requiredInsulationCosts;
-				/*if( dwelling.getId() < 20) {
-					traceln("Required insulation costs at dwelling " + dwelling.getId() + " for label from " + dwelling.getEnergyLabel() + " to " + requiredInsulationLabel + " = " + requiredInsulationCosts);
-				}*/
-			}
-		}
-		
-		//1. Calculate energy source costs per year
-		energyCosts_eurPerYear += (primaryEnergySourceCosts_eurPerkWh * dwelling.getHeatDemand_kWh() * fractionPrimaryEnergySource / efficiencyPrimarySource);
-		if(secondaryEnergySource != NOT_APPLICABLE) {
-			energyCosts_eurPerYear += (secondaryEnergySourceCosts_eurPerkWh * dwelling.getHeatDemand_kWh() * fractionSecondaryEnergySource / efficiencySecondarySource);
-		}
-		
-	    for(int t=0; t<lifetime; t++) {
-	    	if(t==0) {		
-	    		//investment costs in 1st year
-	    		TCO += (investmentCosts - subsidy);
-	    	}
-	    	//annual discounted opex in all years
-	    	TCO += (maintenanceCosts + energyCosts_eurPerYear) / pow((1 + discountRate), t);
-	    }
-		
-		double annuityFactor = (1 - Math.pow(1 + discountRate, -lifetime)) / discountRate;
-		EAC = roundToInt(TCO / annuityFactor);
-		TCO = roundToInt(TCO);
-		/*
-		if(type == ELECTRIC_HEAT_PUMP && householdID < 2) {
-			traceln("Heating system type: " + type + ", EAC = " + EAC + ", TCO = " + TCO + ", CAPEX = " + CAPEX + ", annual energy costs = " + energyCosts_eurPerYear + ", heat demand = " + heatDemand_kWh + ", hh ID = " + householdID);
-		}*/
-		//EquivalentAnnualCosts (EAC) = TCO / Annuity factor
-				//TCO = CAPEX + sum_over_time(OPEXt / (1+r)^t)	  
-				//Annuity Factor = 1 - (1 + r)^-n / r
-		
-		/*if(EAC < 0) {
-			traceln("EAC = " + EAC + " at dwelling " + householdID + " of type " + type );
-		}*/
-	}
     
-    //---- get best values----
-    /*
-    public J_HeatingSystemOptionsLocal getBestByUtility() {
-        return heatingSystemMap.values().stream()
-                .filter(J_HeatingSystemOptionsLocal::getIsPossible)
-                .max(Comparator.comparingDouble(
-                        J_HeatingSystemOptionsLocal::getPerceivedUtility))
-                .orElse(null);
-    }
 
-    public J_HeatingSystemOptionsLocal getBestByEAC() {
-        return heatingSystemMap.values().stream()
-                .filter(J_HeatingSystemOptionsLocal::getIsPossible)
-                .min(Comparator.comparingDouble(
-                        J_HeatingSystemOptionsLocal::getEAC))
-                .orElse(null);
-    }
-
-    public void updateDistrictHeatingPreferenceByUtility() {
-        J_HeatingSystemOptionsLocal best = getBestByUtility();
-        if(best != null && best.getType() == OL_HeatingSystem.DISTRICT_HEATING) {
-        	isDistrictHeatingPreferred = true;
-        }
-        else {
-        	isDistrictHeatingPreferred = false;
-        }
-    }*/
-
-	//Install selected heating method
-	public void f_installSelectedHeatingMethod(J_HeatingSystemOptionsLocal selectedHeatingSystemOption) {
-		//Remove old heating system
-		main.mapAnnualValues.get(heatingSystem.getType()).get(ownership).addRemovedThisYear();
-		
-		//Set new
-		int age = 0;
-		double perceivedUtility = selectedHeatingSystemOption.getPerceivedUtility();
-		heatingSystem = new J_HeatingSystem(selectedHeatingSystemOption, age, perceivedUtility);
-		hasInstalledHeatingSystemThisYear = true;
-		
-		if( validationDwelling ) {
-			adoptionDataList.add(f_addAdoptionToExcel(heatingSystem));
-		}
-		//add to total counts
-		f_addToAnnualValues(selectedHeatingSystemOption);
-		
-		//clear heatingSystemMap
-		heatingSystemMap.clear();
-	}
+  //Install selected heating method
+  	public void f_installSelectedHeatingMethod(OL_HeatingSystem type) {
+  		//Remove old heating system
+  		main.mapAnnualValues.get(heatingSystem.getType()).get(ownership).addRemovedThisYear();
+  		
+  		//Set new
+  		heatingSystem = new J_HeatingSystem(type);
+  		
+  		if( validationDwelling ) {
+  			adoptionDataList.add(f_addAdoptionToExcel(heatingSystem));
+  		}
 	
 	//Get top preffered heating method
 	/*
@@ -28002,13 +27803,13 @@ public class J_Dwelling {
 	}*/
 	
 	//
-	/*
+	
 	public void f_checkOrCreateHeatingSytemMap() {
 		if( heatingSystemMap == null) {
 			f_setHeatingSystemOptions(main.c_heatingSystemOptions);
 		}
 	}
-	*/
+	
 	
 	public boolean isHeatingSystemPossible(OL_HeatingSystem type) {
 		if (this.isInBlock && type == OL_HeatingSystem.NATURAL_GAS_BLOCK)
@@ -28034,8 +27835,9 @@ public class J_Dwelling {
     	heatingSystemMap.values().forEach(x->x.f_setPossible(false));
     	f_setDHPossible();
     	
-    	J_HeatingSystemOptionsLocal requiredHeatingSystem = heatingSystemMap.get(DISTRICT_HEATING);
-    	f_installSelectedHeatingMethod(requiredHeatingSystem);
+    	//J_HeatingSystemOptionsLocal requiredHeatingSystem = heatingSystemMap.get(DISTRICT_HEATING);
+    	OL_HeatingSystem heatingSystem = DISTRICT_HEATING;
+    	f_installSelectedHeatingMethod(heatingSystem);
  
     }
     
@@ -28265,7 +28067,7 @@ public class J_Dwelling {
     	return labelLetter;
     } 
     
-    public J_AdoptionData f_addAdoptionToExcel(J_HeatingSystem heatingSystem) {
+    public J_AdoptionData f_addToAdoptionData(J_HeatingSystem heatingSystem) {
     	OL_HeatingSystem type = heatingSystem.getType();
     	int age = heatingSystem.getAge();
     	double perceivedUtility = heatingSystem.getPerceivedUtility();
@@ -28281,7 +28083,7 @@ public class J_Dwelling {
     public void f_initializeValidationDwellings() {
     	validationDwelling = true;
 		adoptionDataList = new ArrayList<J_AdoptionData>();
-		adoptionDataList.add(f_addAdoptionToExcel(heatingSystem));
+		adoptionDataList.add(f_addToAdoptionData(heatingSystem));
     }
     
     public boolean isValidationDwelling() {
@@ -28346,21 +28148,6 @@ public class J_Dwelling {
 
     public int getId() {
         return id;
-    }
-    public Map<OL_HeatingSystem, J_HeatingSystemOptionsLocal> getHeatingSystemMap() {
-        return heatingSystemMap;
-    }
-    /*
-    public List<J_HeatingSystemOptionsLocal> getHeatingSystemOptions() {
-    	return heatingSystemOptions;
-    }*/
-    /*
-    public List<J_HeatingSystemOptions> getRankedHeatingSystemOptions() {
-    	return rankedHeatingSystemOptions;
-    }
-    */
-    public boolean hasInstalledHeatingSystemThisYear() {
-    	return hasInstalledHeatingSystemThisYear;
     }
     
     public double getHeatDemand_kWh() {
@@ -28434,6 +28221,8 @@ public class J_Dwelling {
 			<Text><![CDATA[/**
  * J_HomeOwner
  */	
+
+
 public class J_HomeOwner extends heat_transition_tipping_pathways.J_Household {
 	//private J_Dwelling dwelling;
    
@@ -28444,9 +28233,6 @@ public class J_HomeOwner extends heat_transition_tipping_pathways.J_Household {
     //Social network
     private List<J_HomeOwner> householdsInNetwork = new ArrayList<>();
     private double shareAnnualContacts;
-    
-    //Adoption function
-    private boolean isTriggered;
     
     /**
      * Default constructor
@@ -28476,32 +28262,59 @@ public class J_HomeOwner extends heat_transition_tipping_pathways.J_Household {
     	//f_setInitialAttitude();
     }
 	
-	//Get best utility option
-	public OL_HeatingSystem getTopRankedUtilityOption() {
-
-	    Map<OL_HeatingSystem, Double> utilityMap = f_getUtilityMap();
-
-	    return utilityMap.entrySet().stream()
-	            .max(Map.Entry.comparingByValue())
-	            .map(Map.Entry::getKey)
-	            .orElse(null);
+	//Check triggers - first step of adoption
+	public boolean hasTrigger() {
+	 	if( getDwelling().f_hasEndOfLifeTrigger() || f_hasOpportunityTriggerTimeCondition() ){
+	   		return true;
+	   	}
+	   	else return false; 
+	}
+		
+	//Opportunity based trigger
+	public void f_adoptNewHeatingSystem() {
+		//If end of life install top selected
+		if( getDwelling().f_hasEndOfLifeTrigger() ) {
+			OL_HeatingSystem bestRankedHSType = getTopRankedUtilityOption();
+			getDwelling().f_installSelectedHeatingMethod(bestRankedHSType);
+			getHeatingSystemOptions().clear();
+		}
+		
+		else if( f_hasOpportunityTriggerTimeCondition() ) {
+			OL_HeatingSystem bestRankedHSType = getTopRankedUtilityOption();
+			if( getDwelling().getHeatingSystem().getType() != bestRankedHSType) {
+				getDwelling().f_installSelectedHeatingMethod(bestRankedHSType);
+				getHeatingSystemOptions().clear();
+			}
+	    }
 	}
 	
-	//Map utility
-	public Map<OL_HeatingSystem, Double> f_getUtilityMap() {
-		
-		Map<OL_HeatingSystem, Double> utilityMap = new HashMap<>();
+	
+	
+	public boolean f_hasOpportunityTriggerTimeCondition() {
 		J_Dwelling d = getDwelling();
-		
-		if( (d.isInBLock && type == NATURAL_GAS_BLOCK) || (d.inGridCongestion && type == ELECTRIC_HEAT_PUMP) || (d.hasDistrictHeating && type == DISTRICT_HEATING))
-		
-		for(OL_HeatingSystem type : OL_HeatingSystem.values()) {
+		int HSAge = d.getHeatingSystem().getAge();
+		int HSLifetime = getMain().c_heatingSystemOptions.get(d.getHeatingSystem().getType()).getLifetime();
+			
+	    if(d.getHeatingSystem().getAge() / HSLifetime > 0.75 ) { //At 3/4th of lifetime
+	    	return true;
+	    }
+	    else {
+	    	return false;
+	    }
+	}
+	
+	public void getHeatingSystemOptionsUtility() { //Note this only works because never storing this for more than a year, recalculting utility every year anyway
+		for (Map.Entry<OL_HeatingSystem, J_HeatingSystemOption> entry : getHeatingSystemOptions().entrySet()) {
+			 
+			J_HeatingSystemOption hsol = entry.getValue();
+			OL_HeatingSystem type = entry.getKey();
+			J_Dwelling d = getDwelling();
 			
 			if( !d.isHeatingSystemPossible(type)) {
 				continue;
 			}
 			else {
-				J_HeatingSystemOptionsGlobal hso = d.getMain().c_heatingSystemOptions.get(type);
+				J_HeatingSystemOptionsGlobal hsog = getMain().c_heatingSystemOptions.get(type);
 				
 				double weight_affordability = 0.6;
 				double weight_effort = 0.3;
@@ -28523,17 +28336,23 @@ public class J_HomeOwner extends heat_transition_tipping_pathways.J_Household {
 				double weight_PBCToBehavior = getDwelling().getMain().p_weight_PBCToBehavior;
 				*/
 						
-				double attitude = f_getAttitudeValue(sustainabilityAttitude, hso);
-				double effort = f_getEffort(type, d, hso.getRequiresLowTemperatureInhouseHeatDistribution() );
+				double attitudeValue = f_getAttitudeValue(sustainabilityAttitude, hsog);
+				double effort = f_getEffort(type, d, hsog.getRequiresLowTemperatureInhouseHeatDistribution() );
 				//double control = f_getControl();
 				double control = 0.0;
-				double EAC_norm = f_getEAC_norm();
+				double EAC_norm = f_getEAC_norm(hsol.getEAC(), hsog);
+				double subjectiveNorm = f_getSubjectiveNorm(type);
 				double PBC = f_getPBC(EAC_norm, effort, weight_EAC, weight_effort, weight_control);
-				double socialLearningRate = hso.getSocialLearningRate();
-				double intention = f_getIntention( attitudeValue, weight_att, subjectiveNorm, weight_SN, socialLearningRate, weight_PBCToIntention);
-				double percUtility = f_getPerceivedUtility(intention, weight_intentionToBehavior, PBC, weight_PBCToBehavior);
+				double socialLearningRate = hsog.getSocialLearningRate();
+				double intention = f_getIntention( attitudeValue, weight_att, subjectiveNorm, weight_SN, socialLearningRate, PBC, weight_PBCToIntention);
+				double perceivedUtility = f_getPerceivedUtility(intention, weight_intentionToBehavior, PBC, weight_PBCToBehavior);
 				
-				utilityMap.put(type, percUtility);
+				hsol.setAttitude(attitudeValue);
+				hsol.setSubjectiveNorm(subjectiveNorm);
+				hsol.setEAC_normalized(EAC_norm);
+				hsol.setPBC(PBC);
+				hsol.setPerceivedUtility(perceivedUtility);
+
 				/*
 				if(id < 3) {
 					traceln(hso.getPerceivedUtility() + " perceived value at hh "  + id + " for hso " + hso.getType());
@@ -28543,36 +28362,48 @@ public class J_HomeOwner extends heat_transition_tipping_pathways.J_Household {
 					traceln("In hh " + getDwelling().getId() + " initial utility of HSO " + hso.getType() + " utility = " + hso.getPerceivedUtility() + ", intention = " + hso.getIntention() + ", PBC = " + hso.getPBC());
 				}*/
 			}
-		}	
+		}
 	}
+		
+	//Get best utility option
+  	public OL_HeatingSystem getTopRankedUtilityOption() {
+  	    //Select top option
+  		OL_HeatingSystem bestType = null;
+  		double bestUtility = Double.NEGATIVE_INFINITY;
+  		for (Map.Entry<OL_HeatingSystem, J_HeatingSystemOption> entry : getHeatingSystemOptions().entrySet()) {
+  			J_HeatingSystemOption hso = entry.getValue();
+  		    double utility = hso.getPerceivedUtility();
+  		    if (utility > bestUtility) {
+  		    	bestUtility = utility;
+  		        bestType = entry.getKey();
+  		    }
+  		}
+  		return bestType;
+  	}
 	
-	
-
 	/*
-    public void f_updateTriggers() {
-    	isTriggered = false;
-    	J_Dwelling d = getDwelling();
-    	if(d.f_hasEndOfLifeTrigger()) {
-    		isTriggered = true;
-    		d.getMain().listDwellingsToAdopt.add(d);
-    	} 
-    	else if(f_hasOpportunityBasedTrigger()) {
-    		isTriggered = true;
-    	}			
+    public void updateDistrictHeatingPreferenceByUtility() {
+        J_HeatingSystemOptionsLocal best = getBestByUtility();
+        if(best != null && best.getType() == OL_HeatingSystem.DISTRICT_HEATING) {
+        	isDistrictHeatingPreferred = true;
+        }
+        else {
+        	isDistrictHeatingPreferred = false;
+        }
     }*/
-   
+	
+	
+   /*
     //2. Check if end of lifetime and adopt new heating system
     public void f_adoptNewHeatingMethod() {   	
     	if(isTriggered) {
-    		
-    		
     		getDwelling().f_rankHeatingSystemOptionsByUtility();
     		J_HeatingSystemOptionsLocal selectedHS = getDwelling().f_getTopRankedHeatingSystemOption();
     		getDwelling().f_installSelectedHeatingMethod(selectedHS);
     		isTriggered = false;
     	}
     }	
-    	
+    	*/
     /*
     public void f_spreadSocialLearning(J_HeatingSystemOptionsLocal preferredHeatingSystem, double socialLearningFactor) {
     	int networkSize = householdsInNetwork.size();
@@ -28590,88 +28421,31 @@ public class J_HomeOwner extends heat_transition_tipping_pathways.J_Household {
     }
     */
     
-    public void f_setSubjectiveNormAdoptionRate() {
+    public double f_getSubjectiveNorm(OL_HeatingSystem heatingSystemType) {
+    	
+    	int adoptersAmongstPeers = 0;
+    	for(J_HomeOwner contact : householdsInNetwork) {
+    		if(contact.getDwelling().getHeatingSystem().getType() == heatingSystemType) {
+    			adoptersAmongstPeers++;
+    		}
+    	}
+    		   		
+    	double adoptionRateAmongstPeers = (double) adoptersAmongstPeers / householdsInNetwork.size();
     	/*
     	if( getDwelling().getId() == 0 ) {
-    		traceln("Heating system options values " + getDwelling().getHeatingSystemMap().values());
+    		traceln("At dwel " + getDwelling().getId() + " and hm " + hsol.getType() + " cur SN = " + adoptionRateAmongstPeers + " adopters amongst peers = " + adoptersAmongstPeers);
     	}*/
-    	for( J_HeatingSystemOptionsLocal hsol : getDwelling().getHeatingSystemMap().values() ) {
-    		OL_HeatingSystem heatingSystemType = hsol.getType();
-    		
-    		int adoptersAmongstPeers = 0;
-    		for(J_HomeOwner contact : householdsInNetwork) {
-    			if(contact.getDwelling().getHeatingSystem().getType() == heatingSystemType) {
-    				adoptersAmongstPeers++;
-    			}
-    		}
-    		   		
-    		double adoptionRateAmongstPeers = (double) adoptersAmongstPeers / householdsInNetwork.size();
-    		/*
-    		if( getDwelling().getId() == 0 ) {
-    			traceln("At dwel " + getDwelling().getId() + " and hm " + hsol.getType() + " cur SN = " + adoptionRateAmongstPeers + " adopters amongst peers = " + adoptersAmongstPeers);
-    		}*/
-    		
-    		hsol.setSubjectiveNorm(adoptionRateAmongstPeers);
-    	}
+    	return adoptionRateAmongstPeers;
     }
     
-    public boolean hasTrigger() {
-    	J_Dwelling d = getDwelling();
-    	if( d.f_hasEndOfLifeTrigger() || f_hasOpportunityBasedTrigger() ){
-    		return true;
-    	}
-    	else return false; 
-    }
-	
-  //3. Check opportunity based trigger
-    public boolean f_hasOpportunityBasedTrigger() {
-		boolean opportunityTrigger = false;
-		J_Dwelling d = getDwelling();
-    	if(d.heatingSystem.getAge() / d.heatingSystem.getLifetime() > 0.75 ) { //At 3/4th of lifetime
-    		d.f_checkOrCreateHeatingSytemMap();
-    		f_checkOrCalculateUtility();
-    		OL_HeatingSystem bestRankedHSType = getBestByUtility().getType();
-			OL_HeatingSystem currentHSType = heatingSystem.getType();
-			if( currentHSType != bestRankedHSType) {
-				opportunityTrigger = true;
-			}
-    	}
-		return opportunityTrigger;
-
-    }
+ 
     
     
     
-    
-
-	private Double perceivedUtility;
-	private double attitudeValue;
-	private double intention;
-	private double effort;
-	private double subjectiveNorm;
-	private double PBC;
-	
-    /**
-     * Default constructor
-     */
-	public J_HeatingSystemOptionsLocalPrivate(
-            OL_HeatingSystem type,
-            boolean isPossible,
-            J_HeatingSystemOptionsGlobal heatingSystemGlobalData,
-            J_Dwelling dwelling,
-            double attitudeValue) {
-
-        super(type, isPossible, heatingSystemGlobalData, dwelling);
-
-        if (dwelling.getOwnership() == OL_HouseholdOwnership.PRIVATELY_OWNED) {
-            f_setEffort(type, dwelling);
-            this.attitudeValue = attitudeValue;
-        }
-    }
-	
+   
 	
 
-	public double f_getAttitudeValue(double sustainabilityAttitudeHousehold, J_HeatingSystemOptionsGlobal hso) {
+	public double f_getAttitudeValue(double sustainabilityAttitudeHousehold, J_HeatingSystemOptionsGlobal hso) {		
 		double sustainabilityScore_norm = hso.getSustainabilityScoreNormalized();
 		/*double alpha = 1.0; //Sensetivity in Gaussian distribution
 		double squaredDeviation = pow( sustainabilityAttitudeHousehold_norm - sustainabilityScore_norm,2);  //squared deviation or preference gap
@@ -28720,13 +28494,12 @@ public class J_HomeOwner extends heat_transition_tipping_pathways.J_Household {
 		//PBC = (EAC_norm_reversed * weight_EAC + effort * weight_effort + control * weight_control) / (weight_EAC + weight_effort + weight_control);
 		return (EAC_norm_reversed * weight_EAC + effort * weight_effort) / (weight_EAC + weight_effort);
 	}
-	public double f_getIntention(double attitudeValue, double weight_att, double subjectiveNorm, double weight_SN, double socialLearningRate, double weight_PBCToIntention) {
+	public double f_getIntention(double attitudeValue, double weight_att, double subjectiveNorm, double weight_SN, double socialLearningRate, double PBC, double weight_PBCToIntention) {
 		return (attitudeValue * weight_att + subjectiveNorm * weight_SN * socialLearningRate + PBC * weight_PBCToIntention) / (weight_att + weight_SN + weight_PBCToIntention);
 	}
 	
 	public double f_getPerceivedUtility(double intention, double weight_intentionToBehavior, double PBC, double weight_PBCToBehavior) {
 		return (intention * weight_intentionToBehavior + PBC * weight_PBCToBehavior) / (weight_intentionToBehavior + weight_PBCToBehavior);
-		
 		/*
 		//Perceived value is costs (EAC) + personal match + Possible
 		perceivedUtility = 0.0;
@@ -28741,39 +28514,11 @@ public class J_HomeOwner extends heat_transition_tipping_pathways.J_Household {
 		}*/ 	
 	}
 	
-	public void setSubjectiveNorm(double subjectiveNorm) {
-		this.subjectiveNorm = subjectiveNorm;
+	public double f_getEAC_norm(double EAC, J_HeatingSystemOptionsGlobal hso) {
+		return getMain().f_getNormalizedValue(EAC, 
+				hso.getMinEAC(), 
+				hso.getMaxEAC());
 	}
-	
-	public Double getPerceivedUtility() {
-		return perceivedUtility;
-	}
-	 
-	public double getAttitudeValue() {
-		return attitudeValue;
-	}
-	
-	public double getSubjectiveNorm() {
-    	return subjectiveNorm;
-    }
-	
-	public double getIntention() {
-    	return intention;
-    }
-	
-	
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
     
     
     
@@ -28968,10 +28713,6 @@ public class J_HomeOwner extends heat_transition_tipping_pathways.J_Household {
     
     public List<J_HomeOwner> getHouseholdsInNetwork() {
     	return householdsInNetwork;
-    }
-    
-    public boolean isTriggered() {
-    	return isTriggered;
     }
     
 
@@ -29553,7 +29294,7 @@ public class J_AnnualValues {
      * Add a dwelling to this bucket.
      * @param d The dwelling to include
      */
-    public void addHeatingSystem(J_HeatingSystemOptionsLocal heatingSystem) {
+    public void addHeatingSystem(J_HeatingSystemOption heatingSystem) {
     	installedThisYear++;
     	sumAtt += heatingSystem.getAttitudeValue();
     	sumPercUtil += heatingSystem.getPerceivedUtility();
@@ -29757,6 +29498,93 @@ public class J_Neighborhood {
 
     	return gisregion;
     }
+
+	@Override
+	public String toString() {
+		return super.toString();
+	}
+
+}]]></Text>
+		</JavaClass>
+		<!--   =========   Java Class   ========  -->
+		<JavaClass>
+			<Id>1771493281641</Id>
+			<Name><![CDATA[J_HeatingSystemOption]]></Name>
+			<Text><![CDATA[/**
+ * J_HeatingSystemOption
+ */	
+public class J_HeatingSystemOption {
+	 private double attitude;
+	 private double perceivedUtility;
+	 private double subjectiveNorm;
+	 private double EAC;
+	 private double PBC;
+	 private double EAC_normalized;
+	 //private double EAC_normalized;
+
+    /**
+     * Default constructor
+     */
+    public J_HeatingSystemOption(double attitude,
+	    	double perceivedUtility,
+	    	double subjectiveNorm,
+	    	double EAC,
+	    	double PBC
+	    ) {
+    	this.attitude = attitude;
+    	this.perceivedUtility = perceivedUtility;
+    	this.subjectiveNorm = subjectiveNorm;
+    	this.EAC = EAC;
+    	this.PBC = PBC;
+    }
+    
+    //For non home owner cases
+    public J_HeatingSystemOption(double EAC) {
+    	this.EAC = EAC;
+    }
+    
+    public void setEAC_normalized(double EAC_norm) {
+    	this.EAC_normalized = EAC_norm;
+    }
+    
+    public void setAttitude(double attitude) {
+    	this.attitude = attitude;
+    }
+    
+    public void setPerceivedUtility(double percUtil) {
+    	this.perceivedUtility = percUtil;
+    }
+    
+    public void setSubjectiveNorm( double SN) {
+    	this.subjectiveNorm = SN;
+    }
+    
+    public void setPBC( double PBC ) {
+    	this.PBC = PBC;
+    }
+    
+    public double getAttitude() {
+    	return attitude;
+    }
+    
+    public double getPerceivedUtility() {
+    	return perceivedUtility;
+    }
+    
+    public double getSubjectiveNorm() {
+    	return subjectiveNorm;
+    }
+    
+    public double getEAC() {
+    	return EAC;
+    }
+    
+    public double getPBC() {
+    	return PBC;
+    }
+    
+    
+    
 
 	@Override
 	public String toString() {
