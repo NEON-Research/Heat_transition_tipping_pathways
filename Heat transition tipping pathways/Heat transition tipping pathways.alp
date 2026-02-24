@@ -317,19 +317,6 @@ f_initalizeSettings();
 					</Properties>
 				</Variable>
 				<Variable Class="PlainVariable">
-					<Id>1693914232713</Id>
-					<Name><![CDATA[v_inputLine]]></Name>
-					<ExcludeFromBuild>true</ExcludeFromBuild>
-					<X>-550</X><Y>-100</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
-						<Type><![CDATA[String]]></Type>        
-					</Properties>
-				</Variable>
-				<Variable Class="PlainVariable">
 					<Id>1700143919032</Id>
 					<Name><![CDATA[v_NaturalGasBoilerColor]]></Name>
 					<ExcludeFromBuild>true</ExcludeFromBuild>
@@ -1011,7 +998,7 @@ f_initalizeSettings();
 				<Variable Class="PlainVariable">
 					<Id>1737995531122</Id>
 					<Name><![CDATA[v_nbhsWithoutDHStartYear]]></Name>
-					<X>-990</X><Y>350</Y>
+					<X>-900</X><Y>380</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -1555,34 +1542,8 @@ f_initalizeSettings();
 					</Properties>
 				</Variable>
 				<Variable Class="PlainVariable">
-					<Id>1770304678967</Id>
-					<Name><![CDATA[mapHeatingSystemsRemoved]]></Name>
-					<ExcludeFromBuild>true</ExcludeFromBuild>
-					<X>-1000</X><Y>1080</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
-						<Type><![CDATA[EnumMap <OL_HeatingSystem, EnumMap <OL_HouseholdOwnership, Integer>>]]></Type>        
-					</Properties>
-				</Variable>
-				<Variable Class="PlainVariable">
-					<Id>1770310664585</Id>
-					<Name><![CDATA[mapInitialHeatingSystemCount]]></Name>
-					<ExcludeFromBuild>true</ExcludeFromBuild>
-					<X>-1000</X><Y>1060</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
-						<Type><![CDATA[EnumMap <OL_HeatingSystem, EnumMap <OL_HouseholdOwnership, Integer>>]]></Type>        
-					</Properties>
-				</Variable>
-				<Variable Class="PlainVariable">
 					<Id>1770383498624</Id>
-					<Name><![CDATA[c_heatingSystemOptions]]></Name>
+					<Name><![CDATA[heatingSystemOptionsGlobalData]]></Name>
 					<X>-650</X><Y>1040</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -1766,31 +1727,6 @@ f_initalizeSettings();
 						</DefaultValue>
 						<ParameterEditor>
 							<Id>1704794561360</Id>
-							<EditorContolType>TEXT_BOX</EditorContolType>
-							<MinSliderValue><![CDATA[0]]></MinSliderValue>
-							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
-							<DelimeterType>NO_DELIMETER</DelimeterType>
-						</ParameterEditor>
-					</Properties>                 
-				</Variable>
-				<Variable Class="Parameter">
-					<Id>1704896138407</Id>
-					<Name><![CDATA[p_testPopulationSize]]></Name>
-					<ExcludeFromBuild>true</ExcludeFromBuild>
-					<X>-850</X><Y>-260</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
-						<Type><![CDATA[double]]></Type>
-						<UnitType><![CDATA[NONE]]></UnitType>
-						<SdArray>false</SdArray>
-						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[8 * pow(10,6)]]></Code>
-						</DefaultValue>
-						<ParameterEditor>
-							<Id>1704896138405</Id>
 							<EditorContolType>TEXT_BOX</EditorContolType>
 							<MinSliderValue><![CDATA[0]]></MinSliderValue>
 							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
@@ -2807,38 +2743,6 @@ f_initalizeSettings();
 					</Properties>                 
 				</Variable>
 				<Variable Class="CollectionVariable">
-					<Id>1730389266762</Id>
-					<Name><![CDATA[c_households]]></Name>
-					<ExcludeFromBuild>true</ExcludeFromBuild>
-					<X>-1150</X><Y>700</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<Properties SaveInSnapshot="true" AccessType="public" StaticVariable="false">
-						<CollectionClass><![CDATA[ArrayList]]></CollectionClass>
-						<ElementClass><![CDATA[J_Household]]></ElementClass>
-						<ValueElementClass><![CDATA[String]]></ValueElementClass>
-					</Properties>
-
-				</Variable>
-				<Variable Class="CollectionVariable">
-					<Id>1732024389301</Id>
-					<Name><![CDATA[_heatingSystemOptions]]></Name>
-					<ExcludeFromBuild>true</ExcludeFromBuild>
-					<X>-650</X><Y>1020</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<Properties SaveInSnapshot="true" AccessType="public" StaticVariable="false">
-						<CollectionClass><![CDATA[ArrayList]]></CollectionClass>
-						<ElementClass><![CDATA[J_HeatingSystemOptionsGlobal]]></ElementClass>
-						<ValueElementClass><![CDATA[String]]></ValueElementClass>
-					</Properties>
-
-				</Variable>
-				<Variable Class="CollectionVariable">
 					<Id>1737379663209</Id>
 					<Name><![CDATA[c_buurtcodeToHouseholds]]></Name>
 					<X>-650</X><Y>980</Y>
@@ -2914,54 +2818,6 @@ f_initalizeSettings();
 
 				</Variable>
 				<Variable Class="CollectionVariable">
-					<Id>1741166079574</Id>
-					<Name><![CDATA[c_rentersSocialHousing]]></Name>
-					<ExcludeFromBuild>true</ExcludeFromBuild>
-					<X>-1150</X><Y>630</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<Properties SaveInSnapshot="true" AccessType="public" StaticVariable="false">
-						<CollectionClass><![CDATA[ArrayList]]></CollectionClass>
-						<ElementClass><![CDATA[J_Renter]]></ElementClass>
-						<ValueElementClass><![CDATA[String]]></ValueElementClass>
-					</Properties>
-
-				</Variable>
-				<Variable Class="CollectionVariable">
-					<Id>1741166079576</Id>
-					<Name><![CDATA[c_rentersLandlords]]></Name>
-					<ExcludeFromBuild>true</ExcludeFromBuild>
-					<X>-1150</X><Y>650</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<Properties SaveInSnapshot="true" AccessType="public" StaticVariable="false">
-						<CollectionClass><![CDATA[ArrayList]]></CollectionClass>
-						<ElementClass><![CDATA[J_Renter]]></ElementClass>
-						<ValueElementClass><![CDATA[String]]></ValueElementClass>
-					</Properties>
-
-				</Variable>
-				<Variable Class="CollectionVariable">
-					<Id>1741612437266</Id>
-					<Name><![CDATA[c_SHNeighborhoods]]></Name>
-					<ExcludeFromBuild>true</ExcludeFromBuild>
-					<X>-1150</X><Y>720</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<Properties SaveInSnapshot="true" AccessType="public" StaticVariable="false">
-						<CollectionClass><![CDATA[ArrayList]]></CollectionClass>
-						<ElementClass><![CDATA[J_SocialHousingNeighborhood]]></ElementClass>
-						<ValueElementClass><![CDATA[String]]></ValueElementClass>
-					</Properties>
-
-				</Variable>
-				<Variable Class="CollectionVariable">
 					<Id>1741626183684</Id>
 					<Name><![CDATA[c_dwellingsSocialHousing]]></Name>
 					<X>-1000</X><Y>850</Y>
@@ -2992,38 +2848,6 @@ f_initalizeSettings();
 
 				</Variable>
 				<Variable Class="CollectionVariable">
-					<Id>1741709993301</Id>
-					<Name><![CDATA[avgElectricityDemandByPostalCode]]></Name>
-					<ExcludeFromBuild>true</ExcludeFromBuild>
-					<X>-1000</X><Y>910</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<Properties SaveInSnapshot="true" AccessType="public" StaticVariable="false">
-						<CollectionClass><![CDATA[HashMap]]></CollectionClass>
-						<ElementClass><![CDATA[String]]></ElementClass>
-						<ValueElementClass><![CDATA[Integer]]></ValueElementClass>
-					</Properties>
-
-				</Variable>
-				<Variable Class="CollectionVariable">
-					<Id>1741710095697</Id>
-					<Name><![CDATA[avgGasDemandByPostalCode]]></Name>
-					<ExcludeFromBuild>true</ExcludeFromBuild>
-					<X>-1000</X><Y>930</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<Properties SaveInSnapshot="true" AccessType="public" StaticVariable="false">
-						<CollectionClass><![CDATA[HashMap]]></CollectionClass>
-						<ElementClass><![CDATA[String]]></ElementClass>
-						<ValueElementClass><![CDATA[Double]]></ValueElementClass>
-					</Properties>
-
-				</Variable>
-				<Variable Class="CollectionVariable">
 					<Id>1743496694453</Id>
 					<Name><![CDATA[c_energyLabelCounts]]></Name>
 					<ExcludeFromBuild>true</ExcludeFromBuild>
@@ -3039,225 +2863,8 @@ f_initalizeSettings();
 					</Properties>
 
 				</Variable>
-				<Variable Class="CollectionVariable">
-					<Id>1752060297265</Id>
-					<Name><![CDATA[c_SHADwellings_by_postcode]]></Name>
-					<X>-1000</X><Y>980</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<Properties SaveInSnapshot="true" AccessType="public" StaticVariable="false">
-						<CollectionClass><![CDATA[HashMap]]></CollectionClass>
-						<ElementClass><![CDATA[String]]></ElementClass>
-						<ValueElementClass><![CDATA[ArrayList<J_Dwelling>]]></ValueElementClass>
-					</Properties>
-
-				</Variable>
 			</Variables>
 			<Functions>
-				<Function AccessType="default" StaticFunction="false">
-					<ReturnModificator>VOID</ReturnModificator>
-					<ReturnType><![CDATA[double]]></ReturnType>
-					<Id>1693907413625</Id>
-					<Name><![CDATA[f_readObjectsFromExcel]]></Name>
-					<ExcludeFromBuild>true</ExcludeFromBuild>
-					<X>-859</X><Y>-197</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<Body><![CDATA[// Function to create agents from Excel data
-//public void createAgentsFromExcel(String excelFilePath) {
-
-ef_residenceObjects.readFile();
-
-// Iterate through dataset rows
-for (int i = 2; i < ef_residenceObjects.getLastRowNum(1); i++) {
-	// Create a new instance of your agent type
-	EA_Household household = add_pop_EA_Households();
-
-	// Set agent attributes based on Excel data
-	household.set_p_numid(ef_residenceObjects.getCellNumericValue(1, i, 1));
-	//household.setAge(dataset.getInteger(i, "Age"));
-	// Set other attributes as needed
-}
-
-
-/*
-p_numid
-p_pid
-p_vid
-p_neighborhoodCode
-p_neighborhoodName
-p_districtCode
-p_districtName
-p_municipalityCode
-p_municipalityName
-p_provinceCode
-p_provinceName
-p_postalCode
-p_street
-p_number
-p_surfaceArea
-p_householdEquivalent
-p_buildingYear
-p_averageWOZValueHouse
-p_averageWOZValueMunicipality
-p_energyLabelLetter
-p_buildingTypeLabel
-p_SBICode
-p_EANCount
-p_groupID2022
-p_longitude
-p_latitude
-p_p6GasM3_2022
-p_p6KWh_2022
-p_p6KWhDirection_2022
-p_p6LandSeizure_M2
-p_p6GasConnections_2022
-*/]]></Body>
-				</Function>
-				<Function AccessType="default" StaticFunction="false">
-					<ReturnModificator>VOID</ReturnModificator>
-					<ReturnType><![CDATA[double]]></ReturnType>
-					<Id>1693909271524</Id>
-					<Name><![CDATA[f_generateObjectsFromAPI]]></Name>
-					<ExcludeFromBuild>true</ExcludeFromBuild>
-					<X>-550</X><Y>-200</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<Body><![CDATA[//Generate households based on included neighborhoods
-for (GZ_Neighborhood x : pop_GZ_Neighborhoods) {	
-	try {
-		// Build the URL with the comma-separated gemeentecodes
-		//String baseUrl = "https://ds.vboenergie.commondatafactory.nl/list/?match-gemeentecode=";
-	    //String url = baseUrl + gemeentecode;
-	    String baseUrl = "https://ds.vboenergie.commondatafactory.nl/list/?match-buurtcode=";
-	    String url = baseUrl + x.p_neighborhoodCode;
-		//traceln(url);
-	   
-	   // Create an HttpURLConnection and set the request method
-		HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
-		connection.setRequestMethod("GET");
-
-		// Get the response code
-		int responseCode = connection.getResponseCode();
-
-		if (responseCode == HttpURLConnection.HTTP_OK) {
-			// Read the response data
-			BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-			String inputLine;
-			StringBuilder response = new StringBuilder();
-
-			while ((inputLine = in.readLine()) != null) {
-				response.append(inputLine);
-			}
-			in.close();
-
-			// Process the response data as needed
-			//String responseData = response.toString();
-			//System.out.println("API Response for buurtcode " + x.p_neighborhoodCode + ":\n" + response.toString());
-
-			// Parse the response (e.g., as JSON)
-	        JSONArray jsonArray = new JSONArray(response.toString()); // Use JSONArray for JSON data
-	        //traceln(jsonArray);
-	        
-	        // Loop through the JSON array and create agents
-			for (int i = 0; i < jsonArray.length(); i++) {
-	    		JSONObject jsonObject = jsonArray.getJSONObject(i);
-				
-				//Make households just for gebruiksdoel woonfuctie				
-				if(jsonObject.getString("gebruiksdoelen").contains("woonfunctie")){
-		   			// Create agents and set their properties based on JSON data
-					f_getHouseholds(jsonObject, x);
-				}
-				//for industry
-				/*
-				else if (jsonObject.getString("gebruiksdoelen").contains("industriefunctie")){
-					f_getIndustrySites(jsonObject, x);
-				}
-				else {
-					f_getUtilityObjects(jsonObject, x);
-				}*/			
-			}
-			
-		} 
-		else {
-			System.out.println("API request for buurtcode " + x.p_neighborhoodCode + " with name " + x.p_neighborhood + " in mun " + x.p_municipality + " failed with status code: " + responseCode);
-		}
-	} catch (Exception e) {
-	    e.printStackTrace();
-	}
-}
-
-//Check if multiple households in building
-/*
-for(EA_Household x : pop_EA_Households){
-	x.p_numberOfHouseholdsInBuilding = count(pop_EA_Households, y->y.p_pid.equals(x.p_pid));
-	x.f_setDefaultEnergyLabel();
-}*/
-//traceln(count(pop_EA_Households, x->x.p_numberOfHouseholdsInBuilding > 1) + " households with multiple households in building " + average(pop_EA_Households, x->x.p_numberOfHouseholdsInBuilding) + " average households in building");
-
-]]></Body>
-				</Function>
-				<Function AccessType="default" StaticFunction="false">
-					<ReturnModificator>VOID</ReturnModificator>
-					<ReturnType><![CDATA[double]]></ReturnType>
-					<Id>1694092039100</Id>
-					<Name><![CDATA[f_generateNeighborhoodsFromAPI]]></Name>
-					<ExcludeFromBuild>true</ExcludeFromBuild>
-					<X>-860</X><Y>-220</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<Body><![CDATA[// List of gemeentecodes you want to match (1680 and 5220 in this case)
-//String[] gemeentecodes = {"GM0482", "GM0505","GM0523","GM0531","GM0590", "GM0610","GM0642"};
-String[] gemeentecodes = {"GM0642"};
-String[] buurtcodes = {"BU06420108"};
-
-
-// Replace with your API key
-
-
-String apiKey = "BU06420108";
-String endpointUrl = "https://opendata.cbs.nl/ODataApi/OData/85618NED/WijkenEnBuurten?$filter=(Wijkcode eq 'BU06420108')";
-
-try {
-    URL url = new URL(endpointUrl);
-    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-    connection.setRequestMethod("GET");
-    connection.setRequestProperty("BU06420108", apiKey);
-
-    int responseCode = connection.getResponseCode();
-
-    if (responseCode == 200) {
-        BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-        String inputLine;
-        StringBuffer response = new StringBuffer();
-
-        while ((inputLine = in.readLine()) != null) {
-            response.append(inputLine);
-        }
-        in.close();
-
-        String responseData = response.toString();
-        System.out.println(responseData);
-
-        // Parse and use the response data as needed
-    } else {
-        System.out.println("Failed to retrieve data. Status code: " + responseCode);
-    }
-
-    connection.disconnect();
-} catch (Exception e) {
-    e.printStackTrace();
-}
-]]></Body>
-				</Function>
 				<Function AccessType="default" StaticFunction="false">
 					<ReturnModificator>VOID</ReturnModificator>
 					<ReturnType><![CDATA[double]]></ReturnType>
@@ -3375,55 +2982,6 @@ duration = f_traceFunctionTime(startTime);
 //traceln("Total start-up time: " + duration + " seconds");
 v_startRuntime = System.currentTimeMillis();
 ]]></Body>
-				</Function>
-				<Function AccessType="default" StaticFunction="false">
-					<ReturnModificator>VOID</ReturnModificator>
-					<ReturnType><![CDATA[double]]></ReturnType>
-					<Id>1700132909653</Id>
-					<Name><![CDATA[f_generateNeighborhoodsDetail]]></Name>
-					<ExcludeFromBuild>true</ExcludeFromBuild>
-					<X>-550</X><Y>-220</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<Body><![CDATA[// CREATE AAGENTS FROM NEIGHBORHOOD CBS DATA
-List<Tuple> rows = selectFrom(neighborhoods_netherlands)
-	.where(neighborhoods_netherlands.gm_code.eq("GM0531")) //hardinxveld-giessendam is testcase
-    .list();
-
-
-String[] buurtcodes = {"BU05310101", "BU05310102", "BU05310103"}; //, "BU05310201", "BU05310202"};
-
-
-//for testing keep to small number of neighborhoods	
-for (Tuple row : rows) {
-
-	for (String code : buurtcodes) {
-		if (code.equals(row.get( neighborhoods_netherlands.statcode))) {    
-			
-			GZ_Neighborhood x;
-			x = add_pop_GZ_Neighborhoods();
-			x.p_neighborhoodCode = row.get( neighborhoods_netherlands.statcode);
-			x.p_neighborhood = row.get( neighborhoods_netherlands.statnaam);
-			//x.p_districtCode = row.get( neighborhoods_netherlands.wijkcode);
-			x.p_municipalityCode = row.get( neighborhoods_netherlands.gm_code);
-			x.p_geometeryCoordinates = row.get( neighborhoods_netherlands.wkt_geom);
-		
-			//SET LOCATION
-			x.p_longitude = row.get( neighborhoods_netherlands.longitude);
-			x.p_latitude = row.get( neighborhoods_netherlands.latitude);	
-			x.setLatLon(x.p_latitude, x.p_longitude);
-			
-			//SET COORDINATES AND REGION FROM WKT_GEOM STRING
-			x.f_drawRegionFromWKTString();
-		}
-	}
-}
-
-v_timer = System.currentTimeMillis();
-//f_colorNeighborhoodsToLegend();
-traceln(roundToDecimal((System.currentTimeMillis() - v_timer)/1000,3) + " seconds to get neighborhood data");]]></Body>
 				</Function>
 				<Function AccessType="default" StaticFunction="false">
 					<ReturnModificator>VOID</ReturnModificator>
@@ -3744,239 +3302,6 @@ for (int i = 0; i < avgEACData.length; i++) {
 				<Function AccessType="default" StaticFunction="false">
 					<ReturnModificator>VOID</ReturnModificator>
 					<ReturnType><![CDATA[double]]></ReturnType>
-					<Id>1704896042683</Id>
-					<Name><![CDATA[f_generateTestAgentPopulation]]></Name>
-					<ExcludeFromBuild>true</ExcludeFromBuild>
-					<X>-850</X><Y>-310</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<Body><![CDATA[v_timer = System.currentTimeMillis();
-for(int i = 0; i < p_testPopulationSize; i++){
-	add_tests();
-}
-traceln(roundToDecimal((System.currentTimeMillis() - v_timer)/1000,3) + " seconds to generate " + p_testPopulationSize + " agents in test population");]]></Body>
-				</Function>
-				<Function AccessType="default" StaticFunction="false">
-					<ReturnModificator>VOID</ReturnModificator>
-					<ReturnType><![CDATA[double]]></ReturnType>
-					<Id>1704902769588</Id>
-					<Name><![CDATA[f_getUtilityObjects]]></Name>
-					<ExcludeFromBuild>true</ExcludeFromBuild>
-					<X>-540</X><Y>-160</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<Parameter>
-						<Name><![CDATA[jsonObject]]></Name>
-						<Type><![CDATA[JSONObject]]></Type>
-					</Parameter>
-					<Parameter>
-						<Name><![CDATA[neighborhood]]></Name>
-						<Type><![CDATA[GZ_Neighborhood]]></Type>
-					</Parameter>
-					<Body><![CDATA[// Create agents and set their properties based on JSON data
-EA_UtilityObject utilityObject = add_pop_EA_UtilityObjects(); // Replace YourAgentType with your agent type
-utilityObject.set_p_numid(jsonObject.getDouble("numid"));
-utilityObject.set_p_pid(jsonObject.getString("pid"));
-utilityObject.set_p_vid(jsonObject.getDouble("vid"));
-utilityObject.set_p_neighborhoodCode(jsonObject.getString("buurtcode"));
-utilityObject.set_p_neighborhoodName(jsonObject.getString("buurtnaam"));
-utilityObject.set_p_districtCode(jsonObject.getString("wijkcode"));
-utilityObject.set_p_districtName(jsonObject.getString("wijknaam"));
-utilityObject.set_p_municipalityCode(jsonObject.getString("gemeentecode"));
-utilityObject.set_p_municipalityName(jsonObject.getString("gemeentenaam"));
-utilityObject.set_p_provinceCode(jsonObject.getString("provincienaam"));
-utilityObject.set_p_provinceName(jsonObject.getString("provinciecode"));
-utilityObject.set_p_postalCode(jsonObject.getString("postcode"));
-utilityObject.set_p_street(jsonObject.getString("straat"));
-utilityObject.set_p_number(jsonObject.getDouble("huisnummer"));
-utilityObject.set_p_surfaceArea(jsonObject.getDouble("oppervlakte"));
-utilityObject.set_p_householdEquivalent(jsonObject.getDouble("woningequivalent"));
-utilityObject.set_p_buildingYear(jsonObject.getDouble("pand_bouwjaar"));
-utilityObject.set_p_usage(jsonObject.getString("gebruiksdoelen"));
-utilityObject.set_p_point(jsonObject.getString("point"));
-				
-//Postal code stats
-/*
-utilityObject.set_p_averageWOZValueHouse(jsonObject.getDouble("pc6_gemiddelde_woz_waarde_woning"));
-utilityObject.set_p_averageWOZValueMunicipality(jsonObject.getDouble("gemiddelde_gemeente_woz"));
-utilityObject.set_p_averageHomeOwnerPerc(jsonObject.getDouble("pc6_eigendomssituatie_perc_koop"));
-utilityObject.set_p_averageHomeRentPerc(jsonObject.getDouble("pc6_eigendomssituatie_perc_huur"));
-utilityObject.set_p_numberHousesHousingCooperations(jsonObject.getDouble("pc6_eigendomssituatie_aantal_woningen_corporaties"));
-utilityObject.set_p_groupID2022(jsonObject.getString("pc6_group_id_2022"));
-*/
-//Energy stats
-utilityObject.set_p_energyLabelLetter(jsonObject.getString("energieklasse"));
-utilityObject.set_p_buildingTypeLabel(jsonObject.getString("woning_type"));
-utilityObject.set_p_SBICode(jsonObject.getString("sbicode"));
-utilityObject.set_p_EANCount(jsonObject.getDouble("gas_ean_count"));
-utilityObject.set_p_p6GasM3_2022(jsonObject.getDouble("pc6_gasm3_2022"));
-utilityObject.set_p_p6KWh_2022(jsonObject.getDouble("pc6_kwh_2022"));
-utilityObject.set_p_p6KWhDirection_2022(jsonObject.getDouble("kwh_leveringsrichting_2022"));
-utilityObject.set_p_p6LandSeizure_M2(jsonObject.getDouble("pc6_grondbeslag_m2"));
-utilityObject.set_p_p6GasConnections_2022(jsonObject.getDouble("pc6_gas_aansluitingen_2022"));
-					
-//household.setLatLon
-//setProperty1(jsonObject.getString("numid"));
-//agent.setProperty2(jsonObject.getInt("property2"));
-// Set other properties as needed
-utilityObject.f_setLocation();
-utilityObject.p_neighborhood = neighborhood;
-neighborhood.c_utilityObjects.add(utilityObject);
-
-if( utilityObject.p_usage.equals("winkelfunctie")){
-	utilityObject.oval.setFillColor(v_shopColor);
-}
-else {
-	utilityObject.oval.setFillColor(v_utilityColor);
-}]]></Body>
-				</Function>
-				<Function AccessType="default" StaticFunction="false">
-					<ReturnModificator>VOID</ReturnModificator>
-					<ReturnType><![CDATA[double]]></ReturnType>
-					<Id>1704903345615</Id>
-					<Name><![CDATA[f_getHouseholds]]></Name>
-					<ExcludeFromBuild>true</ExcludeFromBuild>
-					<X>-540</X><Y>-180</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<Parameter>
-						<Name><![CDATA[jsonObject]]></Name>
-						<Type><![CDATA[JSONObject]]></Type>
-					</Parameter>
-					<Parameter>
-						<Name><![CDATA[neighborhood]]></Name>
-						<Type><![CDATA[GZ_Neighborhood]]></Type>
-					</Parameter>
-					<Body><![CDATA[// Create agents and set their properties based on JSON data
-/*EA_Household household = add_pop_EA_Households(); // Replace YourAgentType with your agent type
-household.set_p_numid(jsonObject.getDouble("numid"));
-household.set_p_pid(jsonObject.getString("pid"));
-household.set_p_vid(jsonObject.getDouble("vid"));
-household.set_p_neighborhoodCode(jsonObject.getString("buurtcode"));
-household.set_p_neighborhoodName(jsonObject.getString("buurtnaam"));
-household.set_p_districtCode(jsonObject.getString("wijkcode"));
-household.set_p_districtName(jsonObject.getString("wijknaam"));
-household.set_p_municipalityCode(jsonObject.getString("gemeentecode"));
-household.set_p_municipalityName(jsonObject.getString("gemeentenaam"));
-household.set_p_provinceCode(jsonObject.getString("provincienaam"));
-household.set_p_provinceName(jsonObject.getString("provinciecode"));
-household.set_p_postalCode(jsonObject.getString("postcode"));
-household.set_p_street(jsonObject.getString("straat"));
-household.set_p_number(jsonObject.getDouble("huisnummer"));
-household.set_p_surfaceArea(jsonObject.getDouble("oppervlakte"));
-household.set_p_householdEquivalent(jsonObject.getDouble("woningequivalent"));
-household.set_p_buildingYear(jsonObject.getDouble("pand_bouwjaar"));
-household.set_p_usage(jsonObject.getString("gebruiksdoelen"));
-household.set_p_point(jsonObject.getString("point"));
-				
-//Postal code stats
-household.set_p_averageWOZValueHouse(jsonObject.getDouble("pc6_gemiddelde_woz_waarde_woning"));
-household.set_p_averageWOZValueMunicipality(jsonObject.getDouble("gemiddelde_gemeente_woz"));
-household.set_p_averageHomeOwnerPerc(jsonObject.getDouble("pc6_eigendomssituatie_perc_koop"));
-household.set_p_averageHomeRentPerc(jsonObject.getDouble("pc6_eigendomssituatie_perc_huur"));
-household.set_p_numberHousesHousingCooperations(jsonObject.getDouble("pc6_eigendomssituatie_aantal_woningen_corporaties"));
-household.set_p_groupID2022(jsonObject.getString("pc6_group_id_2022"));
-
-//Energy stats
-household.set_p_energyLabelLetter(jsonObject.getString("energieklasse"));
-household.set_p_buildingTypeLabel(jsonObject.getString("woning_type"));
-household.set_p_SBICode(jsonObject.getString("sbicode"));
-household.set_p_EANCount(jsonObject.getDouble("gas_ean_count"));
-household.set_p_p6GasM3_2022(jsonObject.getDouble("pc6_gasm3_2022"));
-household.set_p_p6KWh_2022(jsonObject.getDouble("pc6_kwh_2022"));
-household.set_p_p6KWhDirection_2022(jsonObject.getDouble("kwh_leveringsrichting_2022"));
-household.set_p_p6LandSeizure_M2(jsonObject.getDouble("pc6_grondbeslag_m2"));
-household.set_p_p6GasConnections_2022(jsonObject.getDouble("pc6_gas_aansluitingen_2022"));
-					
-//household.setLatLon
-//setProperty1(jsonObject.getString("numid"));
-//agent.setProperty2(jsonObject.getInt("property2"));
-// Set other properties as needed
-household.f_setLocation();
-household.p_neighborhood = neighborhood;
-neighborhood.c_households.add(household);
-*/]]></Body>
-				</Function>
-				<Function AccessType="default" StaticFunction="false">
-					<ReturnModificator>VOID</ReturnModificator>
-					<ReturnType><![CDATA[double]]></ReturnType>
-					<Id>1704903351337</Id>
-					<Name><![CDATA[f_getIndustrySites]]></Name>
-					<ExcludeFromBuild>true</ExcludeFromBuild>
-					<X>-540</X><Y>-140</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<Parameter>
-						<Name><![CDATA[jsonObject]]></Name>
-						<Type><![CDATA[JSONObject]]></Type>
-					</Parameter>
-					<Parameter>
-						<Name><![CDATA[neighborhood]]></Name>
-						<Type><![CDATA[GZ_Neighborhood]]></Type>
-					</Parameter>
-					<Body><![CDATA[// Create agents and set their properties based on JSON data
-EA_IndustrySite industrySite = add_pop_EA_IndustrySites(); // Replace YourAgentType with your agent type
-industrySite.set_p_numid(jsonObject.getDouble("numid"));
-industrySite.set_p_pid(jsonObject.getString("pid"));
-industrySite.set_p_vid(jsonObject.getDouble("vid"));
-industrySite.set_p_neighborhoodCode(jsonObject.getString("buurtcode"));
-industrySite.set_p_neighborhoodName(jsonObject.getString("buurtnaam"));
-industrySite.set_p_districtCode(jsonObject.getString("wijkcode"));
-industrySite.set_p_districtName(jsonObject.getString("wijknaam"));
-industrySite.set_p_municipalityCode(jsonObject.getString("gemeentecode"));
-industrySite.set_p_municipalityName(jsonObject.getString("gemeentenaam"));
-industrySite.set_p_provinceCode(jsonObject.getString("provincienaam"));
-industrySite.set_p_provinceName(jsonObject.getString("provinciecode"));
-industrySite.set_p_postalCode(jsonObject.getString("postcode"));
-industrySite.set_p_street(jsonObject.getString("straat"));
-industrySite.set_p_number(jsonObject.getDouble("huisnummer"));
-industrySite.set_p_surfaceArea(jsonObject.getDouble("oppervlakte"));
-industrySite.set_p_householdEquivalent(jsonObject.getDouble("woningequivalent"));
-industrySite.set_p_buildingYear(jsonObject.getDouble("pand_bouwjaar"));
-industrySite.set_p_usage(jsonObject.getString("gebruiksdoelen"));
-industrySite.set_p_point(jsonObject.getString("point"));
-				
-//Postal code stats
-/*
-EA_IndustrySite.set_p_averageWOZValueHouse(jsonObject.getDouble("pc6_gemiddelde_woz_waarde_woning"));
-EA_IndustrySite.set_p_averageWOZValueMunicipality(jsonObject.getDouble("gemiddelde_gemeente_woz"));
-EA_IndustrySite.set_p_averageHomeOwnerPerc(jsonObject.getDouble("pc6_eigendomssituatie_perc_koop"));
-EA_IndustrySite.set_p_averageHomeRentPerc(jsonObject.getDouble("pc6_eigendomssituatie_perc_huur"));
-EA_IndustrySite.set_p_numberHousesHousingCooperations(jsonObject.getDouble("pc6_eigendomssituatie_aantal_woningen_corporaties"));
-EA_IndustrySite.set_p_groupID2022(jsonObject.getString("pc6_group_id_2022"));
-*/
-//Energy stats
-industrySite.set_p_energyLabelLetter(jsonObject.getString("energieklasse"));
-industrySite.set_p_buildingTypeLabel(jsonObject.getString("woning_type"));
-industrySite.set_p_SBICode(jsonObject.getString("sbicode"));
-industrySite.set_p_EANCount(jsonObject.getDouble("gas_ean_count"));
-industrySite.set_p_p6GasM3_2022(jsonObject.getDouble("pc6_gasm3_2022"));
-industrySite.set_p_p6KWh_2022(jsonObject.getDouble("pc6_kwh_2022"));
-industrySite.set_p_p6KWhDirection_2022(jsonObject.getDouble("kwh_leveringsrichting_2022"));
-industrySite.set_p_p6LandSeizure_M2(jsonObject.getDouble("pc6_grondbeslag_m2"));
-industrySite.set_p_p6GasConnections_2022(jsonObject.getDouble("pc6_gas_aansluitingen_2022"));
-					
-//household.setLatLon
-//setProperty1(jsonObject.getString("numid"));
-//agent.setProperty2(jsonObject.getInt("property2"));
-// Set other properties as needed
-industrySite.f_setLocation();
-industrySite.p_neighborhood = neighborhood;
-neighborhood.c_industrySites.add(industrySite);
-
-industrySite.oval.setFillColor(v_industryColor);]]></Body>
-				</Function>
-				<Function AccessType="default" StaticFunction="false">
-					<ReturnModificator>VOID</ReturnModificator>
-					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1704917508592</Id>
 					<Name><![CDATA[f_setText]]></Name>
 					<X>-640</X><Y>780</Y>
@@ -3992,28 +3317,6 @@ t_hybridHeatPump.setText(v_hybridHeatPumpText);
 t_mixed.setText(v_mixedText);
 t_noHouseholds.setText(v_noHouseholdsText);
 ]]></Body>
-				</Function>
-				<Function AccessType="default" StaticFunction="false">
-					<ReturnModificator>VOID</ReturnModificator>
-					<ReturnType><![CDATA[double]]></ReturnType>
-					<Id>1704919977774</Id>
-					<Name><![CDATA[f_setHouseholdHeatingMethods]]></Name>
-					<ExcludeFromBuild>true</ExcludeFromBuild>
-					<X>-550</X><Y>-120</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<Body><![CDATA[//Set heating methods based on input data
-for( EA_Household household : pop_EA_Households){
-	household.f_setColor(household.v_heatingMethod);
-}
-
-//Set heating methods based on input data
-for( GZ_Neighborhood neighborhood : pop_GZ_Neighborhoods){
-	neighborhood.f_setDefaultHeatingMethodHouseholdAgents(neighborhood.p_gasCV_perc, neighborhood.p_gasBlockHeating_perc, neighborhood.p_electricHeatPump_perc, neighborhood.p_hybridHeatPump_perc, neighborhood.p_districtHeating_perc); //Sets heating method based on neighborhood data of heating methods
-	//neighborhood.f_getHouseholdHeatingMethods();
-}]]></Body>
 				</Function>
 				<Function AccessType="default" StaticFunction="false">
 					<ReturnModificator>VOID</ReturnModificator>
@@ -4044,42 +3347,6 @@ for (Tuple row : filteredRows) {
 				<Function AccessType="default" StaticFunction="false">
 					<ReturnModificator>VOID</ReturnModificator>
 					<ReturnType><![CDATA[double]]></ReturnType>
-					<Id>1708545045651</Id>
-					<Name><![CDATA[f_generateHouseholds]]></Name>
-					<ExcludeFromBuild>true</ExcludeFromBuild>
-					<X>-550</X><Y>-240</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<Body><![CDATA[double timer = System.currentTimeMillis();
-
-f_generateObjectsFromAPI();
-traceln(roundToDecimal((System.currentTimeMillis() - timer)/1000,3) + " seconds to generate objects from API");
-timer = System.currentTimeMillis();
-
-//Initialzie households from neighborhoods
-for (GZ_Neighborhood neighborhood : pop_GZ_Neighborhoods){
-	neighborhood.f_householdInitialization();
-}
-
-//Normalize EAC and preference values
-f_normalizeValuesAndRankHeatingMethods();
-
-//Count heating methods
-f_countHouseholdHeatingMethods();
-
-//Set inital units installed to global heating system options to calculate learning curves
-f_setInitialUnitsInstalledPerHeatingMethod();
-
-//Check initialization time
-traceln(roundToDecimal((System.currentTimeMillis() - timer)/1000,3) + " seconds to generate households");
-
-]]></Body>
-				</Function>
-				<Function AccessType="default" StaticFunction="false">
-					<ReturnModificator>VOID</ReturnModificator>
-					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1708550035912</Id>
 					<Name><![CDATA[f_initializeDSO]]></Name>
 					<X>-650</X><Y>650</Y>
@@ -4095,176 +3362,6 @@ for(GZ_Neighborhood x : pop_GZ_Neighborhoods){
 	pop_DSOs.get(0).c_neighborhoodsNotReinforced.add(x);
 }
 //add_pop_DistrictHeatingCompanies();]]></Body>
-				</Function>
-				<Function AccessType="default" StaticFunction="false">
-					<ReturnModificator>VOID</ReturnModificator>
-					<ReturnType><![CDATA[double]]></ReturnType>
-					<Id>1715085497056</Id>
-					<Name><![CDATA[f_generateJavaHouseholdsFromAPI]]></Name>
-					<ExcludeFromBuild>true</ExcludeFromBuild>
-					<X>-860</X><Y>-140</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<Body><![CDATA[v_timer = System.currentTimeMillis();
-
-//Generate households based on included neighborhoods
-int countNeighborhods = 500;
-for (GZ_Neighborhood x : pop_GZ_Neighborhoods) {	
-	if( x.getIndex() == countNeighborhods){
-		traceln(roundToDecimal((System.currentTimeMillis() - v_timer)/1000,3) + " seconds to generate households in " + countNeighborhods + " neighborhoods with a total population of " + sum(pop_GZ_Neighborhoods, y->y.c_households.size()) + " households");
-		countNeighborhods = countNeighborhods + 500;
-	}
-	try {
-		// Build the URL with the comma-separated gemeentecodes
-		//String baseUrl = "https://ds.vboenergie.commondatafactory.nl/list/?match-gemeentecode=";
-	    //String url = baseUrl + gemeentecode;
-	    String baseUrl = "https://ds.vboenergie.commondatafactory.nl/list/?match-buurtcode=";
-	    String url = baseUrl + x.p_neighborhoodCode;
-		//traceln(url);
-	   
-	   // Create an HttpURLConnection and set the request method
-		HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
-		connection.setRequestMethod("GET");
-
-		// Get the response code
-		int responseCode = connection.getResponseCode();
-
-		if (responseCode == HttpURLConnection.HTTP_OK) {
-			// Read the response data
-			BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-			String inputLine;
-			StringBuilder response = new StringBuilder();
-
-			while ((inputLine = in.readLine()) != null) {
-				response.append(inputLine);
-			}
-			in.close();
-
-			// Process the response data as needed
-			//String responseData = response.toString();
-			//System.out.println("API Response for buurtcode " + x.p_neighborhoodCode + ":\n" + response.toString());
-
-			// Parse the response (e.g., as JSON)
-	        JSONArray jsonArray = new JSONArray(response.toString()); // Use JSONArray for JSON data
-	        //traceln(jsonArray);
-	        
-	        // Loop through the JSON array and create agents
-			for (int i = 0; i < jsonArray.length(); i++) {
-	    		JSONObject jsonObject = jsonArray.getJSONObject(i);
-				
-				//Make households just for gebruiksdoel woonfuctie				
-				if(jsonObject.getString("gebruiksdoelen").contains("woonfunctie")){
-		   			// Create agents and set their properties based on JSON data
-					f_getJavaHouseholds(jsonObject, x);
-				}
-				/*
-				//for industry
-				else if (jsonObject.getString("gebruiksdoelen").contains("industriefunctie")){
-					f_getIndustrySites(jsonObject, x);
-				}
-				else {
-					f_getUtilityObjects(jsonObject, x);
-				}
-				*/			
-			}
-			
-		} 
-		else {
-			System.out.println("API request for buurtcode " + x.p_neighborhoodCode + " failed with status code: " + responseCode);
-		}
-	} catch (Exception e) {
-	    e.printStackTrace();
-	}
-}
-
-//Check if multiple households in building
-//TODO
-/*
-for(EA_Household x : pop_EA_Households){
-	x.p_numberOfHouseholdsInBuilding = count(pop_EA_Households, y->y.p_pid.equals(x.p_pid));
-	x.f_setDefaultEnergyLabel();
-}
-*/
-//traceln(count(pop_EA_Households, x->x.p_numberOfHouseholdsInBuilding > 1) + " households with multiple households in building " + average(pop_EA_Households, x->x.p_numberOfHouseholdsInBuilding) + " average households in building");
-traceln(roundToDecimal((System.currentTimeMillis() - v_timer)/1000,3) + " seconds to generate household population of " + sum(pop_GZ_Neighborhoods, x->x.c_households.size()) + " households");
-
-]]></Body>
-				</Function>
-				<Function AccessType="default" StaticFunction="false">
-					<ReturnModificator>VOID</ReturnModificator>
-					<ReturnType><![CDATA[double]]></ReturnType>
-					<Id>1715085535016</Id>
-					<Name><![CDATA[f_getJavaHouseholds]]></Name>
-					<ExcludeFromBuild>true</ExcludeFromBuild>
-					<X>-850</X><Y>-120</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<Parameter>
-						<Name><![CDATA[jsonObject]]></Name>
-						<Type><![CDATA[JSONObject]]></Type>
-					</Parameter>
-					<Parameter>
-						<Name><![CDATA[neighborhood]]></Name>
-						<Type><![CDATA[GZ_Neighborhood]]></Type>
-					</Parameter>
-					<Body><![CDATA[// Create agents and set their properties based on JSON data
-J_Household household = new J_Household(neighborhood);
-/*household.set_p_numid(jsonObject.getDouble("numid"));
-household.set_p_pid(jsonObject.getString("pid"));
-household.set_p_vid(jsonObject.getDouble("vid"));
-household.set_p_neighborhoodCode(jsonObject.getString("buurtcode"));
-household.set_p_neighborhoodName(jsonObject.getString("buurtnaam"));
-household.set_p_districtCode(jsonObject.getString("wijkcode"));
-household.set_p_districtName(jsonObject.getString("wijknaam"));
-household.set_p_municipalityCode(jsonObject.getString("gemeentecode"));
-household.set_p_municipalityName(jsonObject.getString("gemeentenaam"));
-household.set_p_provinceCode(jsonObject.getString("provincienaam"));
-household.set_p_provinceName(jsonObject.getString("provinciecode"));
-household.set_p_postalCode(jsonObject.getString("postcode"));
-household.set_p_street(jsonObject.getString("straat"));
-household.set_p_number(jsonObject.getDouble("huisnummer"));
-household.set_p_surfaceArea(jsonObject.getDouble("oppervlakte"));
-household.set_p_householdEquivalent(jsonObject.getDouble("woningequivalent"));
-household.set_p_buildingYear(jsonObject.getDouble("pand_bouwjaar"));
-household.set_p_usage(jsonObject.getString("gebruiksdoelen"));
-household.set_p_point(jsonObject.getString("point"));
-				
-//Postal code stats
-household.set_p_averageWOZValueHouse(jsonObject.getDouble("pc6_gemiddelde_woz_waarde_woning"));
-household.set_p_averageWOZValueMunicipality(jsonObject.getDouble("gemiddelde_gemeente_woz"));
-household.set_p_averageHomeOwnerPerc(jsonObject.getDouble("pc6_eigendomssituatie_perc_koop"));
-household.set_p_averageHomeRentPerc(jsonObject.getDouble("pc6_eigendomssituatie_perc_huur"));
-household.set_p_numberHousesHousingCooperations(jsonObject.getDouble("pc6_eigendomssituatie_aantal_woningen_corporaties"));
-household.set_p_groupID2022(jsonObject.getString("pc6_group_id_2022"));
-
-//Energy stats
-household.set_p_energyLabelLetter(jsonObject.getString("energieklasse"));
-household.set_p_buildingTypeLabel(jsonObject.getString("woning_type"));
-household.set_p_SBICode(jsonObject.getString("sbicode"));
-household.set_p_EANCount(jsonObject.getDouble("gas_ean_count"));
-household.set_p_p6GasM3_2022(jsonObject.getDouble("pc6_gasm3_2022"));
-household.set_p_p6KWh_2022(jsonObject.getDouble("pc6_kwh_2022"));
-household.set_p_p6KWhDirection_2022(jsonObject.getDouble("kwh_leveringsrichting_2022"));
-household.set_p_p6LandSeizure_M2(jsonObject.getDouble("pc6_grondbeslag_m2"));
-household.set_p_p6GasConnections_2022(jsonObject.getDouble("pc6_gas_aansluitingen_2022"));
-*/					
-//household.setLatLon
-//setProperty1(jsonObject.getString("numid"));
-//agent.setProperty2(jsonObject.getInt("property2"));
-// Set other properties as needed
-//household.f_setLocation();
-
-neighborhood.c_households.add(household);
-
-//Set default household ownership
-household.f_setHouseholdOwnership(neighborhood.p_ownerOccupiedHomes, neighborhood.p_ownedByHousingAssociation, neighborhood.p_ownedByOtherLandlords);
-
-
-]]></Body>
 				</Function>
 				<Function AccessType="default" StaticFunction="false">
 					<ReturnModificator>VOID</ReturnModificator>
@@ -5380,137 +4477,6 @@ if(mapMode == GRID_CONGESTION){
 	}
 }
 		]]></Body>
-				</Function>
-				<Function AccessType="default" StaticFunction="false">
-					<ReturnModificator>VOID</ReturnModificator>
-					<ReturnType><![CDATA[double]]></ReturnType>
-					<Id>1737363294210</Id>
-					<Name><![CDATA[f_setGeneralNeighborhoodData]]></Name>
-					<ExcludeFromBuild>true</ExcludeFromBuild>
-					<X>-550</X><Y>-80</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<Body><![CDATA[List<Tuple> rows_data = selectFrom(neighborhood_data)
-    .list();
-    
-for (Tuple row_data : rows_data){
-	for (GZ_Neighborhood x : pop_GZ_Neighborhoods){
-		if (x.p_neighborhoodCode.equals(row_data.get(neighborhood_data.buurtcode))){
-			
-			x.p_inhabitants = row_data.get(neighborhood_data.a_inw);
-			x.p_males = row_data.get(neighborhood_data.a_man);
-			x.p_females = row_data.get(neighborhood_data.a_vrouw);
-			
-			x.p_households = row_data.get(neighborhood_data.a_hh);
-			x.p_singlePersonHouseholds = row_data.get(neighborhood_data.a_1p_hh);
-			x.p_householdsWithoutChildren = row_data.get(neighborhood_data.a_hh_z_k);
-			x.p_householdsWithChildren = row_data.get(neighborhood_data.a_hh_m_k);
-			x.p_averageHouseholdSize = row_data.get(neighborhood_data.g_hhgro);
-			x.p_populationDensity = row_data.get(neighborhood_data.bev_dich);
-			
-			//Living
-			x.p_houses = row_data.get(neighborhood_data.a_woning);
-			x.p_housesAverageWOZValue = row_data.get(neighborhood_data.g_wozbag);
-			x.p_ownerOccupiedHomes = row_data.get(neighborhood_data.p_koopw);
-			x.p_rentalProperties = row_data.get(neighborhood_data.p_huurw);
-			x.p_ownedByHousingAssociation = row_data.get(neighborhood_data.p_wcorpw);
-			x.p_ownedByOtherLandlords = row_data.get(neighborhood_data.p_ov_hw);
-			x.p_ownershipUnknown = row_data.get(neighborhood_data.p_e_o_w);
-			x.p_housesBuildBefore2000 = row_data.get(neighborhood_data.p_bjj2k);
-			x.p_housesBuildAfter2000 = row_data.get(neighborhood_data.p_bjo2k);
-			x.set_p_multiFamilyHouseholds_perc(row_data.get(neighborhood_data.p_mgezw));
-			x.set_p_singleFamilyHouseholds_perc(row_data.get(neighborhood_data.p_1gezw));
-			
-			//Energie
-			x.p_averageElectricityConsumptionTotal = row_data.get(neighborhood_data.g_ele);
-			/*
-			x.p_averageElectricityConsumptionApartment = row_data.get(neighborhood_data.g_ele_ap);
-			x.p_averageElectricityConsumptionTerraced = row_data.get(neighborhood_data.g_ele_tw);
-			x.p_averageElectricityConsumptionCorner = row_data.get(neighborhood_data.g_ele_hw);
-			x.p_averageElectricityConsumptionSemiDetached = row_data.get(neighborhood_data.g_ele_2w);
-			x.p_averageElectricityConsumptionDetached = row_data.get(neighborhood_data.g_ele_vw);
-			*/
-			x.p_averageGasConsumptionTotal = row_data.get(neighborhood_data.g_gas);
-			/*
-			x.p_averageGasConsumptionApartment = row_data.get(neighborhood_data.g_gas_ap);
-			x.p_averageGasConsumptionTerraced = row_data.get(neighborhood_data.g_tw);
-			x.p_averageGasConsumptionCorner = row_data.get(neighborhood_data.g_gas_hw);
-			x.p_averageGasConsumptionSemiDetached = row_data.get(neighborhood_data.g_gas_2w);
-			x.p_averageGasConsumptionDetached = row_data.get(neighborhood_data.g_gas_vw);
-			*/
-			x.p_percHouseholdsWithDistrictHeating = row_data.get(neighborhood_data.p_stadsv);
-			x.p_averageIncomeHousehold = row_data.get(neighborhood_data.g_hh_sti);
-			/*
-			x.p_companyLocations = row_data.get(neighborhood_data.a_bedv);
-			x.p_companyLocationsA = row_data.get(neighborhood_data.a_bed_a);
-			x.p_companyLocationsBF = row_data.get(neighborhood_data.a_bed_bf);
-			x.p_companyLocationsGI = row_data.get(neighborhood_data.a_bed_gi);
-			x.p_companyLocationsHJ = row_data.get(neighborhood_data.a_bed_hj);
-			x.p_companyLocationsKL = row_data.get(neighborhood_data.a_bed_kl);
-			x.p_companyLocationsMN = row_data.get(neighborhood_data.a_bed_mn);
-			x.p_companyLocationsOQ = row_data.get(neighborhood_data.a_bed_oq);
-			x.p_companyLocationsRU = row_data.get(neighborhood_data.a_bed_ru);
-			*/
-			//Motor vehicles
-			x.p_cars = row_data.get(neighborhood_data.a_pau);
-			x.p_carsBenzine = row_data.get(neighborhood_data.a_bst_b);
-			x.p_carsOther = row_data.get(neighborhood_data.a_bst_nb);
-			x.p_motorBikes = row_data.get(neighborhood_data.a_m2w);
-			
-			x.p_surfaceArea = row_data.get(neighborhood_data.a_opp_ha);
-			x.p_surfaceAreaLand = row_data.get(neighborhood_data.a_lan_ha);
-			x.p_surfaceAreaWater = row_data.get(neighborhood_data.a_wat_ha);
-			
-			x.p_postalCode = row_data.get(neighborhood_data.pst_mvp);
-			x.p_postalCodeAccuracy = row_data.get(neighborhood_data.pst_dekp);
-			
-			x.p_urbanity = row_data.get(neighborhood_data.ste_mvs);
-			
-			
-			//If missing data in dataset is set to -99999, set to 0
-			x.p_inhabitants = f_returnZeroIfDoubleIsSmallerThanZero(x.p_inhabitants);
-			x.p_males = f_returnZeroIfDoubleIsSmallerThanZero(x.p_males);
-			x.p_females = f_returnZeroIfDoubleIsSmallerThanZero(x.p_females);
-			x.p_households = f_returnZeroIfDoubleIsSmallerThanZeroInt(x.p_households);
-			x.p_singlePersonHouseholds = f_returnZeroIfDoubleIsSmallerThanZero(x.p_singlePersonHouseholds);
-			x.p_householdsWithoutChildren = f_returnZeroIfDoubleIsSmallerThanZeroInt(x.p_householdsWithoutChildren);
-			x.p_averageHouseholdSize = f_returnZeroIfDoubleIsSmallerThanZero(x.p_averageHouseholdSize);
-			x.p_populationDensity = f_returnZeroIfDoubleIsSmallerThanZero(x.p_populationDensity);
-			x.p_houses = f_returnZeroIfDoubleIsSmallerThanZero(x.p_houses);
-			x.p_ownerOccupiedHomes = f_returnZeroIfDoubleIsSmallerThanZero(x.p_ownerOccupiedHomes);
-			x.p_rentalProperties = f_returnZeroIfDoubleIsSmallerThanZero(x.p_rentalProperties);
-			x.p_ownedByHousingAssociation = f_returnZeroIfDoubleIsSmallerThanZero(x.p_ownedByHousingAssociation);
-			x.p_ownedByOtherLandlords = f_returnZeroIfDoubleIsSmallerThanZero(x.p_ownedByOtherLandlords);
-			x.p_ownershipUnknown = f_returnZeroIfDoubleIsSmallerThanZero(x.p_ownershipUnknown);
-			x.p_housesBuildBefore2000 = f_returnZeroIfDoubleIsSmallerThanZero(x.p_housesBuildBefore2000);
-			x.p_housesBuildAfter2000 = f_returnZeroIfDoubleIsSmallerThanZero(x.p_housesBuildAfter2000);
-			x.p_percHouseholdsWithDistrictHeating = f_returnZeroIfDoubleIsSmallerThanZero(x.p_percHouseholdsWithDistrictHeating);
-			/*
-			x.p_companyLocations = f_returnZeroIfDoubleIsSmallerThanZero(x.p_companyLocations);
-			x.p_companyLocationsBF = f_returnZeroIfDoubleIsSmallerThanZero(x.p_companyLocationsBF);
-			x.p_companyLocationsGI = f_returnZeroIfDoubleIsSmallerThanZero(x.p_companyLocationsGI);
-			x.p_companyLocationsHJ = f_returnZeroIfDoubleIsSmallerThanZero(x.p_companyLocationsHJ);
-			x.p_companyLocationsKL = f_returnZeroIfDoubleIsSmallerThanZero(x.p_companyLocationsKL);
-			x.p_companyLocationsMN = f_returnZeroIfDoubleIsSmallerThanZero(x.p_companyLocationsMN);
-			x.p_companyLocationsOQ = f_returnZeroIfDoubleIsSmallerThanZero(x.p_companyLocationsOQ);
-			x.p_companyLocationsRU = f_returnZeroIfDoubleIsSmallerThanZero(x.p_companyLocationsRU);
-			*/
-			x.p_cars = f_returnZeroIfDoubleIsSmallerThanZeroInt(x.p_cars);
-			x.p_carsBenzine = f_returnZeroIfDoubleIsSmallerThanZero(x.p_carsBenzine);
-			x.p_carsOther = f_returnZeroIfDoubleIsSmallerThanZero(x.p_carsOther);
-			x.p_motorBikes = f_returnZeroIfDoubleIsSmallerThanZero(x.p_motorBikes);
-			x.p_surfaceArea = f_returnZeroIfDoubleIsSmallerThanZero(x.p_surfaceArea);
-			x.p_surfaceAreaLand = f_returnZeroIfDoubleIsSmallerThanZero(x.p_surfaceAreaLand);
-			x.p_surfaceAreaWater = f_returnZeroIfDoubleIsSmallerThanZero(x.p_surfaceAreaWater);
-			x.p_postalCode = f_returnZeroIfDoubleIsSmallerThanZero(x.p_postalCode);
-			x.p_postalCodeAccuracy = f_returnZeroIfDoubleIsSmallerThanZero(x.p_postalCodeAccuracy);
-			x.p_urbanity = f_returnZeroIfDoubleIsSmallerThanZero(x.p_urbanity);
-			break;
-		}
-	}
-}	]]></Body>
 				</Function>
 				<Function AccessType="default" StaticFunction="false">
 					<ReturnModificator>VOID</ReturnModificator>
@@ -6932,41 +5898,6 @@ return data;
 				<Function AccessType="default" StaticFunction="false">
 					<ReturnModificator>VOID</ReturnModificator>
 					<ReturnType><![CDATA[double]]></ReturnType>
-					<Id>1747232737285</Id>
-					<Name><![CDATA[f_addDataToTimeStackChart]]></Name>
-					<ExcludeFromBuild>true</ExcludeFromBuild>
-					<X>-1100</X><Y>1270</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<Parameter>
-						<Name><![CDATA[dataset]]></Name>
-						<Type><![CDATA[DataSet]]></Type>
-					</Parameter>
-					<Parameter>
-						<Name><![CDATA[color]]></Name>
-						<Type><![CDATA[Color]]></Type>
-					</Parameter>
-					<Parameter>
-						<Name><![CDATA[label]]></Name>
-						<Type><![CDATA[String]]></Type>
-					</Parameter>
-					<Parameter>
-						<Name><![CDATA[timeStackChart]]></Name>
-						<Type><![CDATA[TimeStackChart]]></Type>
-					</Parameter>
-					<Body><![CDATA[datasetForTimestackChart.reset();
-for(int i=0; i<dataset.size(); i++){
-	datasetForTimestackChart.add(dataset.getX(i) - v_startYear, dataset.getY(i));
-}
-
-timeStackChart.addDataSet(datasetForTimestackChart, label, color);
-]]></Body>
-				</Function>
-				<Function AccessType="default" StaticFunction="false">
-					<ReturnModificator>VOID</ReturnModificator>
-					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1747319707639</Id>
 					<Name><![CDATA[f_endRun]]></Name>
 					<X>-310</X><Y>890</Y>
@@ -7032,20 +5963,6 @@ resultsData = null;
 mapAnnualValues = null;
 
 this.deleteSelf();]]></Body>
-				</Function>
-				<Function AccessType="default" StaticFunction="false">
-					<ReturnModificator>VOID</ReturnModificator>
-					<ReturnType><![CDATA[double]]></ReturnType>
-					<Id>1750675604569</Id>
-					<Name><![CDATA[f_test]]></Name>
-					<ExcludeFromBuild>true</ExcludeFromBuild>
-					<X>-850</X><Y>250</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<Body><![CDATA[beta(5, 2, 0, 1)
-normal(0, 1, 0.8, 0.3)]]></Body>
 				</Function>
 				<Function AccessType="default" StaticFunction="false">
 					<ReturnModificator>VOID</ReturnModificator>
@@ -7128,7 +6045,7 @@ for( J_Dwelling d : c_dwellings ){
 		
 		if( selected.size() < targetPerCategory){
 			selected.add(d);
-			d.f_initializeValidationDwellings();
+			d.f_initializeValidationHouseholds();
 			totalSelected++;
 			
 			//traceln("Dwelling " + d.getId() + " fits key " + key);
@@ -7161,59 +6078,6 @@ if (constructionYear < 1980) return 1;
 if (constructionYear < 1996) return 2;
 if (constructionYear < 2010) return 3;
 return 4;]]></Body>
-				</Function>
-				<Function AccessType="default" StaticFunction="false">
-					<ReturnModificator>VOID</ReturnModificator>
-					<ReturnType><![CDATA[double]]></ReturnType>
-					<Id>1765882227111</Id>
-					<Name><![CDATA[f_writeDataToExampleDwellings]]></Name>
-					<ExcludeFromBuild>true</ExcludeFromBuild>
-					<X>-1149</X><Y>278</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<Body><![CDATA[int rowIndex = 2;
-int columnIndex = 1;
-int sheetIndex = 1;
-ef_exampleDwellings.readFile();
-
-for(J_Dwelling d : c_dwellings){
-	if(d.isValidationDwelling()){
-		columnIndex = 1;
-		List<J_AdoptionData> listAdoptionData = d.getAdoptionDataList();
-		//traceln(listAdoptionData.size() + " size adoption data list");
-		int listIndex = 0;
-		for(J_AdoptionData data : listAdoptionData){
-			if(listIndex == 0){
-				ef_exampleDwellings.setCellValue(d.getId(), sheetIndex, rowIndex, columnIndex);
-				columnIndex++;
-				ef_exampleDwellings.setCellValue(d.getDwellingType().toString(), sheetIndex, rowIndex, columnIndex);
-				columnIndex++;
-				ef_exampleDwellings.setCellValue(d.getOwnership().toString(), sheetIndex, rowIndex, columnIndex);
-				columnIndex++;
-				ef_exampleDwellings.setCellValue(d.getConstructionYear(), sheetIndex, rowIndex, columnIndex);
-				columnIndex++;
-				ef_exampleDwellings.setCellValue(d.getHeatingSystem().getType().toString(), sheetIndex, rowIndex, columnIndex);
-				columnIndex++;
-				ef_exampleDwellings.setCellValue(data.getAge(), sheetIndex, rowIndex, columnIndex);
-				columnIndex++;
-			}
-			else {
-				ef_exampleDwellings.setCellValue(data.getType().toString(), sheetIndex, rowIndex, columnIndex);
-				columnIndex++;
-				ef_exampleDwellings.setCellValue(data.getAdoptionCosts(), sheetIndex, rowIndex, columnIndex);
-				columnIndex++;
-				ef_exampleDwellings.setCellValue(data.getPerceivedUtility(), sheetIndex, rowIndex, columnIndex);
-				columnIndex++;
-			}
-			listIndex++;
-		}
-		rowIndex++;
-	}
-}
-ef_exampleDwellings.writeFile();
-//traceln("Has set example dwellings");]]></Body>
 				</Function>
 				<Function AccessType="default" StaticFunction="false">
 					<ReturnModificator>VOID</ReturnModificator>
@@ -9813,40 +8677,6 @@ for (OL_HeatingSystem heatingSystem : OL_HeatingSystem.values()) {
 					<Login><![CDATA[]]></Login>
 					<Password><![CDATA[]]></Password>
 				</Database>
-				<ExcelFile>
-					<Id>1693920301159</Id>
-					<Name><![CDATA[ef_residenceObjects]]></Name>
-					<ExcludeFromBuild>true</ExcludeFromBuild>
-					<X>-859</X><Y>-167</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<ResourceReference>
-						<PackageName><![CDATA[heat_transition_tipping_pathways]]></PackageName>
-						<ClassName><![CDATA[_objects_zwijndrecht.xlsx]]></ClassName>
-					</ResourceReference>
-					<SaveInSnapshot>false</SaveInSnapshot>
-					<LoadOnStartup>false</LoadOnStartup>
-					<SaveOnDispose>false</SaveOnDispose>
-				</ExcelFile>
-				<ExcelFile>
-					<Id>1765882227113</Id>
-					<Name><![CDATA[ef_exampleDwellings]]></Name>
-					<ExcludeFromBuild>true</ExcludeFromBuild>
-					<X>-1149</X><Y>318</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<ResourceReference>
-						<PackageName><![CDATA[heat_transition_tipping_pathways]]></PackageName>
-						<ClassName><![CDATA[_exampleDwellings.xlsx]]></ClassName>
-					</ResourceReference>
-					<SaveInSnapshot>false</SaveInSnapshot>
-					<LoadOnStartup>true</LoadOnStartup>
-					<SaveOnDispose>true</SaveOnDispose>
-				</ExcelFile>
 			</Connectivity>
 			<AgentLinks>
 				<AgentLink>
@@ -10161,69 +8991,6 @@ for (OL_HeatingSystem heatingSystem : OL_HeatingSystem.values()) {
 					<InitializationType>EMPTY</InitializationType>
 					<InitializationDatabaseTableQuery>
 						<Id>1693907379981</Id>
-						<TableReference>
-						</TableReference>
-					</InitializationDatabaseTableQuery>
-					<InitializationDatabaseType>ONE_AGENT_PER_DATABASE_RECORD</InitializationDatabaseType>
-					<QuantityColumn>
-					</QuantityColumn>
-				</EmbeddedObject>
-				<EmbeddedObject>
-					<Id>1704896037038</Id>
-					<Name><![CDATA[tests]]></Name>
-					<ExcludeFromBuild>true</ExcludeFromBuild>
-					<X>-850</X><Y>-280</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<ActiveObjectClass>
-						<PackageName><![CDATA[heat_transition_neighborhood]]></PackageName>
-						<ClassName><![CDATA[Test]]></ClassName>
-					</ActiveObjectClass>
-					<GenericParameterSubstitute>
-						<GenericParameterSubstituteReference>
-							<PackageName><![CDATA[heat_transition_neighborhood]]></PackageName>
-							<ClassName><![CDATA[Test]]></ClassName>
-							<ItemName><![CDATA[1704896037035]]></ItemName>
-						</GenericParameterSubstituteReference>
-					</GenericParameterSubstitute>
-					<Parameters>
-						<Parameter>
-							<Name><![CDATA[parameter]]></Name>
-							<Value Class="CodeValue">
-								<Code><![CDATA[random()]]></Code>
-							</Value>
-						</Parameter>
-					</Parameters>
-					<ReplicationFlag>true</ReplicationFlag>
-					<Replication Class="CodeValue">
-						<Code><![CDATA[100]]></Code>
-					</Replication>
-					<CollectionType>ARRAY_LIST_BASED</CollectionType>
-					<InEnvironment>true</InEnvironment>
-					<InitialLocationType>XYZ</InitialLocationType>
-					<XCode Class="CodeValue">
-						<Code><![CDATA[0]]></Code>
-					</XCode>
-					<YCode Class="CodeValue">
-						<Code><![CDATA[0]]></Code>
-					</YCode>
-					<ZCode Class="CodeValue">
-						<Code><![CDATA[0]]></Code>
-					</ZCode>
-					<ColumnCode Class="CodeValue">
-						<Code><![CDATA[0]]></Code>
-					</ColumnCode>
-					<RowCode Class="CodeValue">
-						<Code><![CDATA[0]]></Code>
-					</RowCode>
-					<LocationNameCode Class="CodeValue">
-						<Code><![CDATA[""]]></Code>
-					</LocationNameCode>
-					<InitializationType>EMPTY</InitializationType>
-					<InitializationDatabaseTableQuery>
-						<Id>1693907379980</Id>
 						<TableReference>
 						</TableReference>
 					</InitializationDatabaseTableQuery>
@@ -11132,49 +9899,6 @@ for (OL_HeatingSystem heatingSystem : OL_HeatingSystem.values()) {
 					<Font>
 						<Name>SansSerif</Name>
 						<Size>20</Size>
-						<Style>1</Style>
-					</Font>
-					<Alignment>LEFT</Alignment>
-				</Text>
-				<Rectangle>
-					<Id>1715077398713</Id>
-					<Name><![CDATA[rectangle1]]></Name>
-					<X>-600</X><Y>-270</Y>
-					<Label><X>10</X><Y>10</Y></Label>
-					<PublicFlag>true</PublicFlag>
-					<PresentationFlag>false</PresentationFlag>
-					<ShowLabel>false</ShowLabel>
-					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
-					<EmbeddedIcon>false</EmbeddedIcon>
-					<Z>0</Z>
-					<ZHeight>10</ZHeight>
-					<LineWidth>1</LineWidth>
-					<LineColor>-16777216</LineColor>
-					<LineMaterial>null</LineMaterial>
-					<LineStyle>SOLID</LineStyle>
-					<Width>340</Width>
-					<Height>180</Height>
-					<Rotation>0.0</Rotation>
-					<FillColor>-983041</FillColor>
-					<FillMaterial>null</FillMaterial>
-				</Rectangle>
-				<Text>
-					<Id>1715077418164</Id>
-					<Name><![CDATA[text1]]></Name>
-					<X>-580</X><Y>-260</Y>
-					<Label><X>0</X><Y>-10</Y></Label>
-					<PublicFlag>true</PublicFlag>
-					<PresentationFlag>false</PresentationFlag>
-					<ShowLabel>false</ShowLabel>
-					<DrawMode>SHAPE_DRAW_2D</DrawMode>
-					<EmbeddedIcon>false</EmbeddedIcon>
-					<Z>0</Z>
-					<Rotation>0.0</Rotation>
-					<Color>-16777216</Color>
-					<Text><![CDATA[Detailed neighborhoods]]></Text>
-					<Font>
-						<Name>SansSerif</Name>
-						<Size>16</Size>
 						<Style>1</Style>
 					</Font>
 					<Alignment>LEFT</Alignment>
@@ -16862,7 +15586,6 @@ f_setMapColor(mapMode);]]></ActionCode>
 				<Variable Class="CollectionVariable">
 					<Id>1739799303259</Id>
 					<Name><![CDATA[c_rentersSocialHousing]]></Name>
-					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>850</X><Y>80</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -16870,7 +15593,7 @@ f_setMapColor(mapMode);]]></ActionCode>
 					<ShowLabel>true</ShowLabel>
 					<Properties SaveInSnapshot="true" AccessType="public" StaticVariable="false">
 						<CollectionClass><![CDATA[ArrayList]]></CollectionClass>
-						<ElementClass><![CDATA[J_Renter]]></ElementClass>
+						<ElementClass><![CDATA[J_Household]]></ElementClass>
 						<ValueElementClass><![CDATA[String]]></ValueElementClass>
 					</Properties>
 
@@ -16878,7 +15601,6 @@ f_setMapColor(mapMode);]]></ActionCode>
 				<Variable Class="CollectionVariable">
 					<Id>1739799322343</Id>
 					<Name><![CDATA[c_rentersLandlords]]></Name>
-					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>850</X><Y>100</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -16886,7 +15608,7 @@ f_setMapColor(mapMode);]]></ActionCode>
 					<ShowLabel>true</ShowLabel>
 					<Properties SaveInSnapshot="true" AccessType="public" StaticVariable="false">
 						<CollectionClass><![CDATA[ArrayList]]></CollectionClass>
-						<ElementClass><![CDATA[J_Renter]]></ElementClass>
+						<ElementClass><![CDATA[J_Household]]></ElementClass>
 						<ValueElementClass><![CDATA[String]]></ValueElementClass>
 					</Properties>
 
@@ -16909,6 +15631,7 @@ f_setMapColor(mapMode);]]></ActionCode>
 				<Variable Class="CollectionVariable">
 					<Id>1741626271704</Id>
 					<Name><![CDATA[c_dwellingsSocialHousing]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>850</X><Y>120</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -16924,6 +15647,7 @@ f_setMapColor(mapMode);]]></ActionCode>
 				<Variable Class="CollectionVariable">
 					<Id>1741626271706</Id>
 					<Name><![CDATA[c_dwellingsLandlords]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>850</X><Y>140</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -16939,6 +15663,7 @@ f_setMapColor(mapMode);]]></ActionCode>
 				<Variable Class="CollectionVariable">
 					<Id>1753107571481</Id>
 					<Name><![CDATA[c_SHADwellings_by_postcode]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>-440</X><Y>280</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -16948,6 +15673,21 @@ f_setMapColor(mapMode);]]></ActionCode>
 						<CollectionClass><![CDATA[HashMap]]></CollectionClass>
 						<ElementClass><![CDATA[String]]></ElementClass>
 						<ValueElementClass><![CDATA[ArrayList<J_Dwelling>]]></ValueElementClass>
+					</Properties>
+
+				</Variable>
+				<Variable Class="CollectionVariable">
+					<Id>1771944228789</Id>
+					<Name><![CDATA[c_SHAHouseholdsPerPostalCode]]></Name>
+					<X>-440</X><Y>260</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" AccessType="public" StaticVariable="false">
+						<CollectionClass><![CDATA[ArrayList]]></CollectionClass>
+						<ElementClass><![CDATA[J_SocialHousingBlock]]></ElementClass>
+						<ValueElementClass><![CDATA[String]]></ValueElementClass>
 					</Properties>
 
 				</Variable>
@@ -17294,6 +16034,7 @@ v_hybridHeatPumps_perc = v_hybridHeatPumps_nb / households;
 					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1708544215015</Id>
 					<Name><![CDATA[f_colorGISRegionToHeatMethod]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>-440</X><Y>440</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -17710,6 +16451,7 @@ v_districtHeating_perc = v_districtHeating_nb / households;
 					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1741109304629</Id>
 					<Name><![CDATA[f_countDwellingHeatingMethods]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>-440</X><Y>420</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -17791,6 +16533,7 @@ this.deleteSelf();]]></Body>
 					<ReturnType><![CDATA[OL_HeatingSystem]]></ReturnType>
 					<Id>1753111833763</Id>
 					<Name><![CDATA[f_getHouseholdDefaultHeatingSystem1]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>-430</X><Y>110</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -18995,6 +17738,22 @@ import java.util.function.Function;
 						</ParameterEditor>
 					</Properties>                 
 				</Variable>
+				<Variable Class="CollectionVariable">
+					<Id>1771937931572</Id>
+					<Name><![CDATA[c_SHADwellings_by_postcode]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
+					<X>60</X><Y>300</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" AccessType="public" StaticVariable="false">
+						<CollectionClass><![CDATA[HashMap]]></CollectionClass>
+						<ElementClass><![CDATA[String]]></ElementClass>
+						<ValueElementClass><![CDATA[ArrayList<J_Dwelling>]]></ValueElementClass>
+					</Properties>
+
+				</Variable>
 			</Variables>
 			<Functions>
 				<Function AccessType="default" StaticFunction="false">
@@ -19043,11 +17802,19 @@ else {
 
 boolean triggerDistrictHeating = false;
 //nbh.f_executeSocialHousingPolicy();
+if(nbh.p_policyPlan != null && if nbh.p){
+	for(J_SocialHousingBlock shaPerPostalCode : c_SHAHouseholdsPerPostalCode){
+		if( shaPerPostalCode.f_hasTrigger() ){
+			shaPerPostalCode.installNewHeatingMethodInHouseholds(bestType);
+		}
+	}
 	
 if(nbh.p_policyPlan != null){
 	if(nbh.p_policyPlanYear == main.v_year){
 		for(J_Household renterSHA : nbh.c_rentersSocialHousing){
-			ho.getDwelling().f_installSelectedHeatingMethod(p_policyPlan);
+			if(renterSHA.f_hasEndOfLifeTrigger()){
+				renterSHA.getDwelling().f_installSelectedHeatingMethod(p_policyPlan);
+			}
 		}
 	}
 }
@@ -19112,7 +17879,8 @@ if(nbh.p_policyPlan != null){
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
-					<Body><![CDATA[this.deleteSelf();]]></Body>
+					<Body><![CDATA[c_SHAHouseholdsPerPostalCode.clear();
+this.deleteSelf();]]></Body>
 				</Function>
 				<Function AccessType="default" StaticFunction="false">
 					<ReturnModificator>VOID</ReturnModificator>
@@ -19124,100 +17892,14 @@ if(nbh.p_policyPlan != null){
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
-					<Body><![CDATA[//Per postal code update heating methods
-for(ArrayList<J_Dwelling> SHADwellingsInPostcode : main.c_SHADwellings_by_postcode.values()){
-		
-	double averageHMAge = average(SHADwellingsInPostcode, x->x.getHeatingSystem().getAge());
-	int countDH = count(SHADwellingsInPostcode, x->x.getHeatingSystem().getType() == DISTRICT_HEATING);
-	/*
-	if(postcode.equals("2591TX")){
-		
-		Map<OL_HeatingSystem, Long> heatingSystemCounts = SHADwellingsInPostcode.stream()
-		    .map(d -> d.getHeatingSystem().getType())
-		    .collect(Collectors.groupingBy(
-		        Function.identity(),
-		        Collectors.counting()
-		    ));
-		/*    
-		for (Map.Entry<OL_HeatingSystem, Long> entry : heatingSystemCounts.entrySet()) {
-			System.out.println("Heating type: " + entry.getKey() + " → Count: " + entry.getValue());
-		} */
-				
-		/*
-		traceln("PC 2591TX age = " + averageHMAge + " count DH = " + countDH);
-	}
-	*/
-	
-	
-	int lifetime = 15;
-	if((double) countDH / SHADwellingsInPostcode.size() > 0.5){
-		lifetime = 35;
-	}
-	
-	if(averageHMAge >= lifetime){		
-
-		//Aggregating costs of all SHA dwellings in PC6
-		HashMap<OL_HeatingSystem, Double> totalHeatingSystemCosts = new HashMap<>();
-		
-		for( OL_HeatingSystem hs : OL_HeatingSystem.values()){
-			totalHeatingSystemCosts.put(hs, 0.0);
-		}
-		
-		for(J_Dwelling d : SHADwellingsInPostcode){
-			
-			d.f_setHeatingSystemOptions(main.c_heatingSystemOptions);
-			d.f_calculateHeatingSystemOptionsEAC();
-			
-			for(J_HeatingSystemOptionsLocal hsol : d.getHeatingSystemMap().values()){
-				OL_HeatingSystem type = hsol.getType();
-				double currentDwellingCosts = totalHeatingSystemCosts.get(type);
-				totalHeatingSystemCosts.put(type, currentDwellingCosts + hsol.getEAC()); 
-				
-			}
-		}
-		
-		//2. Rank costs heating method
-		// Create a list from the entries of the map
-		List<OL_HeatingSystem> rankedHeatingTypes = totalHeatingSystemCosts.entrySet().stream()
-		    .sorted(Map.Entry.comparingByValue()) 						// sort by cost (ascending)
-		    .map(Map.Entry::getKey)               						// extract the type only
-		    .collect(Collectors.toList());
-		
-		// Optional: print or use the sorted list
-		/*
-		if(postcode.equals("2591TX")){
-			for (OL_HeatingSystem type : rankedHeatingTypes) {
-		     traceln("Heating type ranked list PC6 2591TX: " + type + " | Cost: " + totalHeatingSystemCosts.get(type));
-		     
-			}
-		}*/
-
-		
-		//3.Adopt
-		for(J_Dwelling d : SHADwellingsInPostcode){
-			J_HeatingSystemOptionsLocal hsol = d.f_getFirstPossibleHeatingSystemOption(rankedHeatingTypes);
-			d.f_installSelectedHeatingMethod(hsol);
-		}
-		/*
-		OL_HeatingSystem cheapestType = null;
-		double lowestCost = Double.MAX_VALUE;
-		
-		for (Map.Entry<OL_HeatingSystem, Double> entry : totalHeatingSystemCosts.entrySet()) {
-		    OL_HeatingSystem type = entry.getKey();
-		    double cost = entry.getValue();
-		
-		    if (cost < lowestCost) {
-		        lowestCost = cost;
-		        cheapestType = type;
-		    }
-		}	*/
-		
-		
-	
+					<Body><![CDATA[for(J_SocialHousingBlock shaPerPostalCode : c_SHAHouseholdsPerPostalCode){
+	if( shaPerPostalCode.f_hasTrigger() ){
+		shaPerPostalCode.getAverageHeatingSystemOptionsEAC();
+		OL_HeatingSystem bestType = shaPerPostalCode.getTopRankedEACOption();
+		shaPerPostalCode.installNewHeatingMethodInHouseholds(bestType);
 	}
 }
-	
-//dwelling.f_installNewHeatingMethod();
+
 ]]></Body>
 				</Function>
 			</Functions>
@@ -22095,9 +20777,6 @@ catch (IOException e) {
 						</Parameter>
 						<Parameter>
 							<Name><![CDATA[p_simultaneityHeatPump]]></Name>
-						</Parameter>
-						<Parameter>
-							<Name><![CDATA[p_testPopulationSize]]></Name>
 						</Parameter>
 						<Parameter>
 							<Name><![CDATA[p_modeFullNetherlands]]></Name>
@@ -26626,9 +25305,6 @@ chart1.addDataSet( , format( root.p_innovationCoefficient ), color, true, Chart.
 				<Id>1704794561362</Id>
 			</FreeformParamValue>
 			<FreeformParamValue>	
-				<Id>1704896138407</Id>
-			</FreeformParamValue>
-			<FreeformParamValue>	
 				<Id>1708543855343</Id>
 			</FreeformParamValue>
 			<FreeformParamValue>	
@@ -26792,10 +25468,6 @@ chart1.addDataSet( , format( root.p_innovationCoefficient ), color, true, Chart.
 			</RangeVariationParamValue>
 			<RangeVariationParamValue>	
 				<Id>1704794561362</Id>
-				<Type>FIXED</Type>
-			</RangeVariationParamValue>
-			<RangeVariationParamValue>	
-				<Id>1704896138407</Id>
 				<Type>FIXED</Type>
 			</RangeVariationParamValue>
 			<RangeVariationParamValue>	
@@ -27020,11 +25692,11 @@ import java.util.EnumMap;
 public class J_Household {
 	//Household characteristics
 	private J_Dwelling dwelling;	
-	public Random random;						// Use main instance of random
-	private Main main;
 	private OL_HouseholdOwnership ownership;
     private Map<OL_HeatingSystem, J_HeatingSystemOption> heatingSystemOptions;
 	
+    private boolean validationHousehold;
+	private List<J_AdoptionData> adoptionDataList;
     /**
      * Default constructor
      */
@@ -27033,13 +25705,41 @@ public class J_Household {
 		this.dwelling = dwelling;
 	}
 	
+	//Install selected heating method
+  	public void f_installSelectedHeatingMethod(OL_HeatingSystem type) {
+  		J_Dwelling d = getDwelling();
+  		
+  		//Remove old heating system
+  		d.getMain().mapAnnualValues.get(d.getHeatingSystem().getType()).get(ownership).addRemovedThisYear();
+  		
+  		//Set new
+  		d.setHeatingSystem(new J_HeatingSystem(type));
+  		
+  		//Store value
+  		J_AnnualValues anVal = getDwelling().getMain().mapAnnualValues.get(type).get(ownership);
+  		J_HeatingSystemOption selectedHS = heatingSystemOptions.get(type);
+  		if(ownership != PRIVATELY_OWNED) {
+       		anVal.addRentersInstalled(selectedHS.getEAC());
+       	}
+  		else {
+  			anVal.addHomeOwnerInstalled(selectedHS);
+  		}
+  	}	
+	
 	public void getHeatingSystemOptionsEAC() { //Note this only works because never storing this for more than a year, recalculting EAC every year anyway
 		if(heatingSystemOptions == null) {
 			heatingSystemOptions = new EnumMap<>(OL_HeatingSystem.class);
 			
 			for (OL_HeatingSystem type : OL_HeatingSystem.values()) {
 				double EAC = f_getEAC(this.dwelling, type);
-			    heatingSystemOptions.put(type, new J_HeatingSystemOption(EAC));
+				boolean isPossible = this.dwelling.f_getHeatingMethodPossibility(type);
+			    heatingSystemOptions.put(type, new J_HeatingSystemOption(EAC, isPossible));
+			    
+			    //Store value for annual totals
+			    J_AnnualValues anVal = getDwelling().getMain().mapAnnualValues.get(type).get(ownership);
+		       	if(ownership != PRIVATELY_OWNED) {
+		       		anVal.addRentersConsidered(EAC);
+		       	}
 			}
 		}
 	}
@@ -27063,7 +25763,7 @@ public class J_Household {
     
     public double f_getEAC(J_Dwelling dwelling, OL_HeatingSystem type) {
 		
-    	J_HeatingSystemOptionsGlobal heatingSystemGlobalData = dwelling.getMain().c_heatingSystemOptions.get(type);
+    	J_HeatingSystemOptionsGlobal heatingSystemGlobalData = dwelling.getMain().heatingSystemOptionsGlobalData.get(type);
     	
     	//Get global values
 		double investmentCostsHeatDistributionSystem = heatingSystemGlobalData.getInvestmentCostsHeatDistributionSystem();
@@ -27141,36 +25841,36 @@ public class J_Household {
 		return EAC;
 	}
 
-    
-    
-    /*
-    public void f_calculateNormalizedPreference() {
-    	for( J_HeatingSystemOptionsLocal hso : this.heatingSystemOptions) {
-    		hso.f_setPreferenceScore(sustainabilityAttitude_norm);
+  //2. Check if end of lifetime trigger
+    public boolean f_hasEndOfLifeTrigger() {   	
+    	//Adopt only if end of lifetime
+    	J_Dwelling d = getDwelling();
+    	if(d.getHeatingSystem().getAge() >= d.getMain().heatingSystemOptionsGlobalData.get(d.getHeatingSystem().getType()).getLifetime()) {
+    		return true;
     	}
-    }*/
-	/*
-	//Calculate EAC
-	public void f_calculateHeatingSystemOptionsEAC() {
-		dwelling.f_calculateHeatingSystemOptionsEAC();
-	}
-    */
-
-     
-
-    /*
-    if( heatingSystemType == ELECTRIC_HEAT_PUMP && neighborhood.v_hasGridCongestion == true) {
-		updatedSubjectiveNormContact = contactHeatingSystem.getSubjectiveNorm() + 
-	}*/
+    	return false;
+    }
     
+    
+    public void f_initializeValidationHouseholds() {
+    	validationHousehold = true;
+		adoptionDataList = new ArrayList<J_AdoptionData>();
+		J_HeatingSystem hs = getDwelling().getHeatingSystem();
+		OL_HeatingSystem type = hs.getType();
+    	int age = hs.getAge();
+    	J_AdoptionData adoptionData = new J_AdoptionData(type, age);
+		adoptionDataList.add(adoptionData);
+    }
+    
+    public boolean isValidationHousehold() {
+    	return this.validationHousehold;
+    }
+
+        
     /**Setter methods
      * 
      */
-    /*
-    public void setNewHeatingMethodTriggered(boolean hasTrigger) {
-    	newHeatingMethodTriggered = hasTrigger;
-    }
-    */
+
     /**Getter methods
      * 
      */
@@ -27178,40 +25878,13 @@ public class J_Household {
     	return dwelling;
     }
     
-    public Main getMain() {
-    	return main;
-    }
-    /*
-    public boolean f_isNewHeatingMethodTriggered() {
-    	return newHeatingMethodTriggered;
-    }*/
-    /*
-    public GZ_Neighborhood getNeighborhood() {
-        return neighborhood;
-    }
-
     public OL_HouseholdOwnership getOwnership() {
-        return ownership;
+    	return ownership;
     }
-
-    public J_HeatingSystem getHeatingSystem() {
-        return heatingSystem;
-    }
-
-    public int getId() {
-        return id;
-    }
-    */
-    /*
-    public List<J_HeatingSystemOptions> getRankedHeatingSystemOptions() {
-    	return rankedHeatingSystemOptions;
-    }
-    */
     
     public Map<OL_HeatingSystem, J_HeatingSystemOption> getHeatingSystemOptions() {
         return heatingSystemOptions;
     }
-    
 
 	@Override
 	public String toString() {
@@ -27630,85 +26303,57 @@ public class J_Municipality {
 			<Text><![CDATA[/**
  * J_Dwelling
  */	
-import com.anylogic.engine.database.*;
-import java.util.EnumMap;
-import java.util.Map;
-import java.util.Comparator;
-
 
 public class J_Dwelling {
 	//Dwelling characteristics
 	private int id;
-	//private int numid;
-	//private int pid;
-	//private int vid;
 	private String postalCode6;
 	private String energyLabel;
 	private int energyLabelNumber;
 	private int constructionYear;
 	private double livingArea_m2;
 	private OL_DwellingType dwellingType;
-	//private double householdEquivalent;
-	//private String neighborhoodCode;
 	private GZ_Neighborhood neighborhood;
-	private OL_HouseholdOwnership ownership;
+	//private OL_HouseholdOwnership ownership;
 	
 	//Heating system characteristics
 	private J_HeatingSystem heatingSystem;
-	//private Map<OL_HeatingSystem, J_HeatingSystemOptionsLocal> heatingSystemMap = new HashMap<>();
-	//private LinkedHashMap<OL_HeatingSystem, J_HeatingSystemOptionsLocal> heatingSystemMap; // = new LinkedHashMap<>();
 	private double electricityDemand_kWh;
 	private double naturalGasDemand_kWh;
 	private double heatDemand_kWh;
-	private boolean isDistrictHeatingPreferred;
-	//private boolean endOfLifeTrigger;
-	//private boolean opportunityTrigger;
 	
 	private int yearLastRenovation;
 	private boolean hasLowTemperatureInhouseHeatDistribution;
-	private boolean hasDistrictHeatingGrid;
 	private boolean isInBlock;
 	
-	private boolean validationDwelling;
-	private List<J_AdoptionData> adoptionDataList;
-	
-	private Main main;
+	public Main main;
     
 	
 	/**
      * Default constructor
      */
-    public J_Dwelling(int numid, int pid, int vid, String postalCode6, double oppervlakte, int pand_bouwjaar, String energieklasse, String dwellingType, String buurtcode, OL_HouseholdOwnership ownership, Main main, int idCounter) {
-		//this.numid = numid;
-		//this.pid = pid;
-		//this.vid = vid;
+    public J_Dwelling(String postalCode6, double oppervlakte, int pand_bouwjaar,
+    		String energieklasse, String dwellingType, String buurtcode, int idCounter, Main main) {
+    	this.id = idCounter;
 		this.postalCode6 = postalCode6;
-		this.livingArea_m2 = oppervlakte;
-		if(livingArea_m2 > 500) {
-			livingArea_m2 = 500;
-		}
-		//this.householdEquivalent = woningequivalent;
 		this.constructionYear = pand_bouwjaar;
-		
-		//this.neighborhoodCode = buurtcode;
-		this.ownership = ownership;
+		this.livingArea_m2 = oppervlakte;
+		if(livingArea_m2 > 500) { livingArea_m2 = 500; } //Bound to 500m2
 		this.main = main;
-		this.id = idCounter;
 		
 		f_setDwellingType(dwellingType);
 		f_setDefaultEnergyLabel(energieklasse);
 		f_setAnnualEnergyDemandFromVestaMAIS();
 	}
     
-    public void f_setDwellingData(GZ_Neighborhood nbh, OL_HeatingSystem heatingSystemType , boolean hasDistrictHeatingGrid,  boolean isInBlock) {
+    public void f_setDwellingData(int year, GZ_Neighborhood nbh, OL_HeatingSystem heatingSystemType , boolean hasDistrictHeatingGrid,  boolean isInBlock, OL_HouseholdOwnership ownership) {
 		this.neighborhood = nbh;
 		this.isInBlock = isInBlock;
     	
     	// Initialize heating system based on type 
-    	
-    	// Get random age for heating systemGive random age to heating system
-		int ageHeatingSystem = main.v_year - yearLastRenovation;
-		int heatingSystemLifetime = main.c_heatingSystemOptions.get(heatingSystemType).getLifetime();
+    	   	// Get random age for heating systemGive random age to heating system
+		int ageHeatingSystem = year - yearLastRenovation;
+		int heatingSystemLifetime = main.heatingSystemOptionsGlobalData.get(heatingSystemType).getLifetime();
 		if(ageHeatingSystem >= heatingSystemLifetime) {
 			ageHeatingSystem = (int) (Math.random() * (heatingSystemLifetime + 1));
 		}
@@ -27718,7 +26363,7 @@ public class J_Dwelling {
     	//Add to count
     	main.mapAnnualValues.get(heatingSystemType).get(ownership).addInstalledThisYear();
     	//this.heatingSystemInstalledThisYear = heatingSystem;
-    	this.hasLowTemperatureInhouseHeatDistribution = main.c_heatingSystemOptions.get(heatingSystemType).getRequiresLowTemperatureInhouseHeatDistribution();
+    	this.hasLowTemperatureInhouseHeatDistribution = main.heatingSystemOptionsGlobalData.get(heatingSystemType).getRequiresLowTemperatureInhouseHeatDistribution();
     	
     	//f_initializeHeatingSystemOptions(heatingSystemOptionsInput, hasDistrictHeatingGrid, isInBlock, heatingSystem);
     }
@@ -27755,91 +26400,32 @@ public class J_Dwelling {
     	heatingSystem.updateAge();
 	}   
     
-    //2. Check if end of lifetime trigger
-    public boolean f_hasEndOfLifeTrigger() {   	
-    	//Adopt only if end of lifetime
-    	if(heatingSystem.getAge() >= main.c_heatingSystemOptions.get(heatingSystem.getType()).getLifetime()) {
-    		f_checkOrCreateHeatingSytemMap();
-    		return true;
-    	}
-    	return false;
-    }
-    
-    
-
-  //Install selected heating method
-  	public void f_installSelectedHeatingMethod(OL_HeatingSystem type) {
-  		//Remove old heating system
-  		main.mapAnnualValues.get(heatingSystem.getType()).get(ownership).addRemovedThisYear();
-  		
-  		//Set new
-  		heatingSystem = new J_HeatingSystem(type);
-  		
-  		if( validationDwelling ) {
-  			adoptionDataList.add(f_addAdoptionToExcel(heatingSystem));
-  		}
-	
-	//Get top preffered heating method
-	/*
-	public void f_installSelectedHeatingMethod(List<OL_HeatingSystem> rankedList) {
-		//Get top ranked HM which is possible
-		
-		OL_HeatingSystem selectedHeatingSystem = null;
-
-		for (OL_HeatingSystem preferredHS : rankedList) {
-		    if (heatingSystemMap.get(preferredHS).getIsPossible()) {
-		        selectedHeatingSystem = preferredHS;
-		        break; // Exit loop once a possible heating system is found
-		    }
-		}
-		
-		//Check if a new heating system has been found
-		if (selectedHeatingSystem == null) {
-		    throw new IllegalStateException("No possible heating system found in the ranked list.");
-		}
-				
-		//Install HM
-		f_installSelectedHeatingMethod(selectedHeatingSystem);
-	}*/
-	
 	//
-	
-	public void f_checkOrCreateHeatingSytemMap() {
-		if( heatingSystemMap == null) {
-			f_setHeatingSystemOptions(main.c_heatingSystemOptions);
-		}
-	}
-	
-	
-	public boolean isHeatingSystemPossible(OL_HeatingSystem type) {
-		if (this.isInBlock && type == OL_HeatingSystem.NATURAL_GAS_BLOCK)
-	        return false;
+  	public boolean f_getHeatingMethodPossibility(OL_HeatingSystem type) {
+  		// Obligation to connect to district heating
+  		if (main.p_connectionObligationNewDH && neighborhood.v_hasDistrictHeatingGrid) {
+  			return type == DISTRICT_HEATING;
+  		}
 
-	    if (neighborhood.v_hasGridCongestion && type == OL_HeatingSystem.ELECTRIC_HEAT_PUMP)
-	        return false;
+  		// District heating only possible if grid exists
+  		if (type == DISTRICT_HEATING) {
+  			return neighborhood.v_hasDistrictHeatingGrid;
+  		}
 
-	    if (neighborhood.v_hasDistrictHeatingGrid && type == OL_HeatingSystem.DISTRICT_HEATING)
-	        return false;
+  		    // Block heat pump under congestion
+  		if (type == ELECTRIC_HEAT_PUMP 
+  		    && getMain().p_congestionBlock 
+  		    && neighborhood.v_hasGridCongestion) {
+  		    return false;
+  		}
 
-	    return true;
-	}
-	
-	//Set DH possible
-    public void f_setDHPossible() {
-    	J_HeatingSystemOptionsLocal hsol = heatingSystemMap.get(DISTRICT_HEATING);
-		hsol.f_setPossible(true);
-    }
-    
-    public void f_setObligedDH() {
-    	//Update local heating system options
-    	heatingSystemMap.values().forEach(x->x.f_setPossible(false));
-    	f_setDHPossible();
-    	
-    	//J_HeatingSystemOptionsLocal requiredHeatingSystem = heatingSystemMap.get(DISTRICT_HEATING);
-    	OL_HeatingSystem heatingSystem = DISTRICT_HEATING;
-    	f_installSelectedHeatingMethod(heatingSystem);
- 
-    }
+  		// Block gas block system if not in a block
+  		if (type == NATURAL_GAS_BLOCK && !isInBlock) {
+  		    return false;
+  		}
+
+  		return true;
+  	}
     
     
     public void f_setDefaultEnergyLabel(String label) {
@@ -28067,51 +26653,16 @@ public class J_Dwelling {
     	return labelLetter;
     } 
     
-    public J_AdoptionData f_addToAdoptionData(J_HeatingSystem heatingSystem) {
-    	OL_HeatingSystem type = heatingSystem.getType();
-    	int age = heatingSystem.getAge();
-    	double perceivedUtility = heatingSystem.getPerceivedUtility();
-    	/*
-    	if(perceivedUtility < 0.05 && ownership == PRIVATELY_OWNED) {
-    		traceln("Perceived util " + perceivedUtility);
-    	}*/
-    	double costs = heatingSystemMap.get(type).getEAC();
-    	J_AdoptionData adoptionData = new J_AdoptionData(type, age, perceivedUtility, costs);
-    	return adoptionData;
-    }
     
-    public void f_initializeValidationDwellings() {
-    	validationDwelling = true;
-		adoptionDataList = new ArrayList<J_AdoptionData>();
-		adoptionDataList.add(f_addToAdoptionData(heatingSystem));
-    }
-    
-    public boolean isValidationDwelling() {
-    	return this.validationDwelling;
-    }
-
-    public void f_addToAnnualValues (J_HeatingSystemOptionsLocal hsol) {
-    	OL_HeatingSystem heatingSystemType = hsol.getType();
-    	//add heating system to annual values
-    	J_AnnualValues anVal = main.mapAnnualValues.get(heatingSystemType).get(ownership);
-    	anVal.addHeatingSystem(hsol);
-    }
-    /*
-    public void f_addToCount(OL_HeatingSystem heatingSystemType) {
-    	main.mapAnnualCount.get(heatingSystemType).merge(ownership, 1, Integer::sum);
-    }
-	
-    public void f_countRemoval(OL_HeatingSystem heatingSystemType) {
-    	main.mapHeatingSystemsRemoved.get(heatingSystemType).merge(ownership, 1, Integer::sum);
-    }*/
-
-   
     
  
     /**Setter methods
      * 
      */
-  
+    public void setHeatingSystem( J_HeatingSystem heatingSystem) {
+    	this.heatingSystem = heatingSystem;
+    }
+    
     public void setElectricityDemand_kWh( double elecDemand_kWh) {
     	this.electricityDemand_kWh = elecDemand_kWh;
     }
@@ -28138,10 +26689,6 @@ public class J_Dwelling {
         return neighborhood;
     }
 
-    public OL_HouseholdOwnership getOwnership() {
-        return ownership;
-    }
-
     public J_HeatingSystem getHeatingSystem() {
         return heatingSystem;
     }
@@ -28152,10 +26699,6 @@ public class J_Dwelling {
     
     public double getHeatDemand_kWh() {
     	return heatDemand_kWh;
-    }
-    
-    public boolean getIsDistrictHeatingPreferred( ) {
-    	return isDistrictHeatingPreferred;
     }
     
     public Main getMain() {
@@ -28200,14 +26743,14 @@ public class J_Dwelling {
     	return constructionYear;
     }
     
-    public List<J_AdoptionData> getAdoptionDataList(){
-    	return adoptionDataList;
+    public boolean isInBlock() {
+    	return isInBlock;
     }
     
     
 	@Override
 	public String toString() {
-		return "Dwelling (ID: " + id + " heating system, " + heatingSystem + ", ownership " + ownership + ", nbh name " + neighborhood.p_neighborhood + ", nbh index " + neighborhood.getIndex();
+		return "Dwelling (ID: " + id + " heating system, " + heatingSystem + ", nbh name " + neighborhood.p_neighborhood + ", nbh index " + neighborhood.getIndex();
 	}
 
 
@@ -28240,31 +26783,22 @@ public class J_HomeOwner extends heat_transition_tipping_pathways.J_Household {
     public J_HomeOwner(J_Dwelling dwelling) {
         // Call the constructor of J_Household and pass the dwelling object
         super(dwelling);
-        //this.dwelling = dwelling;
-        
         // Initialize additional behavior or properties for J_HomeOwner
         f_setAttitude();
     }
     
 	public void f_setAttitude() {
-		//Set attitude
-    	//TODO: improve setting attitude
+		//Set attitude according to Beta distribution The Beta distribution is a continuous distribution that has both upper andlower finite bounds. Because many real situations can be bounded in this way,the Beta distribution can be used empirically to estimate the actualdistribution before much data is available.
     	double min = 0;
     	double max = 1;
     	double shift = 0.8;
     	double stretch = 0.2;
-    	//J_Dwelling d = dwelling;
-    	//Main main = dwelling.getMain();
-    	//Random r = dwelling.getMain().randomInstance;
     	sustainabilityAttitude = beta(5, 2, 0, 1, getDwelling().getMain().randomInstance);
-    	//sustainabilityAttitude = normal(min, max, shift, stretch, getDwelling().getMain().randomInstance);
-    	//statusQuoScore = normal(0, 1, 0.5, 0.15, main.randomInstance); 
-    	//f_setInitialAttitude();
     }
 	
 	//Check triggers - first step of adoption
 	public boolean hasTrigger() {
-	 	if( getDwelling().f_hasEndOfLifeTrigger() || f_hasOpportunityTriggerTimeCondition() ){
+	 	if( f_hasEndOfLifeTrigger() || f_hasOpportunityTriggerTimeCondition() ){
 	   		return true;
 	   	}
 	   	else return false; 
@@ -28273,16 +26807,16 @@ public class J_HomeOwner extends heat_transition_tipping_pathways.J_Household {
 	//Opportunity based trigger
 	public void f_adoptNewHeatingSystem() {
 		//If end of life install top selected
-		if( getDwelling().f_hasEndOfLifeTrigger() ) {
+		if( f_hasEndOfLifeTrigger() ) {
 			OL_HeatingSystem bestRankedHSType = getTopRankedUtilityOption();
-			getDwelling().f_installSelectedHeatingMethod(bestRankedHSType);
+			f_installSelectedHeatingMethod(bestRankedHSType);
 			getHeatingSystemOptions().clear();
 		}
 		
 		else if( f_hasOpportunityTriggerTimeCondition() ) {
 			OL_HeatingSystem bestRankedHSType = getTopRankedUtilityOption();
 			if( getDwelling().getHeatingSystem().getType() != bestRankedHSType) {
-				getDwelling().f_installSelectedHeatingMethod(bestRankedHSType);
+				f_installSelectedHeatingMethod(bestRankedHSType);
 				getHeatingSystemOptions().clear();
 			}
 	    }
@@ -28293,7 +26827,7 @@ public class J_HomeOwner extends heat_transition_tipping_pathways.J_Household {
 	public boolean f_hasOpportunityTriggerTimeCondition() {
 		J_Dwelling d = getDwelling();
 		int HSAge = d.getHeatingSystem().getAge();
-		int HSLifetime = getMain().c_heatingSystemOptions.get(d.getHeatingSystem().getType()).getLifetime();
+		int HSLifetime = d.getMain().heatingSystemOptionsGlobalData.get(d.getHeatingSystem().getType()).getLifetime();
 			
 	    if(d.getHeatingSystem().getAge() / HSLifetime > 0.75 ) { //At 3/4th of lifetime
 	    	return true;
@@ -28310,11 +26844,11 @@ public class J_HomeOwner extends heat_transition_tipping_pathways.J_Household {
 			OL_HeatingSystem type = entry.getKey();
 			J_Dwelling d = getDwelling();
 			
-			if( !d.isHeatingSystemPossible(type)) {
+			if( !d.f_getHeatingMethodPossibility(type)) {
 				continue;
 			}
 			else {
-				J_HeatingSystemOptionsGlobal hsog = getMain().c_heatingSystemOptions.get(type);
+				J_HeatingSystemOptionsGlobal hsog = d.getMain().heatingSystemOptionsGlobalData.get(type);
 				
 				double weight_affordability = 0.6;
 				double weight_effort = 0.3;
@@ -28361,6 +26895,9 @@ public class J_HomeOwner extends heat_transition_tipping_pathways.J_Household {
 				if(hso.getPerceivedUtility() == 0) {
 					traceln("In hh " + getDwelling().getId() + " initial utility of HSO " + hso.getType() + " utility = " + hso.getPerceivedUtility() + ", intention = " + hso.getIntention() + ", PBC = " + hso.getPBC());
 				}*/
+				//Store value for annual totals
+			    J_AnnualValues anVal = getDwelling().getMain().mapAnnualValues.get(type).get(getOwnership());
+		        anVal.addHomeOwnerConsidered(hsol);
 			}
 		}
 	}
@@ -28381,48 +26918,8 @@ public class J_HomeOwner extends heat_transition_tipping_pathways.J_Household {
   		return bestType;
   	}
 	
-	/*
-    public void updateDistrictHeatingPreferenceByUtility() {
-        J_HeatingSystemOptionsLocal best = getBestByUtility();
-        if(best != null && best.getType() == OL_HeatingSystem.DISTRICT_HEATING) {
-        	isDistrictHeatingPreferred = true;
-        }
-        else {
-        	isDistrictHeatingPreferred = false;
-        }
-    }*/
-	
-	
-   /*
-    //2. Check if end of lifetime and adopt new heating system
-    public void f_adoptNewHeatingMethod() {   	
-    	if(isTriggered) {
-    		getDwelling().f_rankHeatingSystemOptionsByUtility();
-    		J_HeatingSystemOptionsLocal selectedHS = getDwelling().f_getTopRankedHeatingSystemOption();
-    		getDwelling().f_installSelectedHeatingMethod(selectedHS);
-    		isTriggered = false;
-    	}
-    }	
-    	*/
-    /*
-    public void f_spreadSocialLearning(J_HeatingSystemOptionsLocal preferredHeatingSystem, double socialLearningFactor) {
-    	int networkSize = householdsInNetwork.size();
-    	int annualContacts = (int) Math.round(networkSize * shareAnnualContacts);
-    	double preferenceScore = preferredHeatingSystem.getAttitudeValue();
-    	OL_HeatingSystem heatingSystemType = preferredHeatingSystem.getType();
-    	double socialLearningRate = preferredHeatingSystem.getSocialLearningRate() * socialLearningFactor;
-		for(int i=0; i < annualContacts; i++) {
-			int contactIndex = uniform_discr(0, networkSize - 1, random);
-			J_HomeOwner contact = householdsInNetwork.get(contactIndex);
-			J_HeatingSystemOptionsLocal contactHeatingSystem = contact.getDwelling().getHeatingSystemMap().get(heatingSystemType);
-			double updatedSubjectiveNormContact = contactHeatingSystem.getSubjectiveNorm() + preferenceScore * socialLearningRate;
-			contactHeatingSystem.setSubjectiveNorm(updatedSubjectiveNormContact);
-    	}
-    }
-    */
-    
+    //Get subjective norm -> percentage of households in network with heating system
     public double f_getSubjectiveNorm(OL_HeatingSystem heatingSystemType) {
-    	
     	int adoptersAmongstPeers = 0;
     	for(J_HomeOwner contact : householdsInNetwork) {
     		if(contact.getDwelling().getHeatingSystem().getType() == heatingSystemType) {
@@ -28438,13 +26935,7 @@ public class J_HomeOwner extends heat_transition_tipping_pathways.J_Household {
     	return adoptionRateAmongstPeers;
     }
     
- 
-    
-    
-    
-   
-	
-
+    //Get attitude value
 	public double f_getAttitudeValue(double sustainabilityAttitudeHousehold, J_HeatingSystemOptionsGlobal hso) {		
 		double sustainabilityScore_norm = hso.getSustainabilityScoreNormalized();
 		/*double alpha = 1.0; //Sensetivity in Gaussian distribution
@@ -28515,7 +27006,7 @@ public class J_HomeOwner extends heat_transition_tipping_pathways.J_Household {
 	}
 	
 	public double f_getEAC_norm(double EAC, J_HeatingSystemOptionsGlobal hso) {
-		return getMain().f_getNormalizedValue(EAC, 
+		return getDwelling().getMain().f_getNormalizedValue(EAC, 
 				hso.getMinEAC(), 
 				hso.getMaxEAC());
 	}
@@ -28751,49 +27242,6 @@ public class J_Renter extends heat_transition_tipping_pathways.J_Household {
 		</JavaClass>
 		<!--   =========   Java Class   ========  -->
 		<JavaClass>
-			<Id>1741612057121</Id>
-			<Name><![CDATA[J_SocialHousingNeighborhood]]></Name>
-			<ExcludeFromBuild>true</ExcludeFromBuild>
-			<Text><![CDATA[/**
- * J_SocialHousingNeighborhood
- */	
-public class J_SocialHousingNeighborhood {
-	
-	private GZ_Neighborhood neighborhood;
-	private List<J_Renter> rentersSocialHousing;
-	private List<J_Dwelling> dwellingsSocialHousing;
-	
-    /**
-     * Default constructor
-     */
-    public J_SocialHousingNeighborhood(GZ_Neighborhood nbh, List<J_Renter> rentersSH, List<J_Dwelling> dwellingsSH) {
-    	this.neighborhood = nbh;
-    	//rentersSocialHousing.addAll(rentersSH);
-    	dwellingsSocialHousing.addAll(dwellingsSH);
-    }
-    
-    public void f_updateTriggers() {
-    	for(J_Dwelling dwelling : dwellingsSocialHousing) {
-    		dwelling.f_hasEndOfLifeTrigger();
-    	}
-    }
-    
-    public void f_calculateUtilityTriggeredDwellings() {
-    	for(J_Dwelling dwelling : dwellingsSocialHousing) {
-    		dwelling.f_calculateHeatingSystemOptionsEAC();
-    	}
-    }
-    
-
-	@Override
-	public String toString() {
-		return super.toString();
-	}
-
-}]]></Text>
-		</JavaClass>
-		<!--   =========   Java Class   ========  -->
-		<JavaClass>
 			<Id>1741708927258</Id>
 			<Name><![CDATA[J_PostalCode6]]></Name>
 			<Text><![CDATA[/**
@@ -28825,23 +27273,65 @@ public class J_PostalCode6 {
 			<Text><![CDATA[/**
  * J_SocialHousingBlock
  */	
+import java.util.EnumMap;
+
 public class J_SocialHousingBlock {
 	//Social housing block per postal code
-	String postalCode;
-	ArrayList<J_Dwelling> dwellings;
-	OL_HeatingSystem heatingMethod;
+	//String postalCode;
+	//ArrayList<J_Dwelling> dwellings;
+	private ArrayList<J_Household> households;
+	private J_HeatingSystem heatingSystem;
+	private OL_HeatingSystem heatingMethod;
+	private Map<OL_HeatingSystem, J_HeatingSystemOption> heatingSystemOptions;
 	
     /**
      * Default constructor
      */
-    public J_SocialHousingBlock() {
-    	
+    public J_SocialHousingBlock(ArrayList<J_Household> households) {
+    	this.households = households;
+    }
+        
+    public void getAverageHeatingSystemOptionsEAC() {
+    	if(heatingSystemOptions == null) {
+			heatingSystemOptions = new EnumMap<>(OL_HeatingSystem.class);
+			double EAC = 0.0;
+			boolean isPossible = true;
+			for (OL_HeatingSystem type : OL_HeatingSystem.values()) {
+				for(J_Household hh : households) {
+					J_Dwelling d = hh.getDwelling();
+					EAC += hh.f_getEAC(d, type);
+					if( isPossible == false || !d.f_getHeatingMethodPossibility(type)) {
+						isPossible = false;
+					}
+				}
+				double averageEAC = EAC / households.size();
+				heatingSystemOptions.put(type, new J_HeatingSystemOption(averageEAC, isPossible));
+			}
+		}	
     }
     
-    public void f_addDwelling(J_Dwelling d) {
-    	dwellings.add(d);
+    public void installNewHeatingMethodInHouseholds(OL_HeatingSystem type) {
+    	for(J_Household hh : households) {
+    		hh.getDwelling().f_installSelectedHeatingMethod(type);
+    	}
     }
-
+    
+    //Get best EAC option
+  	public OL_HeatingSystem getTopRankedEACOption() {
+  	    //Select top option
+  		OL_HeatingSystem bestType = null;
+  		double bestEAC = Double.NEGATIVE_INFINITY;
+  		for (Map.Entry<OL_HeatingSystem, J_HeatingSystemOption> entry : heatingSystemOptions.entrySet()) {
+  			J_HeatingSystemOption hso = entry.getValue();
+  		    double EAC = hso.getEAC();
+  		    if (EAC > bestEAC) {
+  		    	bestEAC = EAC;
+  		        bestType = entry.getKey();
+  		    }
+  		}
+  		return bestType;
+  	}
+    
 	@Override
 	public String toString() {
 		return super.toString();
@@ -28871,6 +27361,12 @@ public class J_AdoptionData {
     	this.age_years = age_years;
     	this.perceivedUtility = perceivedUtility;
     	this.adoptionCosts = adoptionCosts;
+    }
+    
+    //Constructor for initialization (no costs calcualted)
+    public J_AdoptionData(OL_HeatingSystem type, int age_years) {
+    	this.type = type;
+    	this.age_years = age_years;
     }
     
     public OL_HeatingSystem getType() {
@@ -29274,13 +27770,23 @@ public class J_AnnualValues {
 	// ========== COUNT / INSTALLED ==========
     private int installedThisYear = 0;
     private int removedThisYear = 0;
+    private int consideredThisYearHomeOwners = 0;
+    private int consideredThisYearRenters = 0;
+    private int installedThisYearHomeOwners = 0;
+    private int installedThisYearRenters = 0;
 
     // ========== SUMS FOR AVERAGES ==========
-    private double sumAtt = 0.0;
-    private double sumPercUtil = 0.0;
-    private double sumSubNorm = 0.0;
-    private double sumEAC = 0.0;
-    private double sumPBC = 0.0;
+    private double sumAttInstalled = 0.0;
+    private double sumPercUtilInstalled = 0.0;
+    private double sumSubNormInstalled = 0.0;
+    private double sumEACInstalled = 0.0;
+    private double sumPBCInstalled = 0.0;
+    
+    private double sumAttConsidered = 0.0;
+    private double sumPercUtilConsidered = 0.0;
+    private double sumSubNormConsidered = 0.0;
+    private double sumEACConsidered = 0.0;
+    private double sumPBCConsidered = 0.0;
 
     /**
      * Default constructor
@@ -29294,6 +27800,7 @@ public class J_AnnualValues {
      * Add a dwelling to this bucket.
      * @param d The dwelling to include
      */
+    /*
     public void addHeatingSystem(J_HeatingSystemOption heatingSystem) {
     	installedThisYear++;
     	sumAtt += heatingSystem.getAttitudeValue();
@@ -29301,55 +27808,95 @@ public class J_AnnualValues {
         sumSubNorm += heatingSystem.getSubjectiveNorm();
         sumEAC += heatingSystem.getEAC();
         sumPBC += heatingSystem.getPBC();
-    }
-    
-    public void addInstalledThisYear() {
-    	installedThisYear++;
-    }
+    }*/
     
     public void addRemovedThisYear() {
     	removedThisYear++;
     }
     
+    public void addRentersConsidered(double EAC) {
+    	sumEACConsidered += EAC;
+    	consideredThisYearRenters++;
+    }
+    public void addRentersInstalled(double EAC) {
+    	sumEACInstalled += EAC;
+    	installedThisYearRenters++;
+    	installedThisYear++;
+    }
+    
+    public void addHomeOwnerConsidered(J_HeatingSystemOption hso) {
+    	 sumAttConsidered += hso.getAttitude();
+    	 sumPercUtilConsidered += hso.getPerceivedUtility();
+    	 sumSubNormConsidered += hso.getSubjectiveNorm();
+    	 sumPBCConsidered += hso.getPBC();
+    	 sumEACConsidered += hso.getEAC();
+    	 consideredThisYearHomeOwners++;
+    }
+    
+    public void addHomeOwnerInstalled(J_HeatingSystemOption hso) {
+    	sumAttInstalled += hso.getAttitude();
+    	sumPercUtilInstalled += hso.getPerceivedUtility();
+    	sumSubNormInstalled += hso.getSubjectiveNorm();
+    	sumPBCInstalled += hso.getPBC();
+    	installedThisYearHomeOwners++;
+    	installedThisYear++;
+   }
+    
 
-    /**
-     * Compute averages for this bucket (0 if no units)
-     */
-    public double getAvgAtt() {
-    	return installedThisYear > 0 ? sumAtt / installedThisYear : 0.0;
+ // Installed
+    public double getAvgAttInstalled() {
+        return avg(sumAttInstalled, installedThisYearHomeOwners);
     }
 
-    public double getAvgPercUtil() {
-        return installedThisYear > 0 ? sumPercUtil / installedThisYear : 0.0;
+    public double getAvgPercUtilInstalled() {
+        return avg(sumPercUtilInstalled, installedThisYearHomeOwners);
     }
 
-    public double getAvgSubNorm() {
-        return installedThisYear > 0 ? sumSubNorm / installedThisYear : 0.0;
+    public double getAvgSubNormInstalled() {
+        return avg(sumSubNormInstalled, installedThisYearHomeOwners);
     }
 
-    public double getAvgEAC() {
-        return installedThisYear > 0 ? sumEAC / installedThisYear : 0.0;
+    public double getAvgEACInstalled() {
+        return avg(sumEACInstalled, installedThisYear);
     }
 
-    public double getAvgPBC() {
-        return installedThisYear > 0 ? sumPBC / installedThisYear : 0.0;
+    public double getAvgPBCInstalled() {
+        return avg(sumPBCInstalled, installedThisYearHomeOwners);
     }
 
-    /**
-     * Reset the per-year counter (call at year end)
-     */
-    public void resetYearly() {
-        installedThisYear = 0;
+    // Considered
+    public double getAvgAttConsidered() {
+        return avg(sumAttConsidered, consideredThisYearHomeOwners);
+    }
+
+    public double getAvgPercUtilConsidered() {
+        return avg(sumPercUtilConsidered, consideredThisYearHomeOwners);
+    }
+
+    public double getAvgSubNormConsidered() {
+        return avg(sumSubNormConsidered, (consideredThisYearHomeOwners + consideredThisYearRenters));
+    }
+
+    public double getAvgEACConsidered() {
+        return avg(sumEACConsidered, consideredThisYearHomeOwners);
+    }
+
+    public double getAvgPBCConsidered() {
+        return avg(sumPBCConsidered, consideredThisYearHomeOwners);
+    }
+    
+    private double avg(double sum, int count) {
+        return count > 0 ? sum / count : 0.0;
     }
 
     // ========== GETTERS ==========
     public int getInstalledThisYear() { return installedThisYear; }
     public int getRemovedThisYear() { return removedThisYear; }
-    public double getSumAtt() { return sumAtt; }
-    public double getSumPercUtil() { return sumPercUtil; }
-    public double getSumSubNorm() { return sumSubNorm; }
-    public double getSumEAC() { return sumEAC; }
-    public double getSumPBC() { return sumPBC; }
+    public double getSumAtt() { return sumAttConsidered ; }
+    public double getSumPercUtil() { return sumPercUtilConsidered; }
+    public double getSumSubNorm() { return sumSubNormConsidered ; }
+    public double getSumEAC() { return sumEACConsidered ; }
+    public double getSumPBC() { return sumPBCConsidered ; }
 
 	@Override
 	public String toString() {
@@ -29520,6 +28067,7 @@ public class J_HeatingSystemOption {
 	 private double EAC;
 	 private double PBC;
 	 private double EAC_normalized;
+	 private boolean isPossible;
 	 //private double EAC_normalized;
 
     /**
@@ -29529,18 +28077,21 @@ public class J_HeatingSystemOption {
 	    	double perceivedUtility,
 	    	double subjectiveNorm,
 	    	double EAC,
-	    	double PBC
+	    	double PBC,
+	    	boolean isPossible
 	    ) {
     	this.attitude = attitude;
     	this.perceivedUtility = perceivedUtility;
     	this.subjectiveNorm = subjectiveNorm;
     	this.EAC = EAC;
     	this.PBC = PBC;
+    	this.isPossible = isPossible;
     }
     
     //For non home owner cases
-    public J_HeatingSystemOption(double EAC) {
+    public J_HeatingSystemOption(double EAC, boolean isPossible) {
     	this.EAC = EAC;
+    	this.isPossible = isPossible;
     }
     
     public void setEAC_normalized(double EAC_norm) {
@@ -29581,6 +28132,10 @@ public class J_HeatingSystemOption {
     
     public double getPBC() {
     	return PBC;
+    }
+    
+    public boolean isPossible() {
+    	return isPossible;
     }
     
     
@@ -29676,12 +28231,6 @@ public class J_HeatingSystemOption {
 		<Resource>
 			<Id>1693907379986</Id>
 			<Path><![CDATA[_export_pivot_table.xlsx]]></Path>
-			<ReferencedFromUserCode>false</ReferencedFromUserCode>
-			<Location>FILE_SYSTEM</Location>
-		</Resource>
-		<Resource>
-			<Id>1765882121564</Id>
-			<Path><![CDATA[_exampleDwellings.xlsx]]></Path>
 			<ReferencedFromUserCode>false</ReferencedFromUserCode>
 			<Location>FILE_SYSTEM</Location>
 		</Resource>
