@@ -1508,7 +1508,7 @@ f_initalizeSettings();
 				<Variable Class="PlainVariable">
 					<Id>1765560679267</Id>
 					<Name><![CDATA[validationMap]]></Name>
-					<X>-890</X><Y>600</Y>
+					<X>-890</X><Y>620</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -1551,6 +1551,18 @@ f_initalizeSettings();
 					<ShowLabel>true</ShowLabel>
 					<Properties SaveInSnapshot="true" Constant="false" AccessType="default" StaticVariable="false">
 						<Type><![CDATA[EnumMap<OL_HeatingSystem, J_HeatingSystemOptionsGlobal>]]></Type>        
+					</Properties>
+				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1772801735371</Id>
+					<Name><![CDATA[pc4BevMap]]></Name>
+					<X>-900</X><Y>360</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[HashMap<Integer, Double>]]></Type>        
 					</Properties>
 				</Variable>
 				<Variable Class="Parameter">
@@ -2875,6 +2887,7 @@ f_initializeAnnualValuesMap();
 //1. Set scenario's and heating methods
 f_setScenarios();
 f_setHeatingSystemOptions();
+f_setPC4ToEV();
 //traceln("Heating methods set");
 
 //2. Create neighbrohoods
@@ -2906,6 +2919,7 @@ traceln("Set households energy demand in: " + duration + " seconds");
 */
 //6. Link households to neighborhoods
 timeStartFunction = System.currentTimeMillis();
+f_setDefaultDataSocialHousingBlocks();
 f_setDefaultDataHouseholdsPerNeighborhood();
 duration = f_traceFunctionTime(timeStartFunction);
 //traceln("Linked households and neighborhoods in: " + duration + " seconds");
@@ -2986,7 +3000,7 @@ for (GZ_Neighborhood neighborhood : pop_GZ_Neighborhoods){
 	
 	//SET GRID CAPACITY
 	double householdsWithHeatPump = neighborhood.p_households * neighborhood.p_electricHeating_perc;
-	neighborhood.p_gridCapacity_kW = neighborhood.f_setGridCapacity(p_PmaxPerHousehold, tf_simultaneityBaseload(neighborhood.p_households), neighborhood.p_households, p_PmaxPerElectricHeatPump, p_simultaneityHeatPump, householdsWithHeatPump, p_PmaxPerEV, p_simultaneityEV, neighborhood.p_electricCars2025);
+	neighborhood.p_gridCapacity_kW = neighborhood.f_setGridCapacity(p_PmaxPerHousehold, tf_simultaneityBaseload(neighborhood.p_households), neighborhood.p_households, p_PmaxPerElectricHeatPump, p_simultaneityHeatPump, householdsWithHeatPump, p_PmaxPerEV, p_simultaneityEV, neighborhood.p_electricCars2023);
 	//traceln(neighborhood.p_gridCapacity_kW + " at neigbhorhood " + neighborhood.getIndex() + " average " + neighborhood.p_gridCapacity_kW/neighborhood.p_households + " kW per household");
 }
 /*
@@ -3421,9 +3435,9 @@ for (Tuple row_data : rows_data){
 			*/
 			//Motor vehicles
 			x.p_cars = row_data.get(neighborhood_data_selection.a_pau);
-			x.p_carsBenzine = row_data.get(neighborhood_data_selection.a_bst_b);
-			x.p_carsOther = row_data.get(neighborhood_data_selection.a_bst_nb);
-			x.p_motorBikes = row_data.get(neighborhood_data_selection.a_m2w);
+			///x.p_carsBenzine = row_data.get(neighborhood_data_selection.a_bst_b);
+			//x.p_carsOther = row_data.get(neighborhood_data_selection.a_bst_nb);
+			//x.p_motorBikes = row_data.get(neighborhood_data_selection.a_m2w);
 			
 			x.p_surfaceArea = row_data.get(neighborhood_data_selection.a_opp_ha);
 			x.p_surfaceAreaLand = row_data.get(neighborhood_data_selection.a_lan_ha);
@@ -3464,15 +3478,24 @@ for (Tuple row_data : rows_data){
 			x.p_companyLocationsRU = f_returnZeroIfDoubleIsSmallerThanZero(x.p_companyLocationsRU);
 			*/
 			x.p_cars = f_returnZeroIfDoubleIsSmallerThanZeroInt(x.p_cars);
-			x.p_carsBenzine = f_returnZeroIfDoubleIsSmallerThanZero(x.p_carsBenzine);
-			x.p_carsOther = f_returnZeroIfDoubleIsSmallerThanZero(x.p_carsOther);
-			x.p_motorBikes = f_returnZeroIfDoubleIsSmallerThanZero(x.p_motorBikes);
+			//x.p_carsBenzine = f_returnZeroIfDoubleIsSmallerThanZero(x.p_carsBenzine);
+			//x.p_carsOther = f_returnZeroIfDoubleIsSmallerThanZero(x.p_carsOther);
+			//x.p_motorBikes = f_returnZeroIfDoubleIsSmallerThanZero(x.p_motorBikes);
 			x.p_surfaceArea = f_returnZeroIfDoubleIsSmallerThanZero(x.p_surfaceArea);
 			x.p_surfaceAreaLand = f_returnZeroIfDoubleIsSmallerThanZero(x.p_surfaceAreaLand);
 			x.p_surfaceAreaWater = f_returnZeroIfDoubleIsSmallerThanZero(x.p_surfaceAreaWater);
 			x.p_postalCode = f_returnZeroIfDoubleIsSmallerThanZero(x.p_postalCode);
 			x.p_postalCodeAccuracy = f_returnZeroIfDoubleIsSmallerThanZero(x.p_postalCodeAccuracy);
 			x.p_urbanity = f_returnZeroIfDoubleIsSmallerThanZero(x.p_urbanity);
+			
+			Double bevShare = pc4BevMap.get(x.p_postalCode);
+
+			if (bevShare == null) {
+			    //traceln("No BEV data for postal code: " + x.p_postalCode);
+			    bevShare = 0.084; // fallback Dutch 2023 average
+			}
+			x.p_electricCars2023 = (int) roundToInt(bevShare * x.p_cars);
+			
 			break;
 		}
 	}
@@ -3586,8 +3609,10 @@ for(J_HomeOwner ho : c_homeOwners){
 
 //7 Set utility in a next loop for normalized values
 for(J_HomeOwner ho : c_homeOwners){	
-	ho.f_getHeatingSystemOptionsUtility();
-	ho.f_adoptNewHeatingSystem();
+	if( ho.getHeatingSystemOptions() != null) { //If triggered this is set in step 5 - executed in seperate step to ensure valid normalization
+		ho.f_getHeatingSystemOptionsUtility();
+		ho.f_adoptNewHeatingSystem();
+	}
 }
 
 
@@ -3730,9 +3755,6 @@ x.p_geometeryCoordinates = row.get( neighborhood_shape.wkt_geom_100);
 //Set neighborhood code
 String replaced = "WK" + x.p_neighborhoodCode.substring(2);
 x.p_districtCode = replaced.substring(0, replaced.length()-2);
-
-x.socialHousingBlock = new J_SocialHousingBlock(x, this);
-c_socialHousingBlocks.add(x.socialHousingBlock);
 	
 //SET LOCATION
 /*
@@ -5262,19 +5284,25 @@ idCounter++;
 
 if (neighborhood != null) {
    	if(ownership == PRIVATELY_OWNED){
-		J_HomeOwner ho = new J_HomeOwner(dwelling);
-		neighborhood.c_homeOwners.add(ho);
+		J_HomeOwner ho = new J_HomeOwner(dwelling, ownership);
+			neighborhood.c_homeOwners.add(ho);
 		c_homeOwners.add(ho);
 		c_households.add(ho);
 	}
 	else if (ownership == PRIVATELY_RENTED ){
-		J_Household hh = new J_Household(dwelling);
+		J_Household hh = new J_Household(dwelling, ownership);
 		neighborhood.c_rentersLandlords.add(hh);
 		c_rentersLandlords.add(hh);
 		c_households.add(hh);
 	}
 	else if( ownership == SOCIAL_HOUSING ){
-		J_Household hh = new J_Household(dwelling);
+		J_Household hh = new J_Household(dwelling, ownership);
+		
+		if(neighborhood.socialHousingBlock == null){
+			neighborhood.socialHousingBlock = new J_SocialHousingBlock(neighborhood, this);
+			c_socialHousingBlocks.add(neighborhood.socialHousingBlock);
+		}
+		
 		neighborhood.socialHousingBlock.addHousehold(hh);
 		//c_rentersSocialHousing.add(hh);
 		c_households.add(hh);
@@ -5350,20 +5378,30 @@ else {
 					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1741101298826</Id>
 					<Name><![CDATA[f_setDefaultDataHouseholdsPerNeighborhood]]></Name>
-					<X>-900</X><Y>480</Y>
+					<X>-900</X><Y>500</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
 					<Body><![CDATA[// Link households to neighborhoods and update data
-for (GZ_Neighborhood neighborhood : pop_GZ_Neighborhoods) {       
-    //Update with nbh data
-    if(neighborhood.c_homeOwners.size() > 0 || neighborhood.c_rentersLandlords.size() > 0 || neighborhood.socialHousingBlock.getHouseholds().size() > 0 ){
-    	neighborhood.f_setHouseholdDefaultHeatingSystem();
-    }    
+Iterator<GZ_Neighborhood> nbhIt = pop_GZ_Neighborhoods.iterator();
+while (nbhIt.hasNext()) {
+    GZ_Neighborhood neighborhood = nbhIt.next();
+    
+    if (neighborhood.c_homeOwners.size() > 0 || neighborhood.c_rentersLandlords.size() > 0 || neighborhood.socialHousingBlock != null) {
+        neighborhood.f_setHouseholdDefaultHeatingSystem();
+    }
+    else if (neighborhood.p_households > 0) {
+        traceln("ERROR: nbh " + neighborhood.getIndex() + " has " + neighborhood.p_households + " households but no hh assigned");
+    }
+    else {
+        traceln("Nbh " + neighborhood.getIndex() + " removed due to no households");
+        nbhIt.remove(); // Safe removal during iteration
+    }
 }
 
-c_buurtcodeToNeighborhood.clear();]]></Body>
+c_buurtcodeToNeighborhood.clear();
+]]></Body>
 				</Function>
 				<Function AccessType="default" StaticFunction="false">
 					<ReturnModificator>VOID</ReturnModificator>
@@ -5529,7 +5567,7 @@ double electricityDemand_kWh = f_getDBValue(columnName, dwellingType, constructi
 					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1741851687084</Id>
 					<Name><![CDATA[f_getDBValue]]></Name>
-					<X>-885</X><Y>500</Y>
+					<X>-885</X><Y>520</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -5570,53 +5608,15 @@ return dbValue;]]></Body>
 for(J_Household hh : c_households){
 	//When no social housing
 	if(hh.getOwnership() != SOCIAL_HOUSING){
-		J_Dwelling d = hh.getDwelling();	
-		int currentELabelNumber = d.getEnergyLabelNumber();
-		if(currentELabelNumber > 2 ){
-			if( (v_year - d.getYearLastRenovation()) > 15 ){
-				double rand = randomInstance.nextDouble();
-				if( rand < 0.05){ //Would renovate once every 20 year between 15 and 35 years
-					int renovatedELabelNumber = currentELabelNumber - 2;
-					if( renovatedELabelNumber < 0) { renovatedELabelNumber = 0;}
-					 
-					d.setEnergyLabelNumber(renovatedELabelNumber);
-					String ELabelLetter = d.f_insulationLabelNumberToLetter(renovatedELabelNumber);
-					d.setEnergyLabel(ELabelLetter);
-					d.setYearLastRenovation(v_year);
-					d.setHasLowTemperatureInhouseHeatDistribution(true);
-				}
-			}
-		}
+		hh.getDwelling().updateExogeneousInsulation();
 	}	
 }
 
 //For Social housing
-for(String postcode : c_SHADwellings_by_postcode.keySet()){
-	ArrayList<J_Dwelling> dwellings = c_SHADwellings_by_postcode.get(postcode);
-	
-	//Get average elabel and last year of renovation
-	double averageELabelSHA = average(dwellings, x->x.getEnergyLabelNumber());
-	double averageYearLastRenovation = average(dwellings, x->x.getYearLastRenovation());
-	
-	if(averageELabelSHA > 2){
-		if(v_year - averageYearLastRenovation > 15){
-			double rand1 = randomInstance.nextDouble();
-			if( rand1 < 0.05){ //Would renovate once every 20 year between 15 and 35 years
-				for(J_Dwelling d : dwellings){
-					int renovatedELabelNumber = roundToInt(averageELabelSHA - 2);
-					if( renovatedELabelNumber < 0) { renovatedELabelNumber = 0;}
-					 
-					d.setEnergyLabelNumber(renovatedELabelNumber);
-					String ELabelLetter = d.f_insulationLabelNumberToLetter(renovatedELabelNumber);
-					d.setEnergyLabel(ELabelLetter);
-					d.setYearLastRenovation(v_year);
-					d.setHasLowTemperatureInhouseHeatDistribution(true);
-				}
-			}
-		}
-	}
+for(J_SocialHousingBlock shb : c_socialHousingBlocks) {
+	shb.updateExogeneousInsulation();
 }
-					]]></Body>
+				]]></Body>
 				</Function>
 				<Function AccessType="default" StaticFunction="false">
 					<ReturnModificator>VOID</ReturnModificator>
@@ -5881,7 +5881,7 @@ return data;
 					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1747319707639</Id>
 					<Name><![CDATA[f_endRun]]></Name>
-					<X>-310</X><Y>890</Y>
+					<X>-310</X><Y>910</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -5898,7 +5898,7 @@ f_cleanUp();
 					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1750323089111</Id>
 					<Name><![CDATA[f_cleanUp]]></Name>
-					<X>-310</X><Y>910</Y>
+					<X>-310</X><Y>930</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -5944,7 +5944,7 @@ this.deleteSelf();]]></Body>
 					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1765559309000</Id>
 					<Name><![CDATA[f_intializeValidationDwellings]]></Name>
-					<X>-900</X><Y>560</Y>
+					<X>-900</X><Y>580</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -5995,7 +5995,7 @@ for(J_Household hh : c_households){
 					<ReturnType><![CDATA[int]]></ReturnType>
 					<Id>1765560240243</Id>
 					<Name><![CDATA[f_getConstructionYearCategory]]></Name>
-					<X>-890</X><Y>580</Y>
+					<X>-890</X><Y>600</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -6056,9 +6056,10 @@ return 4;]]></Body>
 				anVal.getAvgEACConsidered(),
 				anVal.getAvgPBCConsidered()
 			);
+		/*
 		if(installedThisYear == 0){
 			traceln( "0 installed " + heating_method + " at owner " + ownership + " in year index " + yearIndex + " year " + (yearIndex + v_startYear) );
-    	}
+    	}*/
     }
     resultsData.getHeatingMethod(heating_method).sumAnnualTotals(yearIndex);
 }
@@ -6089,6 +6090,55 @@ for (OL_HeatingSystem heatingSystem : OL_HeatingSystem.values()) {
 
 
 ]]></Body>
+				</Function>
+				<Function AccessType="default" StaticFunction="false">
+					<ReturnModificator>VOID</ReturnModificator>
+					<ReturnType><![CDATA[double]]></ReturnType>
+					<Id>1772795533090</Id>
+					<Name><![CDATA[f_setDefaultDataSocialHousingBlocks]]></Name>
+					<X>-900</X><Y>480</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Body><![CDATA[for(J_SocialHousingBlock shb : c_socialHousingBlocks){
+	shb.setDefaultYearLastRenovation();
+    shb.setDefaultEnergyLabel();
+}]]></Body>
+				</Function>
+				<Function AccessType="default" StaticFunction="false">
+					<ReturnModificator>VOID</ReturnModificator>
+					<ReturnType><![CDATA[double]]></ReturnType>
+					<Id>1772801764494</Id>
+					<Name><![CDATA[f_setPC4ToEV]]></Name>
+					<X>-900</X><Y>340</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Body><![CDATA[pc4BevMap = new HashMap<>();
+
+while (pc4EVs.canReadMore()) {
+    String line = pc4EVs.readLine();
+    
+    // Skip header row
+    if (line.startsWith("PC4")) continue;
+    
+    String[] parts = line.split(",");  // or ";" if semicolon-separated
+    
+    // Guard against empty/malformed lines
+    if (parts.length < 2) continue;
+    
+    try {
+        int pc4 = Integer.parseInt(parts[0].trim());
+        double bevProb = Double.parseDouble(parts[1].trim());
+        pc4BevMap.put(pc4, bevProb);
+    } catch (NumberFormatException e) {
+        // Skip bad rows silently
+    }
+}
+
+pc4EVs.close();]]></Body>
 				</Function>
 			</Functions>
 			<TableFunctions>
@@ -8608,6 +8658,25 @@ for (OL_HeatingSystem heatingSystem : OL_HeatingSystem.values()) {
 					<Login><![CDATA[]]></Login>
 					<Password><![CDATA[]]></Password>
 				</Database>
+				<TextFile>
+					<Id>1772801858091</Id>
+					<Name><![CDATA[pc4EVs]]></Name>
+					<X>-900</X><Y>310</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<FileType>FILE</FileType>
+					<Url><![CDATA[]]></Url>
+					<ResourceReference>
+						<PackageName><![CDATA[heat_transition_tipping_pathways]]></PackageName>
+						<ClassName><![CDATA[_EVsPerPC.csv]]></ClassName>
+					</ResourceReference>
+					<FileMode>READ</FileMode>
+					<CharsetName>UTF-8</CharsetName>
+					<Separators>
+,</Separators>
+				</TextFile>
 			</Connectivity>
 			<AgentLinks>
 				<AgentLink>
@@ -8726,7 +8795,7 @@ for (OL_HeatingSystem heatingSystem : OL_HeatingSystem.values()) {
 							<Name><![CDATA[p_myHSMSTrafo]]></Name>
 						</Parameter>
 						<Parameter>
-							<Name><![CDATA[p_electricCars2025]]></Name>
+							<Name><![CDATA[p_electricCars2023]]></Name>
 						</Parameter>
 						<Parameter>
 							<Name><![CDATA[p_electricVans2025]]></Name>
@@ -13500,6 +13569,7 @@ if(rb_mapMode.getValue() == 0){
 				<Variable Class="PlainVariable">
 					<Id>1700132370958</Id>
 					<Name><![CDATA[v_electricCars]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>370</X><Y>570</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -13590,6 +13660,7 @@ if(rb_mapMode.getValue() == 0){
 				<Variable Class="PlainVariable">
 					<Id>1700132371002</Id>
 					<Name><![CDATA[v_electricTrucks]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>370</X><Y>590</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -13602,6 +13673,7 @@ if(rb_mapMode.getValue() == 0){
 				<Variable Class="PlainVariable">
 					<Id>1700132371008</Id>
 					<Name><![CDATA[v_electricVans]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>370</X><Y>610</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -13862,6 +13934,7 @@ if(rb_mapMode.getValue() == 0){
 				<Variable Class="Parameter">
 					<Id>1700132371123</Id>
 					<Name><![CDATA[p_vans]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>370</X><Y>420</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -13883,6 +13956,7 @@ if(rb_mapMode.getValue() == 0){
 				<Variable Class="Parameter">
 					<Id>1700132371126</Id>
 					<Name><![CDATA[p_trucks]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>370</X><Y>400</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -14219,7 +14293,7 @@ if(rb_mapMode.getValue() == 0){
 				</Variable>
 				<Variable Class="Parameter">
 					<Id>1700132371207</Id>
-					<Name><![CDATA[p_electricCars2025]]></Name>
+					<Name><![CDATA[p_electricCars2023]]></Name>
 					<X>370</X><Y>500</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -14241,6 +14315,7 @@ if(rb_mapMode.getValue() == 0){
 				<Variable Class="Parameter">
 					<Id>1700132371210</Id>
 					<Name><![CDATA[p_electricVans2025]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>370</X><Y>540</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -14262,6 +14337,7 @@ if(rb_mapMode.getValue() == 0){
 				<Variable Class="Parameter">
 					<Id>1700132371213</Id>
 					<Name><![CDATA[p_electricTrucks2025]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>370</X><Y>520</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -14703,6 +14779,7 @@ if(rb_mapMode.getValue() == 0){
 				<Variable Class="Parameter">
 					<Id>1700132371297</Id>
 					<Name><![CDATA[p_motorBikes]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>370</X><Y>440</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -14724,6 +14801,7 @@ if(rb_mapMode.getValue() == 0){
 				<Variable Class="Parameter">
 					<Id>1700132371300</Id>
 					<Name><![CDATA[p_carsBenzine]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>370</X><Y>460</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -14745,6 +14823,7 @@ if(rb_mapMode.getValue() == 0){
 				<Variable Class="Parameter">
 					<Id>1700132371303</Id>
 					<Name><![CDATA[p_carsOther]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>370</X><Y>480</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -14998,6 +15077,7 @@ if(rb_mapMode.getValue() == 0){
 				<Variable Class="Parameter">
 					<Id>1715091202558</Id>
 					<Name><![CDATA[p_willingnessEnergyMeasuresHomeOwners]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>60</X><Y>900</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -15019,6 +15099,7 @@ if(rb_mapMode.getValue() == 0){
 				<Variable Class="Parameter">
 					<Id>1715091509071</Id>
 					<Name><![CDATA[p_comfortAsADriverHomeOwners]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>60</X><Y>955</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -15040,6 +15121,7 @@ if(rb_mapMode.getValue() == 0){
 				<Variable Class="Parameter">
 					<Id>1715091553340</Id>
 					<Name><![CDATA[p_environmentAsADriverHomeOwners]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>60</X><Y>975</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -15061,6 +15143,7 @@ if(rb_mapMode.getValue() == 0){
 				<Variable Class="Parameter">
 					<Id>1715091566902</Id>
 					<Name><![CDATA[p_considersHouseEnergyEfficientHomeOwners]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>60</X><Y>995</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -15082,6 +15165,7 @@ if(rb_mapMode.getValue() == 0){
 				<Variable Class="Parameter">
 					<Id>1715092095675</Id>
 					<Name><![CDATA[p_comfortAsADriverRenters]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>60</X><Y>1030</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -15103,6 +15187,7 @@ if(rb_mapMode.getValue() == 0){
 				<Variable Class="Parameter">
 					<Id>1715092095680</Id>
 					<Name><![CDATA[p_environmentAsADriverRenters]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>60</X><Y>1050</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -15124,6 +15209,7 @@ if(rb_mapMode.getValue() == 0){
 				<Variable Class="Parameter">
 					<Id>1715092095683</Id>
 					<Name><![CDATA[p_considersHouseEnergyEfficientRenters]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>60</X><Y>1070</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -15145,6 +15231,7 @@ if(rb_mapMode.getValue() == 0){
 				<Variable Class="Parameter">
 					<Id>1715092150433</Id>
 					<Name><![CDATA[p_willingnessEnergyMeasuresRenters]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>60</X><Y>920</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -15921,12 +16008,35 @@ double JaarverbruikAansluitingen = p_households * p_averageElectricityConsumptio
 double PmaxHouseholds = alfa * JaarverbruikAansluitingen + beta * sqrt(JaarverbruikAansluitingen);
 
 //HEAT PUMPS
-double PmaxAllElectricHeatPumps = p_households * v_electricHeatPumps_perc * main.p_simultaneityHeatPump * main.p_PmaxPerElectricHeatPump;
-double PmaxHybridHeatPumps = p_households * v_hybridHeatPumps_perc * main.p_simultaneityHeatPump * main.p_PmaxPerHybridHeatPump;
+int electricHeatPumps = 0;
+int hybridHeatPumps = 0;
+if(socialHousingBlock != null){
+	if(socialHousingBlock.getHeatingMethod() == ELECTRIC_HEAT_PUMP){
+		electricHeatPumps += socialHousingBlock.getHouseholds().size();
+	}else if(socialHousingBlock.getHeatingMethod() == HYBRID_HEAT_PUMP){
+		hybridHeatPumps += socialHousingBlock.getHouseholds().size();
+	}
+}
+List<J_Household> households = new ArrayList<>();
+households.addAll(c_homeOwners);
+households.addAll(c_rentersLandlords);
+for(J_Household hh : households){
+	OL_HeatingSystem type = hh.getDwelling().getHeatingSystem().getType();
+	if( type == ELECTRIC_HEAT_PUMP){
+		electricHeatPumps++;
+	} else if( type == HYBRID_HEAT_PUMP){
+		hybridHeatPumps++;
+	}
+}
+
+
+double PmaxAllElectricHeatPumps = electricHeatPumps * main.p_simultaneityHeatPump * main.p_PmaxPerElectricHeatPump;
+double PmaxHybridHeatPumps = hybridHeatPumps * main.p_simultaneityHeatPump * main.p_PmaxPerHybridHeatPump;
 double PmaxHeatPumps = PmaxAllElectricHeatPumps + PmaxHybridHeatPumps;
 
 //ELECTRIC TRANSPORT
-double PmaxEVs = v_electricCars * main.p_PmaxPerEV * main.p_simultaneityEV;
+double electricCars = f_getEVs();
+double PmaxEVs = electricCars * main.p_PmaxPerEV * main.p_simultaneityEV;
 //v_electricVans * impactPerCar
 //v_electricTrucks * impactPerTruck
 /*
@@ -16406,9 +16516,11 @@ this.deleteSelf();]]></Body>
 					<ShowLabel>true</ShowLabel>
 					<Body><![CDATA[int homeOwners = c_homeOwners.size();
 int rentersLandlords = c_rentersLandlords.size();
-int rentersSocialHousing = socialHousingBlock.getHouseholds().size();
-
-int households = homeOwners + rentersLandlords + rentersSocialHousing;
+int socialHousingHouseholds = 0;
+if( socialHousingBlock != null){
+	socialHousingHouseholds = socialHousingBlock.getHouseholds().size();
+}
+int households = homeOwners + rentersLandlords + socialHousingHouseholds;
 
 List<J_Household> nonSHBHouseholds = new ArrayList<>();
 nonSHBHouseholds.addAll(c_homeOwners);
@@ -16446,31 +16558,35 @@ int setDH   = 0;
 
 // --- Assign social housing ---
 // First DH
-int socialHousingHouseholds = socialHousingBlock.getHouseholds().size();
-if (setDH + socialHousingHouseholds <= requiredDH) {
-	socialHousingBlock.f_setInitialHeatingMethod(DISTRICT_HEATING);
-    setDH += socialHousingHouseholds;
-} 
-//Than NGBlock
-else if (setNGBl + socialHousingHouseholds <= requiredNGBl) {
-	socialHousingBlock.f_setInitialHeatingMethod(NATURAL_GAS_BLOCK);
-	setNGBl += socialHousingHouseholds;
-}
-//Assign social housing if remaining
-else {
-	double rand = uniform(0,1);
-	if( rand < 0.1 ){
-		socialHousingBlock.f_setInitialHeatingMethod(ELECTRIC_HEAT_PUMP);
-		setEHP += socialHousingHouseholds;
-	} else if( rand < 0.25){
-		socialHousingBlock.f_setInitialHeatingMethod(HYBRID_HEAT_PUMP);
-		setHHP += socialHousingHouseholds;
-	} else {
-		socialHousingBlock.f_setInitialHeatingMethod(NATURAL_GAS_BOILER);
-		setNGB += socialHousingHouseholds;
+if (socialHousingBlock != null){
+	if (setDH + socialHousingHouseholds <= requiredDH) {
+		socialHousingBlock.f_setInitialHeatingMethod(DISTRICT_HEATING);
+	    setDH += socialHousingHouseholds;
+	} 
+	//Than NGBlock
+	else if (setNGBl + socialHousingHouseholds <= requiredNGBl) {
+		socialHousingBlock.f_setInitialHeatingMethod(NATURAL_GAS_BLOCK);
+		setNGBl += socialHousingHouseholds;
+	}
+	//Assign social housing if remaining
+	else {
+	    double rand = uniform(0,1);
+	    if( rand < 0.1 && setEHP + socialHousingHouseholds <= requiredEHP ){
+	        socialHousingBlock.f_setInitialHeatingMethod(ELECTRIC_HEAT_PUMP);
+	        setEHP += socialHousingHouseholds;
+	    } else if( rand < 0.25 && setHHP + socialHousingHouseholds <= requiredHHP ){
+	        socialHousingBlock.f_setInitialHeatingMethod(HYBRID_HEAT_PUMP);
+	        setHHP += socialHousingHouseholds;
+	    } else {
+	        // Default fallback — always safe
+	        socialHousingBlock.f_setInitialHeatingMethod(NATURAL_GAS_BOILER);
+	        setNGB += socialHousingHouseholds;
+	    }
+	}
+	if (socialHousingBlock.getHeatingMethod() == null){
+		traceln("Social housing has no hs at nbh " + this.getIndex());
 	}
 }
-
 // --- Second assign block --- to remaining
 // Shuffle for randomness
 Collections.shuffle(nonSHBHouseholds);
@@ -16504,9 +16620,23 @@ while (setNGBl < requiredNGBl && nonSHBIt.hasNext()) {
     setNGBl++;
 }
 
-//Fill rest of housholds random
+// After social housing assignment, calculate how many MORE are needed
+// from nonSHBHouseholds specifically
+int remainingDH  = requiredDH  - setDH;
+int remainingEHP = requiredEHP - setEHP;
+int remainingHHP = requiredHHP - setHHP;
+int remainingNGB = requiredNGB - setNGB;
+
 Iterator<J_Household> remIt = nonSHBHouseholds.iterator();
 
+while (remainingDH  > 0 && remIt.hasNext()) { J_Household hh = remIt.next(); hh.f_setInitialHeatingMethod(DISTRICT_HEATING);    remIt.remove(); setDH++;  remainingDH--;  }
+while (remainingEHP > 0 && remIt.hasNext()) { J_Household hh = remIt.next(); hh.f_setInitialHeatingMethod(ELECTRIC_HEAT_PUMP);  remIt.remove(); setEHP++; remainingEHP--; }
+while (remainingHHP > 0 && remIt.hasNext()) { J_Household hh = remIt.next(); hh.f_setInitialHeatingMethod(HYBRID_HEAT_PUMP);    remIt.remove(); setHHP++; remainingHHP--; }
+
+// NGB gets all remaining
+while (remIt.hasNext()) { J_Household hh = remIt.next(); hh.f_setInitialHeatingMethod(NATURAL_GAS_BOILER); remIt.remove(); setNGB++; }
+
+/*
 //DH
 while (setDH < requiredDH && remIt.hasNext()) {
     J_Household hh = remIt.next();
@@ -16538,11 +16668,11 @@ while (remIt.hasNext()) {
     remIt.remove();
     setNGB++;
 }
-
+*/
 // --- Validation print ---
 if(!main.v_rapidRun ){
 	int totalSet = setNGB + setNGBl + setEHP + setHHP + setDH;
-	if( this.getIndex() < 4){
+	if( !(requiredNGB == setNGB && requiredNGBl == setNGBl && requiredHHP == setHHP && requiredEHP == setEHP && requiredDH == setDH)){
 		System.out.println("=== Heating Method Assignment Validation ===");
 		System.out.println("Total households:        " + households);
 		System.out.println("Total assigned:          " + totalSet);
@@ -16606,6 +16736,35 @@ for (int i = 0; i < leftover; i++) {
 
 return flooredValues;
 ]]></Body>
+				</Function>
+				<Function AccessType="default" StaticFunction="false">
+					<ReturnModificator>RETURNS_VALUE</ReturnModificator>
+					<ReturnType><![CDATA[double]]></ReturnType>
+					<Id>1772704874950</Id>
+					<Name><![CDATA[f_getEVs]]></Name>
+					<X>-430</X><Y>540</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Body><![CDATA[//EVsinYear = L / (1 + e^(-k(t - t0))) function for s-curve 
+int yearInflextionPoint = 2035;
+int L = p_cars;
+double share2023 = (double) p_electricCars2023 / p_cars;
+double k = 0;
+if( share2023 > 0){
+	double ratio = (1.0 / share2023) - 1.0;
+	double yearDiff = 2023 - yearInflextionPoint;
+	k = -Math.log(ratio) / yearDiff;
+}
+
+double EVsInYear = p_cars / (1.0 + Math.exp(-k * (main.v_year - yearInflextionPoint)));
+
+if(this.getIndex() == 10){
+	traceln("EVs: " + EVsInYear + " in " + main.v_year + " with total cars " + p_cars + " and evs in 2025 " + p_electricCars2023);
+}
+
+return EVsInYear;]]></Body>
 				</Function>
 			</Functions>
 			<AgentLinks>
@@ -16908,6 +17067,7 @@ return flooredValues;
 				<Text>
 					<Id>1715091175347</Id>
 					<Name><![CDATA[Btext4]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>40</X><Y>870</Y>
 					<Label><X>0</X><Y>-10</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -17462,36 +17622,20 @@ this.deleteSelf();]]></Body>
 double chanceOfDHBeingInstalled = main.v_nbhsWithoutDHStartYear / main.pop_GZ_Neighborhoods.size();
 
 for(GZ_Neighborhood neighborhood : main.pop_GZ_Neighborhoods){
-	boolean triggerDistrictHeating = false;
 	
 	if(neighborhood.p_policyPlanStartYear > 0){
 		if(neighborhood.p_policyPlanStartYear + p_planAndConstructionTime_years == main.v_year){
 			neighborhood.v_hasDistrictHeatingGrid = true;
-			triggerDistrictHeating = true;
 		}
 	}
 	
 	//If no start year is given
 	else {
 		double rand = uniform(0,1);
-		if( chanceOfDHBeingInstalled < rand ){
+		if( rand < chanceOfDHBeingInstalled ){
 			neighborhood.v_hasDistrictHeatingGrid = true;
-			triggerDistrictHeating = true;
 		}
 	}
-		
-	//If DH is installed
-	/* DH only at end of life current hm
-	if( triggerDistrictHeating == true){
-		for(J_Dwelling x : neighborhood.c_dwellings){
-			if( main.p_connectionObligationNewDH) {
-				x.f_setObligedDH();
-			}
-			else {
-				x.f_setDHPossible();
-			}
-		}
-	}*/
 }
 
 ]]></Body>
@@ -17506,34 +17650,33 @@ for(GZ_Neighborhood neighborhood : main.pop_GZ_Neighborhoods){
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
-					<Body><![CDATA[for(GZ_Neighborhood neighborhood : main.pop_GZ_Neighborhoods){
+					<Body><![CDATA[for(GZ_Neighborhood nbh : main.pop_GZ_Neighborhoods){
 	
-	double dhHeatDemandPreference_kWh = sumWhere(neighborhood.c_dwellings, x->x.getHeatDemand_kWh(), y->y.getIsDistrictHeatingPreferred() == true && y.getHeatingSystem().getType() != DISTRICT_HEATING);
-	double dhHeatDemandCurrent_kWh = sumWhere(neighborhood.c_dwellings, x->x.getHeatDemand_kWh(), y->y.getHeatingSystem().getType() == DISTRICT_HEATING);
-	double dhHeatDemandTotal_kWh = dhHeatDemandPreference_kWh + dhHeatDemandCurrent_kWh;
-	double dhHeatDemand_GJperHa = dhHeatDemandTotal_kWh * 3.6 / 1000 / neighborhood.p_surfaceAreaLand;
-	
-	//traceln(dhHeatDemand_GJperHa + "GJ/Ha heat demand households DH preference in nbh " + neighborhood.getIndex());
-	//If DH is installed
-	if( dhHeatDemand_GJperHa >= p_requiredHeatDemand_GJPerHa && neighborhood.v_hasDistrictHeatingGrid == false){
-		//traceln("Building DH cost based in nbh " + neighborhood.getIndex() + " with heat demand (GJ/Ha) " + dhHeatDemand_GJperHa + " and required heat demand (GJ/Ha) " + p_requiredHeatDemand_GJPerHa);
+	if(nbh.v_hasDistrictHeatingGrid){
+
+		double dhHeatDemandTotal_kWh = 0;
+		List<J_Household> households = new ArrayList<>();
+		households.addAll(nbh.c_homeOwners);
+		households.addAll(nbh.c_rentersLandlords);
+		if(nbh.socialHousingBlock != null){
+			households.addAll(nbh.socialHousingBlock.getHouseholds());
+		}
 		
-		neighborhood.v_districtHeatYearOfOperation = main.v_year + p_planAndConstructionTime_years;
-	}
+		for(J_Household hh : households){
+			dhHeatDemandTotal_kWh += hh.getDwelling().getHeatDemand_kWh();
+		}
+		
+		double dhHeatDemand_GJperHa = dhHeatDemandTotal_kWh * 3.6 / 1000 / nbh.p_surfaceAreaLand;
 	
+	
+		if( dhHeatDemand_GJperHa >= p_requiredHeatDemand_GJPerHa ){
+			//traceln("Building DH cost based in nbh " + nbh.getIndex() + " with heat demand (GJ/Ha) " + dhHeatDemand_GJperHa + " and required heat demand (GJ/Ha) " + p_requiredHeatDemand_GJPerHa + " in year " + main.v_year);
+			nbh.v_districtHeatYearOfOperation = main.v_year + p_planAndConstructionTime_years;
+		}
+	}
 	//Takes a couple of years to actually build the grid
-	if(main.v_year == neighborhood.v_districtHeatYearOfOperation){		
-		neighborhood.v_hasDistrictHeatingGrid = true;
-		/*
-		for(J_Dwelling x : neighborhood.c_dwellings){
-			if( main.p_connectionObligationNewDH) {
-				x.f_setObligedDH();
-			}
-			else {
-				x.f_setDHPossible();
-			}
-			traceln("District heating is expanded to NBH " + neighborhood.getId());
-		}*/
+	else if	(main.v_year == nbh.v_districtHeatYearOfOperation){		
+		nbh.v_hasDistrictHeatingGrid = true;
 	}
 }
 ]]></Body>
@@ -18360,6 +18503,10 @@ for(GZ_Neighborhood nbh : main.pop_GZ_Neighborhoods){
 		if(hh.f_hasEndOfLifeTrigger()){
 			hh.getHeatingSystemOptionsEAC();
 			OL_HeatingSystem selectedHS = hh.getTopRankedEACOption();
+			
+			if(selectedHS == null){
+				traceln("HS is null at ll");
+			}
 			hh.f_installSelectedHeatingMethod(selectedHS);
 		}
 	}
@@ -19290,7 +19437,7 @@ f_initializeScenarioSettings();
 					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
 						<Type><![CDATA[int]]></Type>        
 						<InitialValue Class="CodeValue">
-							<Code><![CDATA[2023]]></Code>
+							<Code><![CDATA[2024 //min 2024 because earliest construction year = 2024]]></Code>
 						</InitialValue>
 					</Properties>
 				</Variable>
@@ -25729,8 +25876,9 @@ public class J_Household {
      * Default constructor
      */
 	
-	public J_Household(J_Dwelling dwelling) {
+	public J_Household(J_Dwelling dwelling, OL_HouseholdOwnership ownership) {
 		this.dwelling = dwelling;
+		this.ownership = ownership;
 	}
 	
 	//Install selected heating method
@@ -25743,8 +25891,25 @@ public class J_Household {
   		//Set new
   		d.setHeatingSystem(new J_HeatingSystem(type));
   		
+  		if(type == null) {
+  			traceln("Null for type " + type + " and ownership " + ownership );
+  		}
+  		
+  		
+  		if(d.main.heatingSystemOptionsGlobalData.get(type) == null) {
+  			traceln("Null for HSOG map with type " + type + " and ownership " + ownership );
+  		}
+  		  		
+  		if(d.getHasLowTemperatureInhouseHeatDistribution() == false) { //only when does not yet have
+  			d.setHasLowTemperatureInhouseHeatDistribution(d.main.heatingSystemOptionsGlobalData.get(type).getRequiresLowTemperatureInhouseHeatDistribution());
+  		}
+  		
   		//Store value
+  		if(d.getMain().mapAnnualValues.get(type) == null) {
+  			traceln("Null for map with type " + type + " and ownership " + ownership );
+  		}
   		J_AnnualValues anVal = getDwelling().getMain().mapAnnualValues.get(type).get(ownership);
+  		
   		J_HeatingSystemOption selectedHS = heatingSystemOptions.get(type);
   		if(ownership != PRIVATELY_OWNED) {
        		anVal.addRentersInstalled(selectedHS.getEAC());
@@ -25830,7 +25995,7 @@ public class J_Household {
 		String requiredInsulationLabel = heatingSystemGlobalData.getRequiredEnergyLabel();
 		if( !requiredInsulationLabel.equals("no")) {
 			int requiredInsulationLabelNumber = dwelling.f_insulationLabelLetterToNumber(requiredInsulationLabel);
-			if( requiredInsulationLabelNumber < dwelling.getEnergyLabelNumber()) {
+			if( requiredInsulationLabelNumber < dwelling.f_insulationLabelLetterToNumber(dwelling.getEnergyLabel())) {
 				double requiredInsulationCosts = dwelling.f_getInsulationCosts(requiredInsulationLabel);
 				investmentCosts += requiredInsulationCosts;
 				/*if( dwelling.getId() < 20) {
@@ -25902,7 +26067,7 @@ public class J_Household {
     
     public void f_setInitialHeatingMethod( OL_HeatingSystem heatingSystemType ) {
     	J_Dwelling d = getDwelling();
-    	d.setInitialHeatingMethod(heatingSystemType);
+    	d.setInitialHeatingMethod(heatingSystemType);    	
     	d.main.mapAnnualValues.get(heatingSystemType).get(ownership).addInstalledAtInitialization();
     }
     
@@ -26348,7 +26513,7 @@ public class J_Dwelling {
 	private int id;
 	private String postalCode6;
 	private String energyLabel;
-	private int energyLabelNumber;
+	//private int energyLabelNumber;
 	private int constructionYear;
 	private double livingArea_m2;
 	private OL_DwellingType dwellingType;
@@ -26378,6 +26543,7 @@ public class J_Dwelling {
 		this.constructionYear = pand_bouwjaar;
 		this.livingArea_m2 = oppervlakte;
 		if(livingArea_m2 > 500) { livingArea_m2 = 500; } //Bound to 500m2
+		this.neighborhood = neighborhood;
 		this.main = main;
 		
 		f_setDwellingType(dwellingType);
@@ -26417,10 +26583,11 @@ public class J_Dwelling {
   	
   	public void setDefaultYearLastRenovation() {
   	  	if( constructionYear < 1990 ) {
-  	  	    yearLastRenovation = 1990 + main.randomInstance.nextInt(0, 35);
+  	  	    yearLastRenovation = 1990 + main.randomInstance.nextInt(0, (main.v_startYear - 1990));
   	  	}
   	  	else {
   	  		yearLastRenovation = constructionYear;
+ 
   	  	}
   	}
     
@@ -26438,28 +26605,28 @@ public class J_Dwelling {
     	
     	if( label.equals("A++++") || label.equals("A+++") || label.equals("A++") || label.equals("A+") || label.equals("A")){
     		energyLabel = "a";
-    		energyLabelNumber = 1;
+    		//energyLabelNumber = 1;
     	} else if( label.equals("B")){
     		energyLabel = "b";
-    		energyLabelNumber = 2;
+    		//energyLabelNumber = 2;
     	} else if( label.equals("C") ){
     		energyLabel = "c";
-    		energyLabelNumber = 3;
+    		//energyLabelNumber = 3;
     	} else if( label.equals("D") ){
     		energyLabel = "d";
-    		energyLabelNumber = 4;
+    		//energyLabelNumber = 4;
     	} else if( label.equals("E") ){
     		energyLabel = "e";
-    		energyLabelNumber = 5;
+    		//energyLabelNumber = 5;
     	} else if( label.equals("F") ){
     		energyLabel = "f";
-    		energyLabelNumber = 6;
+    		//energyLabelNumber = 6;
     	} else if( label.equals("G") ){
     		energyLabel = "g";
-    		energyLabelNumber = 7;
+    		//energyLabelNumber = 7;
     	} else {
     		energyLabel = "n";
-    		energyLabelNumber = 4;
+    		//energyLabelNumber = 4;
     		main.countLabelN++;
     	}	
 	}
@@ -26512,7 +26679,7 @@ public class J_Dwelling {
     
     public double f_getInsulationCosts(String upgradeToEnergyLabel) {
     	double investmentCostsInsulation = 0.0;
-    	if( energyLabelNumber > 1) { //Only for values where label is not yet A
+    	if( f_insulationLabelLetterToNumber(energyLabel) > 1) { //Only for values where label is not yet A
 	    	//Get min value per connection
 	    	String minOrMaxValue = "min";
 	    	String unit = "_asl";
@@ -26650,7 +26817,22 @@ public class J_Dwelling {
     	return labelLetter;
     } 
     
-    
+    public void updateExogeneousInsulation() {	
+		int currentELabelNumber = f_insulationLabelLetterToNumber(energyLabel);
+		if(currentELabelNumber > 1 && main.v_year - yearLastRenovation > 15 ){
+			double rand = main.randomInstance.nextDouble();
+			if( rand < 0.05){ //Would renovate once every 20 year between 15 and 35 years
+				int renovatedELabelNumber = currentELabelNumber - 2;
+				if( renovatedELabelNumber < 1) { renovatedELabelNumber = 1;}
+					 
+				energyLabel = f_insulationLabelNumberToLetter(renovatedELabelNumber);
+				yearLastRenovation = main.v_year;
+				if( renovatedELabelNumber <= 2) {  
+					hasLowTemperatureInhouseHeatDistribution = true; 
+				}
+			}
+		}
+    }
     
  
     /**Setter methods
@@ -26665,7 +26847,9 @@ public class J_Dwelling {
 		if(ageHeatingSystem >= heatingSystemLifetime) {
 			ageHeatingSystem = (int) (Math.random() * (heatingSystemLifetime + 1));
 		}
-    	
+    	if(ageHeatingSystem < 0) {
+    		traceln("ERROR age hs at dwelling inital method is " + ageHeatingSystem + " at startYear " + main.v_startYear + " with Year Last Renovation " + yearLastRenovation);
+    	}
     	//Initalize heating system
     	this.heatingSystem = new J_HeatingSystem(heatingSystemType, ageHeatingSystem);
     	this.hasLowTemperatureInhouseHeatDistribution = main.heatingSystemOptionsGlobalData.get(heatingSystemType).getRequiresLowTemperatureInhouseHeatDistribution();
@@ -26682,10 +26866,10 @@ public class J_Dwelling {
     }
     public void setNaturalGasDemand_kWh( double naturalGasDemand_kWh) {
     	this.naturalGasDemand_kWh = naturalGasDemand_kWh;
-    }
+    }/*
     public void setEnergyLabelNumber( int value ) {
     	energyLabelNumber = value;
-    }
+    }*/
     public void setEnergyLabel( String value ) {
     	energyLabel = value;
     }
@@ -26726,10 +26910,10 @@ public class J_Dwelling {
     public String getEnergyLabel() {
     	return energyLabel;
     }
-    
+    /*
     public int getEnergyLabelNumber() {
     	return energyLabelNumber;
-    }
+    }*/
     
     public OL_DwellingType getDwellingType() {
     	return dwellingType;
@@ -26791,9 +26975,9 @@ public class J_HomeOwner extends heat_transition_tipping_pathways.J_Household {
     /**
      * Default constructor
      */
-    public J_HomeOwner(J_Dwelling dwelling) {
+    public J_HomeOwner(J_Dwelling dwelling, OL_HouseholdOwnership ownership) {
         // Call the constructor of J_Household and pass the dwelling object
-        super(dwelling);
+        super(dwelling, ownership);
         // Initialize additional behavior or properties for J_HomeOwner
         f_setAttitude();
     }
@@ -26820,6 +27004,17 @@ public class J_HomeOwner extends heat_transition_tipping_pathways.J_Household {
 		//If end of life install top selected
 		if( f_hasEndOfLifeTrigger() ) {
 			OL_HeatingSystem bestRankedHSType = getTopRankedUtilityOption();
+			if(bestRankedHSType == null) {
+				for (Map.Entry<OL_HeatingSystem, J_HeatingSystemOption> entry : getHeatingSystemOptions().entrySet()) {
+				    OL_HeatingSystem heatingSystem = entry.getKey();
+				    J_HeatingSystemOption option = entry.getValue();
+				    
+				    traceln("System: " + heatingSystem + " perc util: " + option.getPerceivedUtility());
+				}
+			}
+			if(bestRankedHSType == null){
+				traceln("HS is null at ho adopt");
+			}
 			f_installSelectedHeatingMethod(bestRankedHSType);
 			getHeatingSystemOptions().clear();
 		}
@@ -26827,6 +27022,19 @@ public class J_HomeOwner extends heat_transition_tipping_pathways.J_Household {
 		else if( f_hasOpportunityTriggerTimeCondition() ) {
 			OL_HeatingSystem bestRankedHSType = getTopRankedUtilityOption();
 			if( getDwelling().getHeatingSystem().getType() != bestRankedHSType) {
+				if(bestRankedHSType == null) {
+					for (Map.Entry<OL_HeatingSystem, J_HeatingSystemOption> entry : getHeatingSystemOptions().entrySet()) {
+					    OL_HeatingSystem heatingSystem = entry.getKey();
+					    J_HeatingSystemOption option = entry.getValue();
+					    
+					    traceln("From opportunity trigger System: " + heatingSystem + " perc util: " + option.getPerceivedUtility());
+					}
+				}
+				
+				if(bestRankedHSType == null){
+					traceln("HS is null at ho op trig");
+				}
+				
 				f_installSelectedHeatingMethod(bestRankedHSType);
 				getHeatingSystemOptions().clear();
 			}
@@ -26848,7 +27056,7 @@ public class J_HomeOwner extends heat_transition_tipping_pathways.J_Household {
 	    }
 	}
 	
-	public void f_getHeatingSystemOptionsUtility() { //Note this only works because never storing this for more than a year, recalculting utility every year anyway
+	public void f_getHeatingSystemOptionsUtility() { //Note this only works because never storing this for more than a year, recalculting utility every year anyway	
 		for (Map.Entry<OL_HeatingSystem, J_HeatingSystemOption> entry : getHeatingSystemOptions().entrySet()) {
 			 
 			J_HeatingSystemOption hsol = entry.getValue();
@@ -27294,8 +27502,12 @@ public class J_SocialHousingBlock {
 	private J_HeatingSystem heatingSystem;
 	private GZ_Neighborhood neighborhood;
 	private Main main;
-	private double yearLastRenovation;
+	private int yearLastRenovation;
 	private Map<OL_HeatingSystem, J_HeatingSystemOption> heatingSystemOptions;
+	
+	private String energyLabel;
+	private boolean hasLowTemperatureInhouseHeatDistribution;
+
 	
     /**
      * Default constructor
@@ -27304,22 +27516,34 @@ public class J_SocialHousingBlock {
     	this.neighborhood = nbh;
     	this.main = main;
     	households = new ArrayList<>();
-    	setDefaultYearLastRenovation();
     }
 
     public void f_setInitialHeatingMethod(OL_HeatingSystem type) {
+    	hasLowTemperatureInhouseHeatDistribution = main.heatingSystemOptionsGlobalData.get(type).getRequiresLowTemperatureInhouseHeatDistribution();
+    	
+	    // Initialize heating system based on type 
+		// Get random age for heating systemGive random age to heating system
+		int ageHeatingSystem = main.v_startYear - yearLastRenovation;
+		int heatingSystemLifetime = main.heatingSystemOptionsGlobalData.get(type).getLifetime();
+		if(ageHeatingSystem >= heatingSystemLifetime) {
+			ageHeatingSystem = (int) (Math.random() * (heatingSystemLifetime + 1));
+		}
+		
+		//Initalize heating system
+		this.heatingSystem = new J_HeatingSystem(type, ageHeatingSystem);
+		this.hasLowTemperatureInhouseHeatDistribution = main.heatingSystemOptionsGlobalData.get(type).getRequiresLowTemperatureInhouseHeatDistribution();
+	    
     	for(J_Household hh : households) {
-    		hh.f_setInitialHeatingMethod(type);
+    		hh.getDwelling().setHeatingSystem(heatingSystem);
+    		hh.getDwelling().setHasLowTemperatureInhouseHeatDistribution(hasLowTemperatureInhouseHeatDistribution);
+    		main.mapAnnualValues.get(type).get(hh.getOwnership()).addInstalledAtInitialization();
     	}
     }
-    public void setHeatingSystem(OL_HeatingSystem type) {
-    	heatingSystem = new J_HeatingSystem(type);
-    }
+    
     
     public void setDefaultYearLastRenovation() {
     	
-    	double avgConstructionYear = average(households, x->x.getDwelling().getConstructionYear());		
-    	
+    	int avgConstructionYear = roundToInt(average(households, x->x.getDwelling().getConstructionYear()));		
     	if(avgConstructionYear < 1990 ) {
     		int randomYear = main.randomInstance.nextInt(0, 35); 
     		yearLastRenovation = 1990 + randomYear;
@@ -27331,6 +27555,15 @@ public class J_SocialHousingBlock {
     	for( J_Household hh : households){
     		hh.getDwelling().setYearLastRenovation(yearLastRenovation);	
     	}
+    }
+    
+    public void setDefaultEnergyLabel() {
+    	int sumLabelNumber = 0;
+    	for(J_Household hh : households) {
+    		sumLabelNumber += f_insulationLabelLetterToNumber(hh.getDwelling().getEnergyLabel());
+    	}
+    	int avgLabelNb = roundToInt(sumLabelNumber / households.size());
+    	energyLabel = f_insulationLabelNumberToLetter(avgLabelNb);
     }
     
     public void addHousehold(J_Household household) {
@@ -27359,11 +27592,17 @@ public class J_SocialHousingBlock {
 			heatingSystemOptions = new EnumMap<>(OL_HeatingSystem.class);
 			double EAC = 0.0;
 			boolean isPossible = true;
+			
+			for(J_Household hh : households) {
+				J_Dwelling d = hh.getDwelling();
+				hh.getHeatingSystemOptionsEAC();
+			}
+			
 			for (OL_HeatingSystem type : OL_HeatingSystem.values()) {
 				for(J_Household hh : households) {
-					J_Dwelling d = hh.getDwelling();
-					EAC += hh.f_getEAC(d, type);
-					if( isPossible == false || !d.f_getHeatingMethodPossibility(type)) {
+					EAC += hh.getHeatingSystemOptions().get(type).getEAC();
+					
+					if( isPossible == false || !hh.getDwelling().f_getHeatingMethodPossibility(type)) {
 						isPossible = false;
 					}
 				}
@@ -27374,7 +27613,12 @@ public class J_SocialHousingBlock {
     }
     
     public void installNewHeatingMethodInHouseholds(OL_HeatingSystem type) {
+    	hasLowTemperatureInhouseHeatDistribution = main.heatingSystemOptionsGlobalData.get(type).getRequiresLowTemperatureInhouseHeatDistribution();
     	for(J_Household hh : households) {
+    		if(type == null){
+				traceln("HS is null at shb");
+			}
+    		
     		hh.f_installSelectedHeatingMethod(type);
     	}
     }
@@ -27396,6 +27640,9 @@ public class J_SocialHousingBlock {
   	}
   	
   	public boolean hasTrigger() {
+  		if( heatingSystem == null) {
+  			traceln("ERROR hs null at nbh " + neighborhood.getIndex());
+  		}
   		int age = heatingSystem.getAge();
   		int lifetime = main.heatingSystemOptionsGlobalData.get(heatingSystem.getType()).getLifetime();
   		
@@ -27406,10 +27653,31 @@ public class J_SocialHousingBlock {
   		else {
   			return false;
   		}
-  		
-  			
-  		
   	}
+  	
+  	public void updateExogeneousInsulation() {	
+		int currentELabelNumber = f_insulationLabelLetterToNumber(energyLabel);
+		if(currentELabelNumber > 1 && main.v_year - yearLastRenovation > 15 ){
+			double rand = main.randomInstance.nextDouble();
+			if( rand < 0.05){ //Would renovate once every 20 year between 15 and 35 years
+				int renovatedELabelNumber = currentELabelNumber - 2;
+				if( renovatedELabelNumber < 1) { renovatedELabelNumber = 1;}
+					 
+				energyLabel = f_insulationLabelNumberToLetter(renovatedELabelNumber);
+				yearLastRenovation = main.v_year;
+				if( renovatedELabelNumber <= 2) {  
+					hasLowTemperatureInhouseHeatDistribution = true; 
+				}
+			}
+			
+			for(J_Household hh : households) {
+				J_Dwelling d = hh.getDwelling();
+				d.setEnergyLabel(energyLabel);
+				d.setHasLowTemperatureInhouseHeatDistribution(hasLowTemperatureInhouseHeatDistribution);
+				d.setYearLastRenovation(yearLastRenovation);
+			}
+		}
+    }
   	
   	public List<J_Household> getHouseholds(){
   		return households;
@@ -27422,7 +27690,60 @@ public class J_SocialHousingBlock {
   	public void clearHouseholds() {
   		households.clear();
   	}
+  	
+  	public String getEnergyLabel() {
+  		return energyLabel;
+  	}
+  	
+  	public int getEnergyLabelNumber() {
+  		return f_insulationLabelLetterToNumber(energyLabel);
+  	}
+  	
+  	public void setEnergyLabel(int energyLabelNumber) {
+  		energyLabel = f_insulationLabelNumberToLetter(energyLabelNumber);
+  	}
     
+  	public int f_insulationLabelLetterToNumber(String labelLetter) {
+    	int labelNumber = 3;
+    	if( labelLetter.equals("a")){
+    		labelNumber = 1;
+    	} else if( labelLetter.equals("b")){
+    		labelNumber = 2;
+    	} else if( labelLetter.equals("c")){
+    		labelNumber = 3;
+    	} else if( labelLetter.equals("d")){
+    		labelNumber = 4;
+    	} else if( labelLetter.equals("e")){
+    		labelNumber = 5;
+    	} else if( labelLetter.equals("f")){
+    		labelNumber = 6;
+    	} else if( labelLetter.equals("g")){
+    		labelNumber = 7;
+    	} else {
+    		labelNumber = 3;
+    	}	
+    	return labelNumber;
+    }
+  
+    public String f_insulationLabelNumberToLetter(int labelNumber) {
+    	String labelLetter = "c";
+    	if( labelNumber <= 1 ){
+    		labelLetter = "a";
+    	} else if( labelNumber == 2 ){
+    		labelLetter = "b";
+    	} else if( labelNumber == 3 ){
+    		labelLetter = "c";
+    	} else if( labelNumber == 4 ){
+    		labelLetter = "d";
+    	} else if( labelNumber == 5 ){
+    		labelLetter = "e";
+    	} else if( labelNumber == 6 ){
+    		labelLetter = "f";
+    	} else if( labelNumber >= 7 ){
+    		labelLetter = "g";
+    	}
+    	return labelLetter;
+    }
 	@Override
 	public String toString() {
 		return super.toString();
@@ -28326,6 +28647,12 @@ public class J_HeatingSystemOption {
 		<Resource>
 			<Id>1693907379986</Id>
 			<Path><![CDATA[_export_pivot_table.xlsx]]></Path>
+			<ReferencedFromUserCode>false</ReferencedFromUserCode>
+			<Location>FILE_SYSTEM</Location>
+		</Resource>
+		<Resource>
+			<Id>1772801679907</Id>
+			<Path><![CDATA[_EVsPerPC.csv]]></Path>
 			<ReferencedFromUserCode>false</ReferencedFromUserCode>
 			<Location>FILE_SYSTEM</Location>
 		</Resource>
