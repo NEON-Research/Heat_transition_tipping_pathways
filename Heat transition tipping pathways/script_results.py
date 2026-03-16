@@ -435,7 +435,7 @@ def create_detail_values_per_hm_per_scenario_plot(
     output_file="plots/detail_values_per_hm_per_scenario.png"
 ):
     # Get privately-owned and scenario-specific data
-    df_filtered = df[(df["ownership"] == "PRIVATELY_OWNED") & (df["scenario_name"] == scen) & (df["year"] != 2023)].copy()
+    df_filtered = df[(df["ownership"] == "PRIVATELY_OWNED") & (df["scenario_name"] == scen) & (df["year"] > 2024)].copy()
 
     # Guard: nothing to do
     if df_filtered.empty:
