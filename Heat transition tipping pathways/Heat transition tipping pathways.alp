@@ -3598,28 +3598,50 @@ for(J_Household x : c_rentersLandlords){
 for(J_SocialHousingBlock shb : c_socialHousingBlocks){
 	shb.f_updateHeatingSystemAge();
 }
-
+/*
+double hoAvgAge = average(c_homeOwners, x->x.getDwelling().getHeatingSystem().getAge());
+double llAvgAge = average(c_rentersLandlords, x->x.getDwelling().getHeatingSystem().getAge());
+double shbAvgAge = average(c_socialHousingBlocks, x->x.getHeatingSystem().getAge());
+traceln("hs age: home owners = " + hoAvgAge + " landlords = " + llAvgAge + " shb = " + shbAvgAge + " in year " + v_year);
+*/
 //2. Update district heating company
 for(DistrictHeatingCompany DHC : pop_districtHeatingCompanies){
 	DHC.f_DHExpansion(p_dhExpansionPlans, yearIndex);
 }
 
+
+int countSHBToAdopt = 0;
+int countLLToAdopt = 0;
+int countHOToAdopt = 0;
 //4. Update social housing - for whole block at once
 for(J_SocialHousingBlock shb : c_socialHousingBlocks) {
+	if(shb.hasTrigger()){
+		countSHBToAdopt += shb.getHouseholds().size();
+	}
 	shb.f_adoptHeatingMethod();
 }
 
 //5. Landlords
+for(J_Household x : c_rentersLandlords){
+	if(x.f_hasEndOfLifeTrigger()){
+		countLLToAdopt++;
+	}
+}
 for(Landlord x : pop_landlords){
 	x.f_adoptHeatingMethod();
 }
 
+
 //5. Homeowners - if home owners have triggered heating method, calculate EACs
 for(J_HomeOwner ho : c_homeOwners){	
 	if(ho.hasTrigger()){
+		countHOToAdopt++;
 		ho.getHeatingSystemOptionsEAC();
 	}	
 }
+
+traceln("Adopting: Social housing renters = " + countSHBToAdopt + " landlord renters = " + countLLToAdopt + " home owners = " + countHOToAdopt + " in " + v_year);
+
 
 //7 Set utility in a next loop for normalized values
 for(J_HomeOwner ho : c_homeOwners){	
@@ -3628,6 +3650,13 @@ for(J_HomeOwner ho : c_homeOwners){
 		ho.f_adoptNewHeatingSystem();
 	}
 }
+
+int countHOWithHSAge10 = count(c_homeOwners, x->x.getDwelling().getHeatingSystem().getAge() >= 10);
+int countLLWithHSAge10 = count(c_rentersLandlords, x->x.getDwelling().getHeatingSystem().getAge() >= 10);
+int countTotalAge10 = count(c_households, x->x.getDwelling().getHeatingSystem().getAge() >= 10);
+int countSHRentersAge10 = countTotalAge10 - countLLWithHSAge10 - countHOWithHSAge10;
+int countSHBlocksAge10 = count(c_socialHousingBlocks, x->x.getHeatingSystem().getAge() >= 10);
+traceln("Count age over 10: Total = " + countTotalAge10 + " HO = " + countHOWithHSAge10 + " LL = " + countLLWithHSAge10 + " SHB renters = " + countSHRentersAge10 + " SHBs = " + countSHBlocksAge10);
 
 
 //9. Update exogenous home renovation and insulation
@@ -3906,7 +3935,7 @@ for (J_HeatingSystemOptionsGlobal option : heatingSystemOptionsGlobalData.values
 for (J_HeatingSystemOptionsGlobal option : heatingSystemOptionsGlobalData.values()) {
 	double normalizedValue = f_getNormalizedValue(option.getSustainabilityScore(), minValue, maxValue);
 	option.setSustainabilityScoreNormalized(normalizedValue);
-	//traceln("Norm sus score for heating system " + hso.getType() + " = " + normalizedValue);
+	//traceln("Norm sus score for heating system " + option.getType() + " = " + normalizedValue);
 }
 ]]></Body>
 				</Function>
@@ -6068,6 +6097,7 @@ return 4;]]></Body>
 		int installedCumulative;
 		int installedCurrent;
 		int installedThisYear = anVal.getInstalledThisYear();
+		int consideredThisYear = anVal.getConsideredThisYear();
 		int removedThisYear = anVal.getRemovedThisYear();
 		if(yearIndex == 0){
 			installedCumulative = installedThisYear;
@@ -6080,6 +6110,7 @@ return 4;]]></Body>
 		resultsPO.setYear(
 				yearIndex,
 				installedThisYear,
+				consideredThisYear,
 				removedThisYear,
 				installedCumulative,
 				installedCurrent,
@@ -6089,12 +6120,24 @@ return 4;]]></Body>
 				anVal.getAvgEACConsidered(),
 				anVal.getAvgPBCConsidered()
 			);
+		/*	
+		if(ownership == PRIVATELY_OWNED){
+			traceln("Avg att cons " + anVal.getAvgAttConsidered() + " for " + ownership + " " + heating_method + " in " + v_year + " with " + consideredThisYear + " considered");
+		}
+		if(ownership != PRIVATELY_OWNED){
+			traceln("Avg EAC cons " + anVal.getAvgEACConsidered() + " for " + ownership + " " + heating_method + " in " + v_year + " with " + consideredThisYear + " considered");
+		}*/
+		if(ownership == PRIVATELY_RENTED && heating_method == NATURAL_GAS_BOILER ){
+			traceln("Considered this year " + anVal.getConsideredThisYear() + " for " + ownership + " " + heating_method + " in " + v_year);
+		}
 		/*
 		if(installedThisYear == 0){
 			traceln( "0 installed " + heating_method + " at owner " + ownership + " in year index " + yearIndex + " year " + (yearIndex + v_startYear) );
     	}*/
     }
+    
     resultsData.getHeatingMethod(heating_method).sumAnnualTotals(yearIndex);
+    
 }
 //Clears this year, ready for the next
 f_initializeAnnualValuesMap();]]></Body>
@@ -17654,8 +17697,8 @@ double neighborhoodsInCongestion_perc = main.pop_GZ_Neighborhoods.size() > 0
     ? (double) c_neighborhoodsWaitingToBeReinforced.size() / main.pop_GZ_Neighborhoods.size() 
     : 0.0;
     
-traceln("Nbhs in congestion = " + neighborhoodsInCongestion_perc + "%, = " + c_neighborhoodsWaitingToBeReinforced.size());
-traceln("Nbhs being reinforced = " + c_neighborhoodsBeingReinforced.size() + ", nbhs reinforced = " + c_neighborhoodsReinforced.size() + ", nbhs not reinforced = " +c_neighborhoodsNotReinforced.size());
+//traceln("Nbhs in congestion = " + neighborhoodsInCongestion_perc + "%, = " + c_neighborhoodsWaitingToBeReinforced.size());
+//traceln("Nbhs being reinforced = " + c_neighborhoodsBeingReinforced.size() + ", nbhs reinforced = " + c_neighborhoodsReinforced.size() + ", nbhs not reinforced = " +c_neighborhoodsNotReinforced.size());
 main.resultsData.addNeighborhoodsInCongestion_perc(neighborhoodsInCongestion_perc, yearIndex);
 ]]></Body>
 				</Function>
@@ -20560,7 +20603,7 @@ try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName, true)))
 	// Write header only if file doesn't exist
 	if (!headerWritten) {
 		sb.append("scenario,scenario_name,iteration,year,nbh_in_grid_congestion_perc,nbh_with_dh_perc,heating_system,ownership,")
-			.append("installed_current,installed_annually,removed_annually,installed_cumulative,")
+			.append("installed_current,installed_annually,removed_annually,installed_cumulative,considered_annually,")
 			.append("avg_att,avg_util,avg_sub_norm,avg_eac,avg_pbc,")
 			.append("SLF,ELF,GRR,DHCT,DHES,SHAES,DHCO,GCHPB\n");
 		headerWritten = true;
@@ -20586,6 +20629,7 @@ try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName, true)))
 				.append(resultsPHM.getInstalledThisYearIndex(year)).append(',')
 				.append(resultsPHM.getRemovedThisYearIndex(year)).append(',')
 				.append(resultsPHM.getInstalledCumulativeIndex(year)).append(',')
+				.append(resultsPHM.getConsideredThisYearIndex(year)).append(',')
 				.append(resultsPHM.getAvgAttIndex(year)).append(',')
 				.append(resultsPHM.getAvgPercUtilIndex(year)).append(',')
 				.append(resultsPHM.getAvgSubNormIndex(year)).append(',')
@@ -20601,6 +20645,8 @@ try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName, true)))
 				.append(currentScenario.gridCongestionHPBan).append('\n');
 				
 				countRows++;
+				//traceln("Considered " + system.name() + " " + resultsPHM.getConsideredThisYearIndex(year) + " in year " + year + " for ownership TOTAL");
+				//traceln("Installed " + system.name() + " " + resultsPHM.getInstalledThisYearIndex(year) + " in year " + year + " for ownership TOTAL");
 		}
 		
 		for (OL_HouseholdOwnership ownership : OL_HouseholdOwnership.values()) {
@@ -20619,6 +20665,7 @@ try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName, true)))
 					.append(resultsPO.getInstalledThisYearIndex(year)).append(',')
 					.append(resultsPO.getRemovedThisYearIndex(year)).append(',')
 					.append(resultsPO.getInstalledCumulativeIndex(year)).append(',')
+					.append(resultsPO.getConsideredThisYearIndex(year)).append(',')
 					.append(resultsPO.getAvgAttIndex(year)).append(',')
 					.append(resultsPO.getAvgPercUtilIndex(year)).append(',')
 					.append(resultsPO.getAvgSubNormIndex(year)).append(',')
@@ -20633,6 +20680,9 @@ try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName, true)))
 					.append(currentScenario.dhConnectionObligation).append(',')
 					.append(currentScenario.gridCongestionHPBan).append('\n');
 					countRows++;
+					
+					//traceln("Considered " + system.name() + " " + resultsPO.getConsideredThisYearIndex(year) + " in year " + year + " for ownership " + ownership.name());
+					//traceln("Installed " + system.name() + " " + resultsPO.getInstalledThisYearIndex(year) + " in year " + year + " for ownership " + ownership.name());
 			}
 		}
 	}
@@ -26306,62 +26356,67 @@ public class J_Household {
 	
 	//Install selected heating method
   	//public void f_installSelectedHeatingMethod(OL_HeatingSystem type) {
-	public void f_installSelectedHeatingMethod(OL_HeatingSystem type, String trigger) {
+	public void f_installSelectedHeatingMethod(OL_HeatingSystem selectedType, String trigger) {
   		J_Dwelling d = getDwelling();
   		  		
   		//Remove old heating system
   		J_HeatingSystem oldHS = d.getHeatingSystem();
-  		d.getMain().mapAnnualValues.get(d.getHeatingSystem().getType()).get(ownership).addRemovedThisYear();
+  		d.getMain().mapAnnualValues.get(oldHS.getType()).get(ownership).addRemovedThisYear();
   		
   		//Set new
-  		d.setHeatingSystem(new J_HeatingSystem(type));
+  		d.setHeatingSystem(new J_HeatingSystem(selectedType));
   		  		
   		if(d.getHasLowTemperatureInhouseHeatDistribution() == false) { //only when does not yet have
-  			d.setHasLowTemperatureInhouseHeatDistribution(d.main.heatingSystemOptionsGlobalData.get(type).getRequiresLowTemperatureInhouseHeatDistribution());
+  			d.setHasLowTemperatureInhouseHeatDistribution(d.main.heatingSystemOptionsGlobalData.get(selectedType).getRequiresLowTemperatureInhouseHeatDistribution());
   		}
   		
-  		//Store value
-  		J_AnnualValues anVal = getDwelling().getMain().mapAnnualValues.get(type).get(ownership);
-  		
-  		J_HeatingSystemOption selectedHS = heatingSystemOptions.get(type);
+  		//Store value  		
+  		J_AnnualValues anVal = getDwelling().getMain().mapAnnualValues.get(selectedType).get(getOwnership());
+  		J_HeatingSystemOption hs = heatingSystemOptions.get(selectedType);
   		if(ownership != PRIVATELY_OWNED) {
-       		anVal.addRentersInstalled(selectedHS.getEAC());
-       	}
-  		else {
-  			anVal.addHomeOwnerInstalled(selectedHS);
+  			anVal.addRentersInstalled(hs.getEAC());
   		}
+  		else {
+  		 	anVal.addHomeOwnerInstalled(hs);
+  		 }
+  		
+  		//Add to validation household
   		if(validationHousehold) {
-  			J_AdoptionData adoptionData = new J_AdoptionData(getDwelling().getMain().v_year, type, heatingSystemOptions, oldHS, trigger );
+  			J_AdoptionData adoptionData = new J_AdoptionData(getDwelling().getMain().v_year, selectedType, heatingSystemOptions, oldHS, trigger );
   			adoptionDataList.add(adoptionData);
   		}
   	}
-	/*
-	public void f_installSelectedHeatingMethodSHB(J_HeatingSystem newHS, boolean hasLowTemperatureInhouseHeatDistribution, String trigger) {
-		J_Dwelling d = getDwelling();
-	  		
+	
+	public void f_installSelectedHeatingMethodSHB(J_HeatingSystem newHS, J_HeatingSystem oldHS, boolean hasLowTemperatureInhouseHeatDistribution, String trigger) {
+  		J_Dwelling d = getDwelling();
+  		  		
   		//Remove old heating system
-  		J_HeatingSystem oldHS = d.getHeatingSystem();
-  		d.getMain().mapAnnualValues.get(d.getHeatingSystem().getType()).get(ownership).addRemovedThisYear();
+  		d.getMain().mapAnnualValues.get(oldHS.getType()).get(ownership).addRemovedThisYear();
   		
   		//Set new
   		d.setHeatingSystem(newHS);
-  		d.setHasLowTemperatureInhouseHeatDistribution(hasLowTemperatureInhouseHeatDistribution);	
-  		
-  		//Store value
-  		J_AnnualValues anVal = getDwelling().getMain().mapAnnualValues.get(newHS.getType()).get(ownership);
-  		
-  		J_HeatingSystemOption selectedHS = heatingSystemOptions.get(newHS.getType());
-  		if(ownership != PRIVATELY_OWNED) {
-       		anVal.addRentersInstalled(selectedHS.getEAC());
-       	}
-  		else {
-  			anVal.addHomeOwnerInstalled(selectedHS);
+  		  		
+  		if(d.getHasLowTemperatureInhouseHeatDistribution() == false && hasLowTemperatureInhouseHeatDistribution ) { //only when does not yet have
+  			d.setHasLowTemperatureInhouseHeatDistribution(hasLowTemperatureInhouseHeatDistribution);
   		}
+  		
+  		//Store value 
+  		OL_HeatingSystem newHSType = newHS.getType();
+  		J_AnnualValues anVal = getDwelling().getMain().mapAnnualValues.get(newHSType).get(getOwnership());
+  		J_HeatingSystemOption hs = heatingSystemOptions.get(newHSType);
+  		if(ownership != PRIVATELY_OWNED) {
+  			anVal.addRentersInstalled(hs.getEAC());
+  		}
+  		else {
+  		 	anVal.addHomeOwnerInstalled(hs);
+  		 }
+  		
+  		//Add to validation household
   		if(validationHousehold) {
-  			J_AdoptionData adoptionData = new J_AdoptionData(getDwelling().getMain().v_year, newHS.getType(), heatingSystemOptions, oldHS, trigger );
+  			J_AdoptionData adoptionData = new J_AdoptionData(getDwelling().getMain().v_year, newHSType, heatingSystemOptions, oldHS, trigger );
   			adoptionDataList.add(adoptionData);
   		}
-  	}*/
+  	}
   	
   	//Update heating system age
     public void f_updateHeatingSystemAge() {
@@ -26376,12 +26431,6 @@ public class J_Household {
 				double EAC = f_getEAC(this.dwelling, type);
 				boolean isPossible = this.dwelling.f_getHeatingMethodPossibility(type);
 			    heatingSystemOptions.put(type, new J_HeatingSystemOption(EAC, isPossible));
-			    
-			    //Store value for annual totals
-			    J_AnnualValues anVal = getDwelling().getMain().mapAnnualValues.get(type).get(ownership);
-		       	if(ownership != PRIVATELY_OWNED) {
-		       		anVal.addRentersConsidered(EAC);
-		       	}
 			}
 		}
 	}
@@ -26391,11 +26440,13 @@ public class J_Household {
 	    OL_HeatingSystem bestHS = null;
 	    double bestEAC = Double.POSITIVE_INFINITY;
 	    for (Map.Entry<OL_HeatingSystem, J_HeatingSystemOption> entry : heatingSystemOptions.entrySet()) {
-	        double EAC = entry.getValue().getEAC();
-	        if (EAC < bestEAC) {
-	            bestEAC = EAC;
-	            bestHS = entry.getKey();
-	        }
+	    	if(entry.getValue().isPossible()) {
+	    		double EAC = entry.getValue().getEAC();
+		        if (EAC < bestEAC) {
+		            bestEAC = EAC;
+		            bestHS = entry.getKey();
+		        }
+	    	}
 	    }
 	    return bestHS;
 	}
@@ -26478,6 +26529,13 @@ public class J_Household {
 		
 		//Set min max
 		heatingSystemGlobalData.setMinMaxEAC(EAC);
+		
+		//Always add to considered
+		if(ownership != PRIVATELY_OWNED) {
+			J_AnnualValues anVal = getDwelling().getMain().mapAnnualValues.get(type).get(getOwnership());
+			anVal.addRentersConsidered(EAC);
+       	}
+			
 		return EAC;
 	}
 
@@ -27061,9 +27119,10 @@ public class J_Dwelling {
   	}
   	
   	public void setDefaultYearLastRenovation() {
-  	  	if( constructionYear < 1990 ) {
-  	  	    yearLastRenovation = 1990 + main.randomInstance.nextInt(0, (main.v_startYear - 1990));
-  	  	}
+  	  	/*int ageSinceRenovation = main.randomInstance.nextInt(0,35);
+  		if (constructionYear < main.v_startYear - ageSinceRenovation) {
+  			yearLastRenovation = main.v_startYear - ageSinceRenovation;
+  		}
   	  	else if(constructionYear > main.v_startYear) {
   	  		yearLastRenovation = main.v_startYear;
   	  		//traceln("Error construction year = " + constructionYear + " with start year " + main.v_startYear);
@@ -27071,7 +27130,13 @@ public class J_Dwelling {
   	  	else {
   	  		yearLastRenovation = constructionYear;
  
-  	  	}/*
+  	  	}*/
+  		yearLastRenovation = constructionYear;
+  		if(constructionYear > main.v_startYear) {
+  	  		yearLastRenovation = main.v_startYear;
+  	  		//traceln("Error construction year = " + constructionYear + " with start year " + main.v_startYear);
+  	  	}
+  		/*
   	  	if( yearLastRenovation > main.v_startYear) {
   	  		traceln("Error year last renovation " + yearLastRenovation + " > " + constructionYear + " construction year");
   	  	}*/
@@ -27331,7 +27396,7 @@ public class J_Dwelling {
 		int ageHeatingSystem = main.v_startYear - yearLastRenovation;
 		int heatingSystemLifetime = main.heatingSystemOptionsGlobalData.get(heatingSystemType).getLifetime();
 		if(ageHeatingSystem >= heatingSystemLifetime) {
-			ageHeatingSystem = (int) (Math.random() * (heatingSystemLifetime + 1));
+			ageHeatingSystem = (int) (Math.random() * (heatingSystemLifetime));
 		}/*
     	if(ageHeatingSystem < 0) {
     		traceln("ERROR age hs at dwelling inital method is " + ageHeatingSystem + " at startYear " + main.v_startYear + " with Year Last Renovation " + yearLastRenovation);
@@ -27539,62 +27604,59 @@ public class J_HomeOwner extends heat_transition_tipping_pathways.J_Household {
 			OL_HeatingSystem type = entry.getKey();
 			J_Dwelling d = getDwelling();
 			
-			if( !d.f_getHeatingMethodPossibility(type)) {
-				continue;
-			}
-			else {
-				J_HeatingSystemOptionsGlobal hsog = d.getMain().heatingSystemOptionsGlobalData.get(type);
+			
+			J_HeatingSystemOptionsGlobal hsog = d.getMain().heatingSystemOptionsGlobalData.get(type);
 				
-				double weight_affordability = 0.6;
-				double weight_effort = 0.3;
-				double weight_control = 0.3;
-				double weight_intentionToBehavior = 0.5;	//was 0.9
-				double weight_att = 0.5;					//was 0.1
-				double weight_SN = 0.5;						//was 0.2
-				double weight_PBCToIntention = 0.5;
-				double weight_PBCToBehavior = 0.5;			//was 0.8
-				double weight_EAC = 0.5;
-				/*
-				double weight_affordability = getDwelling().getMain().p_weight_affordabilityToPBC;
-				double weight_effort = getDwelling().getMain().p_weight_effortToPBC;
-				double weight_control = getDwelling().getMain().p_weight_controlToPBC;
-				double weight_intentionToBehavior = getDwelling().getMain().p_weight_intentionToBehavior;
-				double weight_att = getDwelling().getMain().p_weight_attitudeToIntention;
-				double weight_SN = getDwelling().getMain().p_socialLearningFactor * getDwelling().getMain().p_weight_socialNormToIntention;
-				double weight_PBCToIntention = getDwelling().getMain().p_weight_PBCToIntention;
-				double weight_PBCToBehavior = getDwelling().getMain().p_weight_PBCToBehavior;
-				*/
+			double weight_affordability = 0.6;
+			double weight_effort = 0.3;
+			double weight_control = 0.3;
+			double weight_intentionToBehavior = 0.5;	//was 0.9
+			double weight_att = 0.5;					//was 0.1
+			double weight_SN = 0.5;						//was 0.2
+			double weight_PBCToIntention = 0.5;
+			double weight_PBCToBehavior = 0.5;			//was 0.8
+			double weight_EAC = 0.5;
+			/*
+			double weight_affordability = getDwelling().getMain().p_weight_affordabilityToPBC;
+			double weight_effort = getDwelling().getMain().p_weight_effortToPBC;
+			double weight_control = getDwelling().getMain().p_weight_controlToPBC;
+			double weight_intentionToBehavior = getDwelling().getMain().p_weight_intentionToBehavior;
+			double weight_att = getDwelling().getMain().p_weight_attitudeToIntention;
+			double weight_SN = getDwelling().getMain().p_socialLearningFactor * getDwelling().getMain().p_weight_socialNormToIntention;
+			double weight_PBCToIntention = getDwelling().getMain().p_weight_PBCToIntention;
+			double weight_PBCToBehavior = getDwelling().getMain().p_weight_PBCToBehavior;
+			*/
 						
-				double attitudeValue = f_getAttitudeValue(hsog);
-				double effort = f_getEffort(type, d, hsog.getRequiresLowTemperatureInhouseHeatDistribution() );
-				//double control = f_getControl();
-				double control = 0.0;
-				double EAC_norm = f_getEAC_norm(hsol.getEAC(), hsog);
-				double subjectiveNorm = f_getSubjectiveNorm(type, hsog);
-				double PBC = f_getPBC(EAC_norm, effort, weight_EAC, weight_effort, weight_control);
-				double socialLearningRate = hsog.getSocialLearningRate();
-				double intention = f_getIntention( attitudeValue, weight_att, subjectiveNorm, weight_SN, socialLearningRate, PBC, weight_PBCToIntention);
-				double perceivedUtility = f_getPerceivedUtility(intention, weight_intentionToBehavior, PBC, weight_PBCToBehavior);
+			double attitudeValue = f_getAttitudeValue(hsog);
+			double effort = f_getEffort(type, d, hsog.getRequiresLowTemperatureInhouseHeatDistribution() );
+			//double control = f_getControl();
+			double control = 0.0;
+			double EAC_norm = f_getEAC_norm(hsol.getEAC(), hsog);
+			double subjectiveNorm = f_getSubjectiveNorm(type, hsog);
+			double PBC = f_getPBC(EAC_norm, effort, weight_EAC, weight_effort, weight_control);
+			double socialLearningRate = hsog.getSocialLearningRate();
+			double intention = f_getIntention( attitudeValue, weight_att, subjectiveNorm, weight_SN, socialLearningRate, PBC, weight_PBCToIntention);
+			double perceivedUtility = f_getPerceivedUtility(intention, weight_intentionToBehavior, PBC, weight_PBCToBehavior);
 				
-				hsol.setAttitude(attitudeValue);
-				hsol.setSubjectiveNorm(subjectiveNorm);
-				hsol.setPBC(PBC);
-				hsol.setPerceivedUtility(perceivedUtility);
+			hsol.setAttitude(attitudeValue);
+			hsol.setSubjectiveNorm(subjectiveNorm);
+			hsol.setPBC(PBC);
+			hsol.setPerceivedUtility(perceivedUtility);
 				
 				
 				
-				/*
-				if(id < 3) {
-					traceln(hso.getPerceivedUtility() + " perceived value at hh "  + id + " for hso " + hso.getType());
-					traceln(hso.() + " preference value at hh "  + id + " for hso " + hso.getType());
-				}*//*		  
-				if(hso.getPerceivedUtility() == 0) {
-					traceln("In hh " + getDwelling().getId() + " initial utility of HSO " + hso.getType() + " utility = " + hso.getPerceivedUtility() + ", intention = " + hso.getIntention() + ", PBC = " + hso.getPBC());
-				}*/
-				//Store value for annual totals
-			    J_AnnualValues anVal = getDwelling().getMain().mapAnnualValues.get(type).get(getOwnership());
-		        anVal.addHomeOwnerConsidered(hsol);
-			}
+			/*
+			if(id < 3) {
+				traceln(hso.getPerceivedUtility() + " perceived value at hh "  + id + " for hso " + hso.getType());
+				traceln(hso.() + " preference value at hh "  + id + " for hso " + hso.getType());
+			}*//*		  
+			if(hso.getPerceivedUtility() == 0) {
+				traceln("In hh " + getDwelling().getId() + " initial utility of HSO " + hso.getType() + " utility = " + hso.getPerceivedUtility() + ", intention = " + hso.getIntention() + ", PBC = " + hso.getPBC());
+			}*/
+			
+			J_AnnualValues anVal = getDwelling().getMain().mapAnnualValues.get(type).get(getOwnership());
+			anVal.addHomeOwnerConsidered(hsol);
+				
 		}
 	}
 		
@@ -27603,11 +27665,13 @@ public class J_HomeOwner extends heat_transition_tipping_pathways.J_Household {
   		OL_HeatingSystem bestHS = null;
   	    double bestUtility = Double.NEGATIVE_INFINITY;
   	    for (Map.Entry<OL_HeatingSystem, J_HeatingSystemOption> entry : getHeatingSystemOptions().entrySet()) {
-  	    	double utility = entry.getValue().getPerceivedUtility();
-  	        if (utility > bestUtility) {
-  	        	bestUtility = utility;
-  	        	bestHS = entry.getKey();
-  	        }
+  	    	if( entry.getValue().isPossible() ) {
+	  	    	double utility = entry.getValue().getPerceivedUtility();
+	  	        if (utility > bestUtility) {
+	  	        	bestUtility = utility;
+	  	        	bestHS = entry.getKey();
+	  	        }
+  	    	}
   	    }
   	    return bestHS;
   	}
@@ -27631,13 +27695,19 @@ public class J_HomeOwner extends heat_transition_tipping_pathways.J_Household {
     }*/
     
     //Get attitude value
-	public double f_getAttitudeValue(J_HeatingSystemOptionsGlobal hso) {		
-		double sustainabilityScore_norm = hso.getSustainabilityScoreNormalized();
+	public double f_getAttitudeValue(J_HeatingSystemOptionsGlobal hsog) {		
+		double sustainabilityScore_norm = hsog.getSustainabilityScoreNormalized();
 		/*double alpha = 1.0; //Sensetivity in Gaussian distribution
 		double squaredDeviation = pow( sustainabilityAttitudeHousehold_norm - sustainabilityScore_norm,2);  //squared deviation or preference gap
 		preferenceValue = pow(Math.E, -alpha * squaredDeviation); //Gausian similarity function preference=e−α(household_attitude−heating_score)^2		
 		*/
+		/*
+		if(getDwelling().getId() < 2) {
+			traceln("Att value for Dwelling " + getDwelling().getId() + " at year " + getDwelling().getMain().v_year + " for type " + hsog.getType() + " = " + (1 - abs(sustainabilityAttitude - sustainabilityScore_norm)));
+		}*/
+		
 		return 1 - abs(sustainabilityAttitude - sustainabilityScore_norm);
+		
 		//traceln("HT = " + type + ", att value = " + attitudeValue + ", sus att hh = " + sustainabilityAttitudeHousehold + ", sus score type = " + sustainabilityScore_norm);
 		/*
 		double statusQuoValue = 0;
@@ -27884,14 +27954,16 @@ public class J_HomeOwner extends heat_transition_tipping_pathways.J_Household {
 	}
 
 	public double f_getSubjectiveNorm(OL_HeatingSystem heatingSystemType, J_HeatingSystemOptionsGlobal hsog) {
-	    double countPeers = (double) peerHeatingSystemCounts[heatingSystemType.ordinal()] / householdsInNetwork.size(); 
+	    double sharePeers = (double) peerHeatingSystemCounts[heatingSystemType.ordinal()] / householdsInNetwork.size(); 
 		double salienceFactor = hsog.getSalienceFactor();
+		
+		double subNorm = Math.min(1.0, sharePeers * (1 + salienceFactor));
 		/*
 		if(getDwelling().getId() < 4) {
-			traceln("Sub norm = " + countPeers * salienceFactor + " for type " + heatingSystemType + " with SF " + salienceFactor + " and perc peers" + countPeers);
+			traceln("Sub norm = " + subNorm + " for type " + heatingSystemType + " with SF " + salienceFactor + " and perc peers" + sharePeers);
 		}*/
 		
-	    return countPeers * salienceFactor;
+		return subNorm;
 	}
 
 	public void notifyPeersOfHeatingSystemChange(OL_HeatingSystem oldType, OL_HeatingSystem newType) {
@@ -28050,7 +28122,7 @@ public class J_SocialHousingBlock {
 		int ageHeatingSystem = main.v_startYear - yearLastRenovation;
 		int heatingSystemLifetime = main.heatingSystemOptionsGlobalData.get(type).getLifetime();
 		if(ageHeatingSystem >= heatingSystemLifetime) {
-			ageHeatingSystem = (int) (Math.random() * (heatingSystemLifetime + 1));
+			ageHeatingSystem = (int) (Math.random() * (heatingSystemLifetime));
 		}
 		
 		//Initalize heating system
@@ -28124,9 +28196,10 @@ public class J_SocialHousingBlock {
 			
 			for (OL_HeatingSystem type : OL_HeatingSystem.values()) {
 				for(J_Household hh : households) {
-					EAC += hh.getHeatingSystemOptions().get(type).getEAC();
+					J_HeatingSystemOption hsol = hh.getHeatingSystemOptions().get(type);
+					EAC += hsol.getEAC();
 					
-					if( isPossible == false || !hh.getDwelling().f_getHeatingMethodPossibility(type)) {
+					if( !hsol.isPossible() ) {
 						isPossible = false;
 					}
 				}
@@ -28138,10 +28211,12 @@ public class J_SocialHousingBlock {
     
     public void installNewHeatingMethodInHouseholds(OL_HeatingSystem heatingMethod, String trigger) {
     	hasLowTemperatureInhouseHeatDistribution = main.heatingSystemOptionsGlobalData.get(heatingMethod).getRequiresLowTemperatureInhouseHeatDistribution();
+    	J_HeatingSystem oldHS = heatingSystem;
     	heatingSystem = new J_HeatingSystem(heatingMethod);
     	for(J_Household hh : households) {    		
-    		hh.f_installSelectedHeatingMethod(heatingMethod, trigger);
+    		hh.f_installSelectedHeatingMethodSHB(heatingSystem, oldHS, hasLowTemperatureInhouseHeatDistribution, trigger);
     	}
+    	
     }
     
     //Get best EAC option
@@ -28211,6 +28286,10 @@ public class J_SocialHousingBlock {
   	
   	public String getEnergyLabel() {
   		return energyLabel;
+  	}
+  	
+  	public J_HeatingSystem getHeatingSystem() {
+  		return heatingSystem;
   	}
   	
   	public int getEnergyLabelNumber() {
@@ -28425,6 +28504,7 @@ public class J_ResultsPerOwnerType {
      * Default constructor
      */ 
 	private final int[] installedThisYear;
+	private final int[] consideredThisYear;
 	private final int[] installedCumulative;
     private final int[] installedCurrent;
     private final int[] removedThisYear;
@@ -28436,6 +28516,7 @@ public class J_ResultsPerOwnerType {
 
     public J_ResultsPerOwnerType(int years) {
         this.installedThisYear = new int[years];
+        this.consideredThisYear = new int[years];
     	this.installedCumulative = new int[years];
         this.installedCurrent = new int[years];
         this.removedThisYear = new int[years];
@@ -28446,11 +28527,12 @@ public class J_ResultsPerOwnerType {
         this.avgPBC = new double[years];
     }
 
-    public void setYear(int index, int installedThisYear, int removedThisYear, 
+    public void setYear(int index, int installedThisYear, int consideredThisYear, int removedThisYear, 
     					int installedCumulative, int installedCurrent,                        
     					double avgAtt, double avgPercUtil,
                         double avgSubNorm, double avgEAC, double avgPBC) {
         this.installedThisYear[index] = installedThisYear;
+        this.consideredThisYear[index] = consideredThisYear;
         this.removedThisYear[index] = removedThisYear;
     	this.installedCumulative[index] = installedCumulative;
     	this.installedCurrent[index] = installedCurrent;
@@ -28466,6 +28548,7 @@ public class J_ResultsPerOwnerType {
     // Array getters (defensive copies)
     // -----------------------------
     public int[] getInstalledThisYear()          { return installedThisYear.clone(); }
+    public int[] getConsideredThisYear()		 { return consideredThisYear.clone(); }
     public int[] getRemovedThisYear()       	 { return removedThisYear.clone(); }
     public int[] getInstalledCumulative()        { return installedCumulative.clone(); }
     public int[] getInstalledCurrent()           { return installedCurrent.clone(); }
@@ -28483,6 +28566,11 @@ public class J_ResultsPerOwnerType {
     public int getInstalledThisYearIndex(int index) {
     	checkIndex(index, installedThisYear.length, "installed this year");
         return installedThisYear[index];
+    }
+    
+    public int getConsideredThisYearIndex(int index) {
+    	checkIndex(index, consideredThisYear.length, "considered this year");
+        return consideredThisYear[index];
     }
 
     public int getInstalledCumulativeIndex(int index) {
@@ -28571,6 +28659,7 @@ import java.util.Map;
 public class J_ResultsPerHeatingMethod{
 	
 	private final int[] installedThisYear;
+	private final int[] consideredThisYear;
 	private final int[] installedCumulative;
     private final int[] installedCurrent;
     private final int[] removedThisYear;
@@ -28592,6 +28681,7 @@ public class J_ResultsPerHeatingMethod{
         
         //For totals
         this.installedThisYear = new int[years];
+        this.consideredThisYear = new int[years];
     	this.installedCumulative = new int[years];
         this.installedCurrent = new int[years];
         this.removedThisYear = new int[years];
@@ -28606,41 +28696,41 @@ public class J_ResultsPerHeatingMethod{
         return results.get(type);
     }
     
+    //Get totals over ownership types
     public void sumAnnualTotals(int yearIndex) {
     	int installedThisYear = 0;
+    	int consideredThisYear = 0;
     	int installedCumulative = 0;
     	int installedCurrent = 0;
     	int removedThisYear = 0;
-    	double sumAtt = 0;
-    	double sumPercUtil = 0;
-    	double sumSubNorm = 0;
     	double sumEAC = 0;
-    	double sumPBC = 0;
     	
     	for (OL_HouseholdOwnership type : OL_HouseholdOwnership.values()) {
             int installed = results.get(type).getInstalledThisYearIndex(yearIndex);
+            int considered = results.get(type).getConsideredThisYearIndex(yearIndex);
     		installedThisYear += installed;
+    		consideredThisYear += considered;
             installedCumulative += results.get(type).getInstalledCumulativeIndex(yearIndex);
             installedCurrent += results.get(type).getInstalledCurrentIndex(yearIndex);
             removedThisYear += results.get(type).getRemovedThisYearIndex(yearIndex);
             
-            sumAtt += results.get(type).getAvgAttIndex(yearIndex) * installed;
-            sumPercUtil += results.get(type).getAvgPercUtilIndex(yearIndex) * installed;
-            sumSubNorm += results.get(type).getAvgSubNormIndex(yearIndex) * installed;
-            sumEAC += results.get(type).getAvgEACIndex(yearIndex) * installed;
-            sumPBC += results.get(type).getAvgPBCIndex(yearIndex) * installed;
+            sumEAC += results.get(type).getAvgEACIndex(yearIndex) * considered;
+            
+            if(type == PRIVATELY_OWNED) {
+            	this.avgAtt[yearIndex] = results.get(type).getAvgAttIndex(yearIndex);
+            	this.avgPercUtil[yearIndex] = results.get(type).getAvgPercUtilIndex(yearIndex);
+	            this.avgSubNorm[yearIndex] = results.get(type).getAvgSubNormIndex(yearIndex);
+	            this.avgPBC[yearIndex] = results.get(type).getAvgPBCIndex(yearIndex);
+            }
         }
     	
     	this.installedThisYear[yearIndex] = installedThisYear;
-    	this.installedCumulative[yearIndex] = installedCumulative;
+    	this.consideredThisYear[yearIndex] = consideredThisYear;
+     	this.installedCumulative[yearIndex] = installedCumulative;
     	this.installedCurrent[yearIndex] = installedCurrent;
     	this.removedThisYear[yearIndex] = removedThisYear;
     	
-    	this.avgAtt[yearIndex] = installedThisYear > 0 ? sumAtt / installedThisYear : 0.0;
-        this.avgPercUtil[yearIndex] = installedThisYear > 0 ? sumPercUtil / installedThisYear : 0.0;
-        this.avgSubNorm[yearIndex] = installedThisYear > 0 ? sumSubNorm / installedThisYear : 0.0;
-        this.avgEAC[yearIndex] = installedThisYear > 0 ? sumEAC / installedThisYear : 0.0;
-        this.avgPBC[yearIndex] = installedThisYear > 0 ? sumPBC / installedThisYear : 0.0;
+        this.avgEAC[yearIndex] = consideredThisYear > 0 ? sumEAC / consideredThisYear : 0.0;
     }
     
  // -----------------------------
@@ -28664,6 +28754,11 @@ public class J_ResultsPerHeatingMethod{
     public int getInstalledThisYearIndex(int index) {
     	checkIndex(index, installedThisYear.length, "installed this year");
         return installedThisYear[index];
+    }
+    
+    public int getConsideredThisYearIndex(int index) {
+    	checkIndex(index, installedThisYear.length, "installed this year");
+        return consideredThisYear[index];
     }
 
     public int getInstalledCumulativeIndex(int index) {
@@ -28856,11 +28951,11 @@ public class J_AnnualValues {
     }
 
     public double getAvgSubNormConsidered() {
-        return avg(sumSubNormConsidered, (consideredThisYearHomeOwners + consideredThisYearRenters));
+        return avg(sumSubNormConsidered, (consideredThisYearHomeOwners));
     }
 
     public double getAvgEACConsidered() {
-        return avg(sumEACConsidered, consideredThisYearHomeOwners);
+        return avg(sumEACConsidered, consideredThisYearHomeOwners + consideredThisYearRenters);
     }
 
     public double getAvgPBCConsidered() {
@@ -28873,6 +28968,7 @@ public class J_AnnualValues {
 
     // ========== GETTERS ==========
     public int getInstalledThisYear() { return installedThisYear; }
+    public int getConsideredThisYear() { return consideredThisYearHomeOwners + consideredThisYearRenters; }
     public int getRemovedThisYear() { return removedThisYear; }
     public double getSumAtt() { return sumAttConsidered ; }
     public double getSumPercUtil() { return sumPercUtilConsidered; }
@@ -29055,7 +29151,7 @@ public class J_HeatingSystemOption {
     /**
      * Default constructor
      */
-    public J_HeatingSystemOption(double attitude,
+   /* public J_HeatingSystemOption(double attitude,
 	    	double perceivedUtility,
 	    	double subjectiveNorm,
 	    	double EAC,
@@ -29068,7 +29164,7 @@ public class J_HeatingSystemOption {
     	this.EAC = EAC;
     	this.PBC = PBC;
     	this.isPossible = isPossible;
-    }
+    }*/
     
     //For non home owner cases
     public J_HeatingSystemOption(double EAC, boolean isPossible) {
