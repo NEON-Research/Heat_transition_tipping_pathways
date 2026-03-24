@@ -1520,7 +1520,7 @@ f_initalizeSettings();
 				<Variable Class="PlainVariable">
 					<Id>1769529186288</Id>
 					<Name><![CDATA[resultsData]]></Name>
-					<X>-1000</X><Y>1020</Y>
+					<X>-1000</X><Y>1120</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -1563,6 +1563,78 @@ f_initalizeSettings();
 					<ShowLabel>true</ShowLabel>
 					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
 						<Type><![CDATA[HashMap<Integer, Double>]]></Type>        
+					</Properties>
+				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1774364527954</Id>
+					<Name><![CDATA[hoStochasticChoiceIsNotBestUtility]]></Name>
+					<X>-1000</X><Y>940</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[double]]></Type>        
+					</Properties>
+				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1774364531996</Id>
+					<Name><![CDATA[stochasticChoiceDecision]]></Name>
+					<X>-1000</X><Y>960</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[double]]></Type>        
+					</Properties>
+				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1774366829399</Id>
+					<Name><![CDATA[shbStochasticChoiceIsNotBestEAC]]></Name>
+					<X>-1000</X><Y>990</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[double]]></Type>        
+					</Properties>
+				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1774366829413</Id>
+					<Name><![CDATA[SHBstochasticChoiceDecision]]></Name>
+					<X>-1000</X><Y>1010</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[double]]></Type>        
+					</Properties>
+				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1774366850770</Id>
+					<Name><![CDATA[llStochasticChoiceIsNotBestEAC]]></Name>
+					<X>-1000</X><Y>1040</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[double]]></Type>        
+					</Properties>
+				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1774366850772</Id>
+					<Name><![CDATA[LLstochasticChoiceDecision]]></Name>
+					<X>-1000</X><Y>1060</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[double]]></Type>        
 					</Properties>
 				</Variable>
 				<Variable Class="Parameter">
@@ -2742,6 +2814,48 @@ f_initalizeSettings();
 						</ParameterEditor>
 					</Properties>                 
 				</Variable>
+				<Variable Class="Parameter">
+					<Id>1774364331812</Id>
+					<Name><![CDATA[gumbelScaleUtil]]></Name>
+					<X>-310</X><Y>-50</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[double]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<ParameterEditor>
+							<Id>1774364331810</Id>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1774368794752</Id>
+					<Name><![CDATA[gumbelScaleEAC]]></Name>
+					<X>-310</X><Y>-30</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[double]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<ParameterEditor>
+							<Id>1774368794750</Id>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
 				<Variable Class="CollectionVariable">
 					<Id>1737379663209</Id>
 					<Name><![CDATA[c_buurtcodeToHouseholds]]></Name>
@@ -3635,7 +3749,7 @@ for(J_HomeOwner ho : c_homeOwners){
 		ho.f_adoptNewHeatingSystem();
 	}
 }
-
+/*
 double HHPatSHB = sumWhere(c_socialHousingBlocks, x->x.getHouseholds().size(), x->x.getHeatingSystem().getType() == HYBRID_HEAT_PUMP);
 double EHPatSHB = sumWhere(c_socialHousingBlocks, x->x.getHouseholds().size(), x->x.getHeatingSystem().getType() == ELECTRIC_HEAT_PUMP);
 double NGBatSHB = sumWhere(c_socialHousingBlocks, x->x.getHouseholds().size(), x->x.getHeatingSystem().getType() == NATURAL_GAS_BOILER);
@@ -3644,6 +3758,7 @@ traceln( HHPatSHB + " hhp at shb in " + v_year);
 traceln( EHPatSHB + " ehp at shb in " + v_year);
 traceln( NGBatSHB + " ngb at shb in " + v_year);
 traceln( DHatSHB + " dh at shb in " + v_year);
+*/
 //9. Update exogenous home renovation and insulation
 f_setExogeneousInsulation();
 
@@ -5836,7 +5951,9 @@ for(int i = 0; i < simulationYears; i++){
 }
 
 //f_setCharts();
-
+traceln(roundToInt(hoStochasticChoiceIsNotBestUtility / stochasticChoiceDecision * 100) + "% of HO decisions is not top util decision");
+traceln(roundToInt(shbStochasticChoiceIsNotBestEAC / SHBstochasticChoiceDecision * 100) + "% of SHB decisions is not top EAC decision");
+traceln(roundToInt(llStochasticChoiceIsNotBestEAC / LLstochasticChoiceDecision * 100) + "% of LL decisions is not top EAC decision");
 double duration = f_traceFunctionTime(v_startRuntime);
 //traceln("Total run time: " + duration + " seconds");
 
@@ -17972,7 +18089,7 @@ for(GZ_Neighborhood neighborhood : main.pop_GZ_Neighborhoods){
 			}
 		}
 		
-		//If no start year is given
+		//If no  year is given
 		else {
 			double rand = uniform(0,1);
 			if( rand < chanceOfDHBeingInstalled ){
@@ -18866,7 +18983,8 @@ for(GZ_Neighborhood nbh : main.pop_GZ_Neighborhoods){
 	for(J_Household hh : nbh.c_rentersLandlords){
 		if(hh.f_hasEndOfLifeTrigger()){
 			hh.getHeatingSystemOptionsEAC();
-			OL_HeatingSystem hs = hh.getTopRankedEACOption();
+			//OL_HeatingSystem hs = hh.getTopRankedEACOption();
+			OL_HeatingSystem hs = hh.getStochasticChoiceLL();
 			hh.f_installSelectedHeatingMethod(hs, "end_of_life");
 		}
 	}
@@ -19670,6 +19788,7 @@ f_initializeScenarioSettings();
 				<Variable Class="PlainVariable">
 					<Id>1750235232040</Id>
 					<Name><![CDATA[v_weight_controlToPBC]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>50</X><Y>1190</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -20175,6 +20294,8 @@ m.v_rapidRun = v_rapidRun;
 m.v_runCount = simulationCount;
 
 //Set scenario settings
+m.gumbelScaleUtil = 0.02;
+m.gumbelScaleEAC = 20;
 m.p_socialLearningFactor = f_learningFactorToMultiplier(v_socialLearningFactor);
 m.p_gridReinforcementPace = v_gridReinforcementPace;
 m.p_dhConstructionTime_years = v_dhConstructionTime_years;
@@ -20210,7 +20331,7 @@ m.v_subsidyNaturalGas_ctPerKWh = v_subsidyNaturalGas_ctPerKWh;
 
 
 m.p_weight_affordabilityToPBC = v_weight_affordabilityToPBC;
-m.p_weight_controlToPBC = v_weight_controlToPBC;
+//m.p_weight_controlToPBC = v_weight_controlToPBC;
 m.p_weight_effortToPBC = v_weight_effortToPBC;
 m.p_weight_attitudeToIntention = v_weight_attitudeToIntention;
 m.p_weight_PBCToIntention = v_weight_PBCToIntention;
@@ -20483,8 +20604,7 @@ excel_pivotTable.writeFile();
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
 					<Body><![CDATA[v_weight_affordabilityToPBC = 0.5;
-v_weight_controlToPBC = 0.5;
-v_weight_effortToPBC = 0.5;
+v_weight_effortToPBC = 0.2;
 
 v_weight_attitudeToIntention = 0.5;
 v_weight_PBCToIntention = 0.5;
@@ -20492,6 +20612,7 @@ v_weight_socialNormToIntention = 0.5;
 
 v_weight_intentionToBehavior = 0.5;
 v_weight_PBCToBehavior = 0.5;
+
 
 f_setEditBoxWeights();]]></Body>
 				</Function>
@@ -20546,7 +20667,7 @@ for (double w1 : weights) {
 					<ShowLabel>true</ShowLabel>
 					<Body><![CDATA[eb_w_affToPBC.setText(v_weight_affordabilityToPBC);
 eb_w_effToPBC.setText(v_weight_effortToPBC);
-eb_w_controlToPBC.setText(v_weight_controlToPBC);
+//eb_w_controlToPBC.setText(v_weight_controlToPBC);
 
 eb_w_attToInt.setText(v_weight_attitudeToIntention);
 eb_w_PBCToInt.setText(v_weight_PBCToIntention);
@@ -20835,11 +20956,11 @@ try (BufferedReader br = new BufferedReader(new FileReader(csvFile))) {
 					</Parameter>
 					<Body><![CDATA[switch (learningFactor){
 	case LOW :
-		return 0.25;//0.5;
+		return 0.5;//0.5;
 	case MEDIUM:
 		return 1;
 	case HIGH:
-		return 4;//2;
+		return 2;//2;
 	default:
         System.out.println("Unknown grid reinforcement pace.");
         return 1;
@@ -21512,6 +21633,12 @@ catch (IOException e) {
 						</Parameter>
 						<Parameter>
 							<Name><![CDATA[p_weight_PBCToBehavior]]></Name>
+						</Parameter>
+						<Parameter>
+							<Name><![CDATA[gumbelScaleUtil]]></Name>
+						</Parameter>
+						<Parameter>
+							<Name><![CDATA[gumbelScaleEAC]]></Name>
 						</Parameter>
 					</Parameters>
 					<ReplicationFlag>true</ReplicationFlag>
@@ -22829,6 +22956,7 @@ f_getSelectedMunicipalities();]]></ActionCode>
 				 	<EmbeddedIcon>false</EmbeddedIcon>				
 					<Id>1750235287198</Id>
 					<Name><![CDATA[eb_w_controlToPBC]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>730</X><Y>-110</Y>
 					<Label><X>0</X><Y>-10</Y></Label>
 					<PublicFlag>true</PublicFlag>
@@ -22915,6 +23043,7 @@ f_getSelectedMunicipalities();]]></ActionCode>
 				<Text>
 					<Id>1750235287206</Id>
 					<Name><![CDATA[text35]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>580</X><Y>-100</Y>
 					<Label><X>0</X><Y>-10</Y></Label>
 					<PublicFlag>true</PublicFlag>
@@ -26075,6 +26204,12 @@ chart1.addDataSet( , format( root.p_innovationCoefficient ), color, true, Chart.
 			<FreeformParamValue>	
 				<Id>1750235140128</Id>
 			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1774364331812</Id>
+			</FreeformParamValue>
+			<FreeformParamValue>	
+				<Id>1774368794752</Id>
+			</FreeformParamValue>
 			<RangeVariationParamValue>	
 				<Id>1704719032315</Id>
 				<Type>FIXED</Type>
@@ -26287,6 +26422,14 @@ chart1.addDataSet( , format( root.p_innovationCoefficient ), color, true, Chart.
 				<Id>1750235140128</Id>
 				<Type>FIXED</Type>
 			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1774364331812</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
+			<RangeVariationParamValue>	
+				<Id>1774368794752</Id>
+				<Type>FIXED</Type>
+			</RangeVariationParamValue>
 			<ModelTimeProperties>
 				<StopOption><![CDATA[Stop at specified date]]></StopOption>
 				<InitialDate><![CDATA[1577836800000]]></InitialDate>	
@@ -26440,7 +26583,28 @@ public class J_Household {
 	    return bestHS;
 	}
     
-    
+	public OL_HeatingSystem getStochasticChoiceLL() {
+  	    OL_HeatingSystem bestHS = null;
+  	    double bestScore = Double.POSITIVE_INFINITY;
+  	    
+  	    for (Map.Entry<OL_HeatingSystem, J_HeatingSystemOption> entry : getHeatingSystemOptions().entrySet()) {
+  	        if (entry.getValue().isPossible()) {
+  	            double gumbel = -Math.log(-Math.log(Math.random())); // Gumbel noise
+  	            double score = entry.getValue().getEAC() + getDwelling().getMain().gumbelScaleEAC * gumbel; //gumbelScale is µ from Gumbel / Random Utility Model (RUM)
+  	            if (score < bestScore) {
+  	                bestScore = score;
+  	                bestHS = entry.getKey();
+  	            }
+  	        }
+  	    }
+  	    
+  	    if(bestHS != getTopRankedEACOption()) {
+  	    	getDwelling().getMain().llStochasticChoiceIsNotBestEAC++;
+  	    }
+  	    getDwelling().getMain().LLstochasticChoiceDecision++;
+  	    return bestHS;
+  	}
+	
     public double f_getEAC(J_Dwelling dwelling, OL_HeatingSystem type) {
 		
     	J_HeatingSystemOptionsGlobal heatingSystemGlobalData = dwelling.getMain().heatingSystemOptionsGlobalData.get(type);
@@ -27553,8 +27717,9 @@ public class J_HomeOwner extends heat_transition_tipping_pathways.J_Household {
 	public void f_adoptNewHeatingSystem() {
 		//If end of life install top selected
 		if( f_hasEndOfLifeTrigger()) {
-			OL_HeatingSystem hs = getTopRankedUtilityOption();
-
+			//OL_HeatingSystem hs = getTopRankedUtilityOption();
+			OL_HeatingSystem hs = getStochasticChoiceHO();
+			
 			//contact peers - before installation to retrieve old type
 	  		notifyPeersOfHeatingSystemChange( getDwelling().getHeatingSystem().getType(), hs);
 	  		//install
@@ -27564,7 +27729,9 @@ public class J_HomeOwner extends heat_transition_tipping_pathways.J_Household {
 		}
 		
 		else if( f_hasOpportunityTriggerTimeCondition() ) {
-			OL_HeatingSystem hs = getTopRankedUtilityOption();
+			//OL_HeatingSystem hs = getTopRankedUtilityOption();
+			OL_HeatingSystem hs = getStochasticChoiceHO();
+			
 			if( getDwelling().getHeatingSystem().getType() != hs) {
 
 				//contact peers - before installation to retrieve old type
@@ -27598,10 +27765,11 @@ public class J_HomeOwner extends heat_transition_tipping_pathways.J_Household {
 			J_HeatingSystemOption hsol = entry.getValue();
 			OL_HeatingSystem type = entry.getKey();
 			J_Dwelling d = getDwelling();
+			Main m = d.getMain();
 			
 			
 			J_HeatingSystemOptionsGlobal hsog = d.getMain().heatingSystemOptionsGlobalData.get(type);
-				
+			/*	
 			double weight_affordability = 0.6;
 			double weight_effort = 0.3;
 			double weight_control = 0.3;
@@ -27611,24 +27779,23 @@ public class J_HomeOwner extends heat_transition_tipping_pathways.J_Household {
 			double weight_PBCToIntention = 0.5;
 			double weight_PBCToBehavior = 0.5;			//was 0.8
 			double weight_EAC = 0.5;
-			/*
-			double weight_affordability = getDwelling().getMain().p_weight_affordabilityToPBC;
-			double weight_effort = getDwelling().getMain().p_weight_effortToPBC;
-			double weight_control = getDwelling().getMain().p_weight_controlToPBC;
-			double weight_intentionToBehavior = getDwelling().getMain().p_weight_intentionToBehavior;
-			double weight_att = getDwelling().getMain().p_weight_attitudeToIntention;
-			double weight_SN = getDwelling().getMain().p_socialLearningFactor * getDwelling().getMain().p_weight_socialNormToIntention;
-			double weight_PBCToIntention = getDwelling().getMain().p_weight_PBCToIntention;
-			double weight_PBCToBehavior = getDwelling().getMain().p_weight_PBCToBehavior;
 			*/
+			double weight_EACtoPBC = m.p_weight_affordabilityToPBC;
+			double weight_effort = m.p_weight_effortToPBC;
+			//double weight_control = m.p_weight_controlToPBC;
+			double weight_intentionToBehavior = m.p_weight_intentionToBehavior;
+			double weight_att = m.p_weight_attitudeToIntention;
+			double weight_SN = m.p_socialLearningFactor * m.p_weight_socialNormToIntention;
+			double weight_PBCToIntention = m.p_weight_PBCToIntention;
+			double weight_PBCToBehavior = m.p_weight_PBCToBehavior;
 						
 			double attitudeValue = f_getAttitudeValue(hsog);
 			double effort = f_getEffort(type, d, hsog.getRequiresLowTemperatureInhouseHeatDistribution() );
 			//double control = f_getControl();
-			double control = 0.0;
+			//double control = 0.0;
 			double EAC_norm = f_getEAC_norm(hsol.getEAC(), hsog);
 			double subjectiveNorm = f_getSubjectiveNorm(type, hsog);
-			double PBC = f_getPBC(EAC_norm, effort, weight_EAC, weight_effort, weight_control);
+			double PBC = f_getPBC(EAC_norm, effort, weight_EACtoPBC, weight_effort);
 			double socialLearningRate = hsog.getSocialLearningRate();
 			double intention = f_getIntention( attitudeValue, weight_att, subjectiveNorm, weight_SN, socialLearningRate, PBC, weight_PBCToIntention);
 			double perceivedUtility = f_getPerceivedUtility(intention, weight_intentionToBehavior, PBC, weight_PBCToBehavior);
@@ -27668,6 +27835,28 @@ public class J_HomeOwner extends heat_transition_tipping_pathways.J_Household {
 	  	        }
   	    	}
   	    }
+  	    return bestHS;
+  	}
+  	
+  	public OL_HeatingSystem getStochasticChoiceHO() {
+  	    OL_HeatingSystem bestHS = null;
+  	    double bestScore = Double.NEGATIVE_INFINITY;
+  	    
+  	    for (Map.Entry<OL_HeatingSystem, J_HeatingSystemOption> entry : getHeatingSystemOptions().entrySet()) {
+  	        if (entry.getValue().isPossible()) {
+  	            double gumbel = -Math.log(-Math.log(Math.random())); // Gumbel noise
+  	            double score = entry.getValue().getPerceivedUtility() + getDwelling().getMain().gumbelScaleUtil * gumbel; //gumbelScale is µ from Gumbel / Random Utility Model (RUM)
+  	            if (score > bestScore) {
+  	                bestScore = score;
+  	                bestHS = entry.getKey();
+  	            }
+  	        }
+  	    }
+  	    
+  	    if(bestHS != getTopRankedUtilityOption()) {
+  	    	getDwelling().getMain().hoStochasticChoiceIsNotBestUtility++;
+  	    }
+  	    getDwelling().getMain().stochasticChoiceDecision++;
   	    return bestHS;
   	}
 	
@@ -27719,10 +27908,10 @@ public class J_HomeOwner extends heat_transition_tipping_pathways.J_Household {
 	
 	public double f_getEffort(OL_HeatingSystem type, J_Dwelling dwelling, boolean requiresLowTemperatureInhouseHeatDistribution) {
 		if( type == dwelling.getHeatingSystem().getType()) {
-			return 0.6; //Standard replacement requires minimal effort
+			return 0.2; //Standard replacement requires minimal effort
 		}
 		else if(requiresLowTemperatureInhouseHeatDistribution && dwelling.getHasLowTemperatureInhouseHeatDistribution() == false){
-			return 0.4; //If also inhouse distribution systems require adaptation, effort is way higher
+			return 0.8; //If also inhouse distribution systems require adaptation, effort is way higher
 		}
 		else {
 			return 0.5;
@@ -27740,10 +27929,11 @@ public class J_HomeOwner extends heat_transition_tipping_pathways.J_Household {
 		}
 	}*/
 	
-	public double f_getPBC(double EAC_norm, double effort, double weight_EAC, double weight_effort, double weight_control) {
+	public double f_getPBC(double EAC_norm, double effort, double weight_EAC, double weight_effort) {
 		double EAC_norm_reversed = 1 - EAC_norm; 	//Reverse from cheapest best to highest best	
+		double effort_reversed = 1 - effort;
 		//PBC = (EAC_norm_reversed * weight_EAC + effort * weight_effort + control * weight_control) / (weight_EAC + weight_effort + weight_control);
-		return (EAC_norm_reversed * weight_EAC + effort * weight_effort) / (weight_EAC + weight_effort);
+		return (EAC_norm_reversed * weight_EAC + effort_reversed * weight_effort) / (weight_EAC + weight_effort);
 	}
 	public double f_getIntention(double attitudeValue, double weight_att, double subjectiveNorm, double weight_SN, double socialLearningRate, double PBC, double weight_PBCToIntention) {
 		return (attitudeValue * weight_att + subjectiveNorm * weight_SN * socialLearningRate + PBC * weight_PBCToIntention) / (weight_att + weight_SN + weight_PBCToIntention);
@@ -28172,7 +28362,8 @@ public class J_SocialHousingBlock {
 	    	}
 	    	//Cost based
 	    	else {
-	    		heatingMethodToInstall = getTopRankedEACOption();
+	    		//heatingMethodToInstall = getTopRankedEACOption();
+	    		heatingMethodToInstall = getStochasticChoice();
 	    	}
 	    	installNewHeatingMethodInHouseholds(heatingMethodToInstall, "end_of_life");
 	    }
@@ -28181,8 +28372,6 @@ public class J_SocialHousingBlock {
     public void setAverageHeatingSystemOptionsEAC() {
     	if(heatingSystemOptions == null) {
 			heatingSystemOptions = new EnumMap<>(OL_HeatingSystem.class);
-			double EAC = 0.0;
-			boolean isPossible = true;
 			
 			for(J_Household hh : households) {
 				J_Dwelling d = hh.getDwelling();
@@ -28190,6 +28379,9 @@ public class J_SocialHousingBlock {
 			}
 			
 			for (OL_HeatingSystem type : OL_HeatingSystem.values()) {
+				double EAC = 0.0;
+				boolean isPossible = true;
+				
 				for(J_Household hh : households) {
 					J_HeatingSystemOption hsol = hh.getHeatingSystemOptions().get(type);
 					EAC += hsol.getEAC();
@@ -28221,14 +28413,37 @@ public class J_SocialHousingBlock {
   		OL_HeatingSystem bestHS = null;
   	    double bestEAC = Double.POSITIVE_INFINITY;
   	    for (Map.Entry<OL_HeatingSystem, J_HeatingSystemOption> entry : heatingSystemOptions.entrySet()) {
-  	        double EAC = entry.getValue().getEAC();
-  	        traceln(entry.getKey() + " has avg EAC of " + EAC);
-  	        if (EAC < bestEAC) {
-  	            bestEAC = EAC;
-  	            bestHS = entry.getKey();
+  	    	if(entry.getValue().isPossible()) {
+	    		double EAC = entry.getValue().getEAC();
+		        if (EAC < bestEAC) {
+		            bestEAC = EAC;
+		            bestHS = entry.getKey();
+		        }
+	    	}
+  	    }
+  	    //traceln( bestHS + " best HS with EAC " + bestEAC);
+  	    return bestHS;
+  	}
+  	
+  	public OL_HeatingSystem getStochasticChoice() {
+  	    OL_HeatingSystem bestHS = null;
+  	    double bestScore = Double.POSITIVE_INFINITY;
+  	    
+  	    for (Map.Entry<OL_HeatingSystem, J_HeatingSystemOption> entry : heatingSystemOptions.entrySet()) {
+  	        if (entry.getValue().isPossible()) {
+  	            double gumbel = -Math.log(-Math.log(Math.random())); // Gumbel noise
+  	            double score = entry.getValue().getEAC() + main.gumbelScaleEAC * gumbel; //gumbelScale is µ from Gumbel / Random Utility Model (RUM)
+  	            if (score < bestScore) {
+  	                bestScore = score;
+  	                bestHS = entry.getKey();
+  	            }
   	        }
   	    }
-  	    traceln( bestHS + " best HS with EAC " + bestEAC);
+  	    
+  	    if(bestHS != getTopRankedEACOption()) {
+  	    	main.shbStochasticChoiceIsNotBestEAC++;
+  	    }
+  	    main.SHBstochasticChoiceDecision++;
   	    return bestHS;
   	}
   	
@@ -28270,6 +28485,28 @@ public class J_SocialHousingBlock {
 			}
 		}
     }
+  	
+  //Check possibility
+  	public boolean f_getHeatingMethodPossibility(OL_HeatingSystem type) {
+  		// Obligation to connect to district heating
+  		if (main.p_connectionObligationNewDH && neighborhood.v_hasDistrictHeatingGrid) {
+  			return type == DISTRICT_HEATING;
+  		}
+
+  		// District heating only possible if grid exists
+  		if (type == DISTRICT_HEATING) {
+  			return neighborhood.v_hasDistrictHeatingGrid;
+  		}
+
+  		    // Block heat pump under congestion
+  		if (type == ELECTRIC_HEAT_PUMP 
+  		    && main.p_congestionBlock 
+  		    && neighborhood.v_hasGridCongestion) {
+  		    return false;
+  		}
+
+  		return true;
+  	}
   	
   	public List<J_Household> getHouseholds(){
   		return households;
