@@ -420,6 +420,94 @@ def create_total_ownership_scenario_comparison(
     plt.close()
 
 
+def create_selected_scenarios_comparison(
+    df: pd.DataFrame,
+    output_file="plots/scenario_comparison_selected.png",
+    ownership="TOTAL",
+    scenario_names=None
+):
+    """Create a comparison of selected scenarios (preferably 3-4 scenarios)."""
+    if scenario_names is None:
+        scenario_names = [
+            "policy_driven_dh_strategy",
+            "policy_driven_sha_strategy",
+            "actor_allignment_strategy",
+            "dh_policy_based_connection_obligation",
+        ]
+
+    df_total = df[df["ownership"] == ownership]
+    if df_total.empty:
+        print(f"⚠️ No data for ownership '{ownership}'. Skipping selected scenario comparison.")
+        return
+
+    n_scenarios = len(scenario_names)
+    n_cols = min(2, n_scenarios)
+    n_rows = int(np.ceil(n_scenarios / n_cols))
+
+    fig, axes = plt.subplots(n_rows, n_cols, figsize=(figwidth, 1.8 * n_rows), sharex=True, sharey=True)
+    if n_rows == 1 and n_cols == 1:
+        axes = np.array([axes])
+    else:
+        axes = np.array(axes).flatten()
+
+    legend_handles = None
+    legend_labels = None
+
+    for idx, scen in enumerate(scenario_names):
+        ax = axes[idx]
+
+        df_s = df_total[df_total["scenario_name"] == scen]
+        if df_s.empty:
+            ax.text(0.5, 0.5, f"No data for\n{scen}", ha='center', va='center', transform=ax.transAxes)
+            ax.set_title(scen.replace('_', ' ').title(), fontsize=10)
+            continue
+
+        mean_data = (
+            df_s.groupby(["year", "heating_system"], as_index=False)["installed_current"].mean()
+        )
+
+        pivot = mean_data.pivot(index="year", columns="heating_system", values="installed_current").fillna(0)
+        pivot = pivot.reindex(columns=HEATING_SYSTEM_ORDER, fill_value=0)
+        percentages = pivot.div(pivot.sum(axis=1), axis=0) * 100
+
+        ax.stackplot(
+            percentages.index,
+            [percentages[col] for col in percentages.columns],
+            colors=[HEATING_SYSTEM_COLORS[c] for c in percentages.columns],
+            alpha=0.85
+        )
+
+        ax.set_title(scen.replace('_', ' ').title(), fontsize=10, pad=9)
+        ax.set_ylim(0, 100)
+        ax.grid(True, alpha=0.3, linestyle='--')
+        ax.tick_params(axis='both', labelsize=7)
+
+        if idx % n_cols == 0:
+            ax.set_ylabel('Share (%)', fontsize=7)
+        if idx >= n_scenarios - n_cols:
+            ax.set_xlabel('Year', fontsize=7)
+
+        if legend_handles is None and ax.get_legend_handles_labels()[0]:
+            legend_handles, legend_labels = ax.get_legend_handles_labels()
+
+    for idx in range(n_scenarios, len(axes)):
+        axes[idx].set_visible(False)
+
+    handles = [plt.Line2D([0], [0], color=HEATING_SYSTEM_COLORS[h], lw=8) for h in HEATING_SYSTEM_ORDER]
+    labels = [translate_heating_system_name(label) for label in HEATING_SYSTEM_ORDER]
+
+    fig.legend(handles, labels, loc='lower center', ncol=3, frameon=False, fontsize=fontsizeLegend)
+
+    fig.suptitle(
+        "Scenario comparison of heating system distribution over time",
+        fontsize=fontsizeGraphTitle
+    )
+
+    plt.tight_layout(rect=[0, 0.05, 1, 0.95])
+    plt.savefig(output_file, dpi=300, bbox_inches='tight')
+    plt.close()
+
+
 def translate_metric_name(metric: str) -> str:
     """Translate metric column names to readable names."""
     translation = {
@@ -830,6 +918,19 @@ if __name__ == "__main__":
 
     print("\nCreating scenario comparison plot for TOTAL ownership...")
     create_total_ownership_scenario_comparison(df, output_file="plots/scenario_comparison_TOTAL.png")
+
+    print("\nCreating selected scenario comparison plot (3-4 scenarios)...")
+    create_selected_scenarios_comparison(
+        df,
+        output_file="plots/scenario_comparison_district_heating.png",
+        ownership="TOTAL",
+        scenario_names=[
+            "policy_driven_dh_strategy",
+            "policy_driven_sha_strategy",
+            "actor_allignment_strategy",
+            "dh_policy_based_connection_obligation",
+        ]
+    )
 
     # Create detail plots for the main scenarios across all ownership types
     ownership_types = sorted(df['ownership'].unique())

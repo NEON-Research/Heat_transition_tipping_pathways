@@ -63,6 +63,10 @@
 				<Id>1715083950961</Id>
 				<Name><![CDATA[PRIVATELY_RENTED]]></Name>
 			</Option>
+			<Option>
+				<Id>1774972199028</Id>
+				<Name><![CDATA[HOME_OWNER_ASSOCIATION]]></Name>
+			</Option>
 		</OptionList>
 		<OptionList>
 			<Id>1733326124838</Id>
@@ -2942,7 +2946,7 @@ f_initalizeSettings();
 					<ShowLabel>true</ShowLabel>
 					<Properties SaveInSnapshot="true" AccessType="public" StaticVariable="false">
 						<CollectionClass><![CDATA[ArrayList]]></CollectionClass>
-						<ElementClass><![CDATA[J_SocialHousingBlock]]></ElementClass>
+						<ElementClass><![CDATA[J_HousingBlock]]></ElementClass>
 						<ValueElementClass><![CDATA[String]]></ValueElementClass>
 					</Properties>
 
@@ -2975,6 +2979,21 @@ f_initalizeSettings();
 						<CollectionClass><![CDATA[HashMap]]></CollectionClass>
 						<ElementClass><![CDATA[Integer]]></ElementClass>
 						<ValueElementClass><![CDATA[Integer]]></ValueElementClass>
+					</Properties>
+
+				</Variable>
+				<Variable Class="CollectionVariable">
+					<Id>1774963212597</Id>
+					<Name><![CDATA[c_homeOwnerAssociationBlocks]]></Name>
+					<X>-1000</X><Y>890</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" AccessType="public" StaticVariable="false">
+						<CollectionClass><![CDATA[ArrayList]]></CollectionClass>
+						<ElementClass><![CDATA[J_HousingBlock]]></ElementClass>
+						<ValueElementClass><![CDATA[String]]></ValueElementClass>
 					</Properties>
 
 				</Variable>
@@ -3042,6 +3061,10 @@ duration = f_traceFunctionTime(timeStartFunction);
 //7. Get initial heating method data, counts and numbers
 timeStartFunction = System.currentTimeMillis();
 f_getInitialHeatingMethods();
+f_setDefaultDataHomeOwnerAssociationBlocks();
+for(J_Household hh : c_households){
+	hh.storeInitialHeatingMethods();
+}
 duration = f_traceFunctionTime(timeStartFunction);
 //traceln("Initialized heating methods in: " + duration + " seconds");
 
@@ -3710,8 +3733,12 @@ for(J_Household x : c_rentersLandlords){
 	x.f_updateHeatingSystemAge();
 }
 
-for(J_SocialHousingBlock shb : c_socialHousingBlocks){
+for(J_HousingBlock shb : c_socialHousingBlocks){
 	shb.f_updateHeatingSystemAge();
+}
+
+for(J_HousingBlock hoa : c_homeOwnerAssociationBlocks){
+	hoa.f_updateHeatingSystemAge();
 }
 /*
 double hoAvgAge = average(c_homeOwners, x->x.getDwelling().getHeatingSystem().getAge());
@@ -3726,8 +3753,11 @@ for(DistrictHeatingCompany DHC : pop_districtHeatingCompanies){
 
 
 //4. Update social housing - for whole block at once
-for(J_SocialHousingBlock shb : c_socialHousingBlocks) {
-	shb.f_adoptHeatingMethod();
+for(J_HousingBlock shb : c_socialHousingBlocks) {
+	shb.f_adoptHeatingMethodSHA();
+}
+for(J_HousingBlock hoa : c_homeOwnerAssociationBlocks) {
+	hoa.f_adoptHeatingMethodHOA();
 }
 
 //5. Landlords
@@ -5460,7 +5490,7 @@ if (neighborhood != null) {
 		J_Household hh = new J_Household(dwelling, ownership);
 		
 		if(neighborhood.socialHousingBlock == null){
-			neighborhood.socialHousingBlock = new J_SocialHousingBlock(neighborhood, this);
+			neighborhood.socialHousingBlock = new J_HousingBlock(neighborhood, this);
 			c_socialHousingBlocks.add(neighborhood.socialHousingBlock);
 		}
 		
@@ -5562,7 +5592,6 @@ while (nbhIt.hasNext()) {
 }
 
 c_buurtcodeToNeighborhood.clear();
-
 ]]></Body>
 				</Function>
 				<Function AccessType="default" StaticFunction="false">
@@ -5729,7 +5758,7 @@ double electricityDemand_kWh = f_getDBValue(columnName, dwellingType, constructi
 					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1741851687084</Id>
 					<Name><![CDATA[f_getDBValue]]></Name>
-					<X>-885</X><Y>520</Y>
+					<X>-890</X><Y>540</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -5769,14 +5798,17 @@ return dbValue;]]></Body>
 					<Body><![CDATA[//int year = getYear();
 for(J_Household hh : c_households){
 	//When no social housing
-	if(hh.getOwnership() != SOCIAL_HOUSING){
+	if(hh.getOwnership() != SOCIAL_HOUSING && !hh.isInBlock()){
 		hh.getDwelling().updateExogeneousInsulation();
 	}	
 }
 
 //For Social housing
-for(J_SocialHousingBlock shb : c_socialHousingBlocks) {
+for(J_HousingBlock shb : c_socialHousingBlocks) {
 	shb.updateExogeneousInsulation();
+}
+for(J_HousingBlock hoa : c_homeOwnerAssociationBlocks) {
+	hoa.updateExogeneousInsulation();
 }
 				]]></Body>
 				</Function>
@@ -6271,7 +6303,7 @@ for (OL_HeatingSystem heatingSystem : OL_HeatingSystem.values()) {
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
-					<Body><![CDATA[for(J_SocialHousingBlock shb : c_socialHousingBlocks){
+					<Body><![CDATA[for(J_HousingBlock shb : c_socialHousingBlocks){
 	shb.setDefaultYearLastRenovation();
     shb.setDefaultEnergyLabel();
 }]]></Body>
@@ -6520,6 +6552,21 @@ for (OL_HeatingSystem system : OL_HeatingSystem.values()) {
     heatingSystemOptionsGlobalData.get(system).setSalienceFactor(currentShare, previousShare);
 }
 ]]></Body>
+				</Function>
+				<Function AccessType="default" StaticFunction="false">
+					<ReturnModificator>VOID</ReturnModificator>
+					<ReturnType><![CDATA[double]]></ReturnType>
+					<Id>1774963336969</Id>
+					<Name><![CDATA[f_setDefaultDataHomeOwnerAssociationBlocks]]></Name>
+					<X>-900</X><Y>520</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Body><![CDATA[for(J_HousingBlock hoa : c_homeOwnerAssociationBlocks){
+	hoa.setDefaultYearLastRenovation();
+    hoa.setDefaultEnergyLabel();
+}]]></Body>
 				</Function>
 			</Functions>
 			<TableFunctions>
@@ -14273,7 +14320,19 @@ if(rb_mapMode.getValue() == 0){
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
 					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
-						<Type><![CDATA[J_SocialHousingBlock]]></Type>        
+						<Type><![CDATA[J_HousingBlock]]></Type>        
+					</Properties>
+				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1774962709217</Id>
+					<Name><![CDATA[blockHeatingHOA]]></Name>
+					<X>850</X><Y>140</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[J_HousingBlock]]></Type>        
 					</Properties>
 				</Variable>
 				<Variable Class="Parameter">
@@ -16123,7 +16182,7 @@ if(rb_mapMode.getValue() == 0){
 					<Id>1741626271706</Id>
 					<Name><![CDATA[c_dwellingsLandlords]]></Name>
 					<ExcludeFromBuild>true</ExcludeFromBuild>
-					<X>850</X><Y>140</Y>
+					<X>850</X><Y>180</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -17045,10 +17104,11 @@ Collections.shuffle(nonSHBHouseholds);
 Iterator<J_Household> nonSHBIt = nonSHBHouseholds.iterator();
 while (setNGBl < requiredNGBl && nonSHBIt.hasNext()) {
     J_Household hh = nonSHBIt.next();
-    if (hh.getDwelling().getDwellingType() == APARTMENT) {
+    if (hh.getDwelling().getDwellingType() == APARTMENT || hh.getDwelling().getDwellingType() == HIGHRISE) {
         hh.f_setInitialHeatingMethod(NATURAL_GAS_BLOCK);
         nonSHBIt.remove();
         setNGBl++;
+        f_addHouseholdToHOABlock(hh, NATURAL_GAS_BLOCK);
     }
 }
 // Second terraced
@@ -17059,6 +17119,7 @@ while (setNGBl < requiredNGBl && nonSHBIt.hasNext()) {
         hh.f_setInitialHeatingMethod(NATURAL_GAS_BLOCK);
         nonSHBIt.remove();
         setNGBl++;
+        f_addHouseholdToHOABlock(hh, NATURAL_GAS_BLOCK);
     }
 }
 // Third random
@@ -17068,6 +17129,7 @@ while (setNGBl < requiredNGBl && nonSHBIt.hasNext()) {
     hh.f_setInitialHeatingMethod(NATURAL_GAS_BLOCK);
     nonSHBIt.remove();
     setNGBl++;
+    f_addHouseholdToHOABlock(hh, NATURAL_GAS_BLOCK);
 }
 
 // After social housing assignment, calculate how many MORE are needed
@@ -17233,6 +17295,46 @@ if( share2023 > 0){
 }
 
 p_EVAdoptionFactor = k;]]></Body>
+				</Function>
+				<Function AccessType="default" StaticFunction="false">
+					<ReturnModificator>VOID</ReturnModificator>
+					<ReturnType><![CDATA[double]]></ReturnType>
+					<Id>1774963820564</Id>
+					<Name><![CDATA[f_addHouseholdToHOABlock]]></Name>
+					<X>-440</X><Y>150</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Parameter>
+						<Name><![CDATA[household]]></Name>
+						<Type><![CDATA[J_Household]]></Type>
+					</Parameter>
+					<Parameter>
+						<Name><![CDATA[heating_method]]></Name>
+						<Type><![CDATA[OL_HeatingSystem]]></Type>
+					</Parameter>
+					<Body><![CDATA[if(blockHeatingHOA == null){
+	blockHeatingHOA = new J_HousingBlock(this, main);
+	main.c_homeOwnerAssociationBlocks.add(blockHeatingHOA);
+	blockHeatingHOA.f_setInitialHeatingMethod(heating_method);
+}
+blockHeatingHOA.addHousehold(household);
+household.setInBlock(true);
+
+//Remove from other lists to ensure actions only triggered in block setting
+if(household.getOwnership() == PRIVATELY_OWNED){
+	c_homeOwners.remove(household);
+	main.c_homeOwners.remove(household);
+}
+else if( household.getOwnership() == PRIVATELY_RENTED){
+	c_rentersLandlords.remove(household);
+	main.c_rentersLandlords.remove(household);
+} else{
+	traceln("ERROR: household of ownership " + household.getOwnership() + "added to home owner association");
+}
+
+household.setOwnership(HOME_OWNER_ASSOCIATION);]]></Body>
 				</Function>
 			</Functions>
 			<AgentLinks>
@@ -26469,6 +26571,7 @@ public class J_Household {
 	//Household characteristics
 	private J_Dwelling dwelling;	
 	private OL_HouseholdOwnership ownership;
+	private boolean isInBlock;
     private Map<OL_HeatingSystem, J_HeatingSystemOption> heatingSystemOptions;
 	
     private boolean validationHousehold;
@@ -26719,24 +26822,36 @@ public class J_Household {
     public void f_setInitialHeatingMethod( OL_HeatingSystem heatingSystemType ) {
     	J_Dwelling d = getDwelling();
     	d.setInitialHeatingMethod(heatingSystemType);    	
-    	d.main.mapAnnualValues.get(heatingSystemType).get(ownership).addInstalledAtInitialization();
     }
     
     public void setHeatingSystemOptionsNull() {
     	heatingSystemOptions = null;
     }
     
+    public void storeInitialHeatingMethods() {
+    	J_AngetDwelling().main.mapAnnualValues.get(getDwelling().getHeatingSystem().getType()).get(ownership).addInstalledAtInitialization();
+    }
 
         
     /**Setter methods
      * 
      */
+    public void setInBlock(boolean inBlock) {
+    	isInBlock = inBlock;
+    }
+    public void setOwnership(OL_HouseholdOwnership ownership) {
+    	this.ownership = ownership;
+    }
 
     /**Getter methods
      * 
      */
     public J_Dwelling getDwelling() {
     	return dwelling;
+    }
+    
+    public boolean isInBlock() {
+    	return isInBlock;
     }
     
     public OL_HouseholdOwnership getOwnership() {
@@ -28317,7 +28432,6 @@ public class J_SocialHousingBlock {
     	for(J_Household hh : households) {
     		hh.getDwelling().setHeatingSystem(heatingSystem);
     		hh.getDwelling().setHasLowTemperatureInhouseHeatDistribution(hasLowTemperatureInhouseHeatDistribution);
-    		main.mapAnnualValues.get(type).get(hh.getOwnership()).addInstalledAtInitialization();
     	}
     }
     
@@ -29079,6 +29193,8 @@ public class J_ResultsPerHeatingMethod{
  * J_AnnualValues
  */	
 public class J_AnnualValues {
+	
+	private OL_Group
 
 	// ========== COUNT / INSTALLED ==========
     private int installedThisYear = 0;
@@ -29461,6 +29577,334 @@ public class J_HeatingSystemOption {
     
     
 
+	@Override
+	public String toString() {
+		return super.toString();
+	}
+
+}]]></Text>
+		</JavaClass>
+		<!--   =========   Java Class   ========  -->
+		<JavaClass>
+			<Id>1774962999220</Id>
+			<Name><![CDATA[J_HousingBlock]]></Name>
+			<Text><![CDATA[/**
+ * J_HousingBlock
+ */	
+import java.util.EnumMap;
+
+public class J_HousingBlock {
+	//Housing block (1 social housing block and one VVE per neighborhood)
+	//String postalCode;
+	//ArrayList<J_Dwelling> dwellings;
+	private ArrayList<J_Household> households;
+	private J_HeatingSystem heatingSystem;
+	private GZ_Neighborhood neighborhood;
+	private Main main;
+	private int yearLastRenovation;
+	private Map<OL_HeatingSystem, J_HeatingSystemOption> heatingSystemOptions;
+	
+	private String energyLabel;
+	private boolean hasLowTemperatureInhouseHeatDistribution;
+
+	
+    /**
+     * Default constructor
+     */
+    public J_HousingBlock(GZ_Neighborhood nbh, Main main) {
+    	this.neighborhood = nbh;
+    	this.main = main;
+    	households = new ArrayList<>();
+    }
+
+    public void f_setInitialHeatingMethod(OL_HeatingSystem type) {
+    	hasLowTemperatureInhouseHeatDistribution = main.heatingSystemOptionsGlobalData.get(type).getRequiresLowTemperatureInhouseHeatDistribution();
+    	
+	    // Initialize heating system based on type 
+		// Get random age for heating systemGive random age to heating system
+		int ageHeatingSystem = main.v_startYear - yearLastRenovation;
+		int heatingSystemLifetime = main.heatingSystemOptionsGlobalData.get(type).getLifetime();
+		if(ageHeatingSystem >= heatingSystemLifetime) {
+			ageHeatingSystem = (int) (Math.random() * (heatingSystemLifetime));
+		}
+		
+		//Initalize heating system
+		this.heatingSystem = new J_HeatingSystem(type, ageHeatingSystem);
+		this.hasLowTemperatureInhouseHeatDistribution = main.heatingSystemOptionsGlobalData.get(type).getRequiresLowTemperatureInhouseHeatDistribution();
+	    
+    	for(J_Household hh : households) {
+    		hh.getDwelling().setHeatingSystem(heatingSystem);
+    		hh.getDwelling().setHasLowTemperatureInhouseHeatDistribution(hasLowTemperatureInhouseHeatDistribution);
+    	}
+    }
+    
+    
+    public void setDefaultYearLastRenovation() {
+    	
+    	int avgConstructionYear = roundToInt(average(households, x->x.getDwelling().getConstructionYear()));		
+    	if(avgConstructionYear < 1990 ) {
+    		int randomYear = main.randomInstance.nextInt(0, 35); 
+    		yearLastRenovation = 1990 + randomYear;
+    	} else {
+    		yearLastRenovation = avgConstructionYear;
+    	}
+    	int yearLastRenovation = 0;
+    	
+    	for( J_Household hh : households){
+    		hh.getDwelling().setYearLastRenovation(yearLastRenovation);	
+    	}
+    }
+    
+    public void setDefaultEnergyLabel() {
+    	int sumLabelNumber = 0;
+    	for(J_Household hh : households) {
+    		sumLabelNumber += f_insulationLabelLetterToNumber(hh.getDwelling().getEnergyLabel());
+    	}
+    	int avgLabelNb = roundToInt(sumLabelNumber / households.size());
+    	energyLabel = f_insulationLabelNumberToLetter(avgLabelNb);
+    }
+    
+    public void addHousehold(J_Household household) {
+    	households.add(household);
+    }
+    
+    public void f_adoptHeatingMethodSHA() {
+	    if( hasTrigger()) {
+	    	
+	    	OL_HeatingSystem heatingMethodToInstall = null;
+	    	
+	    	//Policy based
+	    	if(main.p_socialHousingStrategy == POLICY_BASED && neighborhood.p_policyPlan != null){
+	    		heatingMethodToInstall = neighborhood.p_policyPlan;
+	    	}
+	    	//Cost based
+	    	else {
+	    		//heatingMethodToInstall = getTopRankedEACOption();
+	    		heatingMethodToInstall = getStochasticChoice();
+	    	}
+	    	installNewHeatingMethodInHouseholds(heatingMethodToInstall, "end_of_life");
+	    }
+    }
+    
+    public void f_adoptHeatingMethodHOA() {
+	    if( hasTrigger()) {
+	    	OL_HeatingSystem heatingMethodToInstall = getStochasticChoice();
+	    	installNewHeatingMethodInHouseholds(heatingMethodToInstall, "end_of_life");
+	    }
+    }
+        
+    public void setAverageHeatingSystemOptionsEAC() {
+    	if(heatingSystemOptions == null) {
+			heatingSystemOptions = new EnumMap<>(OL_HeatingSystem.class);
+			
+			for(J_Household hh : households) {
+				J_Dwelling d = hh.getDwelling();
+				hh.getHeatingSystemOptionsEAC();
+			}
+			
+			for (OL_HeatingSystem type : OL_HeatingSystem.values()) {
+				double EAC = 0.0;
+				boolean isPossible = true;
+				
+				for(J_Household hh : households) {
+					J_HeatingSystemOption hsol = hh.getHeatingSystemOptions().get(type);
+					EAC += hsol.getEAC();
+					
+					if( !hsol.isPossible() ) {
+						isPossible = false;
+					}
+				}
+				double averageEAC = EAC / households.size();
+				heatingSystemOptions.put(type, new J_HeatingSystemOption(averageEAC, isPossible));
+			}
+		}	
+    }
+    
+    public void installNewHeatingMethodInHouseholds(OL_HeatingSystem heatingMethod, String trigger) {
+    	hasLowTemperatureInhouseHeatDistribution = main.heatingSystemOptionsGlobalData.get(heatingMethod).getRequiresLowTemperatureInhouseHeatDistribution();
+    	J_HeatingSystem oldHS = heatingSystem;
+    	heatingSystem = new J_HeatingSystem(heatingMethod);
+    	for(J_Household hh : households) {    		
+    		hh.f_installSelectedHeatingMethodSHB(heatingSystem, oldHS, hasLowTemperatureInhouseHeatDistribution, trigger);
+    	}
+    	
+    	setHeatingSystemOptionsNull();
+    	
+    }
+    
+    //Get best EAC option
+  	public OL_HeatingSystem getTopRankedEACOption() {
+  		OL_HeatingSystem bestHS = null;
+  	    double bestEAC = Double.POSITIVE_INFINITY;
+  	    for (Map.Entry<OL_HeatingSystem, J_HeatingSystemOption> entry : heatingSystemOptions.entrySet()) {
+  	    	if(entry.getValue().isPossible()) {
+	    		double EAC = entry.getValue().getEAC();
+		        if (EAC < bestEAC) {
+		            bestEAC = EAC;
+		            bestHS = entry.getKey();
+		        }
+	    	}
+  	    }
+  	    //traceln( bestHS + " best HS with EAC " + bestEAC);
+  	    return bestHS;
+  	}
+  	
+  	public OL_HeatingSystem getStochasticChoice() {
+  	    OL_HeatingSystem bestHS = null;
+  	    double bestScore = Double.POSITIVE_INFINITY;
+  	    
+  	    for (Map.Entry<OL_HeatingSystem, J_HeatingSystemOption> entry : heatingSystemOptions.entrySet()) {
+  	        if (entry.getValue().isPossible()) {
+  	            double gumbel = -Math.log(-Math.log(Math.random())); // Gumbel noise
+  	            double score = entry.getValue().getEAC() + main.gumbelScaleEAC * gumbel; //gumbelScale is µ from Gumbel / Random Utility Model (RUM)
+  	            if (score < bestScore) {
+  	                bestScore = score;
+  	                bestHS = entry.getKey();
+  	            }
+  	        }
+  	    }
+  	    
+  	    if(bestHS != getTopRankedEACOption()) {
+  	    	main.shbStochasticChoiceIsNotBestEAC++;
+  	    }
+  	    main.SHBstochasticChoiceDecision++;
+  	    return bestHS;
+  	}
+  	
+  	public boolean hasTrigger() {	
+  		if( heatingSystem.getAge() >= main.heatingSystemOptionsGlobalData.get(heatingSystem.getType()).getLifetime() ) {
+  			setAverageHeatingSystemOptionsEAC();
+  			return true;
+  		}
+  		else {
+  			return false;
+  		}
+  	}
+  	
+  //Update heating system age
+    public void f_updateHeatingSystemAge() {
+    	heatingSystem.updateAge();
+	}  
+  	
+  	public void updateExogeneousInsulation() {	
+		int currentELabelNumber = f_insulationLabelLetterToNumber(energyLabel);
+		if(currentELabelNumber > 1 && main.v_year - yearLastRenovation > 15 ){
+			double rand = main.randomInstance.nextDouble();
+			if( rand < 0.05){ //Would renovate once every 20 year between 15 and 35 years
+				int renovatedELabelNumber = currentELabelNumber - 2;
+				if( renovatedELabelNumber < 1) { renovatedELabelNumber = 1;}
+					 
+				energyLabel = f_insulationLabelNumberToLetter(renovatedELabelNumber);
+				yearLastRenovation = main.v_year;
+				if( renovatedELabelNumber <= 2) {  
+					hasLowTemperatureInhouseHeatDistribution = true; 
+				}
+			}
+			
+			for(J_Household hh : households) {
+				J_Dwelling d = hh.getDwelling();
+				d.setEnergyLabel(energyLabel);
+				d.setHasLowTemperatureInhouseHeatDistribution(hasLowTemperatureInhouseHeatDistribution);
+				d.setYearLastRenovation(yearLastRenovation);
+			}
+		}
+    }
+  	
+  //Check possibility
+  	public boolean f_getHeatingMethodPossibility(OL_HeatingSystem type) {
+  		// Obligation to connect to district heating
+  		if (main.p_connectionObligationNewDH && neighborhood.v_hasDistrictHeatingGrid) {
+  			return type == DISTRICT_HEATING;
+  		}
+
+  		// District heating only possible if grid exists
+  		if (type == DISTRICT_HEATING) {
+  			return neighborhood.v_hasDistrictHeatingGrid;
+  		}
+
+  		    // Block heat pump under congestion
+  		if (type == ELECTRIC_HEAT_PUMP 
+  		    && main.p_congestionBlock 
+  		    && neighborhood.v_hasGridCongestion) {
+  		    return false;
+  		}
+
+  		return true;
+  	}
+  	
+  	public List<J_Household> getHouseholds(){
+  		return households;
+  	}
+  	
+  	public OL_HeatingSystem getHeatingMethod() {
+  		return heatingSystem.getType();
+  	}
+  	
+  	public void clearHouseholds() {
+  		households.clear();
+  	}
+  	
+  	public String getEnergyLabel() {
+  		return energyLabel;
+  	}
+  	
+  	public J_HeatingSystem getHeatingSystem() {
+  		return heatingSystem;
+  	}
+  	
+  	public int getEnergyLabelNumber() {
+  		return f_insulationLabelLetterToNumber(energyLabel);
+  	}
+  	
+  	public void setEnergyLabel(int energyLabelNumber) {
+  		energyLabel = f_insulationLabelNumberToLetter(energyLabelNumber);
+  	}
+  	
+  	public void setHeatingSystemOptionsNull() {
+  		heatingSystemOptions = null;
+  	}
+    
+  	public int f_insulationLabelLetterToNumber(String labelLetter) {
+    	int labelNumber = 3;
+    	if( labelLetter.equals("a")){
+    		labelNumber = 1;
+    	} else if( labelLetter.equals("b")){
+    		labelNumber = 2;
+    	} else if( labelLetter.equals("c")){
+    		labelNumber = 3;
+    	} else if( labelLetter.equals("d")){
+    		labelNumber = 4;
+    	} else if( labelLetter.equals("e")){
+    		labelNumber = 5;
+    	} else if( labelLetter.equals("f")){
+    		labelNumber = 6;
+    	} else if( labelLetter.equals("g")){
+    		labelNumber = 7;
+    	} else {
+    		labelNumber = 3;
+    	}	
+    	return labelNumber;
+    }
+  
+    public String f_insulationLabelNumberToLetter(int labelNumber) {
+    	String labelLetter = "c";
+    	if( labelNumber <= 1 ){
+    		labelLetter = "a";
+    	} else if( labelNumber == 2 ){
+    		labelLetter = "b";
+    	} else if( labelNumber == 3 ){
+    		labelLetter = "c";
+    	} else if( labelNumber == 4 ){
+    		labelLetter = "d";
+    	} else if( labelNumber == 5 ){
+    		labelLetter = "e";
+    	} else if( labelNumber == 6 ){
+    		labelLetter = "f";
+    	} else if( labelNumber >= 7 ){
+    		labelLetter = "g";
+    	}
+    	return labelLetter;
+    }
 	@Override
 	public String toString() {
 		return super.toString();
