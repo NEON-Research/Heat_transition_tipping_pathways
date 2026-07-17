@@ -97,7 +97,7 @@ def create_stacked_percentage_plots(df: pd.DataFrame, output_dir='plots'):
     """
     Create stacked area plots showing percentage distribution of heating systems
     over time for each ownership category.
-    
+
     Parameters:
     -----------
     csv_file : str
@@ -105,6 +105,9 @@ def create_stacked_percentage_plots(df: pd.DataFrame, output_dir='plots'):
     output_dir : str
         Directory to save the plots (default: 'plots')
     """
+    # Ensure output directory exists
+    Path(output_dir).mkdir(parents=True, exist_ok=True)
+
     # Get unique ownership types
     ownership_types = df['ownership'].unique()
     
@@ -417,6 +420,94 @@ def create_total_ownership_scenario_comparison(
     plt.close()
 
 
+def create_selected_scenarios_comparison(
+    df: pd.DataFrame,
+    output_file="plots/scenario_comparison_selected.png",
+    ownership="TOTAL",
+    scenario_names=None
+):
+    """Create a comparison of selected scenarios (preferably 3-4 scenarios)."""
+    if scenario_names is None:
+        scenario_names = [
+            "policy_driven_dh_strategy",
+            "policy_driven_sha_strategy",
+            "actor_allignment_strategy",
+            "dh_policy_based_connection_obligation",
+        ]
+
+    df_total = df[df["ownership"] == ownership]
+    if df_total.empty:
+        print(f"⚠️ No data for ownership '{ownership}'. Skipping selected scenario comparison.")
+        return
+
+    n_scenarios = len(scenario_names)
+    n_cols = min(2, n_scenarios)
+    n_rows = int(np.ceil(n_scenarios / n_cols))
+
+    fig, axes = plt.subplots(n_rows, n_cols, figsize=(figwidth, 1.8 * n_rows), sharex=True, sharey=True)
+    if n_rows == 1 and n_cols == 1:
+        axes = np.array([axes])
+    else:
+        axes = np.array(axes).flatten()
+
+    legend_handles = None
+    legend_labels = None
+
+    for idx, scen in enumerate(scenario_names):
+        ax = axes[idx]
+
+        df_s = df_total[df_total["scenario_name"] == scen]
+        if df_s.empty:
+            ax.text(0.5, 0.5, f"No data for\n{scen}", ha='center', va='center', transform=ax.transAxes)
+            ax.set_title(scen.replace('_', ' ').title(), fontsize=10)
+            continue
+
+        mean_data = (
+            df_s.groupby(["year", "heating_system"], as_index=False)["installed_current"].mean()
+        )
+
+        pivot = mean_data.pivot(index="year", columns="heating_system", values="installed_current").fillna(0)
+        pivot = pivot.reindex(columns=HEATING_SYSTEM_ORDER, fill_value=0)
+        percentages = pivot.div(pivot.sum(axis=1), axis=0) * 100
+
+        ax.stackplot(
+            percentages.index,
+            [percentages[col] for col in percentages.columns],
+            colors=[HEATING_SYSTEM_COLORS[c] for c in percentages.columns],
+            alpha=0.85
+        )
+
+        ax.set_title(scen.replace('_', ' ').title(), fontsize=10, pad=9)
+        ax.set_ylim(0, 100)
+        ax.grid(True, alpha=0.3, linestyle='--')
+        ax.tick_params(axis='both', labelsize=7)
+
+        if idx % n_cols == 0:
+            ax.set_ylabel('Share (%)', fontsize=7)
+        if idx >= n_scenarios - n_cols:
+            ax.set_xlabel('Year', fontsize=7)
+
+        if legend_handles is None and ax.get_legend_handles_labels()[0]:
+            legend_handles, legend_labels = ax.get_legend_handles_labels()
+
+    for idx in range(n_scenarios, len(axes)):
+        axes[idx].set_visible(False)
+
+    handles = [plt.Line2D([0], [0], color=HEATING_SYSTEM_COLORS[h], lw=8) for h in HEATING_SYSTEM_ORDER]
+    labels = [translate_heating_system_name(label) for label in HEATING_SYSTEM_ORDER]
+
+    fig.legend(handles, labels, loc='lower center', ncol=3, frameon=False, fontsize=fontsizeLegend)
+
+    fig.suptitle(
+        "Scenario comparison of heating system distribution over time",
+        fontsize=fontsizeGraphTitle
+    )
+
+    plt.tight_layout(rect=[0, 0.05, 1, 0.95])
+    plt.savefig(output_file, dpi=300, bbox_inches='tight')
+    plt.close()
+
+
 def translate_metric_name(metric: str) -> str:
     """Translate metric column names to readable names."""
     translation = {
@@ -431,16 +522,33 @@ def translate_metric_name(metric: str) -> str:
 
 def create_detail_values_per_hm_per_scenario_plot(
     df: pd.DataFrame,
-    scen = "baseline",
+    scen: str = "baseline",
+    ownership: str = "PRIVATELY_OWNED",
+    min_year: int = 2025,
     output_file="plots/detail_values_per_hm_per_scenario.png"
 ):
-    # Get privately-owned and scenario-specific data
-    df_filtered = df[(df["ownership"] == "PRIVATELY_OWNED") & (df["scenario_name"] == scen) & (df["year"] != 2023)].copy()
+    # Filter scenario and ownership case-insensitively to avoid mismatches
+    scen_norm = scen.strip().lower()
+    ownership_norm = ownership.strip().lower()
+
+    df_filtered = df[
+        (df["ownership"].astype(str).str.strip().str.lower() == ownership_norm) &
+        (df["scenario_name"].astype(str).str.strip().str.lower() == scen_norm) &
+        (df["year"] >= min_year)
+    ].copy()
 
     # Guard: nothing to do
     if df_filtered.empty:
-        print(f"No data for scenario '{scen}' and ownership PRIVATELY_OWNED. Skipping.")
+        found_scenarios = df["scenario_name"].dropna().unique().tolist()
+        found_ownerships = df["ownership"].dropna().unique().tolist()
+        print(
+            f"No data for scenario '{scen}' and ownership '{ownership}'. "
+            f"Found scenarios: {found_scenarios}. Found ownerships: {found_ownerships}. Skipping."
+        )
         return
+
+    # Ensure output directory exists
+    Path(output_file).parent.mkdir(parents=True, exist_ok=True)
 
     # Sort by year
     df_filtered = df_filtered.sort_values("year")
@@ -717,14 +825,93 @@ def create_installed_current_grid_plot(
     plt.close(fig)
     print(f"Saved: {output_file}")
 
+
+def create_considered_annually_stacked_plots(
+    df: pd.DataFrame,
+    scen: str = "baseline",
+    output_file: str = "plots/considered_annually_by_ownership.png"
+):
+    """Plot mean `considered_annually` for NATURAL_GAS_BOILER by ownership.
+
+    This function plots one line per ownership type for the heating system
+    `NATURAL_GAS_BOILER` (because considering a single system implies considering all).
+    """
+
+    # Filter scenario case-insensitively and for the specific heating system.
+    scen_norm = scen.strip().lower()
+    df_filtered = df[
+        (df["scenario_name"].astype(str).str.strip().str.lower() == scen_norm) &
+        (df["heating_system"] == "NATURAL_GAS_BOILER")
+    ].copy()
+
+    if df_filtered.empty:
+        found = df["scenario_name"].dropna().unique().tolist()
+        print(
+            f"No data for scenario '{scen}' (case-insensitive) with NATURAL_GAS_BOILER. "
+            f"Found scenario_name values: {found}. Skipping considered_annually plot."
+        )
+        return
+
+    ownership_types = sorted(df_filtered["ownership"].unique())
+    if not ownership_types:
+        print(f"No ownership types found for scenario '{scen}'. Skipping.")
+        return
+
+    # Mean considered_annually per ownership and year (averaging over iterations when present)
+    if "iteration" in df_filtered.columns:
+        mean_df = (
+            df_filtered
+            .groupby(["ownership", "year", "iteration"], as_index=False)["considered_annually"]
+            .sum()
+            .groupby(["ownership", "year"], as_index=False)["considered_annually"]
+            .mean()
+        )
+    else:
+        mean_df = (
+            df_filtered
+            .groupby(["ownership", "year"], as_index=False)["considered_annually"]
+            .sum()
+        )
+
+    # Plot all ownerships on one axis (one line per ownership)
+    fig, ax = plt.subplots(figsize=(10, 6))
+
+    for ownership in ownership_types:
+        ownership_df = mean_df[mean_df["ownership"] == ownership]
+        if ownership_df.empty:
+            continue
+        ax.plot(
+            ownership_df["year"],
+            ownership_df["considered_annually"],
+            label=translate_heating_system_name(ownership),
+            linewidth=2
+        )
+
+    ax.set_xlabel("Year", fontsize=fontsizeLabels)
+    ax.set_ylabel("Considered (mean)", fontsize=fontsizeLabels)
+    ax.set_title(
+        f"Mean dwellings considered per year (NATURAL_GAS_BOILER)\nScenario: {scen}",
+        fontsize=fontsizeGraphTitle
+    )
+    ax.grid(True, alpha=0.3, linestyle='--')
+    ax.tick_params(axis='both', labelsize=fontsizeLabels)
+    ax.legend(fontsize=fontsizeLegend)
+
+    Path(output_file).parent.mkdir(parents=True, exist_ok=True)
+    plt.tight_layout()
+    plt.savefig(output_file, dpi=300, bbox_inches='tight')
+    plt.close(fig)
+    print(f"Saved: {output_file}")
+
+
 if __name__ == "__main__":
     csv_file = "results/simulation_results.csv"
 
     # Load & clean once
     df = load_and_prepare_results(csv_file)
     
-    # print("Creating stacked percentage plots for each scenario and ownership type...")
-    # create_stacked_percentage_plots(df, output_dir="plots/stacked_percentage_plots")
+    print("Creating stacked percentage plots for each scenario and ownership type...")
+    create_stacked_percentage_plots(df, output_dir="plots/stacked_percentage_plots")
 
     print("\nCreating combined scenario comparison plots for each scenario...")
     create_combined_plot(df, output_file="plots/combined_ownership_plot.png")
@@ -732,12 +919,38 @@ if __name__ == "__main__":
     print("\nCreating scenario comparison plot for TOTAL ownership...")
     create_total_ownership_scenario_comparison(df, output_file="plots/scenario_comparison_TOTAL.png")
 
-    print("\nCreating detail values per heating method plot for baseline scenario (privately owned)...")
-    create_detail_values_per_hm_per_scenario_plot(df, scen="baseline", output_file="plots/detail_values_per_hm_baseline_privately_owned.png")
-    
-    print("\nCreating detail values per heating method plot for individual technologies scenario (privately owned)...")
-    create_detail_values_per_hm_per_scenario_plot(df, scen="individual_technologies", output_file="plots/detail_values_per_hm_individual_technologies_privately_owned.png")
-   
+    print("\nCreating selected scenario comparison plot (3-4 scenarios)...")
+    create_selected_scenarios_comparison(
+        df,
+        output_file="plots/scenario_comparison_district_heating.png",
+        ownership="TOTAL",
+        scenario_names=[
+            "policy_driven_dh_strategy",
+            "policy_driven_sha_strategy",
+            "actor_allignment_strategy",
+            "dh_policy_based_connection_obligation",
+        ]
+    )
 
-    create_installed_current_grid_plot(df, ownership="TOTAL",
-    output_file="plots/installed_current_all.png")
+    # Create detail plots for the main scenarios across all ownership types
+    ownership_types = sorted(df['ownership'].unique())
+    main_scenarios = ["baseline", "individual_technologies"]
+
+    for scen in main_scenarios:
+        for ownership in ownership_types:
+            safe_ownership = ownership.replace(" ", "_")
+            output_file = (
+                f"plots/detail_values_{scen}_{safe_ownership}.png"
+            )
+            print(f"\nCreating detail values per heating method plot for scenario '{scen}' and ownership '{ownership}'...")
+            create_detail_values_per_hm_per_scenario_plot(
+                df,
+                scen=scen,
+                ownership=ownership,
+                output_file=output_file
+            )
+
+    create_installed_current_grid_plot(df, ownership="TOTAL", output_file="plots/installed_current_all.png")
+
+    print("\nCreating considered_annually plot for baseline scenario (by ownership)...")
+    create_considered_annually_stacked_plots(df, scen="baseline", output_file="plots/considered_annually_by_ownership.png")
