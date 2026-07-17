@@ -1,0 +1,122 @@
+"""Extract the real Limburg dwelling stock from households.db (SQLite, 9.7M rows NL-wide)
+and compute per-dwelling heat demand using the model's VestaMAIS archetype method
+(J_Dwelling.f_setAnnualEnergyDemandFromVestaMAIS / f_getDBValue). Faithful mappings:
+  woning_type -> OL_DwellingType (J_Dwelling.f_setDwellingType)
+  energieklasse -> label a..g (constructor; blank -> archetype default_label)
+  construction year -> archetype row via bouwjaar_min/max
+  spaceHeating = (vrv_{label}_asl + vrv_{label}_opp * area)/3.6*1000  [GJ->kWh]
+  dhwBase      =  vww_asl /3.6*1000
+The stochastic energyDemandFactor ~ N(1,0.2) in [0.5,1.5] is applied at RUNTIME by the
+engine (with its seeded RNG), so we export the deterministic space & dhw components:
+  heatDemand = f*space + f*f*dhwBase   (matches the nested factor in the Java).
+Output: out/limburg_dwellings.csv  (one row per dwelling).
+Also exports ownership inputs so the engine assigns ownership with its own RNG.
+"""
+import sqlite3, json, csv, os, sys
+
+HH = sys.argv[1] if len(sys.argv) > 1 else \
+    "../../../Heat transition tipping pathways/households.db"
+OUT = sys.argv[2] if len(sys.argv) > 2 else "../out"
+os.makedirs(OUT, exist_ok=True)
+
+arch = json.load(open(os.path.join(OUT, "dwellings_demand_insulation.json")))
+
+TYPE_MAP = {
+    "Appartement": "APARTMENT", "Maisonnette": "APARTMENT", "Portiekwoning": "APARTMENT",
+    "Flatwoning (overig)": "HIGHRISE", "Galerijwoning": "HIGHRISE",
+    "Rijwoning hoek": "CORNER",
+    "Rijwoning tussen": "TERRACED",
+    "Twee-onder-een-kap / rijwoning hoek": "SEMIDETACHED", "Twee-onder-één-kap": "SEMIDETACHED",
+    "Vrijstaande woning": "DETACHED",
+    "unknown": "TERRACED",
+}   # anything else (incl. blank) -> TERRACED (Java default)
+
+def dwelling_type(woning_type):
+    return TYPE_MAP.get(woning_type, "TERRACED")
+
+def label_letter(energieklasse):
+    e = (energieklasse or "").strip()
+    if e in ("A++++", "A+++", "A++", "A+", "A", "A+++++"): return "a"
+    if e == "B": return "b"
+    if e == "C": return "c"
+    if e == "D": return "d"
+    if e == "E": return "e"
+    if e == "F": return "f"
+    if e == "G": return "g"
+    return ""   # blank -> use archetype default_label
+
+# index archetype rows by type_ol, with (min,max) bands
+by_type = {}
+for r in arch:
+    by_type.setdefault(r["type_ol"], []).append(r)
+for t in by_type:
+    by_type[t].sort(key=lambda r: r["bouwjaar_min"])
+
+def arch_row(type_ol, year):
+    for r in by_type.get(type_ol, []):
+        if r["bouwjaar_min"] <= year <= r["bouwjaar_max"]:
+            return r
+    return by_type.get(type_ol, [None])[0]
+
+def demand_components(type_ol, label, year, area):
+    r = arch_row(type_ol, year)
+    if r is None: return 0.0, 0.0
+    lab = label or (r.get("default_label") or "n")
+    lab = lab.lower()
+    asl = r.get(f"vrv_{lab}_asl"); opp = r.get(f"vrv_{lab}_opp")
+    if asl is None: asl = r.get("vrv_n_asl", 0.0)
+    if opp is None: opp = r.get("vrv_n_opp", 0.0)
+    space = (asl + opp * area) / 3.6 * 1000.0
+    vww = r.get("vww_asl", 0.0) or 0.0
+    dhw = vww / 3.6 * 1000.0
+    return space, dhw
+
+
+# f_insulationLabelLetterToNumber: a=1 (best) .. g=7 (worst); upgrade needed if to < from
+_LN = {"a":1,"b":2,"c":3,"d":4,"e":5,"f":6,"g":7,"n":4}
+def label_num(l): return _LN.get((l or "n").lower(), 4)
+
+def insulation_cost(type_ol, from_label, to_label, area):
+    """f_getInsulationCosts: (minTotal+maxTotal)/2, min/max = asl + opp*area. 0 if no upgrade."""
+    fl = (from_label or "n").lower()
+    if label_num(to_label) >= label_num(fl):   # already as good or better -> no upgrade
+        return 0.0
+    r = arch_row(type_ol, year_for_arch)
+    if r is None: return 0.0
+    col = f"ki_s{fl}{to_label}"
+    a1 = r.get(col+"_min_asl"); o1 = r.get(col+"_min_opp")
+    a2 = r.get(col+"_max_asl"); o2 = r.get(col+"_max_opp")
+    if a1 is None or a2 is None: return 0.0
+    mn = a1 + (o1 or 0)*area; mx = a2 + (o2 or 0)*area
+    return (mn + mx)/2
+
+con = sqlite3.connect(f"file:{HH}?mode=ro", uri=True); cur = con.cursor()
+q = """SELECT postcode, oppervlakte, pand_bouwjaar, energieklasse, woning_type, buurtcode,
+              pc6_eigendomssituatie_perc_koop, pc6_eigendomssituatie_perc_huur,
+              pc6_eigendomssituatie_aantal_woningen_corporaties
+       FROM households WHERE provincienaam='Limburg'"""
+path = os.path.join(OUT, "limburg_dwellings.csv")
+n = 0
+with open(path, "w", newline="") as f:
+    w = csv.writer(f)
+    w.writerow(["id","pc6","buurtcode","dwelling_type","label","construction_year",
+                "area_m2","space_heat_kwh","dhw_base_kwh","insul_to_b","insul_to_c",
+                "perc_koop","perc_huur","aantal_corp"])
+    for (pc6, area, year, ekl, wtype, buurt, koop, huur, corp) in cur.execute(q):
+        area = float(area or 0);  year = int(year or 0)
+        if year > 2025: year = 2025
+        dt = dwelling_type(wtype)
+        lab = label_letter(ekl)
+        # effective label (blank -> archetype default_label), used for demand + insulation
+        r0 = arch_row(dt, year)
+        eff_lab = (lab or (r0.get("default_label") if r0 else "") or "n").lower()
+        global year_for_arch; year_for_arch = year
+        space, dhw = demand_components(dt, eff_lab, year, area)
+        insul_b = insulation_cost(dt, eff_lab, "b", area)
+        insul_c = insulation_cost(dt, eff_lab, "c", area)
+        w.writerow([n, pc6, buurt, dt, eff_lab, year, round(area,1),
+                    round(space,1), round(dhw,1), round(insul_b,1), round(insul_c,1),
+                    int(koop or 0), int(huur or 0), int(corp or 0)])
+        n += 1
+con.close()
+print(f"Exported {n} Limburg dwellings -> {path}  ({os.path.getsize(path)//1024//1024} MB)")
