@@ -159,3 +159,25 @@ household_data_loader/large_files/
 Heat transition tipping pathways/large_files/
 Heat transition tipping pathways/households.db
 # End of https://www.toptal.com/developers/gitignore/api/python,jupyternotebooks
+
+# Full households DB (2.7GB) + large exported stock CSVs -- never commit
+model/households.db
+model/data-export/out/*_dwellings.csv
+model/data/stock/*_dwellings.csv
+
+# Top-level data/ : raw DB is huge, never commit
+data/households.db
+
+# Top-level results/ : run outputs (CSVs + plots) are regenerated, never commit
+results/**
+!results/README.md
+
+# Java engine (was model/engine-java/.gitignore)
+model/engine-java/.gradle/
+model/engine-java/.tooling/          # JDK/Gradle downloaded by gradle-bootstrap.ps1
+# build/ (compiled classes) already ignored by the generic 'build/' rule above
+# regenerable engine run artifacts:
+model/engine-java/java.log
+model/engine-java/java_baseline.csv
+model/engine-java/diag.csv
+model/engine-java/out.csv

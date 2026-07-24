@@ -1,6 +1,0 @@
-# Large regenerable extract — rebuild with scripts/export_limburg_stock.py
-limburg_dwellings.csv
-# Keep the small reference JSONs (archetypes, heating systems, energy sources)
-!dwellings_demand_insulation.json
-!heating_system_data.json
-!energy_source_data.json

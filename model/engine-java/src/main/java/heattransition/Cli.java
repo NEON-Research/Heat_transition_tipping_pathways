@@ -1,0 +1,89 @@
+package heattransition;
+
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+
+/** Multi-owner headless runner (social blocks + landlords + homeowners).
+ *  Usage: java heattransition.Cli --real ..\data-export\out\limburg_dwellings.csv
+ *         [--scenario baseline] [--every 1] [--iterations 1] [--out file.csv] */
+public final class Cli {
+    static String arg(String[] a, String n, String d) {
+        for (int i = 0; i < a.length; i++) if (a[i].equals("--" + n))
+            return (i + 1 < a.length && !a[i + 1].startsWith("--")) ? a[i + 1] : "true";
+        return d;
+    }
+    static final String[] OWN_OUT = { "PRIVATELY_OWNED", "PRIVATELY_RENTED", "SOCIAL_HOUSING", "HOME_OWNER_ASSOCIATION", "TOTAL" };
+
+    public static void main(String[] args) throws Exception {
+        String csv = arg(args, "real", "../data/stock/limburg_dwellings.csv");
+        int everyNth = Integer.parseInt(arg(args, "every", "1"));
+        int iterations = Integer.parseInt(arg(args, "iterations", "1"));
+        String scName = arg(args, "scenario", "baseline");
+        int startYear = Integer.parseInt(arg(args, "start", "2024"));
+        int endYear = Integer.parseInt(arg(args, "end", "2050"));
+        String out = arg(args, "out", null);
+        if (out == null) out = "simulation_results_" +
+                LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss")) + ".csv";
+
+        // --scenario all runs the full 16-scenario matrix into one CSV (like the AL batch run).
+        String[] scenarios = scName.equalsIgnoreCase("all") ? Scenario.NAMES : new String[]{ scName };
+
+        long t0 = System.currentTimeMillis();
+        StringBuilder sb = new StringBuilder(Results.HEADER).append('\n');
+        int nAgents = 0, nBlocks = 0;
+        for (String sn : scenarios) {
+            Scenario scen = Scenario.byName(sn);
+            System.out.printf("scenario %s (id %d): %d iteration(s), %d-%d%n",
+                    scen.scenName, scen.scenId, iterations, startYear, endYear);
+            for (int it = 1; it <= iterations; it++) {
+                long itStart = System.currentTimeMillis();
+                Rng rng = new Rng(1 + it - 1);
+                StockLoader.Agents ag = StockLoader.load(csv, rng, everyNth);
+                nAgents = ag.total(); nBlocks = ag.socialBlocks.size() + ag.hoaBlocks.size();
+                Simulation sim = new Simulation(startYear, endYear, rng, scen, false, 10,
+                        ag.homeowners, ag.landlords, ag.socialBlocks, ag.hoaBlocks, ag.vesta,
+                        ag.neighbourhoods);
+                List<Simulation.YearRow> rows = sim.run();
+                String tags = ',' + scen.socialLearningFactor + ',' + scen.economicLearningFactor + ','
+                        + scen.gridReinforcementRate + ',' + scen.dhConstructionTime + ','
+                        + scen.dhExpansionStrategy + ',' + scen.shaStrategy + ','
+                        + scen.dhConnectionObligation + ',' + scen.gridCongestionHpBan + '\n';
+                for (Simulation.YearRow r : rows) {
+                    // nbh_*_perc are FRACTIONS (0-1), matching AL (e.g. 0.234 at 2050), not integers.
+                    String dh = String.valueOf(r.nbhWithDhPerc), cong = String.valueOf(r.nbhCongestionPerc);
+                    for (HeatingSystem hs : HeatingSystem.values()) {
+                        for (String own : OWN_OUT) {
+                            int cur = own.equals("TOTAL") ? r.stock.get(hs) : r.stockOwn.get(own).get(hs);
+                            int inst = own.equals("TOTAL") ? r.installed.get(hs) : 0;
+                            int rem = own.equals("TOTAL") ? r.removed.get(hs) : 0;
+                            sb.append(scen.scenId).append(',').append(scen.scenName).append(',').append(it).append(',')
+                              .append(r.year).append(',').append(cong).append(',').append(dh).append(',')
+                              .append(hs).append(',').append(own).append(',')
+                              .append(cur).append(',').append(inst).append(',').append(rem).append(',')
+                              .append(r.cumInstalled.get(hs)).append(',').append(r.considered).append(",0,0,0,0,0")
+                              .append(tags);
+                        }
+                    }
+                }
+
+                // progress line: time, running avg, ETA, and final-year gas share (early failure signal).
+                Simulation.YearRow last = rows.get(rows.size() - 1);
+                int total = 0, gas = last.stock.get(HeatingSystem.NATURAL_GAS_BOILER);
+                for (HeatingSystem hs : HeatingSystem.values()) total += last.stock.get(hs);
+                double itSecs = (System.currentTimeMillis() - itStart) / 1000.0;
+                double avg = (System.currentTimeMillis() - t0) / 1000.0 / Math.max(1, it);
+                System.out.printf("  %s iter %d/%d  %.1fs (avg %.1fs)  %d gas %.1f%% at %d%n",
+                        scen.scenName, it, iterations, itSecs, avg,
+                        total, total > 0 ? 100.0 * gas / total : 0.0, last.year);
+                System.out.flush();
+            }
+        }
+        Files.writeString(Path.of(out), sb.toString());
+        System.out.printf("Ran %d scenario(s) x %d iters, %d agents (%d blocks), %d-%d in %.1fs -> %s%n",
+                scenarios.length, iterations, nAgents, nBlocks, startYear, endYear,
+                (System.currentTimeMillis() - t0) / 1000.0, out);
+    }
+}

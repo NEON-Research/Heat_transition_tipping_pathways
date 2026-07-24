@@ -1,0 +1,4225 @@
+{
+  "meta": {
+    "start_year": 2024,
+    "final_year": 2050,
+    "mid_year": 2037,
+    "heating_systems": [
+      "DISTRICT_HEATING",
+      "ELECTRIC_HEAT_PUMP",
+      "HYBRID_HEAT_PUMP",
+      "NATURAL_GAS_BLOCK",
+      "NATURAL_GAS_BOILER"
+    ],
+    "scenarios": [
+      "actor_allignment_strategy",
+      "baseline",
+      "collective_tech_dh_connection_obligation",
+      "collective_tech_grid_congestion_ban",
+      "collective_technologies",
+      "dh_policy_based_connection_obligation",
+      "economic_learning_factor_high",
+      "economic_learning_factor_low",
+      "grid_congestion_HP_ban",
+      "individual_tech_dh_connection_obligation",
+      "individual_tech_grid_congestion_ban",
+      "individual_technologies",
+      "policy_driven_dh_strategy",
+      "policy_driven_sha_strategy",
+      "social_learning_factor_high",
+      "social_learning_factor_low"
+    ],
+    "ownerships": [
+      "PRIVATELY_OWNED",
+      "PRIVATELY_RENTED",
+      "SOCIAL_HOUSING",
+      "TOTAL"
+    ],
+    "iterations": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30
+    ],
+    "source_file": "../../Heat transition tipping pathways/results/simulation_results_non_stochastic_limburg.csv"
+  },
+  "final_year_installed": {
+    "actor_allignment_strategy": {
+      "PRIVATELY_OWNED": {
+        "DISTRICT_HEATING": {
+          "mean": 1934.0,
+          "std": 95.08,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 195841.77,
+          "std": 177.45,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 146832.9,
+          "std": 503.06,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 13427.77,
+          "std": 419.49,
+          "n": 30
+        }
+      },
+      "PRIVATELY_RENTED": {
+        "DISTRICT_HEATING": {
+          "mean": 386.57,
+          "std": 19.1,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 58.67,
+          "std": 7.23,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 49562.43,
+          "std": 178.73,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 32236.53,
+          "std": 181.73,
+          "n": 30
+        }
+      },
+      "SOCIAL_HOUSING": {
+        "DISTRICT_HEATING": {
+          "mean": 11866.03,
+          "std": 201.91,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 0.33,
+          "std": 0.83,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 72188.9,
+          "std": 2935.32,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 21421.1,
+          "std": 2951.79,
+          "n": 30
+        }
+      },
+      "TOTAL": {
+        "DISTRICT_HEATING": {
+          "mean": 14186.6,
+          "std": 216.58,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 195900.77,
+          "std": 179.04,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 268584.23,
+          "std": 2881.08,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 67085.4,
+          "std": 2847.86,
+          "n": 30
+        }
+      }
+    },
+    "baseline": {
+      "PRIVATELY_OWNED": {
+        "DISTRICT_HEATING": {
+          "mean": 2022.4,
+          "std": 108.29,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 195749.17,
+          "std": 163.5,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 146826.27,
+          "std": 557.88,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 13394.1,
+          "std": 469.78,
+          "n": 30
+        }
+      },
+      "PRIVATELY_RENTED": {
+        "DISTRICT_HEATING": {
+          "mean": 374.0,
+          "std": 19.34,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 59.6,
+          "std": 7.61,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 49592.53,
+          "std": 233.89,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 32147.47,
+          "std": 172.37,
+          "n": 30
+        }
+      },
+      "SOCIAL_HOUSING": {
+        "DISTRICT_HEATING": {
+          "mean": 278.8,
+          "std": 270.43,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 0.5,
+          "std": 0.89,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 82897.33,
+          "std": 3027.99,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 22414.83,
+          "std": 3110.78,
+          "n": 30
+        }
+      },
+      "TOTAL": {
+        "DISTRICT_HEATING": {
+          "mean": 2675.2,
+          "std": 312.3,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 195809.27,
+          "std": 163.82,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 279316.13,
+          "std": 3292.75,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 67956.4,
+          "std": 3310.55,
+          "n": 30
+        }
+      }
+    },
+    "collective_tech_dh_connection_obligation": {
+      "PRIVATELY_OWNED": {
+        "DISTRICT_HEATING": {
+          "mean": 43512.03,
+          "std": 2367.24,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 170347.1,
+          "std": 1435.43,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 138030.63,
+          "std": 2264.24,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 4.37,
+          "std": 2.11,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 6060.93,
+          "std": 425.69,
+          "n": 30
+        }
+      },
+      "PRIVATELY_RENTED": {
+        "DISTRICT_HEATING": {
+          "mean": 13954.6,
+          "std": 518.49,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 2.3,
+          "std": 1.29,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 37816.03,
+          "std": 378.68,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 30449.9,
+          "std": 221.78,
+          "n": 30
+        }
+      },
+      "SOCIAL_HOUSING": {
+        "DISTRICT_HEATING": {
+          "mean": 11829.97,
+          "std": 107.13,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 56270.53,
+          "std": 2757.79,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 37478.6,
+          "std": 2686.09,
+          "n": 30
+        }
+      },
+      "TOTAL": {
+        "DISTRICT_HEATING": {
+          "mean": 69296.6,
+          "std": 2836.52,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 170349.4,
+          "std": 1435.79,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 232117.2,
+          "std": 3766.96,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 4.37,
+          "std": 2.11,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 73989.43,
+          "std": 2727.75,
+          "n": 30
+        }
+      }
+    },
+    "collective_tech_grid_congestion_ban": {
+      "PRIVATELY_OWNED": {
+        "DISTRICT_HEATING": {
+          "mean": 4031.27,
+          "std": 273.38,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 193102.6,
+          "std": 1208.18,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 153803.27,
+          "std": 1604.01,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 1.43,
+          "std": 1.41,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 7048.07,
+          "std": 609.04,
+          "n": 30
+        }
+      },
+      "PRIVATELY_RENTED": {
+        "DISTRICT_HEATING": {
+          "mean": 369.1,
+          "std": 19.79,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 3.17,
+          "std": 1.77,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 44556.97,
+          "std": 208.08,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 37308.17,
+          "std": 156.09,
+          "n": 30
+        }
+      },
+      "SOCIAL_HOUSING": {
+        "DISTRICT_HEATING": {
+          "mean": 11892.23,
+          "std": 182.69,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 56515.43,
+          "std": 3832.49,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 37125.3,
+          "std": 3807.73,
+          "n": 30
+        }
+      },
+      "TOTAL": {
+        "DISTRICT_HEATING": {
+          "mean": 16292.6,
+          "std": 327.26,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 193105.77,
+          "std": 1208.86,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 254875.67,
+          "std": 4061.86,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 1.43,
+          "std": 1.41,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 81481.53,
+          "std": 3741.0,
+          "n": 30
+        }
+      }
+    },
+    "collective_technologies": {
+      "PRIVATELY_OWNED": {
+        "DISTRICT_HEATING": {
+          "mean": 3995.97,
+          "std": 267.17,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 193228.23,
+          "std": 1072.58,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 153764.27,
+          "std": 1190.91,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 2.6,
+          "std": 1.82,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 6983.07,
+          "std": 415.81,
+          "n": 30
+        }
+      },
+      "PRIVATELY_RENTED": {
+        "DISTRICT_HEATING": {
+          "mean": 372.3,
+          "std": 18.87,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 3.57,
+          "std": 1.87,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 44582.53,
+          "std": 199.06,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 37293.07,
+          "std": 204.18,
+          "n": 30
+        }
+      },
+      "SOCIAL_HOUSING": {
+        "DISTRICT_HEATING": {
+          "mean": 11903.07,
+          "std": 172.5,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 56491.23,
+          "std": 3585.34,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 37137.1,
+          "std": 3665.87,
+          "n": 30
+        }
+      },
+      "TOTAL": {
+        "DISTRICT_HEATING": {
+          "mean": 16271.33,
+          "std": 316.24,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 193231.8,
+          "std": 1072.99,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 254838.03,
+          "std": 3738.1,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 2.6,
+          "std": 1.82,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 81413.23,
+          "std": 3601.93,
+          "n": 30
+        }
+      }
+    },
+    "dh_policy_based_connection_obligation": {
+      "PRIVATELY_OWNED": {
+        "DISTRICT_HEATING": {
+          "mean": 42288.2,
+          "std": 2180.54,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 173027.87,
+          "std": 1154.76,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 130899.33,
+          "std": 1144.11,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 11794.0,
+          "std": 363.97,
+          "n": 30
+        }
+      },
+      "PRIVATELY_RENTED": {
+        "DISTRICT_HEATING": {
+          "mean": 13753.6,
+          "std": 531.37,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 40.57,
+          "std": 6.11,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 41964.67,
+          "std": 386.55,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 26488.33,
+          "std": 241.61,
+          "n": 30
+        }
+      },
+      "SOCIAL_HOUSING": {
+        "DISTRICT_HEATING": {
+          "mean": 206.27,
+          "std": 346.83,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 0.5,
+          "std": 1.09,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 81069.77,
+          "std": 3231.32,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 24223.9,
+          "std": 3249.27,
+          "n": 30
+        }
+      },
+      "TOTAL": {
+        "DISTRICT_HEATING": {
+          "mean": 56248.07,
+          "std": 2619.99,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 173068.93,
+          "std": 1156.0,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 253933.77,
+          "std": 3787.34,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 62506.23,
+          "std": 3322.55,
+          "n": 30
+        }
+      }
+    },
+    "economic_learning_factor_high": {
+      "PRIVATELY_OWNED": {
+        "DISTRICT_HEATING": {
+          "mean": 2012.67,
+          "std": 109.1,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 195861.83,
+          "std": 194.7,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 146678.97,
+          "std": 641.43,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 13468.17,
+          "std": 463.99,
+          "n": 30
+        }
+      },
+      "PRIVATELY_RENTED": {
+        "DISTRICT_HEATING": {
+          "mean": 379.1,
+          "std": 14.11,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 44474.13,
+          "std": 1210.62,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 19416.07,
+          "std": 1092.28,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 17874.7,
+          "std": 160.02,
+          "n": 30
+        }
+      },
+      "SOCIAL_HOUSING": {
+        "DISTRICT_HEATING": {
+          "mean": 174.2,
+          "std": 246.14,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 73919.67,
+          "std": 5414.06,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 27247.93,
+          "std": 5295.97,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 4249.57,
+          "std": 919.96,
+          "n": 30
+        }
+      },
+      "TOTAL": {
+        "DISTRICT_HEATING": {
+          "mean": 2565.97,
+          "std": 260.63,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 314255.63,
+          "std": 6464.45,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 193342.97,
+          "std": 6414.21,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 35592.43,
+          "std": 1027.7,
+          "n": 30
+        }
+      }
+    },
+    "economic_learning_factor_low": {
+      "PRIVATELY_OWNED": {
+        "DISTRICT_HEATING": {
+          "mean": 2057.77,
+          "std": 120.88,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 195771.93,
+          "std": 171.64,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 146722.2,
+          "std": 580.86,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 13454.67,
+          "std": 430.14,
+          "n": 30
+        }
+      },
+      "PRIVATELY_RENTED": {
+        "DISTRICT_HEATING": {
+          "mean": 368.03,
+          "std": 15.63,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 3.43,
+          "std": 1.75,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 44020.4,
+          "std": 189.34,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 37884.83,
+          "std": 171.33,
+          "n": 30
+        }
+      },
+      "SOCIAL_HOUSING": {
+        "DISTRICT_HEATING": {
+          "mean": 185.07,
+          "std": 285.96,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 63181.23,
+          "std": 3384.48,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 42107.43,
+          "std": 3300.18,
+          "n": 30
+        }
+      },
+      "TOTAL": {
+        "DISTRICT_HEATING": {
+          "mean": 2610.87,
+          "std": 303.22,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 195775.37,
+          "std": 172.04,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 253923.83,
+          "std": 3422.94,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 93446.93,
+          "std": 3356.89,
+          "n": 30
+        }
+      }
+    },
+    "grid_congestion_HP_ban": {
+      "PRIVATELY_OWNED": {
+        "DISTRICT_HEATING": {
+          "mean": 2041.63,
+          "std": 124.55,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 195806.43,
+          "std": 239.07,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 146743.73,
+          "std": 484.52,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 13432.37,
+          "std": 304.14,
+          "n": 30
+        }
+      },
+      "PRIVATELY_RENTED": {
+        "DISTRICT_HEATING": {
+          "mean": 377.33,
+          "std": 18.64,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 58.53,
+          "std": 8.35,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 49614.03,
+          "std": 160.89,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 32125.93,
+          "std": 153.8,
+          "n": 30
+        }
+      },
+      "SOCIAL_HOUSING": {
+        "DISTRICT_HEATING": {
+          "mean": 144.77,
+          "std": 253.45,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 0.33,
+          "std": 0.7,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 82623.43,
+          "std": 2355.12,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 22788.47,
+          "std": 2321.45,
+          "n": 30
+        }
+      },
+      "TOTAL": {
+        "DISTRICT_HEATING": {
+          "mean": 2563.73,
+          "std": 259.77,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 195865.3,
+          "std": 239.4,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 278981.2,
+          "std": 2468.28,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 68346.77,
+          "std": 2444.81,
+          "n": 30
+        }
+      }
+    },
+    "individual_tech_dh_connection_obligation": {
+      "PRIVATELY_OWNED": {
+        "DISTRICT_HEATING": {
+          "mean": 125761.37,
+          "std": 1316.28,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 82385.07,
+          "std": 4639.95,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 4530.17,
+          "std": 470.37,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 145310.4,
+          "std": 4990.0,
+          "n": 30
+        }
+      },
+      "PRIVATELY_RENTED": {
+        "DISTRICT_HEATING": {
+          "mean": 38699.9,
+          "std": 499.27,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 36.6,
+          "std": 12.95,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 31989.03,
+          "std": 340.92,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 11500.2,
+          "std": 218.52,
+          "n": 30
+        }
+      },
+      "SOCIAL_HOUSING": {
+        "DISTRICT_HEATING": {
+          "mean": 308.07,
+          "std": 286.55,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 0.17,
+          "std": 0.37,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 99564.9,
+          "std": 945.41,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 5671.13,
+          "std": 908.57,
+          "n": 30
+        }
+      },
+      "TOTAL": {
+        "DISTRICT_HEATING": {
+          "mean": 164769.33,
+          "std": 1521.81,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 82421.83,
+          "std": 4651.32,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 136084.1,
+          "std": 1038.33,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 162481.73,
+          "std": 5056.64,
+          "n": 30
+        }
+      }
+    },
+    "individual_tech_grid_congestion_ban": {
+      "PRIVATELY_OWNED": {
+        "DISTRICT_HEATING": {
+          "mean": 451.4,
+          "std": 20.57,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 129726.4,
+          "std": 6561.25,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 4452.73,
+          "std": 497.46,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 223341.73,
+          "std": 6815.19,
+          "n": 30
+        }
+      },
+      "PRIVATELY_RENTED": {
+        "DISTRICT_HEATING": {
+          "mean": 360.33,
+          "std": 18.09,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 531.63,
+          "std": 391.26,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 57950.97,
+          "std": 493.81,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 23385.7,
+          "std": 309.79,
+          "n": 30
+        }
+      },
+      "SOCIAL_HOUSING": {
+        "DISTRICT_HEATING": {
+          "mean": 180.4,
+          "std": 248.4,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 9.6,
+          "std": 8.62,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 99860.9,
+          "std": 1014.83,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 5505.2,
+          "std": 907.87,
+          "n": 30
+        }
+      },
+      "TOTAL": {
+        "DISTRICT_HEATING": {
+          "mean": 992.13,
+          "std": 253.32,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 130267.63,
+          "std": 6908.8,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 162264.6,
+          "std": 1245.91,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 252232.63,
+          "std": 6774.27,
+          "n": 30
+        }
+      }
+    },
+    "individual_technologies": {
+      "PRIVATELY_OWNED": {
+        "DISTRICT_HEATING": {
+          "mean": 446.27,
+          "std": 23.78,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 126741.47,
+          "std": 6545.73,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 4234.7,
+          "std": 422.35,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 226578.5,
+          "std": 6690.25,
+          "n": 30
+        }
+      },
+      "PRIVATELY_RENTED": {
+        "DISTRICT_HEATING": {
+          "mean": 364.7,
+          "std": 17.94,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 388.8,
+          "std": 336.24,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 58129.3,
+          "std": 437.23,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 23385.33,
+          "std": 263.19,
+          "n": 30
+        }
+      },
+      "SOCIAL_HOUSING": {
+        "DISTRICT_HEATING": {
+          "mean": 238.7,
+          "std": 295.97,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 8.2,
+          "std": 7.48,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 99711.8,
+          "std": 1079.67,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 5529.23,
+          "std": 995.32,
+          "n": 30
+        }
+      },
+      "TOTAL": {
+        "DISTRICT_HEATING": {
+          "mean": 1049.67,
+          "std": 288.48,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 127138.47,
+          "std": 6850.54,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 162075.8,
+          "std": 1324.64,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 255493.07,
+          "std": 6778.83,
+          "n": 30
+        }
+      }
+    },
+    "policy_driven_dh_strategy": {
+      "PRIVATELY_OWNED": {
+        "DISTRICT_HEATING": {
+          "mean": 1947.23,
+          "std": 108.95,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 195803.63,
+          "std": 205.11,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 146837.53,
+          "std": 531.52,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 13430.93,
+          "std": 390.2,
+          "n": 30
+        }
+      },
+      "PRIVATELY_RENTED": {
+        "DISTRICT_HEATING": {
+          "mean": 364.83,
+          "std": 18.79,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 59.2,
+          "std": 7.68,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 49612.3,
+          "std": 243.64,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 32151.9,
+          "std": 225.06,
+          "n": 30
+        }
+      },
+      "SOCIAL_HOUSING": {
+        "DISTRICT_HEATING": {
+          "mean": 169.17,
+          "std": 233.31,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 0.77,
+          "std": 1.23,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 82505.43,
+          "std": 2731.23,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 22874.07,
+          "std": 2682.25,
+          "n": 30
+        }
+      },
+      "TOTAL": {
+        "DISTRICT_HEATING": {
+          "mean": 2481.23,
+          "std": 277.92,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 195863.6,
+          "std": 209.63,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 278955.27,
+          "std": 2762.33,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 68456.9,
+          "std": 2703.49,
+          "n": 30
+        }
+      }
+    },
+    "policy_driven_sha_strategy": {
+      "PRIVATELY_OWNED": {
+        "DISTRICT_HEATING": {
+          "mean": 2040.8,
+          "std": 105.59,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 195814.2,
+          "std": 184.33,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 146689.5,
+          "std": 513.1,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 13420.7,
+          "std": 378.24,
+          "n": 30
+        }
+      },
+      "PRIVATELY_RENTED": {
+        "DISTRICT_HEATING": {
+          "mean": 417.1,
+          "std": 13.59,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 60.47,
+          "std": 6.05,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 49515.63,
+          "std": 220.12,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 32296.63,
+          "std": 177.82,
+          "n": 30
+        }
+      },
+      "SOCIAL_HOUSING": {
+        "DISTRICT_HEATING": {
+          "mean": 11867.2,
+          "std": 179.66,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 0.63,
+          "std": 1.22,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 71452.97,
+          "std": 2212.67,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 22181.17,
+          "std": 2152.19,
+          "n": 30
+        }
+      },
+      "TOTAL": {
+        "DISTRICT_HEATING": {
+          "mean": 14325.1,
+          "std": 188.82,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 195875.3,
+          "std": 184.7,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 267658.1,
+          "std": 2246.7,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 67898.5,
+          "std": 2273.98,
+          "n": 30
+        }
+      }
+    },
+    "social_learning_factor_high": {
+      "PRIVATELY_OWNED": {
+        "DISTRICT_HEATING": {
+          "mean": 452.03,
+          "std": 18.54,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 127363.3,
+          "std": 7406.53,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 4359.43,
+          "std": 258.39,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 225765.5,
+          "std": 7513.88,
+          "n": 30
+        }
+      },
+      "PRIVATELY_RENTED": {
+        "DISTRICT_HEATING": {
+          "mean": 363.83,
+          "std": 17.62,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 10.7,
+          "std": 4.77,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 46631.83,
+          "std": 210.59,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 35282.9,
+          "std": 206.32,
+          "n": 30
+        }
+      },
+      "SOCIAL_HOUSING": {
+        "DISTRICT_HEATING": {
+          "mean": 161.97,
+          "std": 244.81,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 70802.97,
+          "std": 3627.54,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 34562.53,
+          "std": 3686.66,
+          "n": 30
+        }
+      },
+      "TOTAL": {
+        "DISTRICT_HEATING": {
+          "mean": 977.83,
+          "std": 245.34,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 127374.0,
+          "std": 7409.18,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 121794.23,
+          "std": 3798.43,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 295610.93,
+          "std": 8334.26,
+          "n": 30
+        }
+      }
+    },
+    "social_learning_factor_low": {
+      "PRIVATELY_OWNED": {
+        "DISTRICT_HEATING": {
+          "mean": 3912.7,
+          "std": 279.97,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 193762.23,
+          "std": 573.92,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 153071.77,
+          "std": 1048.15,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 1.93,
+          "std": 1.46,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 7260.17,
+          "std": 533.02,
+          "n": 30
+        }
+      },
+      "PRIVATELY_RENTED": {
+        "DISTRICT_HEATING": {
+          "mean": 383.57,
+          "std": 18.41,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 52.33,
+          "std": 7.24,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 50975.33,
+          "std": 155.11,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 30785.87,
+          "std": 173.52,
+          "n": 30
+        }
+      },
+      "SOCIAL_HOUSING": {
+        "DISTRICT_HEATING": {
+          "mean": 155.1,
+          "std": 259.32,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 0.33,
+          "std": 0.75,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 88140.13,
+          "std": 2232.68,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 17255.53,
+          "std": 2205.14,
+          "n": 30
+        }
+      },
+      "TOTAL": {
+        "DISTRICT_HEATING": {
+          "mean": 4451.37,
+          "std": 362.54,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 193814.9,
+          "std": 576.31,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 292187.23,
+          "std": 2580.06,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 1.93,
+          "std": 1.46,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 55301.57,
+          "std": 2248.85,
+          "n": 30
+        }
+      }
+    }
+  },
+  "mid_year_installed": {
+    "actor_allignment_strategy": {
+      "PRIVATELY_OWNED": {
+        "DISTRICT_HEATING": {
+          "mean": 3169.73,
+          "std": 89.29,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 162867.4,
+          "std": 3042.82,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 65841.07,
+          "std": 4658.15,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 4.93,
+          "std": 2.1,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 126153.3,
+          "std": 6080.32,
+          "n": 30
+        }
+      },
+      "PRIVATELY_RENTED": {
+        "DISTRICT_HEATING": {
+          "mean": 1474.73,
+          "std": 33.73,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 521.33,
+          "std": 22.86,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 28239.13,
+          "std": 212.35,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 52009.0,
+          "std": 252.71,
+          "n": 30
+        }
+      },
+      "SOCIAL_HOUSING": {
+        "DISTRICT_HEATING": {
+          "mean": 12378.07,
+          "std": 255.52,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 15.13,
+          "std": 31.7,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 23933.97,
+          "std": 2795.98,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 69149.2,
+          "std": 2762.24,
+          "n": 30
+        }
+      },
+      "TOTAL": {
+        "DISTRICT_HEATING": {
+          "mean": 17022.53,
+          "std": 275.87,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 163403.87,
+          "std": 3036.89,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 118014.17,
+          "std": 5693.2,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 4.93,
+          "std": 2.1,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 247311.5,
+          "std": 6582.71,
+          "n": 30
+        }
+      }
+    },
+    "baseline": {
+      "PRIVATELY_OWNED": {
+        "DISTRICT_HEATING": {
+          "mean": 3258.6,
+          "std": 101.04,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 164124.53,
+          "std": 2962.97,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 65569.2,
+          "std": 5130.56,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 4.77,
+          "std": 2.43,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 125034.83,
+          "std": 7293.85,
+          "n": 30
+        }
+      },
+      "PRIVATELY_RENTED": {
+        "DISTRICT_HEATING": {
+          "mean": 1468.13,
+          "std": 29.4,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 521.7,
+          "std": 25.82,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 28198.6,
+          "std": 250.22,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 51985.17,
+          "std": 227.52,
+          "n": 30
+        }
+      },
+      "SOCIAL_HOUSING": {
+        "DISTRICT_HEATING": {
+          "mean": 918.7,
+          "std": 350.91,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 27.0,
+          "std": 41.69,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 27267.13,
+          "std": 3753.23,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 77378.63,
+          "std": 3665.15,
+          "n": 30
+        }
+      },
+      "TOTAL": {
+        "DISTRICT_HEATING": {
+          "mean": 5645.43,
+          "std": 348.73,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 164673.23,
+          "std": 2961.19,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 121034.93,
+          "std": 6852.06,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 4.77,
+          "std": 2.43,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 254398.63,
+          "std": 8553.5,
+          "n": 30
+        }
+      }
+    },
+    "collective_tech_dh_connection_obligation": {
+      "PRIVATELY_OWNED": {
+        "DISTRICT_HEATING": {
+          "mean": 25150.03,
+          "std": 1517.26,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 168705.07,
+          "std": 3672.81,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 145870.5,
+          "std": 5247.67,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 20.4,
+          "std": 4.77,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 18209.07,
+          "std": 2070.26,
+          "n": 30
+        }
+      },
+      "PRIVATELY_RENTED": {
+        "DISTRICT_HEATING": {
+          "mean": 10043.6,
+          "std": 390.23,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 509.47,
+          "std": 22.95,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 24802.77,
+          "std": 266.36,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 46867.0,
+          "std": 355.73,
+          "n": 30
+        }
+      },
+      "SOCIAL_HOUSING": {
+        "DISTRICT_HEATING": {
+          "mean": 12210.53,
+          "std": 270.18,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 22.8,
+          "std": 42.12,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 21053.53,
+          "std": 2669.62,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 72292.23,
+          "std": 2682.18,
+          "n": 30
+        }
+      },
+      "TOTAL": {
+        "DISTRICT_HEATING": {
+          "mean": 47404.17,
+          "std": 1878.22,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 169237.33,
+          "std": 3683.87,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 191726.8,
+          "std": 6462.75,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 20.4,
+          "std": 4.77,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 137368.3,
+          "std": 3960.46,
+          "n": 30
+        }
+      }
+    },
+    "collective_tech_grid_congestion_ban": {
+      "PRIVATELY_OWNED": {
+        "DISTRICT_HEATING": {
+          "mean": 5227.67,
+          "std": 265.85,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 179689.03,
+          "std": 3124.81,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 154059.63,
+          "std": 4316.14,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 14.9,
+          "std": 3.84,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 18995.4,
+          "std": 1850.05,
+          "n": 30
+        }
+      },
+      "PRIVATELY_RENTED": {
+        "DISTRICT_HEATING": {
+          "mean": 1460.13,
+          "std": 31.12,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 516.97,
+          "std": 22.12,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 27210.37,
+          "std": 181.31,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 53049.93,
+          "std": 199.07,
+          "n": 30
+        }
+      },
+      "SOCIAL_HOUSING": {
+        "DISTRICT_HEATING": {
+          "mean": 12269.6,
+          "std": 238.02,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 26.9,
+          "std": 51.74,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 20282.47,
+          "std": 3647.62,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 72954.0,
+          "std": 3744.38,
+          "n": 30
+        }
+      },
+      "TOTAL": {
+        "DISTRICT_HEATING": {
+          "mean": 18957.4,
+          "std": 358.47,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 180232.9,
+          "std": 3132.64,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 201552.47,
+          "std": 5354.51,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 14.9,
+          "std": 3.84,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 144999.33,
+          "std": 4331.09,
+          "n": 30
+        }
+      }
+    },
+    "collective_technologies": {
+      "PRIVATELY_OWNED": {
+        "DISTRICT_HEATING": {
+          "mean": 5192.17,
+          "std": 263.36,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 180144.87,
+          "std": 3278.81,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 153792.9,
+          "std": 4194.3,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 15.83,
+          "std": 4.79,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 18828.37,
+          "std": 1387.48,
+          "n": 30
+        }
+      },
+      "PRIVATELY_RENTED": {
+        "DISTRICT_HEATING": {
+          "mean": 1461.03,
+          "std": 32.62,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 508.33,
+          "std": 26.25,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 27247.57,
+          "std": 199.04,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 53034.53,
+          "std": 261.56,
+          "n": 30
+        }
+      },
+      "SOCIAL_HOUSING": {
+        "DISTRICT_HEATING": {
+          "mean": 12287.9,
+          "std": 238.87,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 26.57,
+          "std": 58.72,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 20507.43,
+          "std": 2737.52,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 72709.5,
+          "std": 2714.52,
+          "n": 30
+        }
+      },
+      "TOTAL": {
+        "DISTRICT_HEATING": {
+          "mean": 18941.1,
+          "std": 342.3,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 180679.77,
+          "std": 3273.75,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 201547.9,
+          "std": 5372.23,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 15.83,
+          "std": 4.79,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 144572.4,
+          "std": 3083.41,
+          "n": 30
+        }
+      }
+    },
+    "dh_policy_based_connection_obligation": {
+      "PRIVATELY_OWNED": {
+        "DISTRICT_HEATING": {
+          "mean": 25827.47,
+          "std": 1791.42,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 151267.43,
+          "std": 3104.45,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 61024.0,
+          "std": 4569.39,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 5.13,
+          "std": 2.49,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 119885.37,
+          "std": 4845.86,
+          "n": 30
+        }
+      },
+      "PRIVATELY_RENTED": {
+        "DISTRICT_HEATING": {
+          "mean": 10061.53,
+          "std": 436.89,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 519.87,
+          "std": 18.15,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 25672.63,
+          "std": 290.24,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 45993.13,
+          "std": 326.43,
+          "n": 30
+        }
+      },
+      "SOCIAL_HOUSING": {
+        "DISTRICT_HEATING": {
+          "mean": 813.33,
+          "std": 366.32,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 21.13,
+          "std": 28.02,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 26542.5,
+          "std": 3035.1,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 78123.47,
+          "std": 3067.96,
+          "n": 30
+        }
+      },
+      "TOTAL": {
+        "DISTRICT_HEATING": {
+          "mean": 36702.33,
+          "std": 2161.01,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 151808.43,
+          "std": 3113.87,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 113239.13,
+          "std": 5730.19,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 5.13,
+          "std": 2.49,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 244001.97,
+          "std": 6033.06,
+          "n": 30
+        }
+      }
+    },
+    "economic_learning_factor_high": {
+      "PRIVATELY_OWNED": {
+        "DISTRICT_HEATING": {
+          "mean": 3242.57,
+          "std": 104.66,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 164657.23,
+          "std": 2621.95,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 64955.13,
+          "std": 5782.52,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 4.77,
+          "std": 2.38,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 125161.93,
+          "std": 6465.25,
+          "n": 30
+        }
+      },
+      "PRIVATELY_RENTED": {
+        "DISTRICT_HEATING": {
+          "mean": 1468.67,
+          "std": 29.78,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 6438.47,
+          "std": 1058.15,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 29557.37,
+          "std": 1346.73,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 44679.5,
+          "std": 453.51,
+          "n": 30
+        }
+      },
+      "SOCIAL_HOUSING": {
+        "DISTRICT_HEATING": {
+          "mean": 822.6,
+          "std": 366.11,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 8254.73,
+          "std": 4038.24,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 37330.6,
+          "std": 5651.3,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 59183.43,
+          "std": 3217.27,
+          "n": 30
+        }
+      },
+      "TOTAL": {
+        "DISTRICT_HEATING": {
+          "mean": 5533.83,
+          "std": 339.24,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 179350.43,
+          "std": 6668.58,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 131843.1,
+          "std": 10382.27,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 4.77,
+          "std": 2.38,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 229024.87,
+          "std": 7419.17,
+          "n": 30
+        }
+      }
+    },
+    "economic_learning_factor_low": {
+      "PRIVATELY_OWNED": {
+        "DISTRICT_HEATING": {
+          "mean": 3288.83,
+          "std": 112.54,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 164141.13,
+          "std": 2695.5,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 65141.77,
+          "std": 4834.7,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 4.5,
+          "std": 2.22,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 125430.33,
+          "std": 5971.98,
+          "n": 30
+        }
+      },
+      "PRIVATELY_RENTED": {
+        "DISTRICT_HEATING": {
+          "mean": 1459.67,
+          "std": 28.26,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 518.27,
+          "std": 21.3,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 25544.93,
+          "std": 162.24,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 54753.83,
+          "std": 177.1,
+          "n": 30
+        }
+      },
+      "SOCIAL_HOUSING": {
+        "DISTRICT_HEATING": {
+          "mean": 861.6,
+          "std": 451.11,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 28.2,
+          "std": 51.15,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 21108.7,
+          "std": 3348.81,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 83475.23,
+          "std": 3270.96,
+          "n": 30
+        }
+      },
+      "TOTAL": {
+        "DISTRICT_HEATING": {
+          "mean": 5610.1,
+          "std": 451.86,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 164687.6,
+          "std": 2694.46,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 111795.4,
+          "std": 5663.61,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 4.5,
+          "std": 2.22,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 263659.4,
+          "std": 7129.19,
+          "n": 30
+        }
+      }
+    },
+    "grid_congestion_HP_ban": {
+      "PRIVATELY_OWNED": {
+        "DISTRICT_HEATING": {
+          "mean": 3279.0,
+          "std": 132.71,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 163676.4,
+          "std": 3378.13,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 65285.63,
+          "std": 3985.9,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 4.27,
+          "std": 2.31,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 125778.87,
+          "std": 5525.49,
+          "n": 30
+        }
+      },
+      "PRIVATELY_RENTED": {
+        "DISTRICT_HEATING": {
+          "mean": 1474.9,
+          "std": 19.58,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 518.2,
+          "std": 19.06,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 28231.8,
+          "std": 179.16,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 51950.93,
+          "std": 203.34,
+          "n": 30
+        }
+      },
+      "SOCIAL_HOUSING": {
+        "DISTRICT_HEATING": {
+          "mean": 782.13,
+          "std": 429.13,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 16.83,
+          "std": 33.22,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 27030.87,
+          "std": 2853.65,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 77727.17,
+          "std": 2760.77,
+          "n": 30
+        }
+      },
+      "TOTAL": {
+        "DISTRICT_HEATING": {
+          "mean": 5536.03,
+          "std": 450.36,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 164211.43,
+          "std": 3379.73,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 120548.3,
+          "std": 5811.12,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 4.27,
+          "std": 2.31,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 255456.97,
+          "std": 7029.81,
+          "n": 30
+        }
+      }
+    },
+    "individual_tech_dh_connection_obligation": {
+      "PRIVATELY_OWNED": {
+        "DISTRICT_HEATING": {
+          "mean": 42283.67,
+          "std": 2114.57,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 37698.27,
+          "std": 2450.85,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 6412.8,
+          "std": 341.51,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 1.33,
+          "std": 1.11,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 271590.93,
+          "std": 3084.73,
+          "n": 30
+        }
+      },
+      "PRIVATELY_RENTED": {
+        "DISTRICT_HEATING": {
+          "mean": 15001.43,
+          "std": 720.16,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 508.73,
+          "std": 22.46,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 26178.53,
+          "std": 522.2,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 40537.03,
+          "std": 520.41,
+          "n": 30
+        }
+      },
+      "SOCIAL_HOUSING": {
+        "DISTRICT_HEATING": {
+          "mean": 933.17,
+          "std": 379.33,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 29.0,
+          "std": 58.87,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 35797.73,
+          "std": 3786.21,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 68784.37,
+          "std": 3778.34,
+          "n": 30
+        }
+      },
+      "TOTAL": {
+        "DISTRICT_HEATING": {
+          "mean": 58218.27,
+          "std": 2779.77,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 38236.0,
+          "std": 2448.94,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 68389.07,
+          "std": 4124.3,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 1.33,
+          "std": 1.11,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 380912.33,
+          "std": 4608.23,
+          "n": 30
+        }
+      }
+    },
+    "individual_tech_grid_congestion_ban": {
+      "PRIVATELY_OWNED": {
+        "DISTRICT_HEATING": {
+          "mean": 1714.5,
+          "std": 36.64,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 45194.83,
+          "std": 2360.84,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 6643.8,
+          "std": 438.88,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 1.67,
+          "std": 1.27,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 304417.47,
+          "std": 2614.63,
+          "n": 30
+        }
+      },
+      "PRIVATELY_RENTED": {
+        "DISTRICT_HEATING": {
+          "mean": 1463.23,
+          "std": 33.54,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 506.9,
+          "std": 22.79,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 31627.53,
+          "std": 437.97,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 48630.97,
+          "std": 479.27,
+          "n": 30
+        }
+      },
+      "SOCIAL_HOUSING": {
+        "DISTRICT_HEATING": {
+          "mean": 812.27,
+          "std": 391.88,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 24.07,
+          "std": 39.36,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 35875.0,
+          "std": 4098.05,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 68844.77,
+          "std": 4035.19,
+          "n": 30
+        }
+      },
+      "TOTAL": {
+        "DISTRICT_HEATING": {
+          "mean": 3990.0,
+          "std": 415.77,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 45725.8,
+          "std": 2362.55,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 74146.33,
+          "std": 4559.95,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 1.67,
+          "std": 1.27,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 421893.2,
+          "std": 5211.97,
+          "n": 30
+        }
+      }
+    },
+    "individual_technologies": {
+      "PRIVATELY_OWNED": {
+        "DISTRICT_HEATING": {
+          "mean": 1718.23,
+          "std": 25.12,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 44652.9,
+          "std": 2012.89,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 6449.6,
+          "std": 394.91,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 2.07,
+          "std": 1.24,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 305178.13,
+          "std": 2252.91,
+          "n": 30
+        }
+      },
+      "PRIVATELY_RENTED": {
+        "DISTRICT_HEATING": {
+          "mean": 1460.57,
+          "std": 29.56,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 515.67,
+          "std": 19.24,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 31542.33,
+          "std": 361.31,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 48749.57,
+          "std": 390.31,
+          "n": 30
+        }
+      },
+      "SOCIAL_HOUSING": {
+        "DISTRICT_HEATING": {
+          "mean": 842.3,
+          "std": 400.7,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 17.67,
+          "std": 32.49,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 37265.27,
+          "std": 3780.81,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 67362.7,
+          "std": 3828.61,
+          "n": 30
+        }
+      },
+      "TOTAL": {
+        "DISTRICT_HEATING": {
+          "mean": 4021.1,
+          "std": 406.86,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 45186.23,
+          "std": 2023.55,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 75257.2,
+          "std": 4066.94,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 2.07,
+          "std": 1.24,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 421290.4,
+          "std": 4673.9,
+          "n": 30
+        }
+      }
+    },
+    "policy_driven_dh_strategy": {
+      "PRIVATELY_OWNED": {
+        "DISTRICT_HEATING": {
+          "mean": 3186.1,
+          "std": 97.99,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 163575.97,
+          "std": 3005.3,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 66770.67,
+          "std": 4635.24,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 4.47,
+          "std": 1.75,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 124482.13,
+          "std": 5896.86,
+          "n": 30
+        }
+      },
+      "PRIVATELY_RENTED": {
+        "DISTRICT_HEATING": {
+          "mean": 1461.87,
+          "std": 26.58,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 525.1,
+          "std": 19.3,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 28257.87,
+          "std": 217.84,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 51943.4,
+          "std": 249.99,
+          "n": 30
+        }
+      },
+      "SOCIAL_HOUSING": {
+        "DISTRICT_HEATING": {
+          "mean": 838.2,
+          "std": 318.17,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 18.73,
+          "std": 20.24,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 26439.63,
+          "std": 3154.02,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 78252.87,
+          "std": 3151.46,
+          "n": 30
+        }
+      },
+      "TOTAL": {
+        "DISTRICT_HEATING": {
+          "mean": 5486.17,
+          "std": 362.41,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 164119.8,
+          "std": 3010.38,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 121468.17,
+          "std": 5649.12,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 4.47,
+          "std": 1.75,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 254678.4,
+          "std": 6720.81,
+          "n": 30
+        }
+      }
+    },
+    "policy_driven_sha_strategy": {
+      "PRIVATELY_OWNED": {
+        "DISTRICT_HEATING": {
+          "mean": 3274.6,
+          "std": 98.98,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 163686.13,
+          "std": 3577.53,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 64471.23,
+          "std": 4332.86,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 3.5,
+          "std": 1.8,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 126529.73,
+          "std": 5930.55,
+          "n": 30
+        }
+      },
+      "PRIVATELY_RENTED": {
+        "DISTRICT_HEATING": {
+          "mean": 1477.47,
+          "std": 29.35,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 522.4,
+          "std": 21.21,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 28162.1,
+          "std": 190.29,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 52127.87,
+          "std": 208.95,
+          "n": 30
+        }
+      },
+      "SOCIAL_HOUSING": {
+        "DISTRICT_HEATING": {
+          "mean": 12179.87,
+          "std": 294.55,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 20.43,
+          "std": 35.28,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 23654.63,
+          "std": 3193.73,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 69647.03,
+          "std": 3225.39,
+          "n": 30
+        }
+      },
+      "TOTAL": {
+        "DISTRICT_HEATING": {
+          "mean": 16931.93,
+          "std": 322.3,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 164228.97,
+          "std": 3565.48,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 116287.97,
+          "std": 5785.1,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 3.5,
+          "std": 1.8,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 248304.63,
+          "std": 7159.0,
+          "n": 30
+        }
+      }
+    },
+    "social_learning_factor_high": {
+      "PRIVATELY_OWNED": {
+        "DISTRICT_HEATING": {
+          "mean": 1714.23,
+          "std": 32.6,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 45507.97,
+          "std": 2575.36,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 6551.9,
+          "std": 271.91,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 1.67,
+          "std": 1.3,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 304164.5,
+          "std": 2627.97,
+          "n": 30
+        }
+      },
+      "PRIVATELY_RENTED": {
+        "DISTRICT_HEATING": {
+          "mean": 1463.67,
+          "std": 26.43,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 505.83,
+          "std": 17.83,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 26700.0,
+          "std": 165.27,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 53619.77,
+          "std": 218.03,
+          "n": 30
+        }
+      },
+      "SOCIAL_HOUSING": {
+        "DISTRICT_HEATING": {
+          "mean": 962.53,
+          "std": 385.26,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 12.4,
+          "std": 20.11,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 23350.6,
+          "std": 2471.56,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 81201.93,
+          "std": 2528.23,
+          "n": 30
+        }
+      },
+      "TOTAL": {
+        "DISTRICT_HEATING": {
+          "mean": 4140.43,
+          "std": 385.61,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 46026.2,
+          "std": 2581.94,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 56602.5,
+          "std": 2497.72,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 1.67,
+          "std": 1.3,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 438986.2,
+          "std": 3168.89,
+          "n": 30
+        }
+      }
+    },
+    "social_learning_factor_low": {
+      "PRIVATELY_OWNED": {
+        "DISTRICT_HEATING": {
+          "mean": 5092.43,
+          "std": 278.42,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 181438.8,
+          "std": 2403.4,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 152640.8,
+          "std": 3934.61,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 15.8,
+          "std": 4.13,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 18820.97,
+          "std": 2036.8,
+          "n": 30
+        }
+      },
+      "PRIVATELY_RENTED": {
+        "DISTRICT_HEATING": {
+          "mean": 1475.03,
+          "std": 30.02,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 512.83,
+          "std": 19.29,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 31857.27,
+          "std": 247.36,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 48351.97,
+          "std": 307.5,
+          "n": 30
+        }
+      },
+      "SOCIAL_HOUSING": {
+        "DISTRICT_HEATING": {
+          "mean": 858.43,
+          "std": 408.15,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 18.57,
+          "std": 34.95,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 35581.43,
+          "std": 2029.22,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 69092.67,
+          "std": 2105.4,
+          "n": 30
+        }
+      },
+      "TOTAL": {
+        "DISTRICT_HEATING": {
+          "mean": 7425.9,
+          "std": 472.38,
+          "n": 30
+        },
+        "ELECTRIC_HEAT_PUMP": {
+          "mean": 181970.2,
+          "std": 2403.78,
+          "n": 30
+        },
+        "HYBRID_HEAT_PUMP": {
+          "mean": 220079.5,
+          "std": 4781.23,
+          "n": 30
+        },
+        "NATURAL_GAS_BLOCK": {
+          "mean": 15.8,
+          "std": 4.13,
+          "n": 30
+        },
+        "NATURAL_GAS_BOILER": {
+          "mean": 136265.6,
+          "std": 3340.73,
+          "n": 30
+        }
+      }
+    }
+  },
+  "tipping_year": {
+    "actor_allignment_strategy": {
+      "DISTRICT_HEATING": {
+        "0.25": null,
+        "0.5": null
+      },
+      "ELECTRIC_HEAT_PUMP": {
+        "0.25": {
+          "mean": 2035.13,
+          "std": 0.34,
+          "n": 30
+        },
+        "0.5": null
+      },
+      "HYBRID_HEAT_PUMP": {
+        "0.25": {
+          "mean": 2038.47,
+          "std": 0.5,
+          "n": 30
+        },
+        "0.5": {
+          "mean": 2050.0,
+          "std": 0.0,
+          "n": 1
+        }
+      },
+      "NATURAL_GAS_BLOCK": {
+        "0.25": null,
+        "0.5": null
+      },
+      "NATURAL_GAS_BOILER": {
+        "0.25": {
+          "mean": 2024.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "0.5": {
+          "mean": 2024.0,
+          "std": 0.0,
+          "n": 30
+        }
+      }
+    },
+    "baseline": {
+      "DISTRICT_HEATING": {
+        "0.25": null,
+        "0.5": null
+      },
+      "ELECTRIC_HEAT_PUMP": {
+        "0.25": {
+          "mean": 2035.13,
+          "std": 0.34,
+          "n": 30
+        },
+        "0.5": null
+      },
+      "HYBRID_HEAT_PUMP": {
+        "0.25": {
+          "mean": 2038.47,
+          "std": 0.5,
+          "n": 30
+        },
+        "0.5": {
+          "mean": 2049.0,
+          "std": 0.82,
+          "n": 30
+        }
+      },
+      "NATURAL_GAS_BLOCK": {
+        "0.25": null,
+        "0.5": null
+      },
+      "NATURAL_GAS_BOILER": {
+        "0.25": {
+          "mean": 2024.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "0.5": {
+          "mean": 2024.0,
+          "std": 0.0,
+          "n": 30
+        }
+      }
+    },
+    "collective_tech_dh_connection_obligation": {
+      "DISTRICT_HEATING": {
+        "0.25": null,
+        "0.5": null
+      },
+      "ELECTRIC_HEAT_PUMP": {
+        "0.25": {
+          "mean": 2034.07,
+          "std": 0.25,
+          "n": 30
+        },
+        "0.5": null
+      },
+      "HYBRID_HEAT_PUMP": {
+        "0.25": {
+          "mean": 2033.7,
+          "std": 0.53,
+          "n": 30
+        },
+        "0.5": null
+      },
+      "NATURAL_GAS_BLOCK": {
+        "0.25": null,
+        "0.5": null
+      },
+      "NATURAL_GAS_BOILER": {
+        "0.25": {
+          "mean": 2024.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "0.5": {
+          "mean": 2024.0,
+          "std": 0.0,
+          "n": 30
+        }
+      }
+    },
+    "collective_tech_grid_congestion_ban": {
+      "DISTRICT_HEATING": {
+        "0.25": null,
+        "0.5": null
+      },
+      "ELECTRIC_HEAT_PUMP": {
+        "0.25": {
+          "mean": 2033.63,
+          "std": 0.48,
+          "n": 30
+        },
+        "0.5": null
+      },
+      "HYBRID_HEAT_PUMP": {
+        "0.25": {
+          "mean": 2033.2,
+          "std": 0.4,
+          "n": 30
+        },
+        "0.5": null
+      },
+      "NATURAL_GAS_BLOCK": {
+        "0.25": null,
+        "0.5": null
+      },
+      "NATURAL_GAS_BOILER": {
+        "0.25": {
+          "mean": 2024.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "0.5": {
+          "mean": 2024.0,
+          "std": 0.0,
+          "n": 30
+        }
+      }
+    },
+    "collective_technologies": {
+      "DISTRICT_HEATING": {
+        "0.25": null,
+        "0.5": null
+      },
+      "ELECTRIC_HEAT_PUMP": {
+        "0.25": {
+          "mean": 2033.7,
+          "std": 0.46,
+          "n": 30
+        },
+        "0.5": null
+      },
+      "HYBRID_HEAT_PUMP": {
+        "0.25": {
+          "mean": 2033.2,
+          "std": 0.48,
+          "n": 30
+        },
+        "0.5": null
+      },
+      "NATURAL_GAS_BLOCK": {
+        "0.25": null,
+        "0.5": null
+      },
+      "NATURAL_GAS_BOILER": {
+        "0.25": {
+          "mean": 2024.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "0.5": {
+          "mean": 2024.0,
+          "std": 0.0,
+          "n": 30
+        }
+      }
+    },
+    "dh_policy_based_connection_obligation": {
+      "DISTRICT_HEATING": {
+        "0.25": null,
+        "0.5": null
+      },
+      "ELECTRIC_HEAT_PUMP": {
+        "0.25": {
+          "mean": 2036.07,
+          "std": 0.25,
+          "n": 30
+        },
+        "0.5": null
+      },
+      "HYBRID_HEAT_PUMP": {
+        "0.25": {
+          "mean": 2038.93,
+          "std": 0.36,
+          "n": 30
+        },
+        "0.5": null
+      },
+      "NATURAL_GAS_BLOCK": {
+        "0.25": null,
+        "0.5": null
+      },
+      "NATURAL_GAS_BOILER": {
+        "0.25": {
+          "mean": 2024.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "0.5": {
+          "mean": 2024.0,
+          "std": 0.0,
+          "n": 30
+        }
+      }
+    },
+    "economic_learning_factor_high": {
+      "DISTRICT_HEATING": {
+        "0.25": null,
+        "0.5": null
+      },
+      "ELECTRIC_HEAT_PUMP": {
+        "0.25": {
+          "mean": 2035.03,
+          "std": 0.18,
+          "n": 30
+        },
+        "0.5": {
+          "mean": 2045.53,
+          "std": 0.99,
+          "n": 30
+        }
+      },
+      "HYBRID_HEAT_PUMP": {
+        "0.25": {
+          "mean": 2037.97,
+          "std": 0.75,
+          "n": 30
+        },
+        "0.5": null
+      },
+      "NATURAL_GAS_BLOCK": {
+        "0.25": null,
+        "0.5": null
+      },
+      "NATURAL_GAS_BOILER": {
+        "0.25": {
+          "mean": 2024.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "0.5": {
+          "mean": 2024.0,
+          "std": 0.0,
+          "n": 30
+        }
+      }
+    },
+    "economic_learning_factor_low": {
+      "DISTRICT_HEATING": {
+        "0.25": null,
+        "0.5": null
+      },
+      "ELECTRIC_HEAT_PUMP": {
+        "0.25": {
+          "mean": 2035.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "0.5": null
+      },
+      "HYBRID_HEAT_PUMP": {
+        "0.25": {
+          "mean": 2039.03,
+          "std": 0.48,
+          "n": 30
+        },
+        "0.5": null
+      },
+      "NATURAL_GAS_BLOCK": {
+        "0.25": null,
+        "0.5": null
+      },
+      "NATURAL_GAS_BOILER": {
+        "0.25": {
+          "mean": 2024.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "0.5": {
+          "mean": 2024.0,
+          "std": 0.0,
+          "n": 30
+        }
+      }
+    },
+    "grid_congestion_HP_ban": {
+      "DISTRICT_HEATING": {
+        "0.25": null,
+        "0.5": null
+      },
+      "ELECTRIC_HEAT_PUMP": {
+        "0.25": {
+          "mean": 2035.1,
+          "std": 0.3,
+          "n": 30
+        },
+        "0.5": null
+      },
+      "HYBRID_HEAT_PUMP": {
+        "0.25": {
+          "mean": 2038.4,
+          "std": 0.49,
+          "n": 30
+        },
+        "0.5": {
+          "mean": 2049.13,
+          "std": 0.62,
+          "n": 30
+        }
+      },
+      "NATURAL_GAS_BLOCK": {
+        "0.25": null,
+        "0.5": null
+      },
+      "NATURAL_GAS_BOILER": {
+        "0.25": {
+          "mean": 2024.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "0.5": {
+          "mean": 2024.0,
+          "std": 0.0,
+          "n": 30
+        }
+      }
+    },
+    "individual_tech_dh_connection_obligation": {
+      "DISTRICT_HEATING": {
+        "0.25": {
+          "mean": 2046.2,
+          "std": 0.4,
+          "n": 30
+        },
+        "0.5": null
+      },
+      "ELECTRIC_HEAT_PUMP": {
+        "0.25": null,
+        "0.5": null
+      },
+      "HYBRID_HEAT_PUMP": {
+        "0.25": {
+          "mean": 2049.18,
+          "std": 0.83,
+          "n": 11
+        },
+        "0.5": null
+      },
+      "NATURAL_GAS_BLOCK": {
+        "0.25": null,
+        "0.5": null
+      },
+      "NATURAL_GAS_BOILER": {
+        "0.25": {
+          "mean": 2024.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "0.5": {
+          "mean": 2024.0,
+          "std": 0.0,
+          "n": 30
+        }
+      }
+    },
+    "individual_tech_grid_congestion_ban": {
+      "DISTRICT_HEATING": {
+        "0.25": null,
+        "0.5": null
+      },
+      "ELECTRIC_HEAT_PUMP": {
+        "0.25": {
+          "mean": 2050.0,
+          "std": 0.0,
+          "n": 6
+        },
+        "0.5": null
+      },
+      "HYBRID_HEAT_PUMP": {
+        "0.25": {
+          "mean": 2044.43,
+          "std": 0.62,
+          "n": 30
+        },
+        "0.5": null
+      },
+      "NATURAL_GAS_BLOCK": {
+        "0.25": null,
+        "0.5": null
+      },
+      "NATURAL_GAS_BOILER": {
+        "0.25": {
+          "mean": 2024.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "0.5": {
+          "mean": 2024.0,
+          "std": 0.0,
+          "n": 30
+        }
+      }
+    },
+    "individual_technologies": {
+      "DISTRICT_HEATING": {
+        "0.25": null,
+        "0.5": null
+      },
+      "ELECTRIC_HEAT_PUMP": {
+        "0.25": {
+          "mean": 2050.0,
+          "std": 0.0,
+          "n": 3
+        },
+        "0.5": null
+      },
+      "HYBRID_HEAT_PUMP": {
+        "0.25": {
+          "mean": 2044.23,
+          "std": 0.67,
+          "n": 30
+        },
+        "0.5": null
+      },
+      "NATURAL_GAS_BLOCK": {
+        "0.25": null,
+        "0.5": null
+      },
+      "NATURAL_GAS_BOILER": {
+        "0.25": {
+          "mean": 2024.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "0.5": {
+          "mean": 2024.0,
+          "std": 0.0,
+          "n": 30
+        }
+      }
+    },
+    "policy_driven_dh_strategy": {
+      "DISTRICT_HEATING": {
+        "0.25": null,
+        "0.5": null
+      },
+      "ELECTRIC_HEAT_PUMP": {
+        "0.25": {
+          "mean": 2035.1,
+          "std": 0.3,
+          "n": 30
+        },
+        "0.5": null
+      },
+      "HYBRID_HEAT_PUMP": {
+        "0.25": {
+          "mean": 2038.33,
+          "std": 0.47,
+          "n": 30
+        },
+        "0.5": {
+          "mean": 2049.1,
+          "std": 0.65,
+          "n": 30
+        }
+      },
+      "NATURAL_GAS_BLOCK": {
+        "0.25": null,
+        "0.5": null
+      },
+      "NATURAL_GAS_BOILER": {
+        "0.25": {
+          "mean": 2024.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "0.5": {
+          "mean": 2024.0,
+          "std": 0.0,
+          "n": 30
+        }
+      }
+    },
+    "policy_driven_sha_strategy": {
+      "DISTRICT_HEATING": {
+        "0.25": null,
+        "0.5": null
+      },
+      "ELECTRIC_HEAT_PUMP": {
+        "0.25": {
+          "mean": 2035.1,
+          "std": 0.3,
+          "n": 30
+        },
+        "0.5": null
+      },
+      "HYBRID_HEAT_PUMP": {
+        "0.25": {
+          "mean": 2038.7,
+          "std": 0.53,
+          "n": 30
+        },
+        "0.5": null
+      },
+      "NATURAL_GAS_BLOCK": {
+        "0.25": null,
+        "0.5": null
+      },
+      "NATURAL_GAS_BOILER": {
+        "0.25": {
+          "mean": 2024.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "0.5": {
+          "mean": 2024.0,
+          "std": 0.0,
+          "n": 30
+        }
+      }
+    },
+    "social_learning_factor_high": {
+      "DISTRICT_HEATING": {
+        "0.25": null,
+        "0.5": null
+      },
+      "ELECTRIC_HEAT_PUMP": {
+        "0.25": {
+          "mean": 2050.0,
+          "std": 0.0,
+          "n": 4
+        },
+        "0.5": null
+      },
+      "HYBRID_HEAT_PUMP": {
+        "0.25": null,
+        "0.5": null
+      },
+      "NATURAL_GAS_BLOCK": {
+        "0.25": null,
+        "0.5": null
+      },
+      "NATURAL_GAS_BOILER": {
+        "0.25": {
+          "mean": 2024.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "0.5": {
+          "mean": 2024.0,
+          "std": 0.0,
+          "n": 30
+        }
+      }
+    },
+    "social_learning_factor_low": {
+      "DISTRICT_HEATING": {
+        "0.25": null,
+        "0.5": null
+      },
+      "ELECTRIC_HEAT_PUMP": {
+        "0.25": {
+          "mean": 2033.5,
+          "std": 0.5,
+          "n": 30
+        },
+        "0.5": null
+      },
+      "HYBRID_HEAT_PUMP": {
+        "0.25": {
+          "mean": 2032.93,
+          "std": 0.36,
+          "n": 30
+        },
+        "0.5": {
+          "mean": 2045.7,
+          "std": 0.78,
+          "n": 30
+        }
+      },
+      "NATURAL_GAS_BLOCK": {
+        "0.25": null,
+        "0.5": null
+      },
+      "NATURAL_GAS_BOILER": {
+        "0.25": {
+          "mean": 2024.0,
+          "std": 0.0,
+          "n": 30
+        },
+        "0.5": {
+          "mean": 2024.0,
+          "std": 0.0,
+          "n": 30
+        }
+      }
+    }
+  }
+}

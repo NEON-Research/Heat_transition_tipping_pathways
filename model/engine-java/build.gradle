@@ -1,0 +1,65 @@
+plugins {
+    id 'java'
+    id 'application'
+}
+
+group = 'heattransition'
+version = '0.1.0'
+description = 'Heat-transition ABM engine (AnyLogic-free port of the model core)'
+
+// Compile with whatever JDK runs Gradle (17+), targeting Java 17 bytecode. No toolchain
+// auto-download, so no network needed and any installed JDK 17/21 works out of the box.
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+repositories { mavenCentral() }
+
+dependencies {
+    testImplementation platform('org.junit:junit-bom:5.10.2')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+// `gradle run` launches the model CLI (heattransition.Cli). The `cli` task below is the same
+// entry point but adds a heap size and the HT_DIAG / HT_DYN probe toggles.
+application { mainClass = 'heattransition.Cli' }
+
+test {
+    useJUnitPlatform()
+    testLogging { events 'passed', 'skipped', 'failed' }
+}
+
+// ---------------------------------------------------------------------------------------------
+// Custom run tasks (mirror the raw `java -cp ...` commands; Gradle compiles first automatically).
+// ---------------------------------------------------------------------------------------------
+
+// Dependency-free assertion harness (no JUnit):  gradle selfTest
+tasks.register('selfTest', JavaExec) {
+    group = 'verification'
+    description = 'Run heattransition.SelfTest (hand-verified formula assertions, no JUnit).'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'heattransition.SelfTest'
+}
+
+// Model runner with a bigger heap + HT_DIAG / HT_DYN probes (normally you'd use ../run.py instead).
+// Examples:
+//   .\gradlew cli --args="--real ..\data\stock\limburg_dwellings.csv --scenario baseline --iterations 20 --out java_baseline.csv"
+//   $env:HT_DIAG=1;  .\gradlew --quiet cli --args="... --iterations 20 --out java_baseline.csv" > java.log
+//   $env:HT_DYN=1;   .\gradlew --quiet cli --args="... --scenario baseline --iterations 20 --out java_baseline.csv" > eng_dyn.log
+// Toggles: -Pdiag sets HT_DIAG=1, -Pdyn sets HT_DYN=1 (so you don't need to touch env vars).
+tasks.register('cli', JavaExec) {
+    group = 'application'
+    description = 'Run heattransition.Cli (the model). Pass model args via --args="...".'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'heattransition.Cli'
+    maxHeapSize = '4g'
+    if (project.hasProperty('diag')) environment 'HT_DIAG', '1'
+    if (project.hasProperty('dyn'))  environment 'HT_DYN', '1'
+}
+
+// Build a self-contained runnable jar:  gradle jar  ->  build/libs/heat-transition-engine-0.1.0.jar
+jar {
+    manifest { attributes 'Main-Class': 'heattransition.Cli' }
+}
