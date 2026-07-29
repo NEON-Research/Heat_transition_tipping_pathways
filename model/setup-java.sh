@@ -25,10 +25,25 @@ if [ -x "$JAVA_HOME_DIR/bin/javac" ] && "$JAVA_HOME_DIR/bin/javac" -version >/de
 else
     echo "Downloading JDK 17 .debs from the Ubuntu mirror..."
     cd "$WORK"
+
+    # Some sessions start with EMPTY apt package lists (/var/lib/apt/lists), which makes
+    # `apt-get download` say "Unable to locate package". We can't `apt-get update` the system
+    # lists without root, but we CAN populate a private lists dir under /tmp and point apt at it.
+    APT_STATE="/tmp/apt-java"
+    APT_OPTS="-o Dir::State::Lists=$APT_STATE/lists -o Dir::Cache=$APT_STATE/cache -o Dir::State::status=$APT_STATE/status"
+    if ! ls /var/lib/apt/lists/*_Packages* >/dev/null 2>&1; then
+        echo "  (system apt lists empty -> refreshing a private list cache in $APT_STATE)"
+        mkdir -p "$APT_STATE/lists/partial" "$APT_STATE/cache/archives/partial"
+        : > "$APT_STATE/status"
+        apt-get $APT_OPTS update >/dev/null 2>&1 || true   # third-party PPAs may 403; main archive is what we need
+    else
+        APT_OPTS=""   # system lists are fine, use them
+    fi
+
     # jre-headless carries libjvm.so; jdk-headless carries javac; ca-certificates-java is a dep.
     for pkg in openjdk-17-jre-headless openjdk-17-jdk-headless; do
         # retry once -- apt-get download occasionally truncates large files
-        apt-get download "$pkg" >/dev/null 2>&1 || apt-get download "$pkg" >/dev/null 2>&1
+        apt-get $APT_OPTS download "$pkg" >/dev/null 2>&1 || apt-get $APT_OPTS download "$pkg" >/dev/null 2>&1
     done
 
     echo "Extracting..."

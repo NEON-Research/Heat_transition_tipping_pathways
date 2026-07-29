@@ -1,0 +1,4 @@
+energy_source,costs_eur_per_k_wh,costs_eur_per_k_wh_eu,cost_trend,source
+NATURAL_GAS,0.14,0.16255007999999999,0.01,https://ec.europa.eu/eurostat/databrowser/view/ten00118/default/table?lang=en&category=t_nrg.t_nrg_indic
+ELECTRICITY,0.32,0.2695,0.01,https://ec.europa.eu/eurostat/databrowser/view/ten00117/default/table
+HEAT,0.14,0.16255007999999999,0.01,Niet meer dan anders principe

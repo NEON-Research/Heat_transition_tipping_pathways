@@ -75,7 +75,7 @@ public final class SelfTest {
             for (Dwelling dw : ll) dw.ownership = "PRIVATELY_RENTED";
             HousingBlock blk = new HousingBlock("B1", 5);
             for (Dwelling dw : SyntheticData.make(100, 7)) { dw.ownership = "SOCIAL_HOUSING"; blk.households.add(dw); }
-            Vesta vesta = Vesta.load("../data/reference/dwellings_demand_insulation.json");
+            Vesta vesta = Vesta.load("../data/reference/dwellings_demand_insulation.csv");
             Simulation fs = new Simulation(2024, 2050, new Rng(1), new Scenario(), false, 10,
                     ho, ll, java.util.List.of(blk), java.util.List.of(), vesta);
             java.util.List<Simulation.YearRow> fullRows = fs.run();

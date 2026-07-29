@@ -1,38 +1,75 @@
 package heattransition;
 
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-/** REAL values exported from the AnyLogic HEATING_SYSTEM_DATA / ENERGY_SOURCE_DATA tables
- *  (database/db.script). Costs EUR, demand kWh. Energy domestic costs (EUR/kWh):
- *  NATURAL_GAS 0.14, ELECTRICITY 0.32, HEAT 0.14. requiresLowTemp = (REQUIRED_DIST == 'LT'). */
+/** Heating-system + energy-source specs, loaded from the reference CSVs that are generated from the
+ *  top-level data/ spreadsheets (heating_system_data.csv + energy_source_data.csv) by
+ *  export_reference_tables.py -- the single source of truth. Values are NOT hardcoded here.
+ *  Costs EUR, demand kWh. requiresLowTemp = (required_distribution_system == "LT"). */
 public final class HeatingSystemData {
     private HeatingSystemData() {}
-    private static final double GAS = 0.14, ELEC = 0.32, HEAT = 0.14;
+
+    // Loaded once (idempotent) before any Simulation is built; see StockLoader.load / ensureLoaded.
+    private static List<Map<String, String>> hsRows;     // heating_system_data rows
+    private static Map<String, Double> energyCost;       // energy_source -> costs_eur_per_k_wh
+
+    /** Load the two reference tables from their CSV files (called with the run's reference dir). */
+    public static synchronized void loadFrom(Path heatingSystemCsv, Path energySourceCsv) {
+        try {
+            hsRows = Csv.read(heatingSystemCsv);
+            Map<String, Double> ec = new HashMap<>();
+            for (Map<String, String> r : Csv.read(energySourceCsv))
+                ec.put(r.get("energy_source"), Csv.d(r.get("costs_eur_per_k_wh")));
+            energyCost = ec;
+        } catch (IOException e) {
+            throw new RuntimeException("cannot read heating/energy reference CSV: " + e.getMessage(), e);
+        }
+    }
+
+    /** Fallback for callers that didn't loadFrom() explicitly (tests run from engine-java). */
+    private static synchronized void ensureLoaded() {
+        if (hsRows == null || energyCost == null)
+            loadFrom(Path.of("../data/reference/heating_system_data.csv"),
+                     Path.of("../data/reference/energy_source_data.csv"));
+    }
 
     /** Fresh set of specs (mutable state per simulation, so build a new one per run). */
     public static Map<HeatingSystem, HeatingSystemSpec> freshSpecs() {
+        ensureLoaded();
         Map<HeatingSystem, HeatingSystemSpec> m = new EnumMap<>(HeatingSystem.class);
-        m.put(HeatingSystem.NATURAL_GAS_BOILER, new HeatingSystemSpec(
-                HeatingSystem.NATURAL_GAS_BOILER, 1500, 2250, 3000, 0, false, "no",
-                0, 12, 0.02, 0.01, "NATURAL_GAS", "NOT_APPLICABLE",
-                0.99, 0, 1.0, 0, GAS, 0, 0, 1, 0.5));
-        m.put(HeatingSystem.NATURAL_GAS_BLOCK, new HeatingSystemSpec(
-                HeatingSystem.NATURAL_GAS_BLOCK, 1500, 2250, 3000, 0, false, "no",
-                0, 12, 0.02, 0.01, "NATURAL_GAS", "NOT_APPLICABLE",
-                0.99, 0, 1.0, 0, GAS, 0, 0, 1, 0.5));
-        m.put(HeatingSystem.HYBRID_HEAT_PUMP, new HeatingSystemSpec(
-                HeatingSystem.HYBRID_HEAT_PUMP, 5000, 6000, 7000, 5000, true, "c",
-                0, 15, 0.02, 0.05, "ELECTRICITY", "NATURAL_GAS",
-                3.0, 0.99, 0.8, 0.2, ELEC, GAS, 4000, 3, 1.0));
-        m.put(HeatingSystem.ELECTRIC_HEAT_PUMP, new HeatingSystemSpec(
-                HeatingSystem.ELECTRIC_HEAT_PUMP, 7500, 9000, 12000, 5000, true, "b",
-                0, 15, 0.02, 0.1, "ELECTRICITY", "NOT_APPLICABLE",
-                3.0, 0, 1.0, 0, ELEC, 0, 4000, 5, 1.0));
-        m.put(HeatingSystem.DISTRICT_HEATING, new HeatingSystemSpec(
-                HeatingSystem.DISTRICT_HEATING, 5250.24, 5250.24, 5250.24, 0, false, "no",
-                0, 30, 0.03, 0.05, "HEAT", "NOT_APPLICABLE",
-                0.8, 0, 1.0, 0, HEAT, 0, 3775, 3, 0.5));
+        for (Map<String, String> r : hsRows) {
+            HeatingSystem type;
+            try { type = HeatingSystem.valueOf(r.get("type")); }
+            catch (IllegalArgumentException | NullPointerException e) { continue; }   // skip non-enum rows
+            String primary = r.get("energy_source_primary");
+            String secondary = r.get("energy_source_secondary");
+            m.put(type, new HeatingSystemSpec(type,
+                    Csv.d(r.get("investment_costs_eur_per_unit_small")),
+                    Csv.d(r.get("investment_costs_eur_per_unit_medium")),
+                    Csv.d(r.get("investment_costs_eur_per_unit_high")),
+                    Csv.d(r.get("investment_costs_heat_distribution_system_eur")),
+                    "LT".equals(r.get("required_distribution_system")),
+                    r.get("required_energy_label"),
+                    Csv.d(r.get("maintenance_costs_eur_per_year")),
+                    (int) Csv.d(r.get("lifetime_years")),
+                    Csv.d(r.get("discount_rate")),
+                    Csv.d(r.get("economic_learning_rate_per_unit")),
+                    primary, secondary,
+                    Csv.d(r.get("efficiency_primary_source")),
+                    Csv.d(r.get("efficiency_secondary_source")),
+                    Csv.d(r.get("fraction_primary_energy_source")),
+                    Csv.d(r.get("fraction_secondary_energy_source")),
+                    energyCost.getOrDefault(primary, 0.0),
+                    energyCost.getOrDefault(secondary, 0.0),
+                    Csv.d(r.get("subsidy_eur")),
+                    (int) Csv.d(r.get("sustainability_score")),
+                    Csv.d(r.get("social_learning_rate"))));
+        }
         // min-max sustainability normalization across all systems (AL f_setHeatingSystemOptions)
         int minS = Integer.MAX_VALUE, maxS = Integer.MIN_VALUE;
         for (HeatingSystemSpec sp : m.values()) { minS = Math.min(minS, sp.sustainabilityScore); maxS = Math.max(maxS, sp.sustainabilityScore); }

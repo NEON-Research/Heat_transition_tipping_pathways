@@ -66,7 +66,7 @@ class DecisionTest {
         long eac = Economics.computeEAC(HeatingSystemData.freshSpecs().get(HeatingSystem.NATURAL_GAS_BOILER), d, (dd, l) -> 0);
         assertTrue(eac > 0);
     }
-    @Test void endToEndConservesStock() {
+    @Test void endToEndConservesStock() throws Exception {
         // Full multi-agent model on a synthetic stock: 300 homeowners + 100 landlords + 100 social
         // (in one block) = 500 dwellings; the annual loop must neither create nor destroy dwellings.
         List<Dwelling> ho = SyntheticData.make(300, 5);
@@ -75,7 +75,7 @@ class DecisionTest {
         for (Dwelling dw : ll) dw.ownership = "PRIVATELY_RENTED";
         HousingBlock blk = new HousingBlock("B1", 5);
         for (Dwelling dw : SyntheticData.make(100, 7)) { dw.ownership = "SOCIAL_HOUSING"; blk.households.add(dw); }
-        Vesta vesta = Vesta.load("../data/reference/dwellings_demand_insulation.json");
+        Vesta vesta = Vesta.load("../data/reference/dwellings_demand_insulation.csv");
         List<Simulation.YearRow> rows = new Simulation(2024, 2050, new Rng(1), new Scenario(), false, 10,
                 ho, ll, List.of(blk), List.of(), vesta).run();
         assertEquals(27, rows.size());

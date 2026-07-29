@@ -73,7 +73,7 @@ public final class StockLoader {
     }
     private static String blockAvgLabel(java.util.List<Dwelling> hh) {                  // setDefaultEnergyLabel
         int sum = 0; for (Dwelling d : hh) sum += Vesta.labelNum(d.energyLabel);
-        return Vesta.numLabel(sum / hh.size());   // AL: int/int -> integer division (floor)
+        return Vesta.numLabel((int) Math.round((double) sum / hh.size()));   // round to nearest (was AL int-division floor)
     }
 
     private static double truncNormal(Rng rng, double mean, double sd, double lo, double hi) {
@@ -90,30 +90,17 @@ public final class StockLoader {
         for (int i = a.size() - 1; i > 0; i--) { int j = rng.nextInt(0, i + 1); T t = a.get(i); a.set(i, a.get(j)); a.set(j, t); }
     }
 
-    // minimal parser for nbh_heating.json: {"BUxxxx":{"gasCV":..,"gasBlock":..,"ehp":..,"hhp":..,"dh":..,"hasDHgrid":true},..}
+    // nbh_heating.csv: buurtcode,gasCV,gasBlock,ehp,hhp,dh,hasDHgrid  (per-neighbourhood shares)
     private static Map<String, Perc> loadNbh(String path) throws Exception {
         Map<String, Perc> out = new HashMap<>();
-        String t = Files.readString(Path.of(path));
-        int i = 1, n = t.length();
-        while (i < n) {
-            if (t.charAt(i) == '"') {
-                int ks = i + 1, ke = t.indexOf('"', ks); String buurt = t.substring(ks, ke);
-                int ob = t.indexOf('{', ke); int cb = t.indexOf('}', ob); String body = t.substring(ob, cb + 1);
-                Perc p = new Perc();
-                p.gasCV = num(body, "gasCV"); p.gasBlock = num(body, "gasBlock");
-                p.ehp = num(body, "ehp"); p.hhp = num(body, "hhp"); p.dh = num(body, "dh");
-                // NB: json.dump writes ": " with a space, so a bare contains(":true") never
-                // matches. Strip whitespace first rather than guessing the separator style.
-                p.grid = body.replaceAll("\\s+", "").contains("\"hasDHgrid\":true");
-                out.put(buurt, p); i = cb + 1;
-            } else i++;
+        for (Map<String, String> r : Csv.read(Path.of(path))) {
+            Perc p = new Perc();
+            p.gasCV = Csv.d(r.get("gasCV")); p.gasBlock = Csv.d(r.get("gasBlock"));
+            p.ehp = Csv.d(r.get("ehp")); p.hhp = Csv.d(r.get("hhp")); p.dh = Csv.d(r.get("dh"));
+            p.grid = p.dh > 0;                       // hasDHgrid == dh>0 (same rule as the export)
+            out.put(r.get("buurtcode"), p);
         }
         return out;
-    }
-    private static double num(String body, String key) {
-        int k = body.indexOf("\"" + key + "\""); if (k < 0) return 0;
-        int c = body.indexOf(':', k) + 1; int e = c; while (e < body.length() && body.charAt(e) != ',' && body.charAt(e) != '}') e++;
-        try { return Double.parseDouble(body.substring(c, e).trim()); } catch (Exception ex) { return 0; }
     }
 
     private static int rnd(double x) { return (int) Math.round(x); }
@@ -187,8 +174,16 @@ public final class StockLoader {
     public static Agents load(String csvPath, Rng rng, int everyNth) throws Exception {
         Agents out = new Agents();
         Path dir = Path.of(csvPath).toAbsolutePath().getParent();
-        out.vesta = Vesta.load(refFile(dir, "dwellings_demand_insulation.json").toString());
-        Map<String, Perc> nbhData = loadNbh(refFile(dir, "nbh_heating.json").toString());
+        out.vesta = Vesta.load(refFile(dir, "dwellings_demand_insulation.csv").toString());
+        // heating-system + energy-source specs from the reference CSVs (single source of truth,
+        // generated from the data/ spreadsheets by export_reference_tables.py).
+        HeatingSystemData.loadFrom(refFile(dir, "heating_system_data.csv"),
+                                   refFile(dir, "energy_source_data.csv"));
+        // -Dht.nbhHeating=nbh_heating_2022.csv lets a calibration run start from an observed
+        // historical state (see export_observed_heating.py) instead of the default 2023 shares.
+        String nbhFile = System.getProperty("ht.nbhHeating",
+                System.getenv().getOrDefault("HT_NBHHEATING", "nbh_heating.csv"));
+        Map<String, Perc> nbhData = loadNbh(refFile(dir, nbhFile).toString());
         Perc def = new Perc(); def.gasCV = 1;
 
         Map<String, Nbh> nbhs = new LinkedHashMap<>();

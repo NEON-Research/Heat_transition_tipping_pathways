@@ -46,7 +46,17 @@ def scope_filter(scope):
 
 SCOPE_WHERE, SCOPE_PARAMS, SCOPE_TAG = scope_filter(SCOPE)
 
-arch = json.load(open(os.path.join(REF, "dwellings_demand_insulation.json")))
+def _num(v):   # CSV values are strings; restore numbers (leave type_str/type_ol/labels as strings)
+    if v is None or v == "":
+        return None
+    try:
+        f = float(v)
+        return int(f) if f.is_integer() and "." not in v and "e" not in v.lower() else f
+    except ValueError:
+        return v
+
+with open(os.path.join(REF, "dwellings_demand_insulation.csv"), newline="", encoding="utf-8") as _f:
+    arch = [{k: _num(v) for k, v in row.items()} for row in csv.DictReader(_f)]
 
 TYPE_MAP = {
     "Appartement": "APARTMENT", "Maisonnette": "APARTMENT", "Portiekwoning": "APARTMENT",

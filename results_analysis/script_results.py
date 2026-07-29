@@ -675,6 +675,81 @@ def create_detail_values_per_hm_per_scenario_plot(
     plt.close(fig)
 
 
+def create_eac_by_ownership_plot(
+    df: pd.DataFrame,
+    scen: str = "baseline",
+    min_year: int = 2025,
+    output_file="plots/eac_by_ownership.png",
+):
+    """One figure, 5 panels (PRIVATELY_OWNED, PRIVATELY_RENTED, SOCIAL_HOUSING,
+    HOME_OWNER_ASSOCIATION, TOTAL): average EAC per heating system over time, mean + 90% CI over
+    iterations. Mirrors the EAC panel of the detail_values plot, but one panel per ownership type."""
+    scen_norm = scen.strip().lower()
+    d = df[(df["scenario_name"].astype(str).str.strip().str.lower() == scen_norm) &
+           (df["year"] >= min_year)].copy()
+    if d.empty or "avg_eac" not in d.columns:
+        print(f"No avg_eac data for scenario '{scen}'. Skipping eac_by_ownership.")
+        return
+
+    owners = [o for o in ["PRIVATELY_OWNED", "PRIVATELY_RENTED", "SOCIAL_HOUSING",
+                          "HOME_OWNER_ASSOCIATION", "TOTAL"] if o in d["ownership"].unique()]
+    n = len(owners)
+    n_cols = 2
+    n_rows = math.ceil(n / n_cols)
+    fig, axes = plt.subplots(n_rows, n_cols, figsize=(6.3, 2.7 * n_rows), sharex=True)
+    axes = np.array(axes).flatten()
+    color_map = HEATING_SYSTEM_COLORS
+
+    for ai, own in enumerate(owners):
+        ax = axes[ai]
+        do = d[d["ownership"] == own].copy()
+        # A 0 EAC means "no decider of this ownership evaluated this type this year" (block owners have
+        # few triggers/yr). Treat 0 as missing so it's excluded from the iteration mean (no false
+        # averaging) and the line simply breaks instead of dipping to 0. New engine runs emit blank
+        # (NaN) directly; this also cleans older CSVs that still carry 0.
+        do.loc[do["avg_eac"] == 0, "avg_eac"] = np.nan
+        mean_data = do.groupby(["year", "heating_system"], as_index=False)["avg_eac"].mean()
+        lo = do.groupby(["year", "heating_system"], as_index=False)["avg_eac"].agg(lambda x: x.quantile(0.05))
+        hi = do.groupby(["year", "heating_system"], as_index=False)["avg_eac"].agg(lambda x: x.quantile(0.95))
+        lo.columns = ["year", "heating_system", "lo"]
+        hi.columns = ["year", "heating_system", "hi"]
+        m = mean_data.merge(lo, on=["year", "heating_system"]).merge(hi, on=["year", "heating_system"])
+        # All lines use the SAME statistic (raw per-year mean over iterations, no smoothing). Reindex to
+        # the full year range so a year with no decider of this ownership/type is a NaN -> matplotlib
+        # leaves it as a gap (unfilled) rather than interpolating across it. (With full NL, block
+        # populations are large so empty years become rare anyway.)
+        years = list(range(int(m["year"].min()), int(m["year"].max()) + 1))
+        for hs in m["heating_system"].unique():
+            hsd = m[m["heating_system"] == hs].set_index("year").reindex(years)
+            if hsd["avg_eac"].isna().all():
+                continue
+            color = color_map.get(hs, "#888888")
+            ax.plot(hsd.index, hsd["avg_eac"], label=translate_heating_system_name(hs), color=color, linewidth=2)
+            ax.fill_between(hsd.index, hsd["lo"], hsd["hi"], color=color, alpha=0.15)
+        ax.set_title(own.replace("_", " ").title(), fontsize=fontsizePlotTitle, pad=8)
+        ax.set_xlabel("Year", fontsize=fontsizeLabels)
+        ax.set_ylabel("EAC (EUR/yr)", fontsize=fontsizeLabels)
+        ax.tick_params(axis='both', labelsize=fontsizeLabels)
+        ax.grid(True, alpha=0.3, linestyle="--")
+
+    for ax in axes[n:]:
+        ax.set_visible(False)
+
+    fig.suptitle(f"Average EAC per heating system by ownership type\nscenario: {scen} (90% CI over iterations)",
+                 fontsize=fontsizeGraphTitle, y=0.97, wrap=True)
+    Path(output_file).parent.mkdir(parents=True, exist_ok=True)
+    plt.subplots_adjust(bottom=0.12, hspace=0.4, top=0.86)
+    # dedup legend across panels (a panel may omit systems it never evaluates)
+    seen = {}
+    for ax in axes[:n]:
+        for h, l in zip(*ax.get_legend_handles_labels()):
+            seen.setdefault(l, h)
+    if seen:
+        fig.legend(list(seen.values()), list(seen.keys()), loc='lower center', ncol=3, frameon=False, fontsize=9)
+    plt.savefig(output_file, dpi=300, bbox_inches='tight')
+    plt.close(fig)
+
+
 def create_installed_current_grid_plot(
     df: pd.DataFrame,
     ownership="TOTAL",
@@ -928,13 +1003,14 @@ def generate_all(df, outdir):
         step("selected DH scenario comparison", lambda: create_selected_scenarios_comparison(
             df, output_file=f"{outdir}/scenario_comparison_district_heating.png", ownership="TOTAL", scenario_names=sel))
 
-    ownership_types = sorted(df['ownership'].unique())
     for scen in [s for s in ["baseline", "individual_technologies"] if s in scenarios]:
-        for ownership in ownership_types:
-            safe = ownership.replace(" ", "_")
-            step(f"detail values {scen}/{ownership}", lambda scen=scen, ownership=ownership, safe=safe:
-                 create_detail_values_per_hm_per_scenario_plot(df, scen=scen, ownership=ownership,
-                                                               output_file=f"{outdir}/detail_values_{scen}_{safe}.png"))
+        # Q2: detail_values only for home owners (PRIVATELY_OWNED); other owners get the EAC figure below.
+        step(f"detail values {scen}/PRIVATELY_OWNED", lambda scen=scen:
+             create_detail_values_per_hm_per_scenario_plot(df, scen=scen, ownership="PRIVATELY_OWNED",
+                                                           output_file=f"{outdir}/detail_values_{scen}_PRIVATELY_OWNED.png"))
+        # Q2: one EAC figure, 5 panels (4 owner types + TOTAL).
+        step(f"eac by ownership {scen}", lambda scen=scen:
+             create_eac_by_ownership_plot(df, scen=scen, output_file=f"{outdir}/eac_by_ownership_{scen}.png"))
     step("installed_current grid", lambda: create_installed_current_grid_plot(df, ownership="TOTAL", output_file=f"{outdir}/installed_current_all.png"))
     if "baseline" in scenarios:
         step("considered_annually", lambda: create_considered_annually_stacked_plots(df, scen="baseline", output_file=f"{outdir}/considered_annually_by_ownership.png"))

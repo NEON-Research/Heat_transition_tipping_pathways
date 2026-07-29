@@ -38,10 +38,15 @@ public final class Cli {
             Scenario scen = Scenario.byName(sn);
             System.out.printf("scenario %s (id %d): %d iteration(s), %d-%d%n",
                     scen.scenName, scen.scenId, iterations, startYear, endYear);
+            StockLoader.Agents ag = null;   // hoisted so the previous iteration's ~8.4M-dwelling
+                                            // graph can be released BEFORE the next one is built
             for (int it = 1; it <= iterations; it++) {
                 long itStart = System.currentTimeMillis();
                 Rng rng = new Rng(1 + it - 1);
-                StockLoader.Agents ag = StockLoader.load(csv, rng, everyNth);
+                ag = null;   // drop the last iteration's graph now -> GC can reclaim it during load,
+                             // keeping peak heap ~1x instead of ~2x (MODEL_TODOS C). Each iteration
+                             // still rebuilds/redraws the stock -- that's the Monte-Carlo variance.
+                ag = StockLoader.load(csv, rng, everyNth);
                 nAgents = ag.total(); nBlocks = ag.socialBlocks.size() + ag.hoaBlocks.size();
                 Simulation sim = new Simulation(startYear, endYear, rng, scen, false, 10,
                         ag.homeowners, ag.landlords, ag.socialBlocks, ag.hoaBlocks, ag.vesta,
@@ -55,15 +60,30 @@ public final class Cli {
                     // nbh_*_perc are FRACTIONS (0-1), matching AL (e.g. 0.234 at 2050), not integers.
                     String dh = String.valueOf(r.nbhWithDhPerc), cong = String.valueOf(r.nbhCongestionPerc);
                     for (HeatingSystem hs : HeatingSystem.values()) {
+                        int ord = hs.ordinal();
                         for (String own : OWN_OUT) {
                             int cur = own.equals("TOTAL") ? r.stock.get(hs) : r.stockOwn.get(own).get(hs);
                             int inst = own.equals("TOTAL") ? r.installed.get(hs) : 0;
                             int rem = own.equals("TOTAL") ? r.removed.get(hs) : 0;
+                            // avg_* columns. Emit BLANK (not 0) when no decider of this ownership
+                            // evaluated this type this year -> the cell reads as NaN downstream and is
+                            // left OUT of cross-iteration averaging, instead of biasing the mean to 0.
+                            // TPB terms are homeowner-only (PRIVATELY_OWNED / TOTAL); avg_eac is per
+                            // ownership.
+                            boolean ho = own.equals("PRIVATELY_OWNED") || own.equals("TOTAL");
+                            boolean hoData = ho && r.hoN[ord] > 0;
+                            String att = hoData ? String.valueOf(r.hoMean(r.hoAtt, ord)) : "";
+                            String util = hoData ? String.valueOf(r.hoMean(r.hoUtil, ord)) : "";
+                            String subNorm = hoData ? String.valueOf(r.hoMean(r.hoSn, ord)) : "";
+                            String pbc = hoData ? String.valueOf(r.hoMean(r.hoPbc, ord)) : "";
+                            String eac = r.eacCount(own, ord) > 0 ? String.valueOf(r.eacMean(own, ord)) : "";
                             sb.append(scen.scenId).append(',').append(scen.scenName).append(',').append(it).append(',')
                               .append(r.year).append(',').append(cong).append(',').append(dh).append(',')
                               .append(hs).append(',').append(own).append(',')
                               .append(cur).append(',').append(inst).append(',').append(rem).append(',')
-                              .append(r.cumInstalled.get(hs)).append(',').append(r.considered).append(",0,0,0,0,0")
+                              .append(r.cumInstalled.get(hs)).append(',').append(r.considered).append(',')
+                              .append(att).append(',').append(util).append(',').append(subNorm).append(',')
+                              .append(eac).append(',').append(pbc)
                               .append(tags);
                         }
                     }

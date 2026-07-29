@@ -21,13 +21,41 @@ public final class Simulation {
         public int considered = 0;
         public double nbhWithDhPerc = 0;      // % of neighbourhoods with a DH grid this year
         public double nbhCongestionPerc = 0;  // % of neighbourhoods in grid congestion this year
+        // avg_* decision columns (means emitted to the CSV), accumulated per heating type this year.
+        // TPB terms (att/util/sub_norm/pbc) are meaningful only for homeowners -> reported for
+        // PRIVATELY_OWNED and TOTAL, 0 elsewhere. avg_eac is tracked per ownership so every
+        // category (incl. landlords/social/HOA) gets a real EAC to plot.
+        static final int NT = HeatingSystem.values().length;
+        public final double[] hoAtt = new double[NT], hoUtil = new double[NT], hoSn = new double[NT], hoPbc = new double[NT];
+        public final int[] hoN = new int[NT];
+        public final Map<String, double[]> eacSum = new java.util.HashMap<>();
+        public final Map<String, int[]> eacN = new java.util.HashMap<>();
         YearRow(int y) {
             year = y;
             for (HeatingSystem t : HeatingSystem.values()) {
                 stock.put(t, 0); installed.put(t, 0); removed.put(t, 0); cumInstalled.put(t, 0);
             }
             for (String o : OWN) { Map<HeatingSystem, Integer> m = new EnumMap<>(HeatingSystem.class);
-                for (HeatingSystem t : HeatingSystem.values()) m.put(t, 0); stockOwn.put(o, m); }
+                for (HeatingSystem t : HeatingSystem.values()) m.put(t, 0); stockOwn.put(o, m);
+                eacSum.put(o, new double[NT]); eacN.put(o, new int[NT]); }
+        }
+        /** Mean of a homeowner TPB accumulator for a heating type (0 if none evaluated it). */
+        public double hoMean(double[] sum, int ord) { return hoN[ord] > 0 ? sum[ord] / hoN[ord] : 0; }
+        /** Mean EAC for an ownership + heating type; own="TOTAL" aggregates across all categories. */
+        public double eacMean(String own, int ord) {
+            if ("TOTAL".equals(own)) {
+                double s = 0; int n = 0;
+                for (String o : OWN) { s += eacSum.get(o)[ord]; n += eacN.get(o)[ord]; }
+                return n > 0 ? s / n : 0;
+            }
+            int n = eacN.get(own)[ord];
+            return n > 0 ? eacSum.get(own)[ord] / n : 0;
+        }
+        /** How many deciders of this ownership evaluated this type this year (0 -> emit blank, not 0,
+         *  so a non-triggered year is excluded from cross-iteration averaging instead of biasing it). */
+        public int eacCount(String own, int ord) {
+            if ("TOTAL".equals(own)) { int n = 0; for (String o : OWN) n += eacN.get(o)[ord]; return n; }
+            return eacN.get(own)[ord];
         }
     }
     static final String[] OWN = { "PRIVATELY_OWNED", "PRIVATELY_RENTED", "SOCIAL_HOUSING", "HOME_OWNER_ASSOCIATION" };
@@ -214,8 +242,18 @@ public final class Simulation {
         if (t == HeatingSystem.DISTRICT_HEATING) return d.hasDistrictHeatingGrid;
         // 3. electric HP blocked under grid congestion (congestion state set by the DSO model)
         if (t == HeatingSystem.ELECTRIC_HEAT_PUMP && scen.gridCongestionHpBan && d.hasGridCongestion) return false;
-        // 4. gas block only for apartments
-        if (t == HeatingSystem.NATURAL_GAS_BLOCK) return d.archetype.equals("APARTMENT");
+        // 4. gas block is a COLLECTIVE system: it may only be kept/replaced by a dwelling that is
+        //    ALREADY on block heating (an apartment). An individual boiler never becomes block
+        //    heating. Combined with rule 5, gas block is a closed category that can only shrink or
+        //    upgrade to HP/DH -- never grow from boilers. (Fixes the privately-rented boiler->block
+        //    ratchet that inflated gas block; MODEL_TODOS A.)
+        if (t == HeatingSystem.NATURAL_GAS_BLOCK)
+            return d.archetype.equals("APARTMENT") && d.currentType == HeatingSystem.NATURAL_GAS_BLOCK;
+        // 5. conversely, a dwelling on collective block heating cannot switch to an INDIVIDUAL gas
+        //    boiler (a block can't fragment into per-dwelling boilers; the two gas rows are
+        //    byte-identical in the AL data apart from the DB key, so the swap has no cost basis). It
+        //    re-installs block heating or upgrades to a heat pump / district heating instead.
+        if (t == HeatingSystem.NATURAL_GAS_BOILER && d.currentType == HeatingSystem.NATURAL_GAS_BLOCK) return false;
         return true;
     }
     private Map<HeatingSystem, long[]> eac(Dwelling d) {
@@ -237,7 +275,7 @@ public final class Simulation {
         }
         return best;
     }
-    private HeatingSystem chooseByUtility(Dwelling d, Map<HeatingSystem, long[]> opts) {
+    private HeatingSystem chooseByUtility(Dwelling d, Map<HeatingSystem, long[]> opts, YearRow r) {
         Map<HeatingSystem, Double> util = new EnumMap<>(HeatingSystem.class);
         for (HeatingSystem t : HeatingSystem.values()) {
             if (opts.get(t)[1] == 0) continue;
@@ -258,7 +296,12 @@ public final class Simulation {
                 diagSn[k] += sn; diagPbc[k] += pbc; diagEacN[k] += eacNorm; diagSal[k] += h.salienceFactor;
             }
             double intent = Decision.intention(att, sn, pbc, slf, h.socialLearningRate);
-            util.put(t, Decision.perceivedUtility(intent, pbc));
+            double pu = Decision.perceivedUtility(intent, pbc);
+            util.put(t, pu);
+            // avg_* accumulation (homeowners -> PRIVATELY_OWNED): TPB terms + raw EAC per type.
+            int o = t.ordinal();
+            r.hoAtt[o] += att; r.hoUtil[o] += pu; r.hoSn[o] += sn; r.hoPbc[o] += pbc; r.hoN[o]++;
+            r.eacSum.get("PRIVATELY_OWNED")[o] += opts.get(t)[0]; r.eacN.get("PRIVATELY_OWNED")[o]++;
         }
         HeatingSystem best = null; double bestScore = Double.NEGATIVE_INFINITY;
         for (Map.Entry<HeatingSystem, Double> e : util.entrySet()) {
@@ -376,6 +419,11 @@ public final class Simulation {
             for (HeatingSystem t : HeatingSystem.values())
                 eacByType.put(t, new double[]{ avg.get(t) / b.households.size(), poss.get(t) ? 1 : 0 });
             r.considered += b.households.size();
+            // avg_eac accumulation for blocks, household-weighted, keyed by block ownership.
+            String eacOwnKey = "HOA".equals(b.blockType) ? "HOME_OWNER_ASSOCIATION" : "SOCIAL_HOUSING";
+            int nh = b.households.size();
+            for (HeatingSystem t : HeatingSystem.values()) if (eacByType.get(t)[1] == 1) {
+                r.eacSum.get(eacOwnKey)[t.ordinal()] += eacByType.get(t)[0] * nh; r.eacN.get(eacOwnKey)[t.ordinal()] += nh; }
             HeatingSystem chosen = chooseByEAC(eacByType);
             // SHA POLICY_BASED: a triggered social block follows its neighbourhood's TVW policy plan
             // instead of the cost choice (AL J_SocialHousingBlock.f_adoptHeatingMethodSHA). HOA blocks
@@ -432,6 +480,9 @@ public final class Simulation {
             Map<HeatingSystem, long[]> e = eac(d);
             Map<HeatingSystem, double[]> eacByType = new EnumMap<>(HeatingSystem.class);
             for (HeatingSystem t : HeatingSystem.values()) eacByType.put(t, new double[]{ e.get(t)[0], e.get(t)[1] });
+            // avg_eac accumulation for landlords (PRIVATELY_RENTED), possible types only.
+            for (HeatingSystem t : HeatingSystem.values()) if (e.get(t)[1] != 0) {
+                r.eacSum.get("PRIVATELY_RENTED")[t.ordinal()] += e.get(t)[0]; r.eacN.get("PRIVATELY_RENTED")[t.ordinal()]++; }
             HeatingSystem chosen = chooseByEAC(eacByType);
             if (chosen != null) { r.removed.merge(d.currentType, 1, Integer::sum); r.installed.merge(chosen, 1, Integer::sum);
                 cumInstalled.merge(chosen, 1, Integer::sum);
@@ -459,7 +510,7 @@ public final class Simulation {
             boolean eol = p.endOfLife;
             Map<HeatingSystem, long[]> opts = p.opts;
             r.considered++;
-            HeatingSystem chosen = chooseByUtility(d, opts);
+            HeatingSystem chosen = chooseByUtility(d, opts, r);
             if (chosen == null) continue;
             if (eol || chosen != d.currentType) {
                 notifyPeers(d, d.currentType, chosen);

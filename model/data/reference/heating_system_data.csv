@@ -1,0 +1,6 @@
+type,description,investment_costs_eur_per_unit_small,investment_costs_eur_per_unit_medium,investment_costs_eur_per_unit_high,kw_per_unit,investment_costs_eur_per_kw,required_distribution_system,required_energy_label,investment_costs_heat_distribution_system_eur,maintenance_costs_eur_per_year,lifetime_years,discount_rate,economic_learning_rate_per_unit,energy_source_primary,energy_source_secondary,efficiency_primary_source,efficiency_secondary_source,fraction_primary_energy_source,fraction_secondary_energy_source,subsidy_eur,sustainability_score,social_learning_rate
+NATURAL_GAS_BOILER,natural gas boiler,1500,2250,3000,,,"LT, HT",no,0,0,12,0.02,0.01,NATURAL_GAS,NOT_APPLICABLE,0.99,0,1,0,0,1,0.5
+NATURAL_GAS_BLOCK,natural gas block heating,1500,2250,3000,,,"LT, HT",no,0,0,12,0.02,0.01,NATURAL_GAS,NOT_APPLICABLE,0.99,0,1,0,0,1,0.5
+HYBRID_HEAT_PUMP,hybrid air-water heat pump with electricity or natural gas,5000,6000,7000,,,LT,c,5000,0,15,0.02,0.05,ELECTRICITY,NATURAL_GAS,3,0.99,0.8,0.2,4000,3,1
+ELECTRIC_HEAT_PUMP,electric air-water heat pump,7500,9000,12000,,,LT,b,5000,0,15,0.02,0.1,ELECTRICITY,NOT_APPLICABLE,3,0,1,0,4000,5,1
+DISTRICT_HEATING,medium temperature district heating,5250.24,5250.24,5250.24,,,HT,no,0,0,30,0.03,0.05,HEAT,NOT_APPLICABLE,0.8,0,1,0,3775,3,0.5
