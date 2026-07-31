@@ -1,3 +1,10 @@
+import sys
+# Windows consoles default to cp1252, which cannot encode the unicode glyphs in the progress
+# messages below; force UTF-8 so redirected output (run.py --analyze) never crashes on Windows.
+for _s in (sys.stdout, sys.stderr):
+    try: _s.reconfigure(encoding="utf-8")
+    except Exception: pass
+
 import math
 import pandas as pd
 import matplotlib.pyplot as plt

@@ -90,19 +90,32 @@ def main():
     years = sorted({r["year"] for r in recs})
     print(f"observed_heating_by_year.csv: {len(recs)} buurt-year rows, years {years}")
 
-    # 2022 initial state, in the same schema the engine reads for nbh_heating
+    # 2022 initial state, in the same schema the engine reads for nbh_heating.
+    #
+    # NB shares are RENORMALISED to sum to 1 over the five modelled systems for rows with usable
+    # data. CBS shares otherwise fall short of 100 % because of (a) the 'Type installaties onbekend'
+    # category (~2 %) and (b) cell suppression. The engine assigns any shortfall to the gas boiler
+    # (`while (total < households) reqNGB++`), which would silently inflate gas AND make the state
+    # differ from the observed mix we score against (which is renormalised the same way).
+    # Rows with no usable data are written through unchanged -> engine falls back to gas, as before.
     p2 = os.path.join(OUT, "nbh_heating_2022.csv")
-    n = 0
+    n = norm = 0
+    keys = ("gasCV", "gasBlock", "ehp", "hhp", "dh")
     with open(p2, "w", newline="", encoding="utf-8") as f:
         w = csv.writer(f)
         w.writerow(["buurtcode", "gasCV", "gasBlock", "ehp", "hhp", "dh", "hasDHgrid"])
         for r in recs:
             if r["year"] != "2022":
                 continue
-            w.writerow([r["buurtcode"], r["gasCV"], r["gasBlock"], r["ehp"], r["hhp"], r["dh"],
-                        "true" if r["dh"] > 0 else "false"])
+            v = {k: r[k] for k in keys}
+            s = sum(v.values())
+            if r["complete"] and s > 0:
+                v = {k: x / s for k, x in v.items()}
+                norm += 1
+            w.writerow([r["buurtcode"]] + [v[k] for k in keys] + ["true" if v["dh"] > 0 else "false"])
             n += 1
-    print(f"nbh_heating_2022.csv: {n} neighbourhoods (2022 initial state for calibration runs)")
+    print(f"nbh_heating_2022.csv: {n} neighbourhoods ({norm} renormalised to sum 1; "
+          f"the rest keep raw shares and fall back to gas)")
 
 
 if __name__ == "__main__":

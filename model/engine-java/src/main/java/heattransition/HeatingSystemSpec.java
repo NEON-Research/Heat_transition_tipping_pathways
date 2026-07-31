@@ -15,7 +15,8 @@ public final class HeatingSystemSpec {
     public final double economicLearningRate;
     public final String primarySource, secondarySource;
     public final double efficiencyPrimary, efficiencySecondary, fractionPrimary, fractionSecondary;
-    public final double primaryCostPerKWh, secondaryCostPerKWh;
+    public double primaryCostPerKWh, secondaryCostPerKWh;                 // current-year (price-path adjusted)
+    public final double initialPrimaryCostPerKWh, initialSecondaryCostPerKWh;  // base (year 0), frozen
     public final double subsidy;
     public final int sustainabilityScore;
     public final double socialLearningRate;
@@ -43,6 +44,7 @@ public final class HeatingSystemSpec {
         this.efficiencyPrimary = efficiencyPrimary; this.efficiencySecondary = efficiencySecondary;
         this.fractionPrimary = fractionPrimary; this.fractionSecondary = fractionSecondary;
         this.primaryCostPerKWh = primaryCostPerKWh; this.secondaryCostPerKWh = secondaryCostPerKWh;
+        this.initialPrimaryCostPerKWh = primaryCostPerKWh; this.initialSecondaryCostPerKWh = secondaryCostPerKWh;
         this.subsidy = subsidy; this.sustainabilityScore = sustainabilityScore;
         this.socialLearningRate = socialLearningRate;
         this.sustainabilityScoreNorm = (double) sustainabilityScore / Constants.MAX_SUSTAINABILITY_SCORE;

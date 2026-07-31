@@ -29,6 +29,7 @@ Examples:
     python run.py --scope gemeente:Maastricht --scenario all --out results/maastricht.csv
 """
 import argparse
+import json
 import os
 import subprocess
 import sys
@@ -38,13 +39,54 @@ HERE = os.path.dirname(os.path.abspath(__file__))            # model/
 ROOT = os.path.dirname(HERE)                                 # repo root
 STOCK_DIR = os.path.join(HERE, "data", "stock")
 RESULTS_DIR = os.path.join(ROOT, "results")                  # top-level outputs (git-ignored)
-EXPORT = os.path.join(HERE, "data-export", "scripts", "export_limburg_stock.py")
+EXPORT = os.path.join(HERE, "data-export", "scripts", "export_stock.py")
 ENGINE = os.path.join(HERE, "engine-java")
 ANALYZE = os.path.join(ROOT, "results_analysis", "script_results.py")
+SEARCH_JSON = os.path.join(RESULTS_DIR, "calib", "calibration_search.json")
+
+
+def load_weight_sets(name, path):
+    """Resolve --weights <name> against a calibration_search.json into a list of
+    (label, {weight: value}) pairs. Accepts a representative key (best_fit,
+    low_shareAffordability, high_shareAffordability), `retained:<i>` for a single
+    retained set, or `all` to sweep every retained set."""
+    if not os.path.exists(path):
+        sys.exit(f"[run] --weights given but no search file at {path}\n"
+                 f"      run the calibration first: python results_analysis/calibrate_weights.py search ...")
+    with open(path, encoding="utf-8") as fh:
+        d = json.load(fh)
+    reps, retained = d.get("representative", {}), d.get("retained", [])
+    if name in ("representative", "reps"):
+        if not reps:
+            sys.exit(f"[run] no representative sets in {path}")
+        out, seen = [], set()
+        for key, e in reps.items():
+            sig = tuple(sorted(e["weights"].items()))   # dedupe identical sets (e.g. best_fit == low_*)
+            if sig in seen:
+                print(f"[run] skipping '{key}' (identical weights to an earlier representative set)")
+                continue
+            seen.add(sig)
+            out.append((key, e["weights"]))
+        return out
+    if name == "all":
+        if not retained:
+            sys.exit(f"[run] no retained sets in {path}")
+        width = len(str(len(retained) - 1))
+        return [(f"set{str(i).zfill(width)}_mad{e['mad']:.2f}", e["weights"])
+                for i, e in enumerate(retained)]
+    if name.startswith("retained:"):
+        i = int(name.split(":", 1)[1])
+        if not (0 <= i < len(retained)):
+            sys.exit(f"[run] retained index {i} out of range (0..{len(retained)-1})")
+        return [(f"retained{i}", retained[i]["weights"])]
+    if name in reps:
+        return [(name, reps[name]["weights"])]
+    valid = ", ".join(list(reps) + ["retained:<i>", "all"])
+    sys.exit(f"[run] unknown --weights '{name}'. Choose one of: {valid}")
 
 
 def scope_tag(scope):
-    """scope -> filename tag (must match export_limburg_stock.py)."""
+    """scope -> filename tag (must match export_stock.py)."""
     s = scope.strip()
     if s.lower() in ("nl", "all", "netherlands"):
         return "nl"
@@ -129,28 +171,43 @@ def main():
                          "(default: overwrite results/<scope>/ — better for dev iteration)")
     ap.add_argument("--analyze", action="store_true",
                     help="after a successful run, plot the results CSV into <run folder>/plots/")
+    ap.add_argument("--weights", default=None,
+                    help="run with a calibrated weight set from calibration_search.json: a "
+                         "representative key (best_fit / low_shareAffordability / "
+                         "high_shareAffordability), `retained:<i>`, or `all` to sweep every "
+                         "retained set. Each set's -Dht.* flags are passed to the engine.")
+    ap.add_argument("--weights-file", default=SEARCH_JSON,
+                    help=f"calibration search JSON to read --weights from (default: {SEARCH_JSON})")
+    ap.add_argument("--prop", action="append", default=[], metavar="KEY=VALUE",
+                    help="inject a JVM system property, e.g. --prop ht.gasPriceGrowth=0.0262 "
+                         "(repeatable). Use for energy-price paths and other -Dht.* overrides.")
     args, engine_args = ap.parse_known_args()
 
     tag = scope_tag(args.scope)
     stock_csv = os.path.join(STOCK_DIR, f"{tag}_dwellings.csv")
 
-    # results CSV location:
-    #   explicit --out                  -> exactly that path
-    #   --timestamp  -> results/<tag>/<yyyymmdd_hhmmss>/simulation_results.csv  (never overwritten)
-    #   default      -> results/<tag>/simulation_results.csv                    (overwritten each run)
-    if args.out:
-        results_csv = os.path.abspath(args.out)
-    else:
+    # weight sets to run: one plain run, or one/many calibrated sets from the search JSON.
+    #   (label, {weight: value})   label=None -> no -Dht flags (engine defaults)
+    weight_sets = load_weight_sets(args.weights, args.weights_file) if args.weights else [(None, None)]
+    if args.out and len(weight_sets) > 1:
+        sys.exit("[run] --out cannot be combined with --weights all (each set needs its own file); "
+                 "drop --out and the sets are written under results/<scope>/calib/<label>/")
+
+    def results_path_for(label):
+        # explicit --out wins (single run); labelled sets go under results/<tag>/calib/<label>/;
+        # otherwise the usual results/<tag>/[<timestamp>/]simulation_results.csv
+        if args.out and label is None:
+            return os.path.abspath(args.out)
         run_dir = os.path.join(RESULTS_DIR, tag)
-        if args.timestamp:
+        if label is not None:
+            run_dir = os.path.join(run_dir, "calib", label)
+        elif args.timestamp:
             stamp = datetime.now().strftime("%Y%m%d_%H%M%S")
             run_dir = os.path.join(run_dir, stamp)
-            # leave a pointer to the newest run so downstream tooling can find it
             os.makedirs(os.path.join(RESULTS_DIR, tag), exist_ok=True)
             with open(os.path.join(RESULTS_DIR, tag, "LATEST"), "w") as fh:
                 fh.write(stamp + "\n")
-        results_csv = os.path.abspath(os.path.join(run_dir, "simulation_results.csv"))
-    os.makedirs(os.path.dirname(results_csv), exist_ok=True)
+        return os.path.abspath(os.path.join(run_dir, "simulation_results.csv"))
 
     # 0. build + test the engine first (fail fast on code errors, never run stale classes)
     ensure_built(args.skip_build)
@@ -165,20 +222,29 @@ def main():
     else:
         print(f"[run] using existing stock: {stock_csv}")
 
-    # 3. run the engine
+    # 3. run the engine, once per weight set
     cp = find_classpath()
     if not cp:
         sys.exit(f"[run] no compiled engine found under {ENGINE}\\build. Build it first:\n"
                  f"      cd engine-java  &&  .\\gradlew.bat build")
-    cmd = ["java", f"-Xmx{args.xmx}", "-cp", cp, "heattransition.Cli",
-           "--real", stock_csv, "--out", results_csv] + engine_args
-    print("[run] " + " ".join(cmd))
-    rc = subprocess.run(cmd).returncode
 
-    # 4. optional analysis — only on a clean run; never fails an otherwise-valid simulation
-    if rc == 0 and args.analyze:
-        run_analysis(results_csv)
-    sys.exit(rc)
+    worst_rc = 0
+    for idx, (label, weights) in enumerate(weight_sets):
+        results_csv = results_path_for(label)
+        os.makedirs(os.path.dirname(results_csv), exist_ok=True)
+        dflags = [f"-Dht.{k}={v}" for k, v in (weights or {}).items()]
+        dflags += [f"-D{p}" for p in args.prop]   # generic JVM property passthrough (e.g. price paths)
+        if label is not None:
+            print(f"[run] weight set {idx+1}/{len(weight_sets)}: {label}")
+        cmd = ["java", f"-Xmx{args.xmx}", *dflags, "-cp", cp, "heattransition.Cli",
+               "--real", stock_csv, "--out", results_csv] + engine_args
+        print("[run] " + " ".join(cmd))
+        rc = subprocess.run(cmd).returncode
+        # 4. optional analysis — only on a clean run; never fails an otherwise-valid simulation
+        if rc == 0 and args.analyze:
+            run_analysis(results_csv)
+        worst_rc = worst_rc or rc
+    sys.exit(worst_rc)
 
 
 if __name__ == "__main__":

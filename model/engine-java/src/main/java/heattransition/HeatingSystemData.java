@@ -48,17 +48,19 @@ public final class HeatingSystemData {
             catch (IllegalArgumentException | NullPointerException e) { continue; }   // skip non-enum rows
             String primary = r.get("energy_source_primary");
             String secondary = r.get("energy_source_secondary");
+            double capexF = (type == HeatingSystem.HYBRID_HEAT_PUMP || type == HeatingSystem.ELECTRIC_HEAT_PUMP)
+                    ? Constants.CAPEX_MULT_HP : 1.0;   // HP capex sensitivity multiplier
             m.put(type, new HeatingSystemSpec(type,
-                    Csv.d(r.get("investment_costs_eur_per_unit_small")),
-                    Csv.d(r.get("investment_costs_eur_per_unit_medium")),
-                    Csv.d(r.get("investment_costs_eur_per_unit_high")),
+                    capexF * Csv.d(r.get("investment_costs_eur_per_unit_small")),
+                    capexF * Csv.d(r.get("investment_costs_eur_per_unit_medium")),
+                    capexF * Csv.d(r.get("investment_costs_eur_per_unit_high")),
                     Csv.d(r.get("investment_costs_heat_distribution_system_eur")),
                     "LT".equals(r.get("required_distribution_system")),
                     r.get("required_energy_label"),
                     Csv.d(r.get("maintenance_costs_eur_per_year")),
                     (int) Csv.d(r.get("lifetime_years")),
                     Csv.d(r.get("discount_rate")),
-                    Csv.d(r.get("economic_learning_rate_per_unit")),
+                    Constants.LEARNING_RATE_MULT * Csv.d(r.get("economic_learning_rate_per_unit")),
                     primary, secondary,
                     Csv.d(r.get("efficiency_primary_source")),
                     Csv.d(r.get("efficiency_secondary_source")),

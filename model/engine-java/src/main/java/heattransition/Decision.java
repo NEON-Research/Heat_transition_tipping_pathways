@@ -8,6 +8,17 @@ public final class Decision {
 
     public static double normalizedValue(double v, double mn, double mx) { return (v - mn) / (mx - mn); }
 
+    /** Min-max normalise on a LOG scale: (log v - log mn) / (log mx - log mn).
+     *  Used for the global EAC cost scale so the mapping is PROPORTIONAL (a +40% cost gap maps to a
+     *  similar signal whether the dwelling is small or large) and the right tail of very expensive
+     *  dwellings is compressed instead of setting the whole scale. Values are clamped to >=1 so the
+     *  logarithm is always defined (EACs are euros, so this is a no-op in practice). Returns 0 if the
+     *  window is degenerate. */
+    public static double normalizedLog(double v, double mn, double mx) {
+        double lv = Math.log(Math.max(1.0, v)), lm = Math.log(Math.max(1.0, mn)), lx = Math.log(Math.max(1.0, mx));
+        return lx > lm ? (lv - lm) / (lx - lm) : 0;
+    }
+
     /** attitude = 1 - |householdAttitude - technologySustainabilityScoreNorm| */
     public static double attitudeValue(double att, double scoreNorm) { return 1 - Math.abs(att - scoreNorm); }
 

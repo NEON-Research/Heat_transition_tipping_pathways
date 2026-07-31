@@ -90,17 +90,68 @@ public final class StockLoader {
         for (int i = a.size() - 1; i > 0; i--) { int j = rng.nextInt(0, i + 1); T t = a.get(i); a.set(i, a.get(j)); a.set(j, t); }
     }
 
-    // nbh_heating.csv: buurtcode,gasCV,gasBlock,ehp,hhp,dh,hasDHgrid  (per-neighbourhood shares)
-    private static Map<String, Perc> loadNbh(String path) throws Exception {
-        Map<String, Perc> out = new HashMap<>();
-        for (Map<String, String> r : Csv.read(Path.of(path))) {
-            Perc p = new Perc();
-            p.gasCV = Csv.d(r.get("gasCV")); p.gasBlock = Csv.d(r.get("gasBlock"));
-            p.ehp = Csv.d(r.get("ehp")); p.hhp = Csv.d(r.get("hhp")); p.dh = Csv.d(r.get("dh"));
-            p.grid = p.dh > 0;                       // hasDHgrid == dh>0 (same rule as the export)
-            out.put(r.get("buurtcode"), p);
+    /** Load the optional buurt subselection (-Dht.buurtFilter / HT_BUURTFILTER). Returns null when
+     *  unset, i.e. simulate every neighbourhood in the stock. Path may be absolute or relative to
+     *  the reference dir. */
+    private static java.util.Set<String> loadBuurtFilter(Path stockDir) {
+        String spec = System.getProperty("ht.buurtFilter", System.getenv("HT_BUURTFILTER"));
+        if (spec == null || spec.isEmpty()) return null;
+        Path p = Path.of(spec);
+        if (!p.isAbsolute() && !java.nio.file.Files.exists(p)) p = refFile(stockDir, spec);
+        java.util.Set<String> out = new HashSet<>();
+        try {
+            for (String line : java.nio.file.Files.readAllLines(p)) {
+                String s = line.replace("﻿", "").trim();
+                if (s.isEmpty() || s.startsWith("#")) continue;
+                int comma = s.indexOf(',');
+                if (comma >= 0) s = s.substring(0, comma).trim();
+                if (s.equalsIgnoreCase("buurtcode")) continue;      // header
+                out.add(s);
+            }
+        } catch (java.io.IOException e) {
+            throw new RuntimeException("cannot read buurt filter " + p + ": " + e.getMessage(), e);
         }
+        System.out.printf("[stock] buurt filter: %d neighbourhoods from %s%n", out.size(), p.getFileName());
         return out;
+    }
+
+    // nbh_heating.csv: buurtcode,gasCV,gasBlock,ehp,hhp,dh,hasDHgrid  (per-neighbourhood shares)
+    /** Initial heating-method shares per neighbourhood, read from the combined neighborhoods.csv
+     *  (columns gasCV_<year>, gasBlock_<year>, ehp_<year>, hhp_<year>, dh_<year>; built by
+     *  data-export/scripts/build_neighborhoods.py). Year via -Dht.heatingYear (default 2023).
+     *  Falls back to unsuffixed columns so a legacy nbh_heating-style file still loads.
+     *
+     *  MISSING DATA: a neighbourhood whose shares are absent/blank (CBS privacy suppression) is
+     *  simply not put in the map -- the caller then applies the default Perc (gasCV = 1, i.e. all
+     *  gas boiler), which is AL's behaviour. Shares are NOT silently zeroed, because an all-zero
+     *  row would leave the neighbourhood with no heating system at all. */
+    private static Map<String, Perc> loadNbh(String path) throws Exception {
+        String yr = System.getProperty("ht.heatingYear", System.getenv().getOrDefault("HT_HEATINGYEAR", "2023"));
+        Map<String, Perc> out = new HashMap<>();
+        int skipped = 0;
+        for (Map<String, String> r : Csv.read(Path.of(path))) {
+            String buurt = r.get("buurtcode");
+            if (buurt == null || buurt.isEmpty()) continue;
+            // year-suffixed columns first, then unsuffixed (legacy nbh_heating.csv layout)
+            String gc = pick(r, "gasCV", yr), gb = pick(r, "gasBlock", yr), eh = pick(r, "ehp", yr),
+                   hh = pick(r, "hhp", yr), dh = pick(r, "dh", yr);
+            if (gc == null || gc.isEmpty()) { skipped++; continue; }   // no data -> default (gas)
+            Perc p = new Perc();
+            p.gasCV = Csv.d(gc); p.gasBlock = Csv.d(gb); p.ehp = Csv.d(eh);
+            p.hhp = Csv.d(hh); p.dh = Csv.d(dh);
+            if (p.gasCV + p.gasBlock + p.ehp + p.hhp + p.dh <= 0) { skipped++; continue; }
+            p.grid = p.dh > 0;                       // hasDHgrid == dh>0 (same rule as the export)
+            out.put(buurt, p);
+        }
+        heatingYearUsed = yr;      // reported per-run below, once the stock's neighbourhoods are known
+        return out;
+    }
+    private static String heatingYearUsed = "";
+
+    /** column "<name>_<year>" if present, else the unsuffixed "<name>". */
+    private static String pick(Map<String, String> r, String name, String year) {
+        String v = r.get(name + "_" + year);
+        return v != null ? v : r.get(name);
     }
 
     private static int rnd(double x) { return (int) Math.round(x); }
@@ -179,10 +230,11 @@ public final class StockLoader {
         // generated from the data/ spreadsheets by export_reference_tables.py).
         HeatingSystemData.loadFrom(refFile(dir, "heating_system_data.csv"),
                                    refFile(dir, "energy_source_data.csv"));
-        // -Dht.nbhHeating=nbh_heating_2022.csv lets a calibration run start from an observed
-        // historical state (see export_observed_heating.py) instead of the default 2023 shares.
+        // Initial heating shares now live in the combined neighborhoods.csv; pick the vintage with
+        // -Dht.heatingYear=2022|2023|2024 (a calibration run starts from the observed 2022 state).
+        // -Dht.nbhHeating=<file> can still point at a separate file if ever needed.
         String nbhFile = System.getProperty("ht.nbhHeating",
-                System.getenv().getOrDefault("HT_NBHHEATING", "nbh_heating.csv"));
+                System.getenv().getOrDefault("HT_NBHHEATING", "neighborhoods.csv"));
         Map<String, Perc> nbhData = loadNbh(refFile(dir, nbhFile).toString());
         Perc def = new Perc(); def.gasCV = 1;
 
@@ -191,11 +243,17 @@ public final class StockLoader {
             String[] header = br.readLine().replace("\r", "").split(",");
             Map<String, Integer> c = new HashMap<>();
             for (int i = 0; i < header.length; i++) c.put(header[i], i);
+            // Optional buurt subselection: -Dht.buurtFilter=<file> (one buurtcode per line, or a
+            // CSV whose first column is the code; '#' comments allowed). Restricts the simulation to
+            // those neighbourhoods -- used by the calibration to simulate exactly the buurten the
+            // observed CBS aggregate covers, without duplicating the (large) stock CSV.
+            java.util.Set<String> buurtFilter = loadBuurtFilter(dir);
             String ln; int row = 0, id = 0;
             while ((ln = br.readLine()) != null) {
                 if (ln.isEmpty()) continue;
                 if (row++ % everyNth != 0) continue;
                 String[] f = ln.replace("\r", "").split(",");
+                if (buurtFilter != null && !buurtFilter.contains(f[c.get("buurtcode")])) continue;
                 double koop = Double.parseDouble(f[c.get("perc_koop")]), huur = Double.parseDouble(f[c.get("perc_huur")]), corp = Double.parseDouble(f[c.get("aantal_corp")]);
                 String own = ownership(rng, koop, huur, corp);
                 String label = f[c.get("label")]; if (label == null || label.isEmpty()) label = "n";
@@ -216,6 +274,16 @@ public final class StockLoader {
                 else g.sh.add(d);
             }
         }
+        // Report coverage for THIS RUN's neighbourhoods (not the NL-wide reference table): how many
+        // of the neighbourhoods actually simulated have CBS heating data, and how many fall back to
+        // the default all-gas mix.
+        int nbWith = 0;
+        for (String b : nbhs.keySet()) if (nbhData.containsKey(b)) nbWith++;
+        System.out.printf("[stock] initial heating shares (year %s): %d of %d neighbourhoods in this "
+                + "run have data%s%n", heatingYearUsed, nbWith, nbhs.size(),
+                nbhs.size() - nbWith > 0
+                        ? String.format("; %d default to gas boiler", nbhs.size() - nbWith) : "");
+
         java.util.Map<String, String[]> nbhCsv = loadNeighbourhoodCsv(dir);
         for (Nbh nbh : nbhs.values()) {
             assignInitial(rng, nbh, nbhData.getOrDefault(nbh.buurt, def), out);

@@ -61,4 +61,17 @@ public final class Rng {
 
     /** Gumbel noise -log(-log(U)) for the RUM choice. */
     public double gumbel() { return -Math.log(-Math.log(next())); }
+
+    /** Standard normal via Box-Muller. */
+    public double gaussian() {
+        double u = Math.max(1e-12, next()), v = next();
+        return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
+    }
+    /** Equipment lifetime ~ round(N(base, sd)) clamped to [base-maxDev, base+maxDev].
+     *  sd<=0 or maxDev<=0 -> deterministic base (AnyLogic-faithful). */
+    public int jitteredLifetime(int base, double sd, int maxDev) {
+        if (sd <= 0 || maxDev <= 0) return base;
+        long v = Math.round(base + sd * gaussian());
+        return (int) Math.max(base - maxDev, Math.min(base + maxDev, v));
+    }
 }

@@ -63,7 +63,7 @@ model/
       heating_system_data.json           energy_source_data.json
     stock/                      # generated per-scope stock CSVs (git-ignored, large)
       limburg_dwellings.csv  nl_dwellings.csv  gemeente_maastricht_dwellings.csv ...
-  data-export/scripts/          # Python DB->CSV pipeline (export_limburg_stock.py + others)
+  data-export/scripts/          # Python DB->CSV pipeline (export_stock.py + others)
   engine-java/                  # the Java model (this folder)
     build.gradle  settings.gradle  gradlew(.bat)  gradle/wrapper/   # standard Gradle
     src/main/java/heattransition/*.java              # the engine (see §4)
@@ -80,15 +80,22 @@ resolves *relative to the stock CSV* — no hardcoded paths. The engine never to
 (`gradlew build`, so a run never uses stale classes — `--skip-build` to skip), check whether the
 scope's data exists, provision it from the DB if not, then run:
 ```powershell
-python run.py --scope province:Limburg --scenario baseline --iterations 20 --out results\limburg.csv
-python run.py --scope gemeente:Maastricht --scenario all --iterations 5
-python run.py --scope nl --scenario baseline --iterations 5 --xmx 32g   # whole country (memory-heavy)
+python run.py --scope province:Limburg --scenario all --iterations 20 --analyze
+python run.py --scope gemeente:Maastricht --scenario all --iterations 5 --analyze
+python run.py --scope nl --scenario baseline --iterations 5 --xmx 32g --analyze   # whole country (memory-heavy)
 ```
 It resolves the scope to `data/stock/<tag>_dwellings.csv`, provisions it from the DB if missing,
 then runs `Cli` with any extra engine args forwarded. Scopes: `nl`, `province:<Name>`,
 `gemeente:<Name>` (RES regions need a gemeente->RES mapping — not built yet). NL-wide is the eventual
 target (adoption in one region influences another via the shared learning curve), so provinces are
 subsets for testing, not independent runs.
+
+> **Pass `--analyze` whenever you want the plots refreshed** — without it only the results CSV is
+> rewritten and the PNGs under `results/<scope>/plots/` stay stale (the usual "why didn't my results
+> change?"). And **avoid a custom `--out`** unless deliberate: it writes the CSV away from the default
+> `results/<scope>/simulation_results.csv` that the plotting and downstream analysis read. Forgot
+> `--analyze`? Re-plot an existing CSV without re-simulating — see the full command reference in
+> [`../README.md`](../README.md) ("Plotting a run you already have").
 
 Why Gradle: it compiles incrementally, manages the JUnit dependency, provides the toolchain (right
 JDK), and the **wrapper** pins the exact Gradle version so every machine/CI builds identically with
@@ -111,7 +118,8 @@ no manual install. The `application` plugin + custom `JavaExec` tasks give named
 
 **Annual loop** — `Simulation.run()` calls `stepYear(year)` for 2025..2050. Each `stepYear`:
 1. *(HT_DYN probe: emit decision-time invest+salience per type.)*
-2. reset the per-technology min/max EAC window; age everything by one year; snapshot `prevShare`.
+2. reset the global (and per-technology, diagnostics-only) min/max EAC window; age everything by one year; snapshot `prevShare`.
+   Each system's end-of-life age is **stochastic**: drawn `~ N(lifetime, sd=1)` clamped to `lifetime ± 3` and redrawn on every (re)install, for all technologies (`-Dht.lifetimeJitterSd=0` restores the deterministic AnyLogic lifetime). This smears the otherwise-synchronised replacement cohorts (e.g. the HOA end-of-life "echo").
 3. exogenous insulation (households + blocks slowly improve labels).
 4. district-heating company expands the grid.
 5. **decisions, in AnyLogic order:**
@@ -119,7 +127,7 @@ no manual install. The `application` plugin + custom `JavaExec` tasks give named
      and picks the cheapest (+ Gumbel noise); all its dwellings switch together.
    - **Landlords** — individual, end-of-life only, pick cheapest EAC (+ Gumbel).
    - **Homeowners** — end-of-life OR 75%-of-life opportunity; **two passes**: pass 1 computes every
-     triggered homeowner's EACs (completing the min/max window), pass 2 evaluates TPB utility and
+     triggered homeowner's EACs (completing the global min/max window), pass 2 evaluates TPB utility and
      makes a random-utility (Gumbel) choice.
 6. update salience (per-technology social visibility from rising adoption).
 7. *(HT_DIAG probe: at 2025/2030/2035 print averaged TPB terms.)*
@@ -159,7 +167,8 @@ adoption → stronger social norm) — are why small early differences compound;
 | class | role |
 |---|---|
 | **Economics** | `computeEAC` — Equivalent Annual Cost = annualised discounted TCO (invest − subsidy + Σ discounted maintenance+energy). Faithful to `J_Household.f_getEAC`. Insulation cost added unconditionally, Vesta returns 0 when no upgrade needed (see fix #1 in PARITY_TESTS). |
-| **Decision** | Pure TPB/RUM functions: `attitudeValue`, `effort`, `pbc`, `subjectiveNorm`, `intention`, `perceivedUtility`, `normalizedValue`, `rumScore`, and the trigger predicates (`hasEndOfLifeTrigger`, `hasOpportunityTrigger`). |
+| **Affordability normalisation** | `eacNorm = normalizedLog(EAC, globalMin, globalMax)` on **one global LOG window** spanning every technology and dwelling that year (built from options each household could actually `possible()`-choose, reset annually). Log ⇒ the signal is the *relative* (%) cost gap between a household's options; it removes dwelling-size dominance (the linear window was set by a few huge dwellings, leaving a household's own spread only ~6–13 % of the scale) without clamping or discarding cost level. Per-technology `minEAC/maxEAC` are kept for the `HT_DIAG`/`HT_EACPROBE` diagnostics only. See CALIBRATION_AND_VALIDATION.md → "EAC scale made logarithmic". |
+| **Decision** | Pure TPB/RUM functions: `attitudeValue`, `effort`, `pbc`, `subjectiveNorm`, `intention`, `perceivedUtility`, `normalizedValue`, `normalizedLog` (the affordability cost scale), `rumScore`, and the trigger predicates (`hasEndOfLifeTrigger`, `hasOpportunityTrigger`). |
 | **Vesta** | On-the-fly insulation cost from `dwellings_demand_insulation.json` (per archetype/label/area). Uses the a=1..g=7 label scale. |
 | **Constants** | Calibration constants transcribed verbatim from AL (weights, Gumbel scale, learning multipliers). ⚠ `labelToNumber` here is the REVERSED scale (a=7..g=1) — a historical AL quirk; do NOT reuse it in `Economics` (that was bug #1, now fixed). |
 | **HeatingSystemData** | The REAL per-technology values (invest, lifetime, rates, energy sources) exported from the AL `HEATING_SYSTEM_DATA` / `ENERGY_SOURCE_DATA` tables. `freshSpecs()` builds a fresh mutable `HeatingSystemSpec` map. |

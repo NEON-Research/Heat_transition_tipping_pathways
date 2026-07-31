@@ -11,6 +11,7 @@ public final class HousingBlock {
     public final List<Dwelling> households = new ArrayList<>();
     public HeatingSystem currentType = HeatingSystem.NATURAL_GAS_BOILER;
     public int age;
+    public int lifeDraw;                  // stochastic end-of-life age for the CURRENT block system
     public String energyLabel = "n";
     public int yearLastRenovation = 1980;
     public boolean hasLowTemp = false;

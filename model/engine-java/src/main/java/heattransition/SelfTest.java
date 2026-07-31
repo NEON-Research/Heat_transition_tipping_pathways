@@ -24,6 +24,17 @@ public final class SelfTest {
         approx(Decision.effort(false, false, false), 0.5);
         // normalize
         approx(Decision.normalizedValue(1500, 1000, 2000), 0.5);
+        // stochastic lifetime jitter: sd=0 deterministic; sd>0 stays within [base-max, base+max], mean~base
+        Rng rj = new Rng(42);
+        ok(rj.jitteredLifetime(12, 0.0, 3) == 12, "jitter sd=0 -> base");
+        int jlo = 99, jhi = -99; double jsum = 0; int JN = 5000;
+        for (int i = 0; i < JN; i++) { int v = rj.jitteredLifetime(12, 1.0, 3); jlo = Math.min(jlo, v); jhi = Math.max(jhi, v); jsum += v; }
+        ok(jlo >= 9 && jhi <= 15, "jitter within [base-3, base+3]");
+        approx(jsum / JN, 12.0, 0.15);
+        // log-scale normalise: midpoint in log space, not linear (sqrt(mn*mx) -> 0.5)
+        approx(Decision.normalizedLog(1000, 1000, 2000), 0.0);
+        approx(Decision.normalizedLog(2000, 1000, 2000), 1.0);
+        approx(Decision.normalizedLog(Math.sqrt(1000.0 * 2000.0), 1000, 2000), 0.5);
         // PBC
         approx(Decision.pbc(0.25, 0.5), 0.475 / 0.7);
         approx(Decision.pbc(0.0, 0.0), 1.0);

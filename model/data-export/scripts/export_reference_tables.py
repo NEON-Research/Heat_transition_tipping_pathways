@@ -78,8 +78,8 @@ def export(xlsx, sheet, out_name, keep=None):
 
 
 def main():
-    hs = os.path.join(DATA, "_heating_system_data.xlsx")
-    vesta = os.path.join(DATA, "_energy_demand_and_insulation_costs_VestaMAIS.xlsx")
+    hs = os.path.join(DATA, "heating_system_data.xlsx")
+    vesta = os.path.join(DATA, "energy_demand_and_insulation_costs_VestaMAIS.xlsx")
     for f in (hs, vesta):
         if not os.path.exists(f):
             sys.exit(f"source spreadsheet not found: {f}\n(set HT_DATA_DIR or check the top-level data/ folder)")

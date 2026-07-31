@@ -162,7 +162,6 @@ Heat transition tipping pathways/households.db
 
 # Full households DB (2.7GB) + large exported stock CSVs -- never commit
 model/households.db
-model/data-export/out/*_dwellings.csv
 model/data/stock/*_dwellings.csv
 
 # Top-level data/ : raw DB is huge, never commit

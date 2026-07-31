@@ -42,7 +42,15 @@ public final class Cli {
                                             // graph can be released BEFORE the next one is built
             for (int it = 1; it <= iterations; it++) {
                 long itStart = System.currentTimeMillis();
-                Rng rng = new Rng(1 + it - 1);
+                // Seed = iteration index (+ optional offset). The stochastic content -- peer
+                // networks, attitudes, ownership draws, heat-demand factors -- is FULLY retained and
+                // redrawn every iteration; fixing the seed sequence only makes the set of sampled
+                // worlds REPRODUCIBLE, and lets two parameter sets be compared on the SAME worlds
+                // (common random numbers). -Dht.seedOffset=1000 gives a fresh, independent set of
+                // worlds, for out-of-sample validation of a calibrated parameter set.
+                int seedOffset = Integer.parseInt(System.getProperty("ht.seedOffset",
+                        System.getenv().getOrDefault("HT_SEEDOFFSET", "0")));
+                Rng rng = new Rng(seedOffset + it);
                 ag = null;   // drop the last iteration's graph now -> GC can reclaim it during load,
                              // keeping peak heap ~1x instead of ~2x (MODEL_TODOS C). Each iteration
                              // still rebuilds/redraws the stock -- that's the Monte-Carlo variance.

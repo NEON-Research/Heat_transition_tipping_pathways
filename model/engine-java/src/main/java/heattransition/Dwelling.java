@@ -11,6 +11,7 @@ public final class Dwelling {
     public final int id;
     public HeatingSystem currentType;
     public int age;
+    public int lifeDraw;                          // stochastic end-of-life age for the CURRENT system
     public final double heatDemandKWh;          // frozen at initial label (AL does not recompute)
     public String energyLabel;                  // mutable: exogenous insulation upgrades it
     public final double livingAreaM2;

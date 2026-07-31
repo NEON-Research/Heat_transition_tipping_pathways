@@ -142,6 +142,40 @@ means Q8's congestion feedback loop can't be demonstrated until that port lands.
 
 ---
 
+## 5b. Validation: the NL starting state against CBS national totals
+
+The full-NL run's starting stock was checked against the CBS maatwerk table
+(`Hoofdverwarmingsinstallaties_woningen_2022_2024.xlsx`, `Tabel 1`, `Soort regio = Land`), converted
+to dwellings using the model's own stock size (8,467,974).
+
+**Watch the vintage.** The engine initialises from the heating shares selected by
+`-Dht.heatingYear` (**default 2023**), so the model's *first simulated year* (2024) carries the
+**2023** mix. Comparing it against the CBS **2024** row therefore compares different years and
+manufactures a ~2 %-point error. Against the correct (2023) vintage:
+
+| system | CBS 2023 (renorm.) | model 2024 start | diff |
+|---|---|---|---|
+| natural gas boiler | 80.65 % | 80.85 % | **+0.20** |
+| natural gas block | 5.60 % | 5.56 % | −0.04 |
+| hybrid heat pump | 2.04 % | 1.93 % | −0.11 |
+| electric heat pump | 4.79 % | 4.73 % | −0.06 |
+| district heating | 6.92 % | 6.94 % | +0.01 |
+
+**Max deviation 0.20 %-points** — the national starting state is reproduced essentially exactly. The
+residual is rounding: CBS publishes buurt shares to whole percent, and the engine converts shares to
+whole dwellings per neighbourhood (plus whole social/HOA blocks taking a single system).
+
+Two notes on method:
+- **Renormalisation.** CBS shares sum to 98.3 %, the remainder being `Type installaties onbekend`
+  (1.7 %). The model has no "unknown" category, so the CBS shares are renormalised to 100 % before
+  comparing — the same treatment used in the calibration.
+- **The gas-boiler fallback does not distort the national total.** Neighbourhoods without CBS data
+  default to all-gas, and 4,362 of 14,421 buurten lack data — but those buurten contain **zero
+  dwellings** in the stock (they are water, industry, etc.). Every one of the 8,467,974 simulated
+  dwellings sits in a neighbourhood with real CBS data, so the fallback affects nothing here.
+
+*If the comparison is ever made against 2024, initialise the run with `-Dht.heatingYear=2024`.*
+
 ## 6. Caveats
 
 - **Limburg is district-heating-poor.** Grid expansion keys off heat density, and Limburg is far less

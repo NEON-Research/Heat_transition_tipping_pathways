@@ -27,7 +27,7 @@ Faithfulness notes (all traced to the generated Java, see SOURCE_AUDIT.md):
     cannot agree on run-to-run variance.
 
 Usage:
-    python export_neighborhoods.py [--province Limburg] [-o ../out/neighborhoods.csv]
+    python export_neighborhoods.py [--province Limburg] [-o ../../data/reference/neighborhoods.csv]
 """
 import argparse
 import csv
@@ -82,18 +82,23 @@ def main():
     src = os.path.abspath(os.path.join(here, "..", "..", "..", "data"))
 
     ap = argparse.ArgumentParser()
-    ap.add_argument("--province", default="Limburg")
+    ap.add_argument("--province", default="all",
+                    help="province name, or 'all'/'nl' for the whole country (default). The reference "
+                         "table should normally be NL-wide; runs are scoped via the stock CSV instead.")
     ap.add_argument("--src", default=src)
     ap.add_argument("-o", "--out", default=os.path.join(here, "..", "..", "data", "reference", "neighborhoods.csv"))
     args = ap.parse_args()
 
-    codes = set(PROVINCE_MUNICIPALITIES.get(args.province, []))
-    if not codes:
-        raise SystemExit(f"unknown province {args.province!r}")
+    if args.province.lower() in ("all", "nl", "netherlands"):
+        codes = None                      # no filtering: keep every buurt in the country
+    else:
+        codes = set(PROVINCE_MUNICIPALITIES.get(args.province, []))
+        if not codes:
+            raise SystemExit(f"unknown province {args.province!r}")
 
     # ---- 1. EV shares by PC4 ------------------------------------------------
     bev = {}
-    with open(os.path.join(args.src, "_EVsPerPC.csv"), encoding="utf-8-sig", newline="") as f:
+    with open(os.path.join(args.src, "EVsPerPC.csv"), encoding="utf-8-sig", newline="") as f:
         for row in csv.DictReader(f):
             try:
                 bev[int(row["PC4"])] = float(row["perc_HPEV_BEV"])
@@ -103,7 +108,7 @@ def main():
     # ---- 2. policy plans by buurtcode --------------------------------------
     # installatie -> heating system, per f_setNeighborhoodPolicyPlan's substring tests
     plans = {}
-    with open(os.path.join(args.src, "_nbh_policy_plan_2023.csv"), encoding="utf-8-sig", newline="") as f:
+    with open(os.path.join(args.src, "nbh_policy_plan_2023.csv"), encoding="utf-8-sig", newline="") as f:
         for row in csv.DictReader(f):
             inst = (row.get("installatie") or "")
             if "Wnet" in inst:
@@ -138,12 +143,12 @@ def main():
                    "policy_plan", "policy_start_jaar", "policy_eind_jaar", "policy_infra_w"])
 
     rows, matched_bev, matched_plan = [], 0, 0
-    with open(os.path.join(args.src, "_neighborhoods_data_2023.csv"),
+    with open(os.path.join(args.src, "neighborhoods_data_2023.csv"),
               encoding="utf-8-sig", newline="") as f:
         for row in csv.DictReader(f):
             code = row.get("gwb_code_10", "")
             gm = municipality_of(code)
-            if gm not in codes:
+            if codes is not None and gm not in codes:
                 continue
 
             rec = {"buurtcode": code, "municipality": gm}

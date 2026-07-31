@@ -52,11 +52,51 @@ district-heating share, Limburg is DH-poor). ~1.36 M dwellings.
 4. `... morris --trajectories 8 --outdir <dir>` → rank which weights actually drive the outcome.
    Use the retained/default weights as the **baseline** for the Morris screen, per Naud.
 
+> **Full write-up: `results_analysis/CALIBRATION_AND_VALIDATION.md`** — data justification, method
+> (history matching, not a point fit), region choice incl. the Utrecht-vs-Noord-Brabant test, how to
+> run, findings and caveats. **Region decided: `province:Noord-Brabant`.** Utrecht was tested and
+> rejected: lower MAD (1.49 vs 1.97) but a +4 %pt district-heating over-assignment contaminates its
+> gas residual, whereas Noord-Brabant reproduces the non-calibrated channels (DH +0.1, gas block +0.3)
+> and leaves a clean heat-pump residual. A **start-year initialisation gate** now runs in every mode
+> (warns if the simulated start-year mix deviates > `--start-tol`, default 2 %pts).
+
 **Verified 2026-07-28 (smoke-tested on Limburg, JDK 17):** weight overrides demonstrably move results
 (gas at 2024: 89.2 % with `wAttitudeToIntention=0.2` vs 76.8 % with 0.9); `evaluate` ran
 (AL defaults vs observed 2024 → MAD 1.38 %pts, biggest gap = electric HP under-predicted by 2.6 pts);
 `morris` ran (1 trajectory / 7 runs, ranking `wSocialnormToIntention` > `wAttitudeToIntention` >
 `wIntentionToBehavior`). Numbers are illustrative only — Limburg, 1 MC iteration, 1 trajectory.
+
+**Open follow-up — sharpen the objective before the retained-ensemble step.** The score is currently
+a province-level aggregate (3 systems × 2 years = 6 numbers), which is robust but weakly identifying:
+many weight sets reproduce the same provincial total. Fine for the Morris *ranking*, not enough to
+select a plausible ensemble. Recommended upgrade: **stratified aggregation** (group buurten by
+urbanity / dominant dwelling type / ownership mix, score per stratum) — more spatial signal than one
+aggregate, far less noise than per-buurt (CBS buurt shares are rounded to whole %, and per-buurt MC
+variance is large). Per-buurt scoring would also need per-buurt engine output. A multinomial
+likelihood would be the rigorous alternative to MAD, but needs a defensible noise model. See
+`results_analysis/CALIBRATION_AND_VALIDATION.md` §2.2–2.3.
+
+**RESOLVED 2026-07-29 — affordability now uses ONE global EAC scale.** `eacNorm` was normalised per
+technology against that technology's own population min/max, which erased the cost *level* difference
+and empirically **inverted** it (hybrid, the more expensive option, scored as more affordable because
+its range was stretched by outliers). Now normalised on a single global scale across all technologies
+and dwellings, so the real cost gap is preserved and homeowner behaviour is consistent with the
+block/landlord raw-EAC choice. **Changes results — everything must be re-run:** Limburg baseline 2050
+gas 8.4 % → 14.9 %; calibration objective at defaults 1.18 → 1.99 %pts; the earlier Morris screen is
+void. Details in `results_analysis/CALIBRATION_AND_VALIDATION.md`.
+
+**ADDED 2026-07-30 — stochastic equipment lifetime (all technologies).** End-of-life age is drawn `~ N(lifetime, sd=1)` clamped to `lifetime ± 3`, redrawn on each (re)install (`Rng.jitteredLifetime`, used in every trigger + install site). Deterministic lifetimes made whole cohorts re-decide in lockstep — most visibly the HOA end-of-life *echo*, where the initial gas-block stock (12-yr) all converted to hybrid HP (15-yr) and left a 3-year trigger gap (2037-2039). Jitter smears this: the 2039 HOA dead zone is filled, and Limburg/NB gas 2050 shifts modestly (NB baseline 12.2%%→11.0%%). `-Dht.lifetimeJitterSd=0` recovers AnyLogic-faithful deterministic lifetimes. **Changes results — re-run calibration + scenarios.**
+
+**REFINED 2026-07-30 — the global scale is now LOGARITHMIC.** The linear global window was set by a
+handful of very large/expensive dwellings (p99 ≈ €5.8k vs max €13.2k), so a household's own option
+spread was only ~6–13 % of the scale and affordability mostly encoded dwelling *size* rather than
+*which option is cheaper*. `eacNorm` now normalises `log(EAC)` on the same global window
+(`Decision.normalizedLog`): the mapping is proportional (people weigh cost in %, matching TPB's felt
+control), the expensive tail is compressed without clamping, and cost level is retained (unlike a
+per-m² transform). Own-spread share for a small dwelling rises 5.9 % → 18.8 %; the size gradient
+flattens. Ordering still correct (gas cheaper ⇒ more affordable). **Re-run everything again** — the
+affordability distribution recentres (median dwelling ≈ 0.46 vs ~0.85 before), which recalibration
+will re-weight.
 
 **Caveats to carry into the write-up:** 3 years is short and subsidy-driven; weights remain
 non-identifiable (many sets fit) — so report a *retained ensemble band*, not a single calibrated set.
@@ -108,26 +148,87 @@ Keep it simple — **only LOW and HIGH** per fuel (no central/extra scenarios):
 4. Deliverable: LOW + HIGH runs over the matrix + a note on which outcomes are price-robust.
    **Next action: the KEV/TNO/CE Delft source pull, then wire the two paths.**
 
-## Q6. Homeowner segmentation by Rogers' diffusion categories  *(engine tagging + accumulation)*
-> *Segment homeowners (e.g. 'laggards': low climate-concern attitude + network + poorly-insulated),
-> compute their annual decisions and average stats.*
+## Finding (2026-07-30): TPB **driver signatures** — each technology is carried by a different term
 
-1. **Propensity index** per homeowner from attitude + network climate-concern + insulation label; bin
-   into Rogers' five segments (innovators 2.5 / early adopters 13.5 / early majority 34 / late majority
-   34 / laggards 16 %) by percentile.
-2. **Tag + accumulate** each homeowner's segment at stock build; add per-segment `YearRow` stats
-   (mirrors the avg_* machinery): decisions, chosen-tech mix, avg attitude/EAC/label, switch timing.
-3. Deliverable: per-segment adoption curves + a "laggard profile". Validate the index reproduces the
-   S-curve ordering. Effort: moderate (engine change).
+Measured from the calibrated best_fit run (Noord-Brabant, PRIVATELY_OWNED; the `avg_att / avg_sub_norm
+/ avg_pbc` columns are the appeal of each option averaged over all evaluators each year). This is the
+quantitative backbone for Q6 below — every cell is a script-producible output column, not a hand
+narrative; the *interpretation* under the table is the qualitative layer.
 
-## Q7. Segmentation by dwelling characteristics  *(prefer post-hoc join)*
-> *Differences by dwelling type × floor area × construction year × initial heating, across ownership.*
+| technology | attitude | subjective norm (2026 → 2050) | affordability `pbc` (2026 → 2050) | **carried by** |
+|---|---|---|---|---|
+| gas boiler | 0.30 (low) | **0.89 → 0.05** (collapses) | 0.66 → 0.49 | **subjective norm** (incumbency), then nothing |
+| hybrid HP | **0.79** (high) | 0.07 → 0.49 (builds) | 0.36 → **0.57** (learning) | **attitude + rising affordability & social proof** |
+| electric HP | 0.70 | 0.18 → 0.50 | 0.34 → 0.55 | **attitude**, but affordability/effort-penalised |
+| district heating | 0.77 | 0.28 (grid-gated) | 0.63 (high) | attractive **where the grid exists** |
 
-1. Segments = dwelling_type × floor-area bin × construction-year bin × initial-heating × ownership
-   (bin coarsely).
-2. **Cheapest route:** dump a per-dwelling final-state row `{id, segment keys, year-of-switch, final
-   tech}` once, join to the stock characteristics, pivot in pandas. Avoids heavy engine changes.
-3. Deliverable: adoption-rate + tech-mix tables/heatmaps by segment; flag hard-to-decarbonise segments.
+Three insights, in decreasing obviousness:
+
+1. **Only subjective norm migrates.** Attitude and affordability are ~flat over time; subjective norm
+   is the single driver that moves (gas 0.89→0.05, hybrid 0.07→0.49). **The transition IS a handover of
+   social norm from gas to heat pumps** — this is the tipping mechanism, and its sharpness/timing is
+   governed by the salience parameters (see the structural-sensitivity table in
+   CALIBRATION_AND_VALIDATION.md), not by cost or attitude. Gas has no intrinsic pull (attitude 0.30);
+   it lives on incumbency and dies when social proof flips.
+2. **Non-monotonic attitude: hybrid beats full-electric on *attitude*, not only on cost.** attitude =
+   `1 − |householdAttitude − sustainabilityScoreNorm|`; norms are gas 0 / hybrid 0.5 / electric 1.0, and
+   the mean household is Beta(5,2) ≈ 0.71, which sits *closer to hybrid's 0.5 than to electric's 1.0*.
+   So the median household is more pro-hybrid (0.79) than pro-electric (0.71) on conviction alone;
+   full-electric only wins attitude in the top attitude quartile. Hybrids therefore dominate for **two
+   independent structural reasons** — cheaper **and** a better attitude match for the median — so full
+   electrification stalls unless the median attitude rises OR electric HP's `pbc` (cost + retrofit
+   effort) improves. The model says the binding lever is electric HP's `pbc`.
+3. **Driver → Rogers adopter group falls straight out** (motivates Q6): attitude drives the front of
+   the S-curve (innovators/early adopters — the only group where electric HP's attitude edge wins, they
+   move before cost/norm favour it); affordability + rising social proof drive the bulk (early/late
+   majority → hybrid); social-norm inertia + forced end-of-life define the tail (laggards on gas).
+
+*Caveat:* the table's `avg_*` are over **evaluators**, so they measure each option's *appeal per
+dimension* — good for signatures, but not a per-adopter attribution. Q6 adds the adopter-side
+decomposition.
+
+## Q6 (merged with old Q7). Adopter-segment **adoption pathways** + driver signatures  *(engine change — traces annual statistics)*
+> *Trace how each adopter segment moves through the transition year by year — the S-curve per segment,
+> which technology they pick, and which TPB term drove that pick — and cross this with dwelling
+> characteristics. Annual tracing is the core research output, so this is done in-engine (not a
+> one-shot post-hoc dump).*
+
+**Two segmentation axes, same accumulation machinery:**
+- **A. Rogers behavioural segment** (old Q6): a per-homeowner **propensity index** = weighted blend of
+  attitude + network climate-concern (mean attitude of the peer network) + insulation label, binned by
+  percentile into innovators 2.5 / early adopters 13.5 / early majority 34 / late majority 34 /
+  laggards 16 %. Tag on the `Dwelling` at stock build.
+- **B. Dwelling-characteristic segment** (old Q7): dwelling_type × floor-area bin × construction-year
+  bin × initial-heating (coarse bins). Also tagged on the `Dwelling`. Kept as a *second key* so the
+  same annual stats can be sliced either way (and cross-tabbed, e.g. "laggards in poorly-insulated
+  terraced houses").
+
+**Engine changes (fine to store more + rerun):**
+1. Add `segmentRogers` and `segmentDwelling` fields to `Dwelling`; compute + assign at load
+   (propensity index needs the network, so after `buildNetwork`).
+2. New per-`(year × segment × heating_system)` accumulator, mirroring the `avg_*` machinery but keyed
+   by segment. Each year record, per segment: **stock** (current holders), **installed** (chose this
+   tech this year → the adoption curve), **considered/triggered** (deciders), the **driver
+   decomposition of the CHOSEN option** (mean att / sn / pbc / intention / util of what each adopter
+   actually picked → the per-adopter driver signature), plus avg EAC, avg label, and mean switch age.
+3. Emit a **separate** `segment_stats.csv` alongside `simulation_results.csv` (rows: scenario,
+   iteration, year, segment_type, segment, heating_system, + the stats above). Keeps the main schema
+   clean; one extra file to analyse. Do it for both segmentation axes (segment_type ∈ {rogers,
+   dwelling}).
+
+**Analysis scripts (results_analysis/):**
+- **Per-segment adoption curves** — stacked/line tech share over 2024–2050 for each Rogers segment
+  (and each dwelling segment). Validate the index reproduces the **S-curve ordering** (innovators lead,
+  laggards trail).
+- **Driver-signature-over-time** — per segment × chosen tech, the mean att/sn/pbc contribution, so the
+  handover (gas→HP subjective norm) and the attitude-vs-cost split across segments are explicit and
+  data-based, not asserted.
+- **"Laggard profile"** and **hard-to-decarbonise segments** (cross Rogers × dwelling): who is last,
+  on what, and why.
+
+**Deliverables:** per-segment annual adoption curves; driver-signature tables/plots by segment and
+year; laggard/hard-to-decarbonise profiles. **Effort:** moderate engine change + ~2 analysis scripts.
+This is the primary mechanism-level research output, so prioritise the annual per-segment tracing.
 
 ## Q8. Demonstrate the grid-congestion feedback loops  *(depends on the grid-congestion port below)*
 > *Show how/when feedback loops that account for grid congestion get triggered and accelerate DH /

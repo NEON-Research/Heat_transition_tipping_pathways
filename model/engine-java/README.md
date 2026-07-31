@@ -19,7 +19,7 @@ gradlew run  --args="--real ../data/stock/limburg_dwellings.csv --scenario basel
 gradlew cli  --args="--real ../data/stock/limburg_dwellings.csv --scenario all --iterations 20"   # + heap & HT_DIAG/HT_DYN probes
 ```
 In practice you drive runs through **`../run.py`** (scope resolution, data provisioning, build,
-and optional plotting) rather than calling `Cli` directly — see `../PIPELINE.md`.
+and optional plotting) rather than calling `Cli` directly — see [`../README.md`](../README.md) for the full command reference.
 
 Output is the `simulation_results` CSV schema (rows per scenario × iteration × year × heating
 system × ownership: PRIVATELY_OWNED / PRIVATELY_RENTED / SOCIAL_HOUSING / HOME_OWNER_ASSOCIATION /

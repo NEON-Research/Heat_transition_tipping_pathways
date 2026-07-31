@@ -125,6 +125,9 @@ public final class Simulation {
         this.all = new ArrayList<>(homeowners); this.all.addAll(landlords);
         for (HousingBlock b : blocks) this.all.addAll(b.households);
         this.hs = HeatingSystemData.freshSpecs();
+        // stochastic equipment lifetime: draw each agent's end-of-life age for its CURRENT system
+        for (Dwelling d : all) d.lifeDraw = drawLife(d.currentType);
+        for (HousingBlock b : blocks) b.lifeDraw = drawLife(b.currentType);
         for (HeatingSystem t : HeatingSystem.values()) { cumInstalled.put(t, 0); prevShare.put(t, 0.0); }
         buildNetwork(networkSize);
 
@@ -222,6 +225,25 @@ public final class Simulation {
         for (HeatingSystem t : HeatingSystem.values())
             hs.get(t).salienceFactor = Decision.salienceFactor((double) cumInstalled.get(t) / n, prevShare.get(t));
     }
+    /** Apply the real energy-price path for `year`: retail price = base * (1+growth)^(year-startYear),
+     *  gas growth for NATURAL_GAS and HEAT (niet-meer-dan-anders), electricity growth for ELECTRICITY.
+     *  growth=0 (default) keeps prices static. Uses each spec's frozen initial* base. */
+    private void updateEnergyPrices(int year) {
+        double dt = year - startYear;
+        double gasF  = Math.pow(1 + Constants.GAS_PRICE_GROWTH,  dt);
+        double elecF = Math.pow(1 + Constants.ELEC_PRICE_GROWTH, dt);
+        for (HeatingSystem t : HeatingSystem.values()) {
+            HeatingSystemSpec h = hs.get(t);
+            h.primaryCostPerKWh   = h.initialPrimaryCostPerKWh   * priceFactor(h.primarySource,   gasF, elecF);
+            h.secondaryCostPerKWh = h.initialSecondaryCostPerKWh * priceFactor(h.secondarySource, gasF, elecF);
+        }
+    }
+    private static double priceFactor(String source, double gasF, double elecF) {
+        if (source == null) return 1.0;
+        if (source.equals("ELECTRICITY")) return elecF;
+        if (source.equals("NATURAL_GAS") || source.equals("HEAT")) return gasF;   // HEAT: niet-meer-dan-anders
+        return 1.0;
+    }
     private void updateLearningCurve() {
         for (HeatingSystem t : HeatingSystem.values()) {
             HeatingSystemSpec h = hs.get(t);
@@ -231,10 +253,18 @@ public final class Simulation {
             h.investLarge = h.initialInvestLarge * f;
         }
     }
+    /** ONE cost scale shared by all technologies and all dwellings in the year (see eacNorm below). */
+    private double globalMinEAC = Double.POSITIVE_INFINITY, globalMaxEAC = Double.NEGATIVE_INFINITY;
+
     private void resetMinMax() {
+        globalMinEAC = Double.POSITIVE_INFINITY; globalMaxEAC = Double.NEGATIVE_INFINITY;
         for (HeatingSystem t : HeatingSystem.values()) { hs.get(t).minEAC = Double.POSITIVE_INFINITY; hs.get(t).maxEAC = Double.NEGATIVE_INFINITY; }
     }
     // J_Dwelling.f_getHeatingMethodPossibility -- ORDER MATTERS (early returns). Mirrors JS _possible.
+    /** Draw a jittered end-of-life age for a newly (re)installed system of type t. */
+    private int drawLife(HeatingSystem t) {
+        return rng.jitteredLifetime(hs.get(t).lifetime, Constants.LIFETIME_JITTER_SD, Constants.LIFETIME_JITTER_MAX);
+    }
     private boolean possible(HeatingSystem t, Dwelling d) {
         // 1. obligation to connect to DH overrides everything where a grid exists
         if (scen.dhConnectionObligation && d.hasDistrictHeatingGrid) return t == HeatingSystem.DISTRICT_HEATING;
@@ -261,8 +291,13 @@ public final class Simulation {
         for (HeatingSystem t : HeatingSystem.values()) {
             long e = Economics.computeEAC(hs.get(t), d, this::insulationCost);
             out.put(t, new long[]{ e, possible(t, d) ? 1 : 0 });
-            if (e < hs.get(t).minEAC) hs.get(t).minEAC = e;
+            if (e < hs.get(t).minEAC) hs.get(t).minEAC = e;      // per-type, retained for HT_DIAG only
             if (e > hs.get(t).maxEAC) hs.get(t).maxEAC = e;
+            if (possible(t, d)) {                                  // global window over the options
+                if (e < globalMinEAC) globalMinEAC = e;            // a household could actually choose
+                if (e > globalMaxEAC) globalMaxEAC = e;
+                if (EACPROBE) probeAll.add((double) e);
+            }
         }
         return out;
     }
@@ -287,7 +322,21 @@ public final class Simulation {
                 diagN[k]++; diagAtt[k] += att;
             }
             double eff = Decision.effort(t == d.currentType, h.requiresLowTemp, d.hasLowTemp);
-            double eacNorm = h.maxEAC > h.minEAC ? Decision.normalizedValue(opts.get(t)[0], h.minEAC, h.maxEAC) : 0;
+            // Affordability is normalised on ONE cost scale shared by all technologies and dwellings
+            // (population-wide, across technologies), so it carries the real cost DIFFERENCE between a
+            // household's options: options that are close together score similarly (cost barely
+            // discriminates for that household), options far apart score far apart (cost dominates).
+            // Per-technology normalisation was rejected -- it rescales each technology by its own
+            // population spread, which erases the level difference and can even invert it (an
+            // expensive technology with a wide spread scored as MORE affordable).
+            // The scale is LOGARITHMIC (Decision.normalizedLog). A linear global min/max let dwelling
+            // SIZE dominate: the window was stretched by a few very large/expensive dwellings (p99
+            // was less than half the max), so a household's own option spread occupied only ~6-13% of
+            // the scale while the size signal spanned ~40%. log(EAC) makes the mapping PROPORTIONAL --
+            // people weigh cost differences in %, not euros -- so a +40% gap reads similarly for a
+            // small and a large dwelling, and the expensive tail is compressed without clamping.
+            double eacNorm = globalMaxEAC > globalMinEAC
+                    ? Decision.normalizedLog(opts.get(t)[0], globalMinEAC, globalMaxEAC) : 0;
             double pbc = Decision.pbc(eacNorm, eff);
             int peers = d.peerCounts.getOrDefault(t, 0);
             double sn = Decision.subjectiveNorm(peers, Math.max(1, d.network.size()), h.salienceFactor);
@@ -351,10 +400,51 @@ public final class Simulation {
         }
     }
 
+    // HT_EACPROBE: dump the global EAC window, its distribution, and a few example dwellings, so the
+    // width of the shared cost scale can be judged (is a household's own spread visible on it?).
+    private static final boolean EACPROBE = System.getenv("HT_EACPROBE") != null;
+    private final java.util.List<Double> probeAll = new ArrayList<>();
+
+    private void eacProbe(int year, List<PendingHomeowner> pending) {
+        if (!EACPROBE || pending.isEmpty()) return;
+        double[] v = probeAll.stream().mapToDouble(Double::doubleValue).sorted().toArray();
+        java.util.function.DoubleUnaryOperator pct = q -> v[(int) Math.min(v.length - 1, Math.max(0, Math.round(q * (v.length - 1))))];
+        System.out.printf("%nEACPROBE %d  global LOG window [%.0f, %.0f]  log-width %.3f  (n=%d options)%n",
+                year, globalMinEAC, globalMaxEAC, Math.log(globalMaxEAC) - Math.log(globalMinEAC), v.length);
+        System.out.printf("  EAC percentiles: p1=%.0f p5=%.0f p25=%.0f p50=%.0f p75=%.0f p95=%.0f p99=%.0f%n",
+                pct.applyAsDouble(.01), pct.applyAsDouble(.05), pct.applyAsDouble(.25), pct.applyAsDouble(.50),
+                pct.applyAsDouble(.75), pct.applyAsDouble(.95), pct.applyAsDouble(.99));
+        // three example dwellings: smallest / median / largest floor area among the triggered ones
+        List<PendingHomeowner> byArea = new ArrayList<>(pending);
+        byArea.sort((a, b) -> Double.compare(a.dwelling.livingAreaM2, b.dwelling.livingAreaM2));
+        int[] pick = { 0, byArea.size() / 2, byArea.size() - 1 };
+        String[] lbl = { "small", "median", "large" };
+        for (int i = 0; i < 3; i++) {
+            PendingHomeowner ph = byArea.get(pick[i]);
+            Dwelling d = ph.dwelling;
+            StringBuilder eacs = new StringBuilder(), norms = new StringBuilder();
+            double lo = Double.MAX_VALUE, hi = -Double.MAX_VALUE;
+            for (HeatingSystem t : HeatingSystem.values()) {
+                if (ph.opts.get(t)[1] == 0) continue;
+                double e = ph.opts.get(t)[0];
+                double n = Decision.normalizedLog(e, globalMinEAC, globalMaxEAC);
+                lo = Math.min(lo, e); hi = Math.max(hi, e);
+                eacs.append(String.format(" %s=%.0f", t.toString().substring(0, 4), e));
+                norms.append(String.format(" %s=%.3f", t.toString().substring(0, 4), 1 - n));
+            }
+            System.out.printf("  [%s] area=%.0fm2 label=%s%n    EAC:%s   (own log-spread %.3f = %.1f%% of global log-width)%n    affordability (1-eacNorm):%s%n",
+                    lbl[i], d.livingAreaM2, d.energyLabel, eacs, Math.log(hi) - Math.log(lo),
+                    100 * (Math.log(hi) - Math.log(lo)) / (Math.log(globalMaxEAC) - Math.log(globalMinEAC)), norms);
+        }
+        probeAll.clear();
+        System.out.flush();
+    }
+
     private static final boolean DYN = System.getenv("HT_DYN") != null;
     private static final boolean BLK = System.getenv("HT_BLOCK") != null;
 
     private YearRow stepYear(int year) {
+        updateEnergyPrices(year);   // apply the fuel price path for THIS year before any EAC is computed
         // HT_DYN probe: decision-time dynamic state (learned invest + salience + cumulative) per
         // heating type at the START of the year -- the values this year's decisions will use.
         // Compare 1:1 with AL's ALDYN probe (tests/compare_dyn.py). Prefix ENGDYN (same as JS).
@@ -403,7 +493,7 @@ public final class Simulation {
 
         // 1. Social-housing + HOA blocks (whole block, avg EAC, end-of-life)
         for (HousingBlock b : blocks) {
-            int lifetime = hs.get(b.currentType).lifetime;
+            int lifetime = b.lifeDraw;
             if (b.age < lifetime) continue;
             Map<HeatingSystem, Double> avg = new EnumMap<>(HeatingSystem.class);
             Map<HeatingSystem, Boolean> poss = new EnumMap<>(HeatingSystem.class);
@@ -455,9 +545,9 @@ public final class Simulation {
                     r.removed.merge(d.currentType, 1, Integer::sum);
                     r.installed.merge(chosen, 1, Integer::sum);
                     cumInstalled.merge(chosen, 1, Integer::sum);
-                    d.currentType = chosen; d.age = 0;
+                    d.currentType = chosen; d.age = 0; d.lifeDraw = drawLife(chosen);
                 }
-                b.currentType = chosen; b.age = 0;
+                b.currentType = chosen; b.age = 0; b.lifeDraw = drawLife(chosen);
             }
         }
         if (BLK) {
@@ -474,7 +564,7 @@ public final class Simulation {
 
         // 2. Landlords (individual, end-of-life, cost)
         for (Dwelling d : landlords) {
-            int lifetime = hs.get(d.currentType).lifetime;
+            int lifetime = d.lifeDraw;
             if (!Decision.hasEndOfLifeTrigger(d.age, lifetime)) continue;
             r.considered++;
             Map<HeatingSystem, long[]> e = eac(d);
@@ -487,7 +577,7 @@ public final class Simulation {
             if (chosen != null) { r.removed.merge(d.currentType, 1, Integer::sum); r.installed.merge(chosen, 1, Integer::sum);
                 cumInstalled.merge(chosen, 1, Integer::sum);
                 if (!d.hasLowTemp) d.hasLowTemp = hs.get(chosen).requiresLowTemp;
-                d.currentType = chosen; d.age = 0; }
+                d.currentType = chosen; d.age = 0; d.lifeDraw = drawLife(chosen); }
         }
 
         // 3. Homeowners (TPB utility; end-of-life or 75%-of-life opportunity)
@@ -499,12 +589,13 @@ public final class Simulation {
         // eac() again in pass 2 -- that would double-count into the min/max window.
         List<PendingHomeowner> hoPending = new ArrayList<>();
         for (Dwelling d : homeowners) {
-            int lifetime = hs.get(d.currentType).lifetime;
+            int lifetime = d.lifeDraw;
             boolean eol = Decision.hasEndOfLifeTrigger(d.age, lifetime);
             boolean opp = Decision.hasOpportunityTrigger(d.age, lifetime, legacyTrigger);
             if (!eol && !opp) continue;
             hoPending.add(new PendingHomeowner(d, eol, eac(d)));  // PASS 1: populate window only
         }
+        if (EACPROBE && (year == 2025 || year == 2030)) eacProbe(year, hoPending);
         for (PendingHomeowner p : hoPending) {                    // PASS 2: utility + decide
             Dwelling d = p.dwelling;
             boolean eol = p.endOfLife;
@@ -518,7 +609,7 @@ public final class Simulation {
                 r.installed.merge(chosen, 1, Integer::sum);
                 cumInstalled.merge(chosen, 1, Integer::sum);
                 if (!d.hasLowTemp) d.hasLowTemp = hs.get(chosen).requiresLowTemp;
-                d.currentType = chosen; d.age = 0;
+                d.currentType = chosen; d.age = 0; d.lifeDraw = drawLife(chosen);
             }
         }
 
