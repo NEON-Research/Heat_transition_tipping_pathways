@@ -10,8 +10,9 @@ import java.util.Map;
 
 /** On-the-fly insulation cost from the archetype table (dwellings_demand_insulation.csv),
  *  matching AL (J_Dwelling.f_getInsulationCosts + f_insulationLabelLetterToNumber). Heat demand
- *  stays frozen at the initial label; insulation cost uses the dwelling's CURRENT label so
- *  exogenous insulation flows through. Flat CSV (numbers + a couple of string columns). */
+ *  Heat demand is a function of the CURRENT label (spaceHeatKWh), so insulation reduces demand and
+ *  therefore future running costs -- which is what makes a better-insulated dwelling cheaper to heat
+ *  with a heat pump. Flat CSV (numbers + a couple of string columns). */
 public final class Vesta {
     private final Map<String, List<Map<String, Double>>> byType = new HashMap<>();
     // keep bouwjaar bounds + string type per row
@@ -59,6 +60,20 @@ public final class Vesta {
         if (rows == null) return null;
         for (int i = 0; i < rows.size(); i++) if (bs.get(i)[0] <= year && year <= bs.get(i)[1]) return rows.get(i);
         return rows.isEmpty() ? null : rows.get(0);
+    }
+
+    /** Annual space-heat demand (kWh) at a given energy label, from the VestaMAIS archetype table:
+     *  (vrv_<label>_asl + vrv_<label>_opp * area) / 3.6 * 1000  [GJ -> kWh], the same formula the
+     *  stock export uses. Returns -1 when the archetype/label is unknown so the caller can keep the
+     *  existing value. */
+    public double spaceHeatKWh(String archetype, int year, String label, double area) {
+        Map<String, Double> r = archRow(archetype, year);
+        if (r == null) return -1;
+        String l = (label == null ? "n" : label.toLowerCase());
+        Double asl = r.get("vrv_" + l + "_asl"), opp = r.get("vrv_" + l + "_opp");
+        if (asl == null || opp == null) { asl = r.get("vrv_n_asl"); opp = r.get("vrv_n_opp"); }
+        if (asl == null || opp == null) return -1;
+        return (asl + opp * area) / 3.6 * 1000.0;
     }
 
     /** f_getInsulationCosts: 0 if no upgrade needed (labelNum(to) >= labelNum(from)). */

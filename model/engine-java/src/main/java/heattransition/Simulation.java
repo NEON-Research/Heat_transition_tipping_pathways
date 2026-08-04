@@ -18,6 +18,17 @@ public final class Simulation {
         public final Map<HeatingSystem, Integer> installed = new EnumMap<>(HeatingSystem.class);
         public final Map<HeatingSystem, Integer> removed = new EnumMap<>(HeatingSystem.class);
         public final Map<HeatingSystem, Integer> cumInstalled = new EnumMap<>(HeatingSystem.class);
+        // Loop-state at DECISION TIME (start of the year): the intermediates of the two reinforcing
+        // loops, so the feedback can be plotted rather than inferred. Emitted to loop_state.csv.
+        public final Map<HeatingSystem, Double> learnedCapex = new EnumMap<>(HeatingSystem.class);
+        public final Map<HeatingSystem, Double> salience = new EnumMap<>(HeatingSystem.class);
+        public final Map<HeatingSystem, Double> energyPrice = new EnumMap<>(HeatingSystem.class);
+        /** Per-segment tracing (Q6): key = "segType|segment|technology" ->
+         *  {stock, installed, considered, sumAtt, sumSn, sumPbc, sumUtil, sumEac, nChosen, sumIntent}. */
+        public final java.util.Map<String, double[]> seg = new java.util.LinkedHashMap<>();
+        public double[] segSlot(String type, String name, HeatingSystem t) {
+            return seg.computeIfAbsent(type + "|" + name + "|" + t, k -> new double[10]);
+        }
         public int considered = 0;
         public double nbhWithDhPerc = 0;      // % of neighbourhoods with a DH grid this year
         public double nbhCongestionPerc = 0;  // % of neighbourhoods in grid congestion this year
@@ -98,6 +109,7 @@ public final class Simulation {
     private final Vesta vesta;
     private final Map<HeatingSystem, Integer> cumInstalled = new EnumMap<>(HeatingSystem.class);  // starting stock + all new installs
     private final Map<HeatingSystem, Double> prevShare = new EnumMap<>(HeatingSystem.class);
+    private final Map<HeatingSystem, double[]> lastTerms = new EnumMap<>(HeatingSystem.class);  // per-option TPB terms of the last homeowner evaluated
 
     public Simulation(int startYear, int endYear, Rng rng, Scenario scen, boolean legacyTrigger,
                           int networkSize, List<Dwelling> homeowners, List<Dwelling> landlords,
@@ -130,6 +142,16 @@ public final class Simulation {
         for (HousingBlock b : blocks) b.lifeDraw = drawLife(b.currentType);
         for (HeatingSystem t : HeatingSystem.values()) { cumInstalled.put(t, 0); prevShare.put(t, 0.0); }
         buildNetwork(networkSize);
+        // Adopter + dwelling segmentation (Q6): tag every dwelling so adoption can be traced per
+        // group, and homeowners additionally by Rogers category from their propensity index.
+        for (Dwelling d : all) { d.segDwelling = Segments.dwellingSegment(d);
+                                 d.segContext = Segments.contextSegment(d); }
+        for (Dwelling d : homeowners) {
+            double net = 0; int n = 0;
+            for (Dwelling p : d.network) { net += p.attitude; n++; }
+            d.propensity = Segments.propensity(d, n > 0 ? net / n : d.attitude);
+        }
+        Segments.assignRogers(homeowners);
 
         // --- DIAGNOSTIC (remove once Java/JS parity is resolved) -------------------------
         // JS reference at t0: 911 neighbourhoods, 67 with DH, 911 with surfaceArea>0,
@@ -156,8 +178,37 @@ public final class Simulation {
         for (Dwelling d : all) cumInstalled.merge(d.currentType, 1, Integer::sum);   // count the starting stock
         for (HeatingSystem t : HeatingSystem.values()) hs.get(t).initialUnits = Math.max(1, cumInstalled.get(t));
         int n0 = Math.max(1, all.size());
+        // DSO: size each neighbourhood's grid from its ACTUAL t0 dwelling demand (never g_ele), so
+        // grids start adequate and congestion emerges from the transition (heat pumps + EVs) itself.
+        for (Neighbourhood nb : neighbourhoods) {
+            double l0 = GridModel.peakLoadKW(nb, GridModel.evs(nb, startYear), hs);
+            nb.gridLoadKW = l0;
+            nb.gridCapacityKW = GridModel.sizeCapacityKW(l0, nb.allDwellings.size());
+            nb.hasGridCongestion = false;
+        }
         for (HeatingSystem t : HeatingSystem.values())            // f_setInitialSalienceFactor: initial STOCK share
             hs.get(t).salienceFactor = Decision.salienceFactor((double) cumInstalled.get(t) / n0, (double) cumInstalled.get(t) / n0);
+    }
+
+    /** Re-derive a dwelling's heat demand from its CURRENT label. Insulation therefore lowers future
+     *  running costs, which is what makes an insulated dwelling cheaper to heat with a heat pump and
+     *  feeds back into every later adoption decision. Hot water is unaffected by insulation. */
+    /** A heating system with a required label includes that insulation upgrade in its EAC, so on
+     *  adoption the dwelling's label must actually improve -- otherwise the household pays for
+     *  insulation and never receives the demand reduction. */
+    private void applyRequiredInsulation(Dwelling d, HeatingSystem chosen) {
+        String req = hs.get(chosen).requiredLabel;
+        if (req == null || req.equals("no")) return;
+        if (Vesta.labelNum(req) < Vesta.labelNum(d.energyLabel)) {   // lower number = better label
+            d.energyLabel = req;
+        }
+        refreshHeatDemand(d);
+    }
+
+    private void refreshHeatDemand(Dwelling d) {
+        double space = vesta.spaceHeatKWh(d.archetype, d.constructionYear, d.energyLabel, d.livingAreaM2);
+        if (space < 0) return;                       // unknown archetype/label: keep the current value
+        d.heatDemandKWh = d.demandFactor * space + d.dhwKWh;
     }
 
     private double insulationCost(Dwelling d, String toLabel) {
@@ -221,6 +272,7 @@ public final class Simulation {
         return m;
     }
     private void updateSalience() {
+        if (Constants.SALIENCE_FREEZE) return;   // knock-out: social-learning loop disabled
         int n = all.size();
         for (HeatingSystem t : HeatingSystem.values())
             hs.get(t).salienceFactor = Decision.salienceFactor((double) cumInstalled.get(t) / n, prevShare.get(t));
@@ -244,6 +296,34 @@ public final class Simulation {
         if (source.equals("NATURAL_GAS") || source.equals("HEAT")) return gasF;   // HEAT: niet-meer-dan-anders
         return 1.0;
     }
+    /** DSO step: recompute each neighbourhood's peak load, flag congestion, then let the grid
+     *  operator reinforce a share of congested neighbourhoods (scenario rate GRR). Congestion is
+     *  propagated to the dwellings so possible() rule 3 can block electric heat pumps. */
+    private void updateGrid(int year) {
+        if (Constants.CONGESTION_OFF || neighbourhoods.isEmpty()) return;
+        java.util.List<Neighbourhood> congested = new ArrayList<>();
+        for (Neighbourhood nb : neighbourhoods) {
+            nb.gridLoadKW = GridModel.peakLoadKW(nb, GridModel.evs(nb, year), hs);
+            nb.hasGridCongestion = nb.gridLoadKW > nb.gridCapacityKW;
+            if (nb.hasGridCongestion) congested.add(nb);
+        }
+        // reinforcement: capacity is raised to serve the current load with the design margin
+        double rate = Constants.GRID_REINFORCE_RATE.getOrDefault(scen.gridReinforcementRate, 0.15);
+        int budget = (int) Math.ceil(rate * congested.size());
+        for (int i = 0; i < Math.min(budget, congested.size()); i++) {
+            Neighbourhood nb = congested.get(i);
+            nb.gridCapacityKW = Math.max(nb.gridCapacityKW,
+                    GridModel.sizeCapacityKW(nb.gridLoadKW, nb.allDwellings.size()));
+            nb.hasGridCongestion = false;
+        }
+        int stillCongested = 0;
+        for (Neighbourhood nb : neighbourhoods) {
+            for (Dwelling d : nb.allDwellings) d.hasGridCongestion = nb.hasGridCongestion;
+            if (nb.hasGridCongestion) stillCongested++;
+        }
+        nbhCongestionPerc = (double) stillCongested / neighbourhoods.size();
+    }
+
     private void updateLearningCurve() {
         for (HeatingSystem t : HeatingSystem.values()) {
             HeatingSystemSpec h = hs.get(t);
@@ -311,6 +391,7 @@ public final class Simulation {
         return best;
     }
     private HeatingSystem chooseByUtility(Dwelling d, Map<HeatingSystem, long[]> opts, YearRow r) {
+        lastTerms.clear();
         Map<HeatingSystem, Double> util = new EnumMap<>(HeatingSystem.class);
         for (HeatingSystem t : HeatingSystem.values()) {
             if (opts.get(t)[1] == 0) continue;
@@ -347,6 +428,7 @@ public final class Simulation {
             double intent = Decision.intention(att, sn, pbc, slf, h.socialLearningRate);
             double pu = Decision.perceivedUtility(intent, pbc);
             util.put(t, pu);
+            lastTerms.put(t, new double[]{ att, sn, pbc, pu, opts.get(t)[0], intent });   // for segment tracing
             // avg_* accumulation (homeowners -> PRIVATELY_OWNED): TPB terms + raw EAC per type.
             int o = t.ordinal();
             r.hoAtt[o] += att; r.hoUtil[o] += pu; r.hoSn[o] += sn; r.hoPbc[o] += pbc; r.hoN[o]++;
@@ -374,7 +456,7 @@ public final class Simulation {
         int cur = Vesta.labelNum(d.energyLabel);
         if (cur > 1 && (year - d.yearLastRenovation) > 15 && rng.next() < 0.05) {
             int newNum = Math.max(1, cur - 2);
-            d.energyLabel = Vesta.numLabel(newNum);
+            d.energyLabel = Vesta.numLabel(newNum); refreshHeatDemand(d);
             d.yearLastRenovation = year;
             if (newNum <= 2) d.hasLowTemp = true;
         }
@@ -393,7 +475,7 @@ public final class Simulation {
                 if (newNum <= 2) b.hasLowTemp = true;
             }
             for (Dwelling d : b.households) {              // unconditional propagation
-                d.energyLabel = b.energyLabel;
+                d.energyLabel = b.energyLabel; refreshHeatDemand(d);
                 d.hasLowTemp = b.hasLowTemp;
                 d.yearLastRenovation = b.yearLastRenovation;
             }
@@ -445,6 +527,14 @@ public final class Simulation {
 
     private YearRow stepYear(int year) {
         updateEnergyPrices(year);   // apply the fuel price path for THIS year before any EAC is computed
+        YearRow loopRow = null;     // filled at the end; capture decision-time loop state now
+        Map<HeatingSystem, Double> capex0 = new EnumMap<>(HeatingSystem.class),
+                                   sal0   = new EnumMap<>(HeatingSystem.class),
+                                   price0 = new EnumMap<>(HeatingSystem.class);
+        for (HeatingSystem t : HeatingSystem.values()) {
+            HeatingSystemSpec h = hs.get(t);
+            capex0.put(t, h.investMedium); sal0.put(t, h.salienceFactor); price0.put(t, h.primaryCostPerKWh);
+        }
         // HT_DYN probe: decision-time dynamic state (learned invest + salience + cumulative) per
         // heating type at the START of the year -- the values this year's decisions will use.
         // Compare 1:1 with AL's ALDYN probe (tests/compare_dyn.py). Prefix ENGDYN (same as JS).
@@ -542,6 +632,7 @@ public final class Simulation {
                 b.hasLowTemp = hs.get(chosen).requiresLowTemp;   // installNewHeatingMethodInHouseholds
                 for (Dwelling d : b.households) {
                     d.hasLowTemp = b.hasLowTemp;
+                    applyRequiredInsulation(d, chosen);
                     r.removed.merge(d.currentType, 1, Integer::sum);
                     r.installed.merge(chosen, 1, Integer::sum);
                     cumInstalled.merge(chosen, 1, Integer::sum);
@@ -577,6 +668,7 @@ public final class Simulation {
             if (chosen != null) { r.removed.merge(d.currentType, 1, Integer::sum); r.installed.merge(chosen, 1, Integer::sum);
                 cumInstalled.merge(chosen, 1, Integer::sum);
                 if (!d.hasLowTemp) d.hasLowTemp = hs.get(chosen).requiresLowTemp;
+                applyRequiredInsulation(d, chosen);
                 d.currentType = chosen; d.age = 0; d.lifeDraw = drawLife(chosen); }
         }
 
@@ -603,16 +695,34 @@ public final class Simulation {
             r.considered++;
             HeatingSystem chosen = chooseByUtility(d, opts, r);
             if (chosen == null) continue;
+            // per-segment tracing: record the DRIVER TERMS OF THE OPTION ACTUALLY CHOSEN, so each
+            // segment's adoption can be attributed to attitude / social norm / affordability.
+            double[] tm = lastTerms.get(chosen);
+            if (tm != null) {
+                for (String[] sg : new String[][]{{"rogers", d.segRogers}, {"dwelling", d.segDwelling},
+                                                  {"context", d.segContext}}) {
+                    double[] a = r.segSlot(sg[0], sg[1], chosen);
+                    a[2] += 1;                       // considered/triggered
+                    a[3] += tm[0]; a[4] += tm[1]; a[5] += tm[2]; a[6] += tm[3]; a[7] += tm[4];
+                    a[9] += tm[5];                   // intention of the chosen option
+                    a[8] += 1;                       // n for the means
+                }
+            }
             if (eol || chosen != d.currentType) {
                 notifyPeers(d, d.currentType, chosen);
                 r.removed.merge(d.currentType, 1, Integer::sum);
                 r.installed.merge(chosen, 1, Integer::sum);
                 cumInstalled.merge(chosen, 1, Integer::sum);
                 if (!d.hasLowTemp) d.hasLowTemp = hs.get(chosen).requiresLowTemp;
+                applyRequiredInsulation(d, chosen);
+                r.segSlot("rogers", d.segRogers, chosen)[1]++;      // installed this year
+                r.segSlot("dwelling", d.segDwelling, chosen)[1]++;
+                r.segSlot("context", d.segContext, chosen)[1]++;
                 d.currentType = chosen; d.age = 0; d.lifeDraw = drawLife(chosen);
             }
         }
 
+        updateGrid(year);      // DSO reacts to this year's adoption before the next year's decisions
         updateSalience();
 
         if (year == 2025 || year == 2030 || year == 2035) diagReport(year);
@@ -622,6 +732,12 @@ public final class Simulation {
         for (HeatingSystem t : HeatingSystem.values()) r.cumInstalled.put(t, cumInstalled.get(t));
         r.nbhWithDhPerc = nbhWithDHPerc;
         r.nbhCongestionPerc = nbhCongestionPerc;
+        r.learnedCapex.putAll(capex0); r.salience.putAll(sal0); r.energyPrice.putAll(price0);
+        for (Dwelling d : all) {                       // per-segment stock snapshot
+            r.segSlot("dwelling", d.segDwelling, d.currentType)[0]++;
+            r.segSlot("context", d.segContext, d.currentType)[0]++;
+            if (!"NA".equals(d.segRogers)) r.segSlot("rogers", d.segRogers, d.currentType)[0]++;
+        }
         return r;
     }
 

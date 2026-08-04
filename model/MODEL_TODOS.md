@@ -1,303 +1,150 @@
 # Model TODOs
 
-**Open** analysis/modelling tasks are up top; a brief **Done** log is at the bottom. Plain bug fixes
-are applied in code and *not* logged here (they belong in git history, not this list).
+A short, current overview: what is still **open**, and a one-line **done** log. Detailed method and
+results descriptions live in `results_analysis/CALIBRATION_AND_VALIDATION.md` and
+`model/engine-java/ARCHITECTURE.md`; plain bug fixes belong in git history, not here.
+
+Last updated: 2026-08-03.
 
 ---
 
-# Open — analysis & modelling tasks
+# Open
 
-## Q3 + Q4. TPB-weight sensitivity + calibration — **tooling built, ready to run**
+## 1. Restructure the paper around tipping mechanisms  *(Q9 — in progress)*
 
-**Data decision (2026-07-28).** The only usable observed series is CBS maatwerk
-*Hoofdverwarmingsinstallaties woningen 2022–2024* (`data/Hoofdverwarmingsinstallaties_woningen_2022_2024.xlsx`).
-CBS changed method before 2022, so **only the 2022–2024 window is internally consistent**.
-*Is it still worth using?* **Yes — but only as a broad plausibility range, not a fit target.** Without
-it the weights are unconstrained on [0,1]; with it we can at least reject weight sets that get the
-*direction and magnitude* of 2022–24 change badly wrong. The signal is real and buurt-level:
+Organise scenarios **and** results by mechanism instead of by instrument, because the
+`social_learning_factor_*` / `economic_learning_factor_*` "scenarios" are not policies — they are
+discrete points on the same axes the sensitivity analysis varies, so presenting both duplicates the
+evidence. Mirror the four mechanism families of the theory section:
 
-| | 2022 mean | change 2022→2024 |
+| # | Mechanism | Varied |
 |---|---|---|
-| individual gas CV | 83.5 % | **−5.05 %pts** |
-| electric (EHP) | 4.1 % | **+3.15** |
-| hybrid (HHP) | 1.5 % | **+1.75** |
-| district heating | 4.2 % | +0.17 |
-| gas block | 4.2 % | −0.17 |
+| 0 | General exploration | Weight ensemble + full structural screen |
+| 1 | Economic learning / increasing returns | HP learning rate, HP capex, **energy prices**, ELF |
+| 2 | Social learning and thresholds | Salience curve, choice noise, SLF |
+| 3 | Rules, regulations, infrastructure | DH obligation, congestion HP ban, DH/SHA strategy, GRR |
+| 4 | Co-evolution / coordination | Actor alignment, individual vs collective technology sets |
 
-(9,318 buurten with complete data in both years; NL-level gas CV 82→77 %, electric 4→8 %.)
+- [x] Section 4 "Scenario analysis" rewritten as a mechanism table (`scenario_section_draft.tex`).
+- [ ] **Restructure the Results section** into: general → economic learning → social learning →
+      rules/infrastructure → coordination → **policy synthesis** (keep a policy-facing conclusion; a
+      mechanism-first paper must not become policy-mute).
+- [ ] Add the **adopter-segment layer** to each mechanism section (who leads, who lags, and why).
+- [ ] Keep baseline as the reference pathway in every mechanism section.
 
-**Calibration region: `province:Noord-Brabant`** — best combined match to NL on *both* criteria
-(heating-mix L1 5.9 and dwelling-type L1 12.1 vs NL; Utrecht matches stock better but has ~2× the NL
-district-heating share, Limburg is DH-poor). ~1.36 M dwellings.
+## FIXED (2026-08-03): heat demand now responds to insulation
 
-**Setup:** start the engine in **2022 from the observed 2022 state** (`nbh_heating_2022.csv`), run to
-2024, score the simulated 2024 mix against the observed 2024 mix. Same source both ends ⇒ consistent.
+`Dwelling.heatDemandKWh` was **final** — frozen at the initial label — so a dwelling paid for
+insulation but never received the energy saving. Fixed in three places:
 
-**Tooling (built 2026-07-28):**
-- `model/data-export/scripts/export_observed_heating.py` → `observed_heating_by_year.csv` (buurt ×
-  2022/23/24, mapped to the model's 5 systems, CBS suppression handled) + `nbh_heating_2022.csv`.
-- Engine weights are now **runtime-configurable**: `-Dht.<name>=<value>` (or `HT_<NAME>`) for
-  `wAttitudeToIntention, wSocialnormToIntention, wPbcToIntention, wAffordabilityToPbc, wEffortToPbc,
-  wIntentionToBehavior` (+ gumbel/salience) — see `Constants.p`. No recompile per sweep.
-  `-Dht.nbhHeating=nbh_heating_2022.csv` selects the historical initial state.
-- `results_analysis/calibrate_weights.py` with three modes:
-  `evaluate` (one weight set vs observed), `search` (LHS ensemble → retain sets within a MAD
-  tolerance = history matching, **not** a point fit), `morris` (elementary effects: µ*, µ, σ).
+1. `Vesta.spaceHeatKWh(archetype, year, label, area)` derives demand from the VestaMAIS table for any
+   label, using the same formula as the stock export
+   (`(vrv_<label>_asl + vrv_<label>_opp x area)/3.6x1000`). No data regeneration needed.
+2. `Simulation.refreshHeatDemand()` re-derives demand from the dwelling's **current** label; the
+   hot-water component and the per-dwelling stochastic factor are preserved, so only the space-heat
+   part responds to insulation. Called at every label change: **autonomous/exogenous insulation**
+   (individual and block, including the unconditional block propagation).
+3. `Simulation.applyRequiredInsulation()` — a second, related bug: a system with a `requiredLabel`
+   charges the insulation in its EAC, but the dwelling's label was never upgraded on adoption. The
+   label is now improved on install (homeowners, landlords and blocks) and demand refreshed, so the
+   upgrade that was paid for is actually delivered.
 
-**Run order (next actions):**
-1. Provision the region: `python run.py --scope province:Noord-Brabant --scenario baseline --iterations 1`
-2. `python results_analysis/calibrate_weights.py evaluate --scope province:Noord-Brabant`
-   → how far the AL defaults are from observed 2022–24.
-3. `... search --samples 60 --tolerance 2 --outdir <dir>` → behaviourally-plausible weight ensemble.
-4. `... morris --trajectories 8 --outdir <dir>` → rank which weights actually drive the outcome.
-   Use the retained/default weights as the **baseline** for the Morris screen, per Naud.
+**Verified** (Maastricht, 1 iteration): mean energy label improves 3.09 -> 1.86 over the run and mean
+heat demand falls 9,210 -> 8,572 kWh in step; gas-boiler EAC (which involves no insulation) falls
+1,763 -> 1,647 at 2050, i.e. pure demand reduction. Electric-HP EAC at 2050 falls 1,735 -> 1,534
+(-12 %), and the 2050 mix shifts gas 13.5 -> 11.1 %, hybrid 70.3 -> 73.9 %, electric 10.3 -> 11.0 %.
 
-> **Full write-up: `results_analysis/CALIBRATION_AND_VALIDATION.md`** — data justification, method
-> (history matching, not a point fit), region choice incl. the Utrecht-vs-Noord-Brabant test, how to
-> run, findings and caveats. **Region decided: `province:Noord-Brabant`.** Utrecht was tested and
-> rejected: lower MAD (1.49 vs 1.97) but a +4 %pt district-heating over-assignment contaminates its
-> gas residual, whereas Noord-Brabant reproduces the non-calibrated channels (DH +0.1, gas block +0.3)
-> and leaves a clean heat-pump residual. A **start-year initialisation gate** now runs in every mode
-> (warns if the simulated start-year mix deviates > `--start-tol`, default 2 %pts).
+**Consequences:** heat pumps are now cheaper where insulation is required, the cost structure is no
+longer near-linear in demand (the insulation feedback is the main non-linearity), and heat demand
+should now differentiate the technology choice rather than scaling all options together.
+**Re-run calibration and all scenarios** — the previous fit partly compensated for the missing saving
+through the weights.
 
-**Verified 2026-07-28 (smoke-tested on Limburg, JDK 17):** weight overrides demonstrably move results
-(gas at 2024: 89.2 % with `wAttitudeToIntention=0.2` vs 76.8 % with 0.9); `evaluate` ran
-(AL defaults vs observed 2024 → MAD 1.38 %pts, biggest gap = electric HP under-predicted by 2.6 pts);
-`morris` ran (1 trajectory / 7 runs, ranking `wSocialnormToIntention` > `wAttitudeToIntention` >
-`wIntentionToBehavior`). Numbers are illustrative only — Limburg, 1 MC iteration, 1 trajectory.
+## 3. Production runs still to do
 
-**Open follow-up — sharpen the objective before the retained-ensemble step.** The score is currently
-a province-level aggregate (3 systems × 2 years = 6 numbers), which is robust but weakly identifying:
-many weight sets reproduce the same provincial total. Fine for the Morris *ranking*, not enough to
-select a plausible ensemble. Recommended upgrade: **stratified aggregation** (group buurten by
-urbanity / dominant dwelling type / ownership mix, score per stratum) — more spatial signal than one
-aggregate, far less noise than per-buurt (CBS buurt shares are rounded to whole %, and per-buurt MC
-variance is large). Per-buurt scoring would also need per-buurt engine output. A multinomial
-likelihood would be the rigorous alternative to MAD, but needs a defensible noise model. See
-`results_analysis/CALIBRATION_AND_VALIDATION.md` §2.2–2.3.
+- [ ] **Full weight ensemble, Noord-Brabant** at `--iterations 5` (20 sets × 16 scenarios, ≈11 h).
+- [ ] **NL headline run**: `pathway_batch.py --scope nl --iterations 3 --ensemble-weights
+      representative --price-scenario baseline --xmx 48g` (≈4 h). NL is 8.47 M dwellings (7.1× NB);
+      the **full** ensemble on NL is infeasible (~126 h) and unnecessary — NB carries the uncertainty
+      analysis, NL carries the policy-relevant headline. NL needs *fewer* MC iterations (aggregate
+      noise scales ~1/√N), so 3 is enough. **Memory, not time, is the constraint** — smoke-test heap
+      first with a single scenario.
+- [ ] Re-check the three congestion scenarios wherever they are reported — before the port they were
+      no-ops, so any earlier numbers for them are void.
 
-**RESOLVED 2026-07-29 — affordability now uses ONE global EAC scale.** `eacNorm` was normalised per
-technology against that technology's own population min/max, which erased the cost *level* difference
-and empirically **inverted** it (hybrid, the more expensive option, scored as more affordable because
-its range was stretched by outliers). Now normalised on a single global scale across all technologies
-and dwellings, so the real cost gap is preserved and homeowner behaviour is consistent with the
-block/landlord raw-EAC choice. **Changes results — everything must be re-run:** Limburg baseline 2050
-gas 8.4 % → 14.9 %; calibration objective at defaults 1.18 → 1.99 %pts; the earlier Morris screen is
-void. Details in `results_analysis/CALIBRATION_AND_VALIDATION.md`.
+## 4. Sharpen the calibration objective *(optional, before the final ensemble)*
 
-**ADDED 2026-07-30 — stochastic equipment lifetime (all technologies).** End-of-life age is drawn `~ N(lifetime, sd=1)` clamped to `lifetime ± 3`, redrawn on each (re)install (`Rng.jitteredLifetime`, used in every trigger + install site). Deterministic lifetimes made whole cohorts re-decide in lockstep — most visibly the HOA end-of-life *echo*, where the initial gas-block stock (12-yr) all converted to hybrid HP (15-yr) and left a 3-year trigger gap (2037-2039). Jitter smears this: the 2039 HOA dead zone is filled, and Limburg/NB gas 2050 shifts modestly (NB baseline 12.2%%→11.0%%). `-Dht.lifetimeJitterSd=0` recovers AnyLogic-faithful deterministic lifetimes. **Changes results — re-run calibration + scenarios.**
+The objective is an unweighted MAD over technologies. Consider weighting by stock share or scoring
+the *change* rather than the level, so a large stable category cannot dominate the fit. Not blocking —
+the current ensemble is defensible — but worth a sensitivity check on the retained set.
 
-**REFINED 2026-07-30 — the global scale is now LOGARITHMIC.** The linear global window was set by a
-handful of very large/expensive dwellings (p99 ≈ €5.8k vs max €13.2k), so a household's own option
-spread was only ~6–13 % of the scale and affordability mostly encoded dwelling *size* rather than
-*which option is cheaper*. `eacNorm` now normalises `log(EAC)` on the same global window
-(`Decision.normalizedLog`): the mapping is proportional (people weigh cost in %, matching TPB's felt
-control), the expensive tail is compressed without clamping, and cost level is retained (unlike a
-per-m² transform). Own-spread share for a small dwelling rises 5.9 % → 18.8 %; the size gradient
-flattens. Ordering still correct (gas cheaper ⇒ more affordable). **Re-run everything again** — the
-affordability distribution recentres (median dwelling ≈ 0.46 vs ~0.85 before), which recalibration
-will re-weight.
+## 5. Deferred — only if the spatial tipping story goes in this paper
 
-**Caveats to carry into the write-up:** 3 years is short and subsidy-driven; weights remain
-non-identifiable (many sets fit) — so report a *retained ensemble band*, not a single calibrated set.
-
-### Background: method choice and feasibility
-> *Q3: sensitivity tests for the TPB decision weights; what it means for interpretation and how to
-> validate. Q4: calibrate to 2020–2026 adoption? — but weights are non-unique (equifinality) and
-> calibration may overweight that window. Goal (Naud): NOT the "true" weights, but to test tipping
-> points / pathways under a set of plausible weights.*
-
-The goal is exploratory, so Q3 and Q4 are one workflow: **don't calibrate to a point — bound, sample,
-filter, explore** ("exploratory modelling / history-matching (GLUE) under deep uncertainty"; Kwakkel,
-Lempert, Beven).
-
-**SA methods (cheapest → most rigorous):**
-1. **OAT tornado** — vary each weight ±25/50 %, one at a time (~2×k runs). First screen; local only.
-2. **Morris elementary effects** — global screening (~r×(k+1) runs). Best "which weights matter" rank.
-3. **LHS + PRCC / metamodel** — sample the space, regress outcomes on weights (~200 runs).
-4. **Variance-based Sobol** — first/total-order indices; gold standard but thousands of runs.
-5. **Scenario discovery (PRIM/CART on an LHS ensemble)** — find the *weight regions* that produce each
-   pathway. **Fits the goal best** ("under which weights do we get which tipping pathway?").
-
-**Feasibility (subset):** Limburg ≈ 8 s/iter, ~3–5 MC iters/sample ⇒ ~30–40 s/sample. Morris (k≈6,
-r=10) ≈ 40 min; LHS-200 ≈ 2 h; Sobol-500 ≈ 40 h (too much). Downsample with `--every` or use one
-municipality for heavy sweeps. **Prereq:** make the weights runtime-configurable so sweeps don't
-recompile.
-
-**Recommended:** Morris (rank weights) → literature-bounded LHS ensemble → scenario discovery mapping
-weight-regions → pathways. Report **robustness** ("which tipping conclusions hold across the plausible
-weight space"), not a single fitted set.
-
-**On calibration (Q4):** a point fit to 2020–26 overweights a short, subsidy-driven window and is
-non-identifiable. Instead use 2020–26 as a **plausibility filter, not a fit target**: run the LHS
-ensemble, keep the weight sets whose simulated 2020–26 adoption is within tolerance of observed (CBS /
-RVO / Netbeheer / PBL KEV), discard the rest (history matching / GLUE), and explore pathways across
-the retained ensemble. **Default weight-setting:** AL defaults as the central case, literature ranges
-as bounds, history-match to prune, present results as an ensemble band.
-
-## Q5. Energy-price sensitivity (gas + electricity, high/low)  *(scenarios + a source pull)*
-> *Add high/low price scenarios; suggest good bounds with sources.*
-
-Keep it simple — **only LOW and HIGH** per fuel (no central/extra scenarios):
-1. **Where price enters:** `energy_source_data` feeds EAC via annual energy cost. Add a per-source
-   real annual growth-rate parameter (gas, electricity), runtime-configurable, with LOW/HIGH settings.
-2. **Source the bounds (separate step, in order):** PBL **KEV** first (official NL household price
-   projections → the low/high bracket); then **TNO / CE Delft** NL heating studies to sanity-check.
-   *(Placeholder until pulled: gas ±~3–5 %/yr real, electricity ±~2–4 %/yr real.)*
-3. **Report the spark spread** (gas:electricity ratio) — it, not absolute levels, drives HP-vs-gas EAC.
-4. Deliverable: LOW + HIGH runs over the matrix + a note on which outcomes are price-robust.
-   **Next action: the KEV/TNO/CE Delft source pull, then wire the two paths.**
-
-## Finding (2026-07-30): TPB **driver signatures** — each technology is carried by a different term
-
-Measured from the calibrated best_fit run (Noord-Brabant, PRIVATELY_OWNED; the `avg_att / avg_sub_norm
-/ avg_pbc` columns are the appeal of each option averaged over all evaluators each year). This is the
-quantitative backbone for Q6 below — every cell is a script-producible output column, not a hand
-narrative; the *interpretation* under the table is the qualitative layer.
-
-| technology | attitude | subjective norm (2026 → 2050) | affordability `pbc` (2026 → 2050) | **carried by** |
-|---|---|---|---|---|
-| gas boiler | 0.30 (low) | **0.89 → 0.05** (collapses) | 0.66 → 0.49 | **subjective norm** (incumbency), then nothing |
-| hybrid HP | **0.79** (high) | 0.07 → 0.49 (builds) | 0.36 → **0.57** (learning) | **attitude + rising affordability & social proof** |
-| electric HP | 0.70 | 0.18 → 0.50 | 0.34 → 0.55 | **attitude**, but affordability/effort-penalised |
-| district heating | 0.77 | 0.28 (grid-gated) | 0.63 (high) | attractive **where the grid exists** |
-
-Three insights, in decreasing obviousness:
-
-1. **Only subjective norm migrates.** Attitude and affordability are ~flat over time; subjective norm
-   is the single driver that moves (gas 0.89→0.05, hybrid 0.07→0.49). **The transition IS a handover of
-   social norm from gas to heat pumps** — this is the tipping mechanism, and its sharpness/timing is
-   governed by the salience parameters (see the structural-sensitivity table in
-   CALIBRATION_AND_VALIDATION.md), not by cost or attitude. Gas has no intrinsic pull (attitude 0.30);
-   it lives on incumbency and dies when social proof flips.
-2. **Non-monotonic attitude: hybrid beats full-electric on *attitude*, not only on cost.** attitude =
-   `1 − |householdAttitude − sustainabilityScoreNorm|`; norms are gas 0 / hybrid 0.5 / electric 1.0, and
-   the mean household is Beta(5,2) ≈ 0.71, which sits *closer to hybrid's 0.5 than to electric's 1.0*.
-   So the median household is more pro-hybrid (0.79) than pro-electric (0.71) on conviction alone;
-   full-electric only wins attitude in the top attitude quartile. Hybrids therefore dominate for **two
-   independent structural reasons** — cheaper **and** a better attitude match for the median — so full
-   electrification stalls unless the median attitude rises OR electric HP's `pbc` (cost + retrofit
-   effort) improves. The model says the binding lever is electric HP's `pbc`.
-3. **Driver → Rogers adopter group falls straight out** (motivates Q6): attitude drives the front of
-   the S-curve (innovators/early adopters — the only group where electric HP's attitude edge wins, they
-   move before cost/norm favour it); affordability + rising social proof drive the bulk (early/late
-   majority → hybrid); social-norm inertia + forced end-of-life define the tail (laggards on gas).
-
-*Caveat:* the table's `avg_*` are over **evaluators**, so they measure each option's *appeal per
-dimension* — good for signatures, but not a per-adopter attribution. Q6 adds the adopter-side
-decomposition.
-
-## Q6 (merged with old Q7). Adopter-segment **adoption pathways** + driver signatures  *(engine change — traces annual statistics)*
-> *Trace how each adopter segment moves through the transition year by year — the S-curve per segment,
-> which technology they pick, and which TPB term drove that pick — and cross this with dwelling
-> characteristics. Annual tracing is the core research output, so this is done in-engine (not a
-> one-shot post-hoc dump).*
-
-**Two segmentation axes, same accumulation machinery:**
-- **A. Rogers behavioural segment** (old Q6): a per-homeowner **propensity index** = weighted blend of
-  attitude + network climate-concern (mean attitude of the peer network) + insulation label, binned by
-  percentile into innovators 2.5 / early adopters 13.5 / early majority 34 / late majority 34 /
-  laggards 16 %. Tag on the `Dwelling` at stock build.
-- **B. Dwelling-characteristic segment** (old Q7): dwelling_type × floor-area bin × construction-year
-  bin × initial-heating (coarse bins). Also tagged on the `Dwelling`. Kept as a *second key* so the
-  same annual stats can be sliced either way (and cross-tabbed, e.g. "laggards in poorly-insulated
-  terraced houses").
-
-**Engine changes (fine to store more + rerun):**
-1. Add `segmentRogers` and `segmentDwelling` fields to `Dwelling`; compute + assign at load
-   (propensity index needs the network, so after `buildNetwork`).
-2. New per-`(year × segment × heating_system)` accumulator, mirroring the `avg_*` machinery but keyed
-   by segment. Each year record, per segment: **stock** (current holders), **installed** (chose this
-   tech this year → the adoption curve), **considered/triggered** (deciders), the **driver
-   decomposition of the CHOSEN option** (mean att / sn / pbc / intention / util of what each adopter
-   actually picked → the per-adopter driver signature), plus avg EAC, avg label, and mean switch age.
-3. Emit a **separate** `segment_stats.csv` alongside `simulation_results.csv` (rows: scenario,
-   iteration, year, segment_type, segment, heating_system, + the stats above). Keeps the main schema
-   clean; one extra file to analyse. Do it for both segmentation axes (segment_type ∈ {rogers,
-   dwelling}).
-
-**Analysis scripts (results_analysis/):**
-- **Per-segment adoption curves** — stacked/line tech share over 2024–2050 for each Rogers segment
-  (and each dwelling segment). Validate the index reproduces the **S-curve ordering** (innovators lead,
-  laggards trail).
-- **Driver-signature-over-time** — per segment × chosen tech, the mean att/sn/pbc contribution, so the
-  handover (gas→HP subjective norm) and the attitude-vs-cost split across segments are explicit and
-  data-based, not asserted.
-- **"Laggard profile"** and **hard-to-decarbonise segments** (cross Rogers × dwelling): who is last,
-  on what, and why.
-
-**Deliverables:** per-segment annual adoption curves; driver-signature tables/plots by segment and
-year; laggard/hard-to-decarbonise profiles. **Effort:** moderate engine change + ~2 analysis scripts.
-This is the primary mechanism-level research output, so prioritise the annual per-segment tracing.
-
-## Q8. Demonstrate the grid-congestion feedback loops  *(depends on the grid-congestion port below)*
-> *Show how/when feedback loops that account for grid congestion get triggered and accelerate DH /
-> renewables; optionally add subsidy/other scenarios to trigger loops or overcome bottlenecks.*
-
-A **tipping point** = when a *reinforcing* loop becomes self-sustaining and uptake accelerates on its
-own. The model has two loops; Q8 is to show it can exhibit + locate them, and that congestion reroutes
-which fires:
-- **Learning-curve loop:** more installs → cumulative volume ↑ → learning lowers capex → EAC ↓ → wins
-  more decisions → more installs. The tipping point is where damped flips to self-sustaining (S-curve).
-- **Congestion-redirection loop:** HP uptake → local load ↑ → congestion → EHP blocked → DH/hybrid
-  becomes viable → DH uptake → DH learning kicks in → more DH. Congestion redirects the tipping from
-  all-electric toward DH.
-
-**How to prove it (not just assert):**
-1. Plot loop state variables (per-tech cumulative installs, learned capex, salience, congestion events,
-   DH-grid count) vs the **adoption rate** — a tipping point shows as an inflection when the driver
-   crosses a threshold.
-2. **Knock-out test (causal proof):** re-run with the loop disabled (freeze learning / turn congestion
-   off), same seeds — the with/without gap quantifies the loop's contribution.
-3. **Locate the trigger:** sweep a driver (cost gap, subsidy, congestion severity) and find the flip
-   threshold (outcome-vs-driver step).
-4. **Policy levers (optional):** subsidy / carbon or gas price (Q5) / faster DH rollout / faster grid
-   reinforcement — show they move the tipping point or convert a non-tipping run to a tipping one.
-
-Deliverable: annotated time-series + with/without-loop comparison + a small trigger scenario set.
-
-## Grid congestion + DSO port  *(engine; the linchpin for Q8)*
-Congestion is currently **never detected** — `Dwelling.hasGridCongestion` is never set true, so the
-three `*_grid_congestion_ban` scenarios ≡ their baselines and Q8's congestion loop can't be shown.
-Porting the DSO / grid-capacity mechanism is the open engine work. **When porting, handle the
-baseload:** `_neighborhoods_data_2023.csv` has `g_ele = -99999` (CBS privacy suppression) in all
-14,421 rows → household baseload = 0, so a naïve port sizes grid *capacity* with a baseload but the
-*load* without it (congestion systematically under-detected). Source per-household electricity
-elsewhere (e.g. `p6_kwh_2023` from the households DB, or a municipal average) so the comparison is
-like-for-like. Regenerate the three ban scenarios afterwards.
+- [ ] **Neighbourhood-level output** (`neighbourhood_state.csv`, sampled ~200 stratified
+      neighbourhoods): per-year DH state, congestion, heat-demand density vs the ~600 GJ/ha business
+      case. The DH and congestion thresholds are *defined* per neighbourhood, but only province-wide
+      percentages are currently emitted, so "threshold crossed → uptake accelerates" cannot yet be
+      shown spatially. Stratify by DH presence, demand-density band (the *near-threshold* stratum is
+      where tipping happens), social-housing share and congestion status.
+- [ ] Validate the grid power/simultaneity constants against Netbeheer Nederland figures. *Not
+      required for the current paper* — the congestion scenario is illustrative and the combined
+      values are data-validated.
 
 ---
 
-# Done  *(brief log)*
+# Done
 
-- **S0 — scenario-difference statistics (done).** `results_analysis/scenario_spread.py` computes the
-  cross-scenario spread of the 2050 tech mix (min/max/range/stdev per technology + which scenario is
-  the min/max) and writes a strip figure. On Limburg: DH range 41 %pts, hybrid 34, all-electric 23,
-  gas boiler 21, gas block ~0 — so the scenarios diverge most on DH and hybrid. (The per-scenario mix
-  table and the differentiating-scenario figure already exist in the scenario-comparison plots.)
-- **Reference data single-sourced → CSV.** All engine reference inputs (`heating_system_data`,
-  `energy_source_data`, `dwellings_demand_insulation`, `nbh_heating`, `neighborhoods`) are now
-  generated from the top-level `data/` spreadsheets and read as **CSV**; heating/energy specs are no
-  longer hardcoded in `HeatingSystemData.java`; the deprecated AL-dump dependency is gone. Verified
-  faithful (baseline identical).
-- **Q1 — resolved (documented).** Scenarios aren't actually converged; the apparent similarity was a
-  plot-selection artifact (the DH-comparison figure shows 3 near-identical policy scenarios) + weak
-  POLICY_BASED DH expansion + congestion never firing. Real spread is large. Follow-up = the open
-  **S0** task above.
-- **Q2 — done.** Split the figure: homeowner-only `detail_values` + a new 5-panel `eac_by_ownership`
-  figure. Also fixed the block-EAC no-trigger years (engine emits **blank**, so they're gaps and don't
-  bias the cross-iteration mean — no smoothing).
-- **A — done.** `NATURAL_GAS_BLOCK` is a *closed* category (`possible()` rules 4/5): only a current
-  gas-block apartment keeps it, and a block can't drop to an individual boiler. Verified: gas block = 0
-  for private owners (the earlier "gain" was a flip ratchet), HOA → small residual floor, SOCIAL fully
-  converts.
-- **B — done.** `avg_att/util/sub_norm/pbc` (homeowners) + per-ownership `avg_eac` now emitted (were
-  hardcoded zeros); spot-checked against the AL golden.
-- **C — done (re-measure on NL).** `Cli` nulls the agent graph before each reload (peak ~1× not ~2×).
-  Confirm the per-iteration time flattened on an NL run with `-Xlog:gc*`.
-- **Block average energy label — fixed.** `StockLoader.blockAvgLabel` now rounds to nearest instead of
-  integer-division floor. Changes HOA results → regenerate reference runs.
+**Calibration & validation** — full description in `results_analysis/CALIBRATION_AND_VALIDATION.md`.
+- **Q3/Q4 — TPB-weight calibration.** History matching (GLUE) on Noord-Brabant 2022–24: LHS over the
+  4 share-parameters, 20/100 sets retained within 2 %pts MAD, reported as an ensemble band. Morris
+  screen ranks the weights; `converge` sets the replication count (1 suffices for the 3-year objective).
+- **Structural sensitivity.** Separate Morris + LHS screen of process and techno-economic parameters
+  at fixed calibrated weights, over the 2050 modal split, repeated at three weight vectors to confirm
+  the ranking is weight-stable. Energy price, HP learning rate and HP capex dominate.
+- **Q5 — energy prices.** Real annual growth per fuel wired into the EAC (`-Dht.gasPriceGrowth`,
+  `elecPriceGrowth`; default 0 = static). Coupled low/high bracket derived from **KEV 2025 Table 10**
+  2030 bandwidths, passed through to retail on the commodity component.
+- **Replication analysis.** `pathway_convergence.py` sizes MC iterations for the 2024–2050 pathways
+  (the 3-year calibration figure does not transfer — the pathway is ~15× noisier).
 
-> Note: cross-platform floating-point (`Math.*` not bit-identical) gives small run-to-run differences
-> between Windows and Linux for the same seed. Parked per Naud (fine); `StrictMath.*` would make it
-> bit-reproducible if ever needed.
+**Engine**
+- **Affordability normalisation.** Per-technology → one **global logarithmic** EAC scale across all
+  technologies and dwellings; removes an outright inversion and the dwelling-size dominance.
+- **Stochastic equipment lifetime.** End-of-life ~ N(lifetime, 1) clamped ±3, redrawn per install;
+  removes the synchronised replacement cohorts (the HOA "echo" and its blank years).
+- **Grid congestion + DSO (ported).** `GridModel` — peak load = baseload + electric heating + EV, each
+  diversified; congestion = load > capacity; DSO reinforces at the scenario rate. **`g_ele` is not
+  used**: baseload comes from the actual dwellings and initial capacity is sized from t0 load, so
+  congestion emerges from the transition rather than from a data artefact. The block is **policy-gated
+  by design** (`gridCongestionHpBan`) — a DSO cannot stop a homeowner installing within their existing
+  connection capacity. Verified: baseline outcomes are bit-identical with congestion on/off; the three
+  ban scenarios are no longer no-ops.
+- **Q8 — loop state + knock-outs.** `<out>_loop_state.csv` emits the decision-time loop intermediates
+  (learned capex, salience, cumulative installs, price). Knock-out switches `learningRateMult=0`,
+  `salienceFreeze`, `congestionOff` give causal evidence per loop; wired into `pathway_batch`.
+- **Q6 (merged with old Q7) — per-segment tracing.** `Segments.java` + `<out>_segments.csv`: Rogers
+  adopter categories from a propensity index (attitude + network + dwelling readiness) and dwelling
+  segments (archetype-area-era-label), with the driver terms of the option **actually chosen**.
+  Validated: reproduces the S-curve ordering.
+- Reference data single-sourced to CSV; gas block closed as a category; per-ownership `avg_*` emitted;
+  block-EAC no-trigger years emitted blank; agent graph released between iterations.
+
+**Analysis tooling** (`results_analysis/`)
+`calibrate_weights.py` (evaluate/search/morris/converge) · `structural_sensitivity.py` +
+`structural_batch.py` · `pathway_batch.py` (ensemble + prices + knock-outs + analysis) ·
+`analyze_all.py` (all scenario bands + global figures) · `compare_weight_sets.py` ·
+`pathway_convergence.py` · `mechanism_analysis.py` (loop state × segments × knock-outs) ·
+`paper_figures.py`.
+
+**Key findings so far**
+- Gas is phased out under **every** plausible parameterisation (2050: 7–24 %); the *route* — hybrid vs
+  full electrification vs DH — is not identified. Report the band.
+- **Electric heat pumps are an innovator/early-adopter technology**: 2050 share within segment runs
+  99.7 % (innovators) → 0.0 % (laggards). This explains the aggregate ~35 % electric-HP plateau as
+  **segment saturation**, not a cost ceiling.
+- **Economics gate the pathway**: price, HP learning rate and HP capex dominate the structural screen;
+  the learning-rate lever specifically decides hybrid vs electric.
+- **Knock-out evidence**: disabling economic learning leaves 31 % on gas versus 13 % intact; the social
+  loop contributes ~4 %pts. Both loops are causally necessary.
+- Salience parameters matter **only** where the calibrated social-norm weight is high — a genuine
+  weight × structural interaction, not a confound.

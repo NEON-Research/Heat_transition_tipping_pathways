@@ -11,8 +11,14 @@ public final class Dwelling {
     public final int id;
     public HeatingSystem currentType;
     public int age;
+    public String segRogers = "NA";      // Rogers adopter category (homeowners only)
+    public String segDwelling = "NA";    // dwelling-characteristic segment (all dwellings)
+    public String segContext = "NA";     // ownership x archetype x heat-demand tier
+    public double propensity = 0;        // adoption-propensity index behind segRogers
     public int lifeDraw;                          // stochastic end-of-life age for the CURRENT system
-    public final double heatDemandKWh;          // frozen at initial label (AL does not recompute)
+    public double heatDemandKWh;                // recomputed when the energy label improves
+    public double dhwKWh = 0;                   // hot-water part: does NOT change with insulation
+    public double demandFactor = 1.0;           // per-dwelling stochastic multiplier, kept on recompute
     public String energyLabel;                  // mutable: exogenous insulation upgrades it
     public final double livingAreaM2;
     public final String dwellingType;

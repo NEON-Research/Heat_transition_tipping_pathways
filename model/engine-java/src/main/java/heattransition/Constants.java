@@ -34,6 +34,44 @@ public final class Constants {
     public static final double SALIENCE_THRESHOLD = p("salienceThreshold", 0.3);
     public static final double SALIENCE_STEEPNESS = p("salienceSteepness", 30.0);
 
+    // Knock-out switch for the SOCIAL-LEARNING loop: freeze salience at its initialisation value so
+    // the subjective norm no longer responds to adoption. Used for the causal loop test (Q8); note
+    // this differs from zeroing the social-norm weight, which changes the decision structure itself.
+    public static final boolean SALIENCE_FREEZE = p("salienceFreeze", 0.0) != 0.0;
+
+    // ---- Electricity grid / DSO (GridModel) ----------------------------------------------------
+    // Baseload is derived from the dwellings themselves (NOT the privacy-suppressed CBS g_ele).
+    public static final double BASELOAD_KWH_PER_DWELLING = p("baseloadKWhPerDwelling", 2500.0);
+    public static final double BASELOAD_PEAK_FACTOR      = p("baseloadPeakFactor", 3.0);   // avg kW -> peak kW
+    public static final double SIMULTANEITY_BASE         = p("simultaneityBase", 0.20);
+    public static final double PMAX_ELECTRIC_HEAT_PUMP   = p("pmaxElectricHeatPump", 3.0); // kW at design
+    public static final double SIMULTANEITY_HEAT_PUMP    = p("simultaneityHeatPump", 0.80);
+    public static final double PMAX_EV                   = p("pmaxEv", 3.7);               // kW charger
+    public static final double SIMULTANEITY_EV           = p("simultaneityEv", 0.30);
+    public static final double GRID_DESIGN_MARGIN        = p("gridDesignMargin", 1.20);
+    /** Per-dwelling design capacity floor (AL's capacityPerHousehold_kW): grids are dimensioned to a
+     *  standard connection allowance per dwelling, not only to the measured t0 load. Prevents small
+     *  neighbourhoods from being congested by a single extra heat pump. */
+    public static final double CAPACITY_PER_DWELLING_KW  = p("capacityPerDwellingKW", 1.50);
+    /** Optional round-up of capacity to a discrete transformer size (kW). Default 0 = off: rounding
+     *  to 50 kW steps over-provisioned small neighbourhoods and delayed congestion unrealistically. */
+    public static final double CAPACITY_STEP_KW          = p("capacityStepKW", 0.0);
+    // EV logistic adoption (AL S-curve): share of the neighbourhood car fleet that is electric.
+    public static final double EV_SHARE_2050    = p("evShare2050", 0.85);
+    public static final double EV_MIDPOINT_YEAR = p("evMidpointYear", 2035.0);
+    public static final double EV_STEEPNESS     = p("evSteepness", 0.30);
+    // Share of congested neighbourhoods the DSO can reinforce per year, by scenario rate.
+    public static final Map<String, Double> GRID_REINFORCE_RATE =
+            Map.of("SLOW", p("grrSlow", 0.05), "MEDIUM", p("grrMedium", 0.15), "FAST", p("grrFast", 0.40));
+    /** Knock-out: disable the congestion mechanism entirely (grids never constrain). */
+    public static final boolean CONGESTION_OFF = p("congestionOff", 0.0) != 0.0;
+
+    // ---- Adopter segmentation (Segments.java) --------------------------------------------------
+    // Weights of the adoption-propensity index behind the Rogers categories.
+    public static final double SEG_W_ATTITUDE = p("segWAttitude", 0.5);
+    public static final double SEG_W_NETWORK  = p("segWNetwork", 0.3);
+    public static final double SEG_W_LABEL    = p("segWLabel", 0.2);
+
     // Stochastic equipment lifetime: each installed system's end-of-life age is drawn ~ N(lifetime,
     // sd) clamped to lifetime +/- maxDev, redrawn on every (re)install, for ALL heating methods. This
     // smears the deterministic-lifetime cohorts (e.g. the HOA end-of-life "echo" where a whole cohort

@@ -33,6 +33,8 @@ public final class Cli {
 
         long t0 = System.currentTimeMillis();
         StringBuilder sb = new StringBuilder(Results.HEADER).append('\n');
+        StringBuilder lb = new StringBuilder(Results.LOOP_HEADER).append('\n');
+        StringBuilder gb = new StringBuilder(Results.SEG_HEADER).append('\n');
         int nAgents = 0, nBlocks = 0;
         for (String sn : scenarios) {
             Scenario scen = Scenario.byName(sn);
@@ -65,6 +67,29 @@ public final class Cli {
                         + scen.dhExpansionStrategy + ',' + scen.shaStrategy + ','
                         + scen.dhConnectionObligation + ',' + scen.gridCongestionHpBan + '\n';
                 for (Simulation.YearRow r : rows) {
+                    for (java.util.Map.Entry<String, double[]> e : r.seg.entrySet()) {
+                        String[] k = e.getKey().split("\\|", 3); double[] v = e.getValue();
+                        double n = v[8] > 0 ? v[8] : 1;
+                        gb.append(scen.scenId).append(',').append(scen.scenName).append(',').append(it)
+                          .append(',').append(r.year).append(',').append(k[0]).append(',').append(k[1])
+                          .append(',').append(k[2]).append(',')
+                          .append((long) v[0]).append(',').append((long) v[1]).append(',').append((long) v[2]).append(',')
+                          .append(String.format(java.util.Locale.US,"%.4f",v[3]/n)).append(',')
+                          .append(String.format(java.util.Locale.US,"%.4f",v[4]/n)).append(',')
+                          .append(String.format(java.util.Locale.US,"%.4f",v[5]/n)).append(',')
+                          .append(String.format(java.util.Locale.US,"%.4f",v[6]/n)).append(',')
+                          .append(String.format(java.util.Locale.US,"%.1f",v[7]/n)).append(',')
+                          .append(String.format(java.util.Locale.US,"%.4f",v[9]/n)).append('\n');
+                    }
+                    for (HeatingSystem t : HeatingSystem.values()) {   // loop-state row per technology
+                        lb.append(scen.scenId).append(',').append(scen.scenName).append(',').append(it)
+                          .append(',').append(r.year).append(',').append(t).append(',')
+                          .append(String.format(java.util.Locale.US, "%.2f", r.learnedCapex.getOrDefault(t, 0.0))).append(',')
+                          .append(String.format(java.util.Locale.US, "%.5f", r.salience.getOrDefault(t, 0.0))).append(',')
+                          .append(r.cumInstalled.get(t)).append(',')
+                          .append(String.format(java.util.Locale.US, "%.5f", r.energyPrice.getOrDefault(t, 0.0))).append(',')
+                          .append(r.installed.get(t)).append('\n');
+                    }
                     // nbh_*_perc are FRACTIONS (0-1), matching AL (e.g. 0.234 at 2050), not integers.
                     String dh = String.valueOf(r.nbhWithDhPerc), cong = String.valueOf(r.nbhCongestionPerc);
                     for (HeatingSystem hs : HeatingSystem.values()) {
@@ -110,6 +135,9 @@ public final class Cli {
             }
         }
         Files.writeString(Path.of(out), sb.toString());
+        String loopOut = out.replaceAll("\\.csv$", "") + "_loop_state.csv";
+        Files.writeString(Path.of(loopOut), lb.toString());
+        Files.writeString(Path.of(out.replaceAll("\\.csv$", "") + "_segments.csv"), gb.toString());
         System.out.printf("Ran %d scenario(s) x %d iters, %d agents (%d blocks), %d-%d in %.1fs -> %s%n",
                 scenarios.length, iterations, nAgents, nBlocks, startYear, endYear,
                 (System.currentTimeMillis() - t0) / 1000.0, out);

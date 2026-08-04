@@ -26,6 +26,11 @@ public final class Neighbourhood {
     public double avgElectricityKWh = 0;    // p_averageElectricityConsumptionTotal (g_ele)
     public int cars = 0;                    // p_cars (a_pau)
 
+    /** DSO / grid state (see GridModel). Capacity is sized from actual dwelling demand at t0. */
+    public double gridCapacityKW = 0;
+    public double gridLoadKW = 0;
+    public boolean hasGridCongestion = false;
+
     public String policyPlan = "NONE";      // p_policyPlan
     public int policyStartJaar = 0;
     public int policyEindJaar = 0;

@@ -264,6 +264,10 @@ public final class StockLoader {
                 Dwelling d = new Dwelling(id++, HeatingSystem.NATURAL_GAS_BOILER, rng.nextInt(0, 12),
                         fac * space + fac * fac * dhwBase, label, Double.parseDouble(f[c.get("area_m2")]),
                         dtype, false, perc.grid, rng.beta(5, 2, 0, 1));   // hasLowTemp set from initial heating system below
+                // split off the hot-water part and keep the stochastic factor: insulation reduces the
+                // SPACE-heat component only, so demand can be rebuilt when the label improves
+                d.dhwKWh = fac * fac * dhwBase;
+                d.demandFactor = fac;
                 d.ownership = own; d.archetype = dtype; d.buurt = buurt;
                 d.numid = f[c.get("numid")];
                 d.constructionYear = (int) Double.parseDouble(f[c.get("construction_year")]);

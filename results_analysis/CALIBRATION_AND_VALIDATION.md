@@ -1,9 +1,17 @@
-# Calibration & validation of the TPB decision weights
+# Calibration, validation and sensitivity analysis
 
-How the behavioural weights are constrained against observed data, why the approach is a
-*plausibility filter* rather than a point fit, which region is used and why, and how to run it.
+How the model's uncertain parameters are constrained, what was found, and how to reproduce it.
 
-Companion docs: `ANALYSIS.md` (results & scenarios), `model/MODEL_TODOS.md` (open work).
+The model contains two distinct kinds of uncertainty and they are treated separately throughout:
+
+| | uncertainty | constrained by | reported as |
+|---|---|---|---|
+| **A. Preferences** | the four TPB decision-weight shares | observed 2022–24 adoption (history matching) | an ensemble **band** |
+| **B/C. Structure** | salience curve, choice noise, HP capex, learning rate, grid | *not* identifiable from 3 years of data | a **sensitivity ranking** at fixed weights |
+| **D/E. Exogenous** | energy prices, policy levers | scenario assumptions (KEV, policy design) | discrete **scenarios** |
+
+Merging these would conflate "what households value" with "how fast the technology learns" and "what
+the gas price does". Sections 2–4 cover A; section 5 covers B/C; section 6 covers D.
 
 ---
 
@@ -43,77 +51,40 @@ as 0 and does not make a row incomplete; the individually-modelled columns must 
 buurt-year to count as `complete`.
 
 ---
+---
 
 ## 2. Method: history matching, not a point fit
 
-Three years of subsidy-driven data cannot identify six weights (many combinations fit equally well —
-equifinality). So the workflow is **bound → sample → filter → explore**, i.e. history matching /
-GLUE-style exploratory modelling, consistent with the project goal of mapping *tipping pathways under
-plausible weights* rather than finding "the true" weights.
+Three years of subsidy-driven data cannot identify four weights — many combinations fit equally well
+(equifinality). Rather than force a point fit, the workflow is **bound → sample → filter → explore**
+(history matching / GLUE-style exploratory modelling), which matches the project goal of mapping
+*tipping pathways under plausible weights* rather than finding "the true" weights:
 
-1. **Bound** each weight with a plausible range (currently ±around the AnyLogic defaults).
-2. **Sample** the weight space (Latin hypercube).
+1. **Bound** each weight with a plausible range around the AnyLogic defaults.
+2. **Sample** the space with a Latin hypercube.
 3. **Filter**: retain the weight sets whose simulated 2022→24 change lands within a tolerance of
-   observed (default MAD ≤ 2 %pts). Discard the wildly-off ones.
-4. **Explore**: run scenarios across the *retained ensemble* and report a band, not a single line.
+   observed (default MAD ≤ 2 %pts); discard the rest.
+4. **Explore**: run 2024–2050 scenarios across the *retained ensemble* and report a band.
 
-### 2.1 What exactly is scored
+### 2.1 What is scored
 
-The objective is currently:
+The engine is initialised in **2022 from the observed 2022 state** (`-Dht.heatingYear=2022`), run to
+2024, and each weight set is scored by the **mean absolute deviation** of its simulated 2023 *and*
+2024 provincial technology mixes from observed. MAD is preferred over RMSE because with five
+technologies there is no outlier problem to solve, and squaring would amplify Monte-Carlo noise and
+make the Morris ranking jumpier. Scoring is at **province level**: that is where the CBS data is
+trustworthy (buurt values are rounded and privacy-suppressed), and it is adequate for ranking weights.
+A **start-year gate** runs in every mode and warns if the initialised mix deviates from observed by
+more than `--start-tol` (default 2 %pts); it currently passes within 0.1 %pts on every technology.
 
-> **mean, over the scored years {2023, 2024}, of the mean absolute deviation (in %-points) across
-> three heating systems, computed on the *province-level* dwelling-weighted share.**
+### 2.2 Monte-Carlo replications — measured, not guessed
 
-i.e. one simulated number and one observed number per (system, year) for all of Noord-Brabant —
-5 systems × 2 years, of which 3 systems enter the score. 2022 is the initialisation year and is never
-scored (it is identity-checked instead, §3).
-
-**Which systems.** Only gas boiler, electric HP and hybrid HP. District heating is grid-gated and
-obligation-driven rather than a TPB choice, and gas block is a closed, decaying category — including
-either would score mechanisms the weights don't control.
-*Note the systems are weighted **equally**, so a 1 %-point error on electric HP (≈6 % of the stock)
-counts as much as 1 %-point on gas boiler (≈85 %). That is deliberate — the small, policy-relevant
-heat-pump categories are the ones we care about — but it is a choice, not a neutral default.*
-
-### 2.2 Why MAD, and what the alternatives are
-
-| metric | behaviour | verdict |
-|---|---|---|
-| **MAD / MAE** (chosen) | mean of \|sim − obs\| in %-points | **used** — directly interpretable ("off by 1.2 %-points on average"), robust to one bad system, and it makes the retention tolerance meaningful (`--tolerance 2` = "within 2 %-points") |
-| RMSE / MSE | squares errors, so large misses dominate | rejected: with only 3 systems there is no outlier problem to solve, and squaring amplifies Monte-Carlo noise, which would make the Morris ranking jumpier |
-| relative / percentage error | error ÷ observed share | rejected: would let district heating (1.6 %) or hybrid (2.6 %) dominate purely because their denominators are small |
-| multinomial log-likelihood / χ² | treats shares as counts over known dwelling totals | **the rigorous upgrade** — it would give a proper statistical acceptance criterion and enable Bayesian/ABC calibration. Deferred: it needs a defensible noise model (CBS shares are rounded to whole %, and MC iterations add their own variance) |
-
-Since the goal is a *plausibility filter*, not an optimum, an interpretable distance in %-points is
-worth more than statistical sharpness — the number has to support a defensible statement like
-"weight sets more than 2 %-points off the observed trajectory were discarded".
-
-### 2.3 Spatial aggregation: why province-level, and the alternatives
-
-This is the more consequential choice, so the options are worth stating:
-
-| level | information used | pros / cons |
-|---|---|---|
-| **Province total per year** (current) | 3 systems × 2 years = 6 numbers | Robust and nearly noise-free (aggregating ~1.3 M dwellings averages out MC variance). **But weakly identifying**: many different weight sets reproduce the same provincial aggregate, and it is blind to *where* adoption happens. |
-| Per-neighbourhood (buurt) | ~1,450 buurten × 3 systems × 2 years | Far more information, and it tests the *spatial distribution* — whether heat pumps appear in the right kind of neighbourhood, not just in the right quantity. **Costs:** the engine would need per-buurt output (it currently emits only TOTAL rows); per-buurt MC noise is large (small populations); and CBS buurt shares are rounded to whole percent, a ±0.5 %-point quantisation floor. Real risk of fitting noise. |
-| Stratified groups | e.g. by urbanity, dominant dwelling type, ownership mix | **The sensible middle ground and the recommended next step**: enough spatial signal to distinguish weight sets, while each stratum still aggregates enough dwellings to suppress noise. |
-| Change (Δ) instead of level | Δ2022→2024 per system | Emphasises dynamics over starting state. Here it is nearly equivalent to the level-based score, because the run is initialised from the observed 2022 state — so levels already *are* changes. |
-
-**Why province-level for now:** it is the level at which the data is trustworthy (buurt values are
-rounded and noisy), it costs no extra engine plumbing, and it is adequate for the immediate purpose —
-a Morris *ranking* of which weights matter. Before the retained-ensemble step (which does need
-identification power) the stratified option should be revisited; it is logged as a follow-up.
-
-**Experimental setup.** Initialise the engine in **2022 from the observed 2022 state**
-(`-Dht.heatingYear=2022`, reading the `gasCV_2022 … dh_2022` columns of the combined
-`neighborhoods.csv`), run to 2024, and score the simulated **2023 and 2024** mixes against observed.
-Same source throughout, so method differences cancel.
-
-**The CBS-complete filter is calibration-only.** `-Dht.buurtFilter` is passed *only* by
-`calibrate_weights.py`; `model/run.py` never sets it, so all scenario/analysis runs simulate **every**
-neighbourhood, with data-less buurten falling back to the default gas-boiler mix. Dropping buurten is
-acceptable for calibration (it makes simulated and observed cover the same population) but would bias
-the headline results, so it must not leak into the main model.
+`converge` runs the replication analysis (Law & Kelton; for ABMs, Lorscheid et al.): between-world SD
+of the objective is **0.028 %pts**, so even ±0.1 %pts precision needs only **n = 1** for the 3-year
+calibration objective — the province-wide aggregate over ~1.19 M dwellings averages out per-agent
+stochasticity. This does **not** transfer to the 2024–2050 pathways, which are path-dependent and
+~15× noisier (SD ≈ 0.4 %pts); `pathway_convergence.py` sizes those separately (≈9–10 iterations for
+±0.25 %pts, driven by the hybrid heat pump).
 
 ---
 
@@ -152,7 +123,7 @@ initialisation gate**: it compares the simulated 2022 mix with the observed 2022
 system deviates by more than `--start-tol` (default 2 %pts). This is exactly the "make sure district
 heating in the first year isn't much higher than the data" check; disable with `--no-start-check`.
 
-### The start year should be (and now is) essentially identical
+### 3.1 Start-year initialisation matches observed
 
 The run is initialised from the same 2022 CBS data it is scored against, so the start-year mix should
 match almost exactly. Initially it didn't (deviations of 1–2 %pts, and +4 %pts DH in Utrecht). That
@@ -195,7 +166,7 @@ Residual sources (now negligible): integer rounding per neighbourhood, and block
 social/HOA blocks take a single system). The gate therefore now behaves as a genuine identity check —
 any deviation beyond ~0.5 %pt points at a real initialisation problem.
 
-### Why buurten drop out, and why `Indelingswijziging` is *not* the fix
+### 3.2 Why buurten drop out
 
 `Tabel 2` carries an `Indelingswijziging` column (codes 1 / 2 / 3) flagging boundary or coding
 changes — municipal mergers and re-coded buurten. It is a plausible explanation for buurten missing a
@@ -221,78 +192,11 @@ buurten, not heat-pump propensity), and the start-year identity check confirms t
 consistent. Worth revisiting only if a much larger sample is ever needed.
 
 ---
+---
 
-## 4. How to run
+## 4. Calibrating the decision weights
 
-```powershell
-# 0. one-off: extract the observed series + the 2022 initial state
-python model\data-export\scripts\export_observed_heating.py
-
-# 1. one-off: provision the region's stock
-python model\run.py --scope province:Noord-Brabant --scenario baseline --iterations 1
-
-# 2. how far are the AL defaults from observed? (also runs the start-year gate)
-python results_analysis\calibrate_weights.py evaluate --scope province:Noord-Brabant
-
-# 3. plausible-weight ensemble (LHS + retain within tolerance)
-python results_analysis\calibrate_weights.py search --scope province:Noord-Brabant `
-    --samples 60 --iterations 2 --tolerance 2 --outdir results\calib
-
-# 4. Morris screening: which weights actually matter
-python results_analysis\calibrate_weights.py morris --scope province:Noord-Brabant `
-    --trajectories 8 --levels 4 --iterations 2 --outdir results\calib
-```
-
-```powershell
-# 5. run the 2024-2050 scenarios across the retained weight sets (the "explore" step) --
-#    representative bracket, or `all` for the full ensemble (needs many --iterations; size with
-#    results_analysis/pathway_convergence.py):
-python model\run.py --scope province:Noord-Brabant --scenario all --iterations 10 --analyze --weights representative
-
-# 6. compare the weight sets as a BAND (per scenario: summary CSV + min-max band figure across sets):
-python results_analysis\compare_weight_sets.py --scope province:Noord-Brabant --scenario baseline
-```
-
-`compare_weight_sets.py` only *reads* the runs `run.py --weights` already wrote under
-`results/<scope>/calib/<label>/` — it does not re-simulate, so run it any time after the scenario
-runs finish. It globs every `calib/*/` set, so the same command covers 2 representative sets or the
-full 20-set ensemble. Options: `--scenario`, `--year` (summary year, default 2050), `--ownership`,
-`--dir` (point at a calib folder directly).
-
-Weights are passed to the engine at runtime (`-Dht.<name>=<value>`, see `Constants.p`) so **no
-recompile per sample**. `-Dht.nbhHeating=nbh_heating_2022.csv` selects the historical initial state.
-Weights screened: `wAttitudeToIntention`, `wSocialnormToIntention`, `wPbcToIntention`,
-`wAffordabilityToPbc`, `wEffortToPbc`, `wIntentionToBehavior`.
-
-### What `--trajectories` means (Morris sampling)
-
-Morris is a **one-at-a-time screening design repeated from many random starting points**. One
-*trajectory* is:
-
-1. pick a random starting point on a discretised grid of the weight box (`--levels`, default 4
-   levels per weight);
-2. step **one weight at a time**, in random order, each by a fixed amount Δ, until all *k* weights
-   have been moved once.
-
-Each step yields one **elementary effect** for that weight: EE = (change in model error) / (change in
-that weight). One trajectory therefore costs **k + 1 runs** (here 6 weights + 1 = **7 runs**) and
-gives one EE per weight. Repeating over `r` trajectories gives *r* elementary effects per weight,
-sampled from different regions of the space, which are summarised as:
-
-- **µ\*** — mean of |EE| = overall **influence** (the ranking you care about);
-- **µ** — mean of EE = direction of effect;
-- **σ** — spread of EE = **interaction / non-linearity** (a weight whose effect depends on where you
-  are in the space has large σ).
-
-**Why 8?** Total cost is `r × (k + 1)` runs, so r trades precision against runtime. The screening
-literature typically uses **r = 4–10** (SALib's default is in the same range); below ~4 the ranking
-is unstable, above ~10 you pay a lot for little extra ranking accuracy — and Morris is only meant to
-*rank* factors, not quantify them precisely (that is Sobol's job). **r = 8** sits at the reliable end
-of that range: 8 × 7 = **56 model runs** ≈ 26 min on Noord-Brabant. Use `--trajectories 4` for a
-quick look, and if the top of the µ\* ranking is stable between r = 4 and r = 8 you can trust it.
-
-
-### What is varied: normalised SHARES, not raw weights (2026-07-29)
+### 4.1 What is varied: normalised shares, not raw weights
 
 **Is the normalisation in the TPB implementation defensible?** Partly. Ajzen's TPB is usually a plain
 linear combination; dividing by the sum of weights is AL's choice, and it buys a real advantage —
@@ -338,190 +242,34 @@ weight toward X, away from the residual"* — the meaningful behavioural questio
 within-group effects are linearly dependent and should be reported as a **ranking**, not as
 independent contributions.
 
-### Structural parameters held fixed — candidates for a second-stage sensitivity analysis
+### 4.2 What `--trajectories` means (Morris sampling)
 
-The calibration above varies only the **4 TPB decision-weight shares**. Several *structural* constants
-that shape the tipping dynamics are currently held at their AnyLogic defaults but are legitimate
-sensitivity-analysis inputs — some were flagged by inspecting result graphs (e.g. the sharp year-1→2
-kink in gas subjective norm, and the strength with which social norm holds gas). All are already
-runtime-overridable via `-Dht.<name>` (see `Constants.p`), so they can be screened with the same
-Morris/LHS machinery without a recompile:
+Morris is a **one-at-a-time screening design repeated from many random starting points**. One
+*trajectory* is:
 
-| parameter | `-Dht` name | default | what it controls | why it matters |
-|---|---|---|---|---|
-| Salience novelty midpoint | `salienceThreshold` | 0.30 | share below which a technology is treated as "novel" and gains social salience | sets **when an incumbent's social-norm lock-in releases** — gas subjective norm collapses once its share falls through this threshold |
-| Salience novelty sharpness | `salienceK` | 10.0 | steepness of the novelty logistic in *share* | how abruptly the novelty boost switches on/off around the threshold |
-| Salience momentum sharpness | `salienceSteepness` | 30.0 | steepness of the momentum logistic in *Δshare* | **directly responsible for the non-physical year-1→2 kink** in subjective norm: at 30 the momentum term flips almost like a step around Δshare≈0, producing a sharp drop→flat→re-accelerate shape. A softer value smooths the transition |
-| Choice noise (blocks/landlords) | `gumbelScaleEac` | 20 | € scale of the Gumbel noise added to each option's EAC before the cheapest is chosen | how much collective/landlord choices scatter off the pure cost optimum; too small and near-identical cohorts all pick the same technology (contributes to the HOA end-of-life "cohort echo") |
-| Choice noise (homeowners) | `gumbelScaleUtil` | 0.02 | scale of the Gumbel noise on homeowner utility | homeowner choice dispersion |
-| Lifetime jitter | `lifetimeJitterSd` / `lifetimeJitterMax` | 1.0 / 3 | spread of the stochastic end-of-life age `N(lifetime, sd)` clamped to `±max`, all technologies | **now on by default** (removes the synchronised replacement cohorts / HOA echo); `sd=0` recovers deterministic AnyLogic lifetimes. Its magnitude is a sensitivity input |
-| Social-learning rate | scenario `SLF` (LOW/MED/HIGH) | MEDIUM | how fast salience feeds back into adoption | already a scenario axis; note Morris/LHS hold it at MEDIUM |
+1. pick a random starting point on a discretised grid of the weight box (`--levels`, default 4
+   levels per weight);
+2. step **one weight at a time**, in random order, each by a fixed amount Δ, until all *k* weights
+   have been moved once.
 
-These are **structural**, not behavioural-weight, parameters, so they belong in a *separate* screening
-(ideally after the weight ensemble is fixed) rather than being folded into the 4-parameter weight
-calibration — varying them together would confound "which weights fit" with "how sharp is the
-salience curve". A sensible second-stage design: Morris over `{salienceThreshold, salienceK,
-salienceSteepness, gumbelScaleEac}` at the retained-ensemble median weights, scored on both the
-2022–24 fit and the 2050 pathway spread. The salience-curve constants in particular are the lever
-behind two graph artefacts already observed (the subjective-norm kink and the strength of gas
-social-norm persistence), so they are the highest-priority structural factors to screen.
+Each step yields one **elementary effect** for that weight: EE = (change in model error) / (change in
+that weight). One trajectory therefore costs **k + 1 runs** (here 6 weights + 1 = **7 runs**) and
+gives one EE per weight. Repeating over `r` trajectories gives *r* elementary effects per weight,
+sampled from different regions of the space, which are summarised as:
 
-### Morris results (8 trajectories, 40 runs, Noord-Brabant, init 2022, scored 2023+2024)
+- **µ\*** — mean of |EE| = overall **influence** (the ranking you care about);
+- **µ** — mean of EE = direction of effect;
+- **σ** — spread of EE = **interaction / non-linearity** (a weight whose effect depends on where you
+  are in the space has large σ).
 
-**What the three numbers are.** An *elementary effect* is `Δ(objective) / Δ(sampled coordinate)`,
-where the objective is the calibration MAD **in %-points** and the coordinate is normalised to [0, 1]
-over that factor's sampled range. So:
+**Why 8?** Total cost is `r × (k + 1)` runs, so r trades precision against runtime. The screening
+literature typically uses **r = 4–10** (SALib's default is in the same range); below ~4 the ranking
+is unstable, above ~10 you pay a lot for little extra ranking accuracy — and Morris is only meant to
+*rank* factors, not quantify them precisely (that is Sobol's job). **r = 8** sits at the reliable end
+of that range: 8 × 7 = **56 model runs** ≈ 26 min on Noord-Brabant. Use `--trajectories 4` for a
+quick look, and if the top of the µ\* ranking is stable between r = 4 and r = 8 you can trust it.
 
-- **µ\*** = mean \|EE\| = **how many %-points the MAD moves if the share is swept across its whole
-  sampled range** — the influence ranking.
-- **µ** = mean signed EE = the *direction* (positive ⇒ increasing that share makes the fit worse).
-- **σ** = spread of the EEs = interaction / non-linearity (how much the effect depends on where the
-  other shares are).
-
-**Translating to the codependent shares.** Because µ\* is *per full range* and the ranges differ
-(0.45 vs 0.60 wide), the raw µ\* partly reflects range width. Converting to a common unit —
-**%-points of MAD per 0.1 of share** — is the fair comparison:
-
-| factor (share ↑, at the expense of its residual) | sampled range | µ\* (per range) | **per 0.1 share** | direction |
-|---|---|---|---|---|
-| **shareAffordability** (residual = shareEffort) | [0.30, 0.90] | 3.29 | **0.549** | + worse |
-| **shareSocialnorm** (residual = sharePbc) | [0.15, 0.60] | 1.86 | **0.412** | **− better** |
-| shareIntention (residual = sharePbcBeh) | [0.20, 0.80] | 2.39 | 0.399 | + worse |
-| shareAttitude (residual = sharePbc) | [0.15, 0.60] | 1.31 | 0.291 | + worse |
-
-Note the ranking **changes** once normalised: `shareSocialnorm` and `shareIntention` swap, because the
-former was sampled over a narrower range. Use the per-0.1-share column for interpretation.
-
-**How to read a row.** "shareAffordability, per 0.1 share, +0.549" means: *shifting 10 percentage
-points of PBC weight from effort onto affordability (cost) worsens the fit by about 0.55 %-points of
-MAD, on average across the sampled space.* Each effect is a **reallocation** between a component and
-its residual partner — never an isolated change, since the shares in a group sum to 1.
-
-**Substantive reading.**
-- **Cost-weighting in PBC is the strongest single lever, and it hurts.** Heat pumps have high EAC, so
-  a cost-heavy PBC suppresses precisely the adoption the model already under-predicts.
-- **Social norm is the only lever that improves the fit** (µ < 0): more peer influence → more
-  heat-pump uptake → closes the standing gap.
-- Together these say the same thing from two directions: to match 2022–24, the model needs *less*
-  cost-dominance and *more* social influence than the AnyLogic defaults provide.
-- **The weights matter a lot relative to the target.** Sweeping one share moves the MAD by 1.3–3.3
-  %-points against a baseline objective of ~1.18 — the data can genuinely discriminate between weight
-  sets, which is encouraging for the history-matching step.
-
-### The ranking is a property of the IMPLEMENTATION, not of the TPB constructs
-
-A Morris µ\* measures the leverage of a *weight*, and that leverage is roughly
-
-> (conceptual importance of the construct) × (**how much the underlying variable actually varies
-> across the alternatives being compared**).
-
-A weight on a variable that barely differs between heating systems has little leverage no matter how
-important the construct is in theory. The four TPB inputs are implemented on very different scales:
-
-| input | implementation | cross-alternative contrast |
-|---|---|---|
-| **attitude** | `1 − \|householdAttitude − sustainabilityScoreNorm\|`; sustainability 1/1/3/5/3 → normalised 0 / 0 / 0.5 / 1.0 / 0.5 | moderate (~0.5 spread) and **non-monotonic**: for a mean household (Beta(5,2) ≈ 0.71) hybrid (0.79) scores above all-electric (0.71) |
-| **subjective norm** | `min(1, peerShare × (1 + salience))` | **largest**: gas ≈0.85 vs heat pumps ≈0.03 early, and it *moves* as adoption grows — this is the tipping feedback |
-| **affordability** | `1 − eacNorm` on a **single global LOG cost scale** (see below) | proportional to the *relative* (%) cost gap between a household's options |
-| **effort** | discrete `0.2` (keep current) / `0.8` (needs low-temp retrofit) / `0.5` | large, systematic **status-quo bias** (0.8 incumbent vs 0.2 heat-pump-with-retrofit) |
-
-#### EAC normalisation: fixed 2026-07-29 (per-technology → single global scale)
-
-**The problem found.** `eacNorm` was normalised against each technology's **own** population min/max
-(`hs[t].minEAC/maxEAC`). That rescales every technology by its own spread, which erases the cost
-*level* difference — and empirically it **inverted** it. Measured on Limburg 2025 (`HT_DIAG`):
-
-| | min–max EAC | mean `eacNorm` | affordability `1−eacNorm` |
-|---|---|---|---|
-| gas boiler | 329 – 8,333 | 0.208 | 0.792 |
-| hybrid HP | 301 – **12,629** | 0.150 | **0.850** ← *scored as more affordable* |
-
-Hybrid is *more expensive* on average (~2,150 vs ~1,950 for homeowners) yet scored as **more
-affordable**, purely because its range is stretched wider by a few expensive outliers.
-
-**The fix (implemented, no flag — this is now the model).** Affordability is normalised on **one
-global scale** shared by all technologies and all dwellings in the year, built from the options a
-household could actually choose (`possible()`), reset annually. This is what the model always
-intended: it preserves the *magnitude* of the cost difference, so a household whose options are
-close together sees little cost discrimination, while a household whose options diverge sees cost
-dominate. It also makes homeowner cost behaviour consistent with blocks and landlords, which choose
-on raw EAC.
-
-*After the fix* (same probe): gas `eacNorm` 0.131 → affordability **0.869**, hybrid 0.144 → **0.856**.
-The ordering is now correct (gas cheaper ⇒ more affordable) and the gap is small *because the real
-cost gap is small relative to the population range* — exactly the intended behaviour.
-
-#### EAC scale made logarithmic: 2026-07-30 (linear global → log global)
-
-**The remaining problem.** The single global scale (above) fixed the inversion, but a probe of the
-window (`HT_EACPROBE`, Limburg 2025) showed the *linear* range was still dominated by dwelling
-**size**, not by which option is cheaper:
-
-```
-EACPROBE 2025  global window [301, 13205]  width 12904   (linear)
-  EAC percentiles: p1=761  p5=1014  p25=1522  p50=2041  p75=2728  p95=4210  p99=5805
-```
-
-p99 (5,805) is under half the max (13,205): a handful of very large/expensive dwellings set the whole
-scale. Consequently a household's own choice-relevant spread — *which of my options is cheaper* —
-occupied only **~6–13 %** of the scale, while the dwelling-size signal (small→large) spanned ~**40 %**.
-So "affordability" mostly encoded *how big is my house*, not *which option should I pick*. Small
-dwellings, whose euro spread is small but whose **proportional** spread is large, were flattened to
-near-zero cost discrimination — precisely the local-vs-global imbalance flagged in review.
-
-**The fix (implemented, no flag — this is now the model).** `eacNorm` is normalised on
-`log(EAC)` between `log(globalMin)` and `log(globalMax)` (`Decision.normalizedLog`), same global
-window, reset annually. Three reasons:
-
-- **Proportional, not absolute.** People judge cost differences in **percent**, not euros (the
-  behavioural-economics standard; TPB's *perceived behavioural control* is about felt, relative
-  burden). A +40 % gap now reads similarly whether the dwelling is small or large.
-- **Removes size dominance without discarding level.** The expensive right tail is compressed by the
-  logarithm, so extreme dwellings no longer set the scale — yet absolute level is still present
-  (a €6,800 option is still high on the scale), unlike a per-m² transform which would erase it.
-- **No clamping.** Unlike a robust p1–p99 window, log needs no percentile cut-off, so the largest
-  dwellings keep — rather than lose — their cost discrimination.
-
-*After the fix* (same probe, now log-scale), own spread as a share of the scale rises sharply for the
-small dwelling and the size gradient flattens:
-
-| dwelling | area | EACs (gas / hybrid / electric) | own spread, **linear** | own spread, **log** |
-|---|---|---|---|---|
-| small | 20 m² | 957 / 732 / 1488 | 5.9 % | **18.8 %** |
-| median | 134 m² | 2326 / 2263 / 3243 | 7.6 % | **9.5 %** |
-| large | 500 m² | 5127 / 6800 / 5990 | 13.0 % | **7.5 %** |
-
-The inversion check still holds — lower cost ⇒ higher affordability (small dwelling: hybrid €732 is
-cheapest and scores highest, 0.765). Because the window's geometric mean (~€1,994) sits at the median
-EAC (p50 ≈ 2,041), a median dwelling now centres near affordability ≈ 0.46 instead of being crammed to
-the cheap end (~0.85) — a more even use of the scale that recalibration will re-weight.
-
-**Consequences — everything downstream must be re-run.** Homeowner PBC for gas rose 0.786 → 0.840
-(hybrid 0.677 → 0.682), widening the gas-vs-hybrid PBC gap from 0.109 to 0.158. On Limburg:
-- baseline 2050 gas share **8.4 % → 14.9 %**;
-- the calibration objective at AL defaults **1.18 → 1.99 %-points**, with electric HP now
-  under-predicted by 3.4 %-points (was 1.7).
-
-So the model is now *further* from observed 2022–24 at the default weights, which sharpens rather
-than weakens the case for the calibration: the cost channel is now real and the defaults over-weight
-it. **The Morris ranking below predates this change and must be re-run.**
-
-**Caveats.** σ/µ\* remains > 1 for all factors (1.10 for the strongest, 1.83 for the weakest), so real
-interaction/non-linearity is present and the ranking is *indicative*, not additive. At 8 trajectories
-the middle two (0.412 vs 0.399 per 0.1 share) are **not** separated — treat them as tied. Confirm with
-`--trajectories 16` or a second `--seed` before relying on that ordering.
-
-> An earlier screen using raw (unnormalised) weights was run before the share re-parameterisation. Its
-> elementary effects cancelled (\|µ\|/µ\* ≈ 0.1) because identical steps meant different things at
-> different points in the space, so **no conclusions are drawn from it**; it is superseded by the run
-> above and retained only as the motivation for switching to shares.
-
-**Runtime** (calibration runs span only 3 years, so they are cheap): ≈14 s per run per MC iteration
-for Noord-Brabant ⇒ Morris with 8 trajectories ≈ 26 min, LHS-60 ≈ 28 min.
-
----
-
-## 4b. The LHS / history-matching step (Noord-Brabant)
+### 4.3 The LHS / history-matching step
 
 **Why Morris is not enough.** Morris is a *screening* method: it perturbs one factor at a time along
 a few trajectories and averages the resulting derivatives. That yields a **ranking and a direction**
@@ -557,7 +305,7 @@ python results_analysis\calibrate_weights.py search --scope province:Noord-Braba
 **Then run the 2050 pathways under those representative sets only** — the band costs 3 full scenario
 runs instead of 100, which is what makes the ensemble approach affordable at 2024–2050 × 16 scenarios.
 
-### Choosing the three settings (they are NOT arbitrary defaults — decide them explicitly)
+### 4.4 Choosing the three settings (decide them explicitly, they are not defaults)
 
 **1. What "the default" is.** It is the AnyLogic weight set, expressed as shares. It is *not* "all
 weights equal":
@@ -645,73 +393,102 @@ dimension per decile). Raise `--samples` if the retained set comes back very sma
 `--tolerance` (or the share ranges) if nothing is retained at all.
 
 ---
+### 4.5 Result: the retained ensemble
 
-## 5. Findings so far
+100 LHS samples, 2022–24, Noord-Brabant:
 
-- **The AL default weights under-produce heat-pump adoption.** Electric HP is under-predicted in
-  *both* test regions (−1.7 %pts Utrecht, −3.2 Noord-Brabant). Two independent regions agreeing means
-  this is a weights/model property, not a regional quirk — and it is exactly the gap calibration
-  should close. Hybrid is close (+0.2/+0.3), so the shortfall is specific to all-electric.
-- **Non-calibrated channels are reproduced well in Noord-Brabant** (DH +0.1, gas block +0.3), which is
-  what makes it a clean calibration target.
-- **District heating is over-assigned in DH-rich regions** (Utrecht +4.0 %pts). Suspected cause: the
-  initial assignment hands whole social-housing blocks to DH preferentially, which is lumpy and can
-  overshoot where DH is common. Not pursued further (Noord-Brabant is unaffected), but worth
-  remembering if a DH-heavy region is ever used.
-- **A first full Morris screen was run on Noord-Brabant (8 trajectories, 56 runs) but PRE-FIX** —
-  before the aggregation/buurt-set/normalisation corrections above. It gave a flat, weakly-separated
-  ranking (µ\* 2.29 → 0.98: `wEffortToPbc`, `wIntentionToBehavior`, `wAttitudeToIntention`,
-  `wSocialnormToIntention`, `wAffordabilityToPbc`, `wPbcToIntention`) with σ ≥ µ\* for every weight —
-  i.e. dominated by interaction/noise, which is what a contaminated objective looks like.
-  **It must be re-run now that the start year matches**; treat the old ranking as void.
-- Note µ ≈ −µ\* for `wAttitudeToIntention` (a consistently negative effect: raising it lowers the
-  error), which is the kind of clean directional signal worth re-checking after the re-run.
+- AL default weights score **MAD 2.21 %pts** — *above* the 2.0 tolerance, so the defaults themselves
+  are not retained. The best sampled set scores **0.21**, a ~10× better fit well inside the plausible
+  box.
+- **20 of 100 sets retained** — a healthy history-matching yield: not empty (which would mean the
+  ranges are wrong) and not everything (which would mean the data cannot discriminate).
+- The ensemble pulls **affordability down** (default 0.714 → median 0.621) and **effort up**
+  (0.286 → 0.430): cost matters *less* to households than the AnyLogic defaults assume.
+- **Every retained range is wide** — equifinality confirmed. The deliverable is a band, never a single
+  "calibrated" vector.
 
+### 4.6 Which weights matter (Morris)
+
+8 trajectories, 40 runs, at the retained-ensemble settings:
+
+| weight | µ* (influence) | µ (direction) | σ (interaction) |
+|---|---|---|---|
+| shareAffordability | **2.74** | +2.47 | 3.43 |
+| shareSocialnorm | 2.29 | −1.83 | 3.39 |
+| shareIntention | 2.12 | −0.48 | 2.86 |
+| shareAttitude | 1.49 | +1.25 | 3.64 |
+
+Affordability is the strongest lever and pushes the fit the *wrong* way (µ > 0: raising the cost
+weight increases error), confirming the defaults over-weight cost. Social norm is the strongest
+*improving* lever. σ > µ* for every factor, so the response surface is non-additive — the weights
+cannot be tuned one at a time, which is precisely why the LHS-and-filter approach is used. At 8
+trajectories the middle two are not separated; treat their order as tied.
+
+### 4.7 Why the cost channel is so influential
+
+The first structural Morris (median weights, baseline, 80 runs) puts three techno-economic factors —
+`energyPrice`, `learningRateMult`, `capexMultHp` — in a clear top tier (µ\* ≈ 24–26), roughly double any
+behavioural-dynamics factor. That is not an artefact; it follows from four features of the decision
+structure. (Numbers refer to `Decision.java`.)
+
+**1. Cost enters the utility *twice* — it is structurally over-represented.** The RUM chain is
+`pbc = ((1−eacNorm)·wEac + (1−effort)·wEffort)/(…)`, then `intention = (att·wAtt + sn·wSn + pbc·wPbcToInt)/(…)`,
+then `perceivedUtility = (intention·wInt + pbc·wPbc)/(…)`. Affordability (`1−eacNorm`) sits inside `pbc`,
+and **`pbc` reaches the final utility through two paths** — via `intention` *and* directly in
+`perceivedUtility`. Attitude and subjective norm reach utility through the single `intention` path only.
+So the cost term has a built-in leverage advantage over the other TPB constructs, independent of the
+weights.
+
+**2. All three economic factors converge on the *same* most-leveraged variable, `eacNorm`.** Energy
+price moves the operating cost (`energyPerYear`), capex moves the investment term, and the learning rate
+moves the capex *trajectory* — but all three feed `EAC → eacNorm`, which is the doubly-weighted input
+from point 1. They are three levers on the one variable the decision is most sensitive to, so their
+effects stack on the same channel rather than dispersing.
+
+**3. The learning rate is the *gain on a reinforcing feedback loop*, so it compounds over 26 years.**
+`capexLearningFactor = (1−rate)^doublings` with `doublings = log₂(cumInstalled/initialUnits)`: more heat-pump
+installs → more doublings → lower capex → lower EAC → higher `pbc`/utility → more installs. `learningRateMult`
+scales `rate`, i.e. the loop gain — and a small gain change is amplified by the whole 2024–2050 trajectory
+of the loop. This is why it is not just top-tier but specifically the lever on the **hybrid-vs-electric
+endpoint** (µ\* hybrid 10, electric 12, gas 3): the loop runs hardest for whichever heat pump is winning,
+so faster learning tips the system toward *full* electrification. Salience is also a feedback (social
+proof → subjective norm), but its gain is the social-norm weight, which the calibration set to a moderate
+~0.28 — a weaker loop than the learning loop acting on the doubly-weighted cost channel.
+
+**4. The economic factors move their input by large, *compounding*, always-on amounts.** The price path
+compounds annually (gas +2.62 %/yr ≈ ×2 by 2050); capex and learning act every year and through the loop;
+and because affordability is normalised on the **log-EAC scale** (§4.1), proportional cost shifts
+map directly onto `eacNorm`. Since the hybrid-vs-gas EAC is close for many dwellings, a modest shift in
+price or capex flips the cheaper option for a large sub-population → big share swings. The behavioural-shape
+parameters (salience threshold/K/steepness, lifetime jitter) reshape *how* the response curves but within
+bounded, largely one-off effects; the choice-noise scales (`gumbelScale*`) add dispersion around the
+cost-optimal choice (hence mid-tier, not top-tier) rather than moving the mean trajectory.
+
+**The subtle point — sensitivity is not the same as preference weight.** The calibration actually
+*down-weighted* affordability (best_fit puts cost at ~39 % of PBC, below the AnyLogic 0.71), i.e.
+households care about cost *less* than AL assumed. Yet the cost *drivers* are the most influential on the
+2050 outcome, because sensitivity ≈ (weight) × (how far the factor moves the input) × (feedback
+amplification), and the economic factors dominate the last two terms even at a modest weight. So "economics
+gate the pathway" is a statement about the **forcing and the feedback**, not about households being
+cost-obsessed.
+
+**Caveats.** This is one weight vector (the median) and the baseline scenario. Whether the ranking holds
+was confirmed at the `high_shareAffordability` and `best_fit` vectors (§5.3): the ranking holds, and the
+salience factors do rise where the social-norm weight is higher — the weight×structural interaction,
+reported as a finding rather than a caveat. Magnitudes are quantified by the LHS in §5.3.
 ---
 
-## 6. Caveats for the write-up
+## 5. Structural sensitivity (process and techno-economic parameters)
 
-- **3 years, subsidy-driven.** The window coincides with strong NL heat-pump subsidies and the post-
-  2022 gas-price spike; weights fitted to it may absorb those transient drivers.
-- **Non-identifiable.** Report a *retained ensemble band*, never a single "calibrated" weight vector,
-  and state the identifiability limits explicitly.
-- **Regional transfer.** Weights are constrained on one province; representativeness was checked on
-  stock, heating mix and ownership, but not on income or attitudes (not in the model).
-- **Not a validation of outcomes.** Matching 2022–24 does not validate 2050 projections; it only
-  filters out behaviourally implausible parameterisations.
+The weight calibration covers preference uncertainty only. The parameters governing *how the dynamics
+play out* are screened **separately**, holding the weights at the retained-ensemble median so that
+"which weights fit" is never entangled with "how sharp is the salience curve".
 
----
-
-## 6. Comprehensive sensitivity analysis — parameter inventory, categories, and plan
-
-The weight calibration (sections 4–4b) covers only **one kind of uncertainty**: how much each decision
-criterion matters. The model contains many other tunable parameters that represent *different kinds*
-of uncertainty, and lumping them into one Morris/LHS would confound them — e.g. mixing `salienceSteepness`
-(how sharply the social process unfolds) into the weight sampling would blur "which preferences fit the
-data" with "how fast does diffusion tip." This section inventories every parameter, sorts them by the
-**type of uncertainty** they carry, and gives a staged plan that keeps the types separate.
-
-### 6.1 Why separate by uncertainty type
-
-A sensitivity analysis is only interpretable if each factor answers a well-posed question. Four
-distinct questions are tangled in this model:
-
-1. *What do households value?* — the TPB decision weights (preference/value uncertainty).
-2. *How does the social diffusion process play out?* — salience curve, choice noise, network, social
-   learning (behavioural-**dynamics**/mechanism uncertainty).
-3. *What do the technologies cost and deliver?* — capex, learning rates, COP, discount, subsidy,
-   lifetime (techno-**economic** uncertainty, estimable from engineering/literature).
-4. *What macro futures unfold?* — energy prices, policy levers (exogenous **scenario** uncertainty).
-
-These need different treatments (ensemble filter vs screening vs literature bounds vs discrete
-scenarios) and, crucially, different **reporting**: a preference band, a process band, and a set of
-price/policy scenarios are three separate statements, not one number.
-
-### 6.2 Full parameter inventory
+### 5.1 Full parameter inventory
 
 | parameter(s) | default | where | category | uncertainty type | proposed treatment |
 |---|---|---|---|---|---|
-| `shareAttitude, shareSocialnorm, shareAffordability, shareIntention` (4 weights) | AL: ⅓·⅓·⅓ / 0.71 / 0.5 | `Constants` | **A. Decision weights** | preference / value | **done** — LHS + history-matching ensemble (§4b) |
+| `shareAttitude, shareSocialnorm, shareAffordability, shareIntention` (4 weights) | AL: ⅓·⅓·⅓ / 0.71 / 0.5 | `Constants` | **A. Decision weights** | preference / value | **done** — LHS + history-matching ensemble (§4) |
 | `salienceThreshold` (0.30), `salienceK` (10), `salienceSteepness` (30) | — | `Constants` | **B. Behavioural dynamics** | mechanism / process | Morris screen at fixed weights → quantify top |
 | `gumbelScaleEac` (20), `gumbelScaleUtil` (0.02) | — | `Constants` | **B. Behavioural dynamics** | mechanism (choice stochasticity) | Morris screen |
 | `social_learning_rate` (per tech, 0.5–1.0) | data | `heating_system_data.csv` | **B. Behavioural dynamics** | mechanism | Morris screen (or fold into `SLF`) |
@@ -724,86 +501,78 @@ price/policy scenarios are three separate statements, not one number.
 | `discount_rate` (0.02 / 0.03 DH) | data | `heating_system_data.csv` | **C. Techno-economic** | estimate (household discounting) | OAT (1–7%); interacts with lifetime |
 | `subsidy_eur` (HP 4000, DH 3775) | data | `heating_system_data.csv` | **C. Techno-economic / policy** | policy lever | **scenario** (ISDE schedule LOW/BASE/HIGH), not random |
 | `lifetime_years` (12/15/30) | data | `heating_system_data.csv` | **C. Techno-economic** | estimate | OAT ±cohort; jitter already added |
-| **gas price** (0.14 €/kWh) + real growth | static | `energy_source_data.csv` | **D. Energy prices** | exogenous market | **scenario LOW/HIGH path** (§6.5) |
-| **electricity price** (0.32 €/kWh) + real growth | static | `energy_source_data.csv` | **D. Energy prices** | exogenous market | **scenario LOW/HIGH path** (§6.5) |
+| **gas price** (0.14 €/kWh) + real growth | static | `energy_source_data.csv` | **D. Energy prices** | exogenous market | **scenario LOW/HIGH path** (§6) |
+| **electricity price** (0.32 €/kWh) + real growth | static | `energy_source_data.csv` | **D. Energy prices** | exogenous market | **scenario LOW/HIGH path** (§6) |
 | `SLF, ELF, GRR, DHCT, DHES, SHAES, DHCO, GCHPB` | scenario | `Scenario` | **E. Policy / scenario levers** | decision, not uncertainty | the 16-scenario matrix (existing) |
 | CBS-suppressed neighbourhoods → default gas (≈1.8% of stock), stock draw, `heatingYear` | — | `StockLoader` | **F. Initial-condition / data** | data uncertainty | robustness checks, not sampled |
+### 5.2 Design
 
-### 6.3 The categories and their methods
+Held **fixed** (good assumptions or low interest): efficiency (COP), discount rate, lifetime (the ±3
+jitter already covers its spread), subsidy (a policy assumption), and network structure. **Energy
+price is one *coupled* factor** — gas and electricity co-move through the marginal power price — so it
+is a single axis from both-fall to both-rise, not a 2×2 grid. Screening runs on the **baseline
+scenario**: it pins every policy switch at neutral, and several scenarios would *confound* the screen
+because they themselves move structural parameters (`individual_/collective_technologies` and the
+learning-factor scenarios set SLF/ELF).
 
-- **A — Decision weights.** *Done.* History-matching ensemble; reported as a band. Preference
-  uncertainty. Nothing to add.
-- **B — Behavioural dynamics.** The largest *new* block and the one the calibration cannot touch (it
-  is orthogonal to "which weights fit"). Strongly interacting and non-additive (Morris σ ≫ µ\* expected),
-  so **screen with Morris, do not fold into the weight LHS**. Two of these (`salienceSteepness`,
-  `gumbelScaleEac`) are already implicated in graph artefacts (the subjective-norm kink; the cohort echo).
-  The network parameters are currently hard-coded and must be exposed as `-Dht.*` before they can be
-  screened.
-- **C — Techno-economic.** Estimable from engineering/literature, so they get **bounds, not priors**.
-  `economic_learning_rate` is the priority — the ELF scenario already showed it swings 2050 gas from
-  ~5% to ~14%, so its *continuous* uncertainty deserves quantification, not just LOW/HIGH. Subsidy is a
-  **policy lever** → treat as a scenario (ISDE), not a random factor.
-- **D — Energy prices.** Exogenous futures → discrete **scenario paths**, not continuous sampling
-  (§6.5). Report which conclusions are price-robust.
-- **E — Policy/scenario levers.** Already the 16-scenario matrix; these are *choices*, reported as
-  scenarios, never mixed into uncertainty sampling.
-- **F — Initial-condition/data.** Handled by targeted robustness checks (e.g. the 1.8% gas-default
-  sensitivity, a `heatingYear` swap, multi-seed stock draws), not by parameter sampling.
+Method is **Morris first, then LHS on the survivors** — which factors matter is an empirical question,
+so the expensive variance-based step is spent only on those that survive screening. Morris ranking is
+robust at 1 iteration (effects of 10–25 %pts dwarf the ~0.4 %pt pathway noise); LHS quantification
+needs 5–10.
 
-### 6.4 Staged plan (order matters, to avoid confounding)
+The objective is the full **2050 modal split**: the screen reports a factor × technology µ* matrix plus
+a TOTAL = Σ|µ*|, so a factor that swaps hybrid↔electric without touching gas still registers.
 
-**Scope decisions (2026-07-30).** Held **fixed** (good assumptions or low interest): `efficiency`
-(COP), `discount_rate`, `lifetime` (the ±3 jitter already covers spread), `subsidy` (fixed policy
-assumption), and the network parameters (`MEAN_SIZE`, `SHARE_LOCAL/SIMILAR`) — for now. **Energy price
-is one *coupled* factor** (gas and electricity move together, since the power price is gas-linked at the
-margin): a single axis from both-fall (LOW) to both-rise (HIGH), not a 2×2 grid. Screening is run in
-the **baseline scenario only** to keep it attainable (the policy scenarios A–E are a separate axis).
+### 5.3 Result: economics dominate, and the ranking is weight-stable
 
-**Retained structural factor set (9):** `salienceSteepness`, `salienceThreshold`, `salienceK`,
-`gumbelScaleEac`, `gumbelScaleUtil`, `lifetimeJitterSd` (category B), `capexMultHp`, `learningRateMult`
-(category C), and the coupled `energyPrice` (D). All are `-Dht`-overridable (capex and learning-rate
-multipliers were exposed for this).
+µ* TOTAL, at three weight vectors spanning the retained ensemble:
 
-**Method — Morris first, THEN LHS on the survivors (not straight to a presumed 5).** Screening which
-factors matter is an empirical question, so do not presuppose the key five. Same two-stage logic as the
-weight calibration:
+| factor | median | high-affordability | best-fit |
+|---|---|---|---|
+| energyPrice | 25.7 | 23.1 | 25.7 |
+| learningRateMult | 25.4 | 12.2 | 25.8 |
+| capexMultHp | 24.4 | **33.0** | 23.2 |
+| gumbelScaleUtil | 13.7 | 8.7 | 15.1 |
+| gumbelScaleEac | 9.2 | 5.4 | 9.2 |
+| salienceThreshold | 3.3 | 3.1 | 6.6 |
+| salienceSteepness | 1.5 | **4.1** | 2.3 |
+| lifetimeJitterSd | 1.5 | 2.8 | 2.2 |
+| salienceK | 1.4 | 1.2 | 2.5 |
 
-1. **Fix the preference band (A).** Hold the decision weights at the **retained-ensemble median**
-   (`structural_sensitivity.py` does this automatically), so B/C/D are screened on a fixed, plausible
-   preference setting rather than entangled with weight sampling. Optionally re-run at 2 edge weight
-   vectors to confirm the ranking is weight-stable.
-2. **Structural Morris screen over all 9 factors** at the median weights, baseline scenario, scored on
-   the full **2050 modal split** — the script reports a factor × technology µ\* matrix (gas / hybrid /
-   electric / DH) plus a TOTAL = Σ|µ\*| over the mix, so a factor that swaps hybrid↔electric without
-   touching gas still registers. (The 2050 outcome, not the 2022–24 fit, is the right score: a factor
-   can be fit-irrelevant yet pathway-decisive.)
-   `python structural_sensitivity.py morris --scope province:Noord-Brabant --trajectories 8 --iterations 1`
-   → µ\* ranking. Drop the inert factors.
-3. **LHS/Sobol on the ~5 survivors** to quantify their share of 2050 variance (standardized regression
-   coefficients now; Sobol from the same CSV later):
-   `python structural_sensitivity.py lhs --factors <survivors> --samples 80 --iterations 5`
-4. **Report in tiers, never merged:** (i) preference band from A; (ii) process/economic band from the
-   structural survivors (B/C); (iii) coupled energy-price scenario (D) and the policy matrix (E). The
-   headline is *which tipping conclusions survive all three*.
+Three techno-economic factors dominate in **every** weight vector, each roughly twice as influential
+as any behavioural parameter. The LHS (80 samples, 8 iterations) gives directions and variance shares:
 
-**Iterations — the 1-vs-more point clarified.** `converge` found 1 iteration suffices for the
-*2022–24 calibration* objective (between-world SD 0.028 %pts). The structural screen scores the *2050
-pathway*, which is ~15× noisier (SD ≈0.4 %pts, `pathway_convergence.py`). But for **Morris ranking**
-that noise is still tiny next to the effects (capex/price move shares 10–25 %pts), so **`--iterations 1`
-is fine for the screen** and keeps it cheap: a 9-factor Morris at r=8 is (9+1)·8 = 80 runs ≈ 25 min at
-NB. **LHS quantification needs `5–10`** — SRC/Sobol estimate variance, which 0.4 %pt noise attenuates
-(the script warns if lhs is run below 5). Outputs: `structural_morris.json`, `structural_lhs.csv`.
+| factor | gas | hybrid | electric | DH |
+|---|---|---|---|---|
+| energyPrice | −0.54 | −0.30 | **+0.52** | −0.47 |
+| capexMultHp | +0.48 | +0.18 | −0.40 | +0.53 |
+| learningRateMult | −0.27 | **−0.50** | **+0.54** | −0.16 |
+| gumbelScaleUtil | −0.27 | +0.37 | −0.14 | −0.44 |
+| gumbelScaleEac | ~0 | −0.18 | +0.13 | +0.09 |
+| **model R²** | 0.76 | **0.63** | **0.91** | 0.81 |
 
-**Why baseline only (and when to cross-check).** Baseline is the *right* isolation: it pins every
-policy switch at neutral, so the structural factors are screened cleanly. Several of the 16 scenarios
-would **confound** the screen because they themselves move structural parameters — `individual_/
-collective_technologies` and the `economic/social_learning_factor_*` scenarios set ELF/SLF, i.e. the
-same learning/salience channels the factors vary. So do **not** screen across those. If you want to
-confirm the *ranking is policy-stable*, re-run the Morris on one or two **pure-policy** scenarios that
-change only flags, not B/C params — e.g. `dh_policy_based_connection_obligation` or
-`grid_congestion_HP_ban` (`--scenario ...`) — as a robustness check, not the main screen.
+Higher prices and faster learning both push gas *and hybrid* toward full electrification; higher HP
+capex holds gas and DH. The 2050 electric-HP share is almost entirely explained by these economic
+factors (R² 0.91), whereas hybrid is the least predictable (0.63) — it is the swing technology.
 
-### 6.5 Energy prices — implementation + test (was Q5)
+**The salience parameters matter only where the social-norm weight is high** (steepness µ* 1.5 at the
+median vs 4.1 at the high-affordability vector, whose intention group carries more social norm). This
+is a genuine weight × structural interaction and a reportable finding, not a confound: the tipping
+parameters bite exactly to the extent that calibrated preferences weight the social channel.
+
+### 5.4 Note on the grid parameters
+
+Congestion is deliberately **policy-gated** (`possible()` rule 3 is conditional on
+`gridCongestionHpBan`), reflecting that a DSO cannot stop a homeowner installing a heat pump within
+their existing connection capacity. Verified: in baseline, adoption outcomes are **bit-identical**
+with congestion active or disabled — only the reported congestion percentage differs. Consequently the
+grid parameters return µ* = 0 on a baseline screen and are **not** part of the table above; they can
+only be screened on a scenario where the ban is active. The baseline structural results are therefore
+unaffected by the congestion port.
+
+---
+
+## 6. Energy prices (exogenous scenario axis)
 
 **Current state (verified).** Prices are **static**: `Economics.computeEAC` uses a fixed
 `primaryCostPerKWh` (gas 0.14, electricity 0.32 €/kWh) for every year and every point in the EAC
@@ -863,56 +632,92 @@ variable and state which tipping conclusions survive the price grid.
 
 **Priority.** Wiring done; the outstanding work is running the price grid across the retained weight
 ensemble and folding the result into the tiered report (preference band × price scenarios).
-### 6.6 Why the economic factors dominate — a structural reading (preliminary)
+---
 
-The first structural Morris (median weights, baseline, 80 runs) puts three techno-economic factors —
-`energyPrice`, `learningRateMult`, `capexMultHp` — in a clear top tier (µ\* ≈ 24–26), roughly double any
-behavioural-dynamics factor. That is not an artefact; it follows from four features of the decision
-structure. (Numbers refer to `Decision.java`.)
+## 7. How to run
 
-**1. Cost enters the utility *twice* — it is structurally over-represented.** The RUM chain is
-`pbc = ((1−eacNorm)·wEac + (1−effort)·wEffort)/(…)`, then `intention = (att·wAtt + sn·wSn + pbc·wPbcToInt)/(…)`,
-then `perceivedUtility = (intention·wInt + pbc·wPbc)/(…)`. Affordability (`1−eacNorm`) sits inside `pbc`,
-and **`pbc` reaches the final utility through two paths** — via `intention` *and* directly in
-`perceivedUtility`. Attitude and subjective norm reach utility through the single `intention` path only.
-So the cost term has a built-in leverage advantage over the other TPB constructs, independent of the
-weights.
+```powershell
+# 0. one-off: extract the observed series + the 2022 initial state
+python model\data-export\scripts\export_observed_heating.py
+# 1. one-off: provision the region's stock
+python model\run.py --scope province:Noord-Brabant --scenario baseline --iterations 1
 
-**2. All three economic factors converge on the *same* most-leveraged variable, `eacNorm`.** Energy
-price moves the operating cost (`energyPerYear`), capex moves the investment term, and the learning rate
-moves the capex *trajectory* — but all three feed `EAC → eacNorm`, which is the doubly-weighted input
-from point 1. They are three levers on the one variable the decision is most sensitive to, so their
-effects stack on the same channel rather than dispersing.
+# 2. how far are the AL defaults from observed? (also runs the start-year gate)
+python results_analysis\calibrate_weights.py evaluate --scope province:Noord-Brabant
+# 3. how many MC iterations does the 3-year objective need?
+python results_analysis\calibrate_weights.py converge --scope province:Noord-Brabant
+# 4. plausible-weight ensemble (LHS + retain within tolerance)
+python results_analysis\calibrate_weights.py search  --scope province:Noord-Brabant --samples 100 --iterations 1 --tolerance 2 --outdir results\calib
+# 5. Morris screen of the weights
+python results_analysis\calibrate_weights.py morris  --scope province:Noord-Brabant --trajectories 8 --iterations 1 --outdir results\calib
 
-**3. The learning rate is the *gain on a reinforcing feedback loop*, so it compounds over 26 years.**
-`capexLearningFactor = (1−rate)^doublings` with `doublings = log₂(cumInstalled/initialUnits)`: more heat-pump
-installs → more doublings → lower capex → lower EAC → higher `pbc`/utility → more installs. `learningRateMult`
-scales `rate`, i.e. the loop gain — and a small gain change is amplified by the whole 2024–2050 trajectory
-of the loop. This is why it is not just top-tier but specifically the lever on the **hybrid-vs-electric
-endpoint** (µ\* hybrid 10, electric 12, gas 3): the loop runs hardest for whichever heat pump is winning,
-so faster learning tips the system toward *full* electrification. Salience is also a feedback (social
-proof → subjective norm), but its gain is the social-norm weight, which the calibration set to a moderate
-~0.28 — a weaker loop than the learning loop acting on the doubly-weighted cost channel.
+# 6. structural sensitivity at fixed calibrated weights (Morris -> LHS on the survivors)
+python results_analysis\structural_batch.py --scope province:Noord-Brabant
 
-**4. The economic factors move their input by large, *compounding*, always-on amounts.** The price path
-compounds annually (gas +2.62 %/yr ≈ ×2 by 2050); capex and learning act every year and through the loop;
-and because affordability is normalised on the **log-EAC scale** (§6.5/§log-fix), proportional cost shifts
-map directly onto `eacNorm`. Since the hybrid-vs-gas EAC is close for many dwellings, a modest shift in
-price or capex flips the cheaper option for a large sub-population → big share swings. The behavioural-shape
-parameters (salience threshold/K/steepness, lifetime jitter) reshape *how* the response curves but within
-bounded, largely one-off effects; the choice-noise scales (`gumbelScale*`) add dispersion around the
-cost-optimal choice (hence mid-tier, not top-tier) rather than moving the mean trajectory.
+# 7. explore: scenarios across the ensemble + price bracket + loop knock-outs + all figures
+python results_analysis\pathway_batch.py --scope province:Noord-Brabant --iterations 5
+```
 
-**The subtle point — sensitivity is not the same as preference weight.** The calibration actually
-*down-weighted* affordability (best_fit puts cost at ~39 % of PBC, below the AnyLogic 0.71), i.e.
-households care about cost *less* than AL assumed. Yet the cost *drivers* are the most influential on the
-2050 outcome, because sensitivity ≈ (weight) × (how far the factor moves the input) × (feedback
-amplification), and the economic factors dominate the last two terms even at a modest weight. So "economics
-gate the pathway" is a statement about the **forcing and the feedback**, not about households being
-cost-obsessed.
+`pathway_batch` writes the band to `results/<scope>/calib/`, the price runs to `price_low|price_high/`,
+the knock-out runs and mechanism report to `knockout_*/` and `mechanism/`, and all comparison figures
+to `figures/` (per-scenario bands in `figures/scenarios/`). To regenerate only the figures from
+existing runs, use `analyze_all.py --scope <scope>`.
 
-**Caveats.** This is one weight vector (the median) and the baseline scenario. Whether the ranking holds
-is being checked at the `high_shareAffordability`/`best_fit` vectors; the salience factors in particular
-should rise where the social-norm weight is higher (the weight×structural interaction). Magnitudes will be
-quantified by the LHS/Sobol step. Read this as the *mechanism* behind the preliminary ranking, to be
-confirmed by the full run.
+Weights are passed to the engine at runtime (`-Dht.<name>=<value>`), so **no recompile per sample**.
+Each run also emits `<out>_loop_state.csv` (decision-time loop intermediates) and `<out>_segments.csv`
+(per adopter/dwelling segment), which `mechanism_analysis.py` combines.
+
+---
+
+## 8. Verification
+
+- **Unit tests** on the decision functions (`SelfTest`, 38 assertions) plus a JUnit suite.
+- **Cross-implementation parity** between the Java research engine and the original AnyLogic model on
+  hand-verified cases.
+- **Start-year gate** in every calibration mode (see §2.1), currently passing within 0.1 %pts.
+- **Knock-out tests** for causal claims about the reinforcing loops: disabling economic learning
+  (`-Dht.learningRateMult=0`) leaves 31 % of dwellings on gas in 2050 versus 13 % intact; freezing
+  salience (`-Dht.salienceFreeze=1`) accounts for a further ~4 %pts. Both loops are causally necessary
+  for the gas phase-out, and the economic loop is much the stronger.
+- **Segment validation**: the adopter-propensity index reproduces the expected S-curve ordering
+  (innovators lead, laggards trail) — see §8.
+
+---
+
+## 9. Findings
+
+- **Decarbonisation is robust; the route is not.** Across all 20 retained weight sets the 2050 gas
+  share lands between 7 % and 24 %, but hybrid spans 35–81 %, electric 11–42 % and DH 1–16 %. Report
+  the band; the qualitative outcome is identified, the specific mix is not.
+- **Electric heat pumps are an innovator/early-adopter technology.** 2050 electric-HP share *within*
+  each Rogers segment: innovators 99.7 %, early adopters 77 %, early majority 28 %, late majority 1.8 %,
+  laggards 0 %. This explains the aggregate ~35 % electric-HP plateau as **segment saturation**, not a
+  cost ceiling. Dwelling segments confirm the technical channel: large, ground-access, better-insulated
+  homes electrify; apartments and high-rise do not.
+- **Economics gate the pathway** (§5.2), and the HP learning rate specifically decides hybrid versus
+  full electrification.
+- **Energy prices can exceed the preference band**: under the high-price path the 2050 electric-HP
+  share reaches 47.5 %, above anything any weight set produces at static prices, while gas falls to
+  2.4 %. Price uncertainty is not a subset of preference uncertainty.
+- **The AL default weights under-produce heat-pump adoption** — electric HP is under-predicted in two
+  independent regions (−1.7 %pts Utrecht, −3.2 Noord-Brabant), so this is a model property rather than
+  a regional quirk, and it is exactly the gap calibration closes. Hybrid is close (+0.2/+0.3).
+- **District heating is over-assigned in DH-rich regions** (Utrecht +4.0 %pts), suspected to be the
+  lumpy initial assignment of whole social-housing blocks. Noord-Brabant is unaffected; worth
+  remembering if a DH-heavy region is ever used.
+
+---
+
+## 10. Caveats for the write-up
+
+- **3 years, subsidy-driven.** The window coincides with strong NL heat-pump subsidies and the
+  post-2022 gas-price spike; weights fitted to it may absorb those transient drivers.
+- **Non-identifiable.** Report a *retained ensemble band*, never a single "calibrated" weight vector,
+  and state the identifiability limits explicitly.
+- **Regional transfer.** Weights are constrained on one province; representativeness was checked on
+  stock, heating mix and ownership, but not on income or attitudes (not in the model).
+- **Not a validation of outcomes.** Matching 2022–24 filters out behaviourally implausible
+  parameterisations; it does **not** validate the 2050 projections, which are interpreted for the
+  mechanisms they reveal rather than as forecasts.
+- **Sensitivity ≠ preference weight.** Calibration *down-weights* affordability, yet the cost *drivers*
+  dominate the 2050 outcome, because influence ≈ weight × input swing × feedback amplification.

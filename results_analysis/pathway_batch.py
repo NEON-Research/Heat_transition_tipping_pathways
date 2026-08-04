@@ -21,11 +21,17 @@ import argparse, json, os, subprocess, sys, time
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.normpath(os.path.join(HERE, ".."))
 RUNPY = os.path.join(ROOT, "model", "run.py")
-COMPARE = os.path.join(HERE, "compare_weight_sets.py")
+ANALYZE_ALL = os.path.join(HERE, "analyze_all.py")
 SEARCH = os.path.join(ROOT, "results", "calib", "calibration_search.json")
 # coupled price ends (KEV 2025 Table 10 2030 bandwidth -> retail; gas & electricity move together)
 PRICE = {"low":  {"ht.gasPriceGrowth": -0.0100, "ht.elecPriceGrowth": -0.0157},
          "high": {"ht.gasPriceGrowth":  0.0262, "ht.elecPriceGrowth":  0.0141}}
+# Knock-out runs: disable ONE reinforcing loop at a time, everything else identical (same seeds,
+# stock, weights). The gap versus the intact run is that loop's causal contribution -- the evidence
+# that the transition depends on the feedback, rather than merely correlating with it (Q8).
+KNOCKOUT = {"nolearn":   {"ht.learningRateMult": 0},      # economic learning loop severed
+            "nosocial":  {"ht.salienceFreeze": 1},        # social learning (salience) loop severed
+            "nocongest": {"ht.congestionOff": 1}}         # grid constraint removed (control)
 
 def tag(scope):
     s = scope.strip().lower()
@@ -50,6 +56,10 @@ def main():
     ap.add_argument("--price-scenario", default="all", help="--scenario for the price runs (all | baseline)")
     ap.add_argument("--no-band", action="store_true")
     ap.add_argument("--no-price", action="store_true")
+    ap.add_argument("--no-knockout", action="store_true",
+                    help="skip the loop knock-out runs (causal evidence for the tipping mechanisms)")
+    ap.add_argument("--knockout-scenario", default="baseline",
+                    help="scenario for the knock-out runs (default baseline; 'all' for the full matrix)")
     a = ap.parse_args()
     resdir = os.path.join(ROOT, "results", tag(a.scope)); os.makedirs(resdir, exist_ok=True)
     t0 = time.time()
@@ -73,13 +83,40 @@ def main():
                  "--iterations", a.iterations, "--analyze", "--out", out] + props,
                 os.path.join(resdir, f"log_price_{lvl}.txt"))
 
-    # 3. ensemble comparison figure
-    if not a.no_band:
-        run([sys.executable, COMPARE, "--scope", a.scope, "--scenario", "baseline"],
-            os.path.join(resdir, "log_compare.txt"))
+    # 2b. knock-out runs at the calibrated central weights: causal evidence per reinforcing loop
+    if not a.no_knockout:
+        w = json.load(open(SEARCH))["representative"][a.price_weights]["weights"]
+        wprops = []
+        for k, v in w.items(): wprops += ["--prop", f"ht.{k}={v}"]
+        for lab, flags in KNOCKOUT.items():
+            props = list(wprops)
+            for k, v in flags.items(): props += ["--prop", f"{k}={v}"]
+            out = os.path.join(resdir, f"knockout_{lab}", "simulation_results.csv")
+            run([sys.executable, RUNPY, "--scope", a.scope, "--scenario", a.knockout_scenario,
+                 "--iterations", a.iterations, "--out", out] + props,
+                os.path.join(resdir, f"log_knockout_{lab}.txt"))
+        # intact reference at the same weights, for the comparison
+        out = os.path.join(resdir, "knockout_intact", "simulation_results.csv")
+        run([sys.executable, RUNPY, "--scope", a.scope, "--scenario", a.knockout_scenario,
+             "--iterations", a.iterations, "--out", out] + wprops,
+            os.path.join(resdir, "log_knockout_intact.txt"))
+        # mechanism report: loop state + segments + the knock-out table
+        ko = [f"{lab}={os.path.join(resdir, f'knockout_{lab}', 'simulation_results.csv')}"
+              for lab in KNOCKOUT]
+        run([sys.executable, os.path.join(HERE, "mechanism_analysis.py"),
+             "--run", out, "--knockout"] + ko + ["--outdir", os.path.join(resdir, "mechanism")],
+            os.path.join(resdir, "log_mechanism.txt"))
 
-    print(f"\n[batch] done in {(time.time()-t0)/3600:.2f} h. Band in {resdir}/calib/, "
-          f"price runs in {resdir}/price_low|price_high/, logs in {resdir}/")
+    # 3. full cross-set analysis: per-scenario bands + global figures (Morris, price triptych, EHP)
+    if not a.no_band:
+        run([sys.executable, ANALYZE_ALL, "--scope", a.scope],
+            os.path.join(resdir, "log_analyze.txt"))
+
+    print(f"\n[batch] done in {(time.time()-t0)/3600:.2f} h.\n"
+          f"  band      -> {resdir}/calib/\n"
+          f"  prices    -> {resdir}/price_low|price_high/\n"
+          f"  knock-out -> {resdir}/knockout_*/ + mechanism report in {resdir}/mechanism/\n"
+          f"  figures   -> {resdir}/figures/ (per-scenario bands in figures/scenarios/)")
 
 if __name__ == "__main__":
     main()
