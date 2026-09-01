@@ -48,8 +48,11 @@ public final class HeatingSystemData {
             catch (IllegalArgumentException | NullPointerException e) { continue; }   // skip non-enum rows
             String primary = r.get("energy_source_primary");
             String secondary = r.get("energy_source_secondary");
-            double capexF = (type == HeatingSystem.HYBRID_HEAT_PUMP || type == HeatingSystem.ELECTRIC_HEAT_PUMP)
-                    ? Constants.CAPEX_MULT_HP : 1.0;   // HP capex sensitivity multiplier
+            double capexF = 1.0;                       // capex sensitivity multipliers
+            if (type == HeatingSystem.HYBRID_HEAT_PUMP || type == HeatingSystem.ELECTRIC_HEAT_PUMP)
+                capexF = Constants.CAPEX_MULT_HP;
+            else if (type == HeatingSystem.DISTRICT_HEATING)
+                capexF = Constants.CAPEX_MULT_DH;
             m.put(type, new HeatingSystemSpec(type,
                     capexF * Csv.d(r.get("investment_costs_eur_per_unit_small")),
                     capexF * Csv.d(r.get("investment_costs_eur_per_unit_medium")),

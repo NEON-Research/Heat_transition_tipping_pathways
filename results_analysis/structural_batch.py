@@ -40,16 +40,25 @@ def main():
     ap.add_argument("--lhs-iters", type=int, default=8)
     ap.add_argument("--lhs-weights", default="median", help="weight vector for the LHS quantification")
     ap.add_argument("--no-lhs", action="store_true")
-    ap.add_argument("--outdir", default=os.path.join(HERE, "..", "results", "calib"))
+    ap.add_argument("--search", "--weights-file", dest="search", default=None,
+                    help="calibration_search.json holding the ensemble the weight vectors are read\n"
+                         "from (default: results/calib/calibration_search.json). --outdir defaults to\n"
+                         "this file's directory, so a sweep in results/calib500 writes its screen there.")
+    ap.add_argument("--outdir", default=None)
     a = ap.parse_args()
-    outdir = os.path.abspath(a.outdir); os.makedirs(outdir, exist_ok=True)
+    search = os.path.abspath(a.search) if a.search else os.path.join(HERE, "..", "results", "calib", "calibration_search.json")
+    if not os.path.exists(search):
+        sys.exit(f"[batch] no calibration search at {search}")
+    outdir = os.path.abspath(a.outdir) if a.outdir else os.path.dirname(search)
+    os.makedirs(outdir, exist_ok=True)
+    print(f"[batch] weights from {search}\n[batch] outputs to  {outdir}")
     vectors = [w.strip() for w in a.weights.split(",") if w.strip()]
     t0 = time.time(); results = {}
 
     for i, wv in enumerate(vectors):
         cmd = [sys.executable, SCRIPT, "morris", "--scope", a.scope,
                "--trajectories", str(a.trajectories), "--iterations", str(a.morris_iters),
-               "--weights", wv, "--outdir", outdir]
+               "--weights", wv, "--weights-file", search, "--outdir", outdir]
         if i > 0: cmd.append("--skip-build")          # build once, on the first run
         rc = run(cmd, os.path.join(outdir, f"log_morris_{wv.replace(':','')}.txt"))
         jf = os.path.join(outdir, f"structural_morris_{wv.replace(':','')}.json")
@@ -72,7 +81,8 @@ def main():
     if not a.no_lhs:
         cmd = [sys.executable, SCRIPT, "lhs", "--scope", a.scope, "--samples", str(a.lhs_samples),
                "--iterations", str(a.lhs_iters), "--factors", ",".join(survivors),
-               "--weights", a.lhs_weights, "--skip-build", "--outdir", outdir]
+               "--weights", a.lhs_weights, "--weights-file", search,
+               "--skip-build", "--outdir", outdir]
         run(cmd, os.path.join(outdir, "log_lhs.txt"))
 
     print(f"\n[batch] done in {(time.time()-t0)/3600:.2f} h. Outputs + logs in {outdir}")

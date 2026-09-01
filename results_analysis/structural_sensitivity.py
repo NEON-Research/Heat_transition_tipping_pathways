@@ -45,9 +45,24 @@ FACTORS = {
     "gumbelScaleEac":    (5.0, 50.0,  lambda v: {"gumbelScaleEac": v}),
     "gumbelScaleUtil":   (0.005, 0.05, lambda v: {"gumbelScaleUtil": v}),
     "lifetimeJitterSd":  (0.0, 3.0,   lambda v: {"lifetimeJitterSd": v}),
-    "capexMultHp":       (0.7, 1.3,   lambda v: {"capexMultHp": v}),
+    "capexMultHp":       (0.85, 1.15, lambda v: {"capexMultHp": v}),
+    "capexMultDh":       (0.85, 1.15, lambda v: {"capexMultDh": v}),
     "learningRateMult":  (0.5, 2.0,   lambda v: {"learningRateMult": v}),
     "energyPrice":       (0.0, 1.0,   price_map),   # coupled gas+electricity
+}
+
+# Readable names for reporting. Keys are the -Dht flags; values are what a reader should see.
+FACTOR_LABEL = {
+    "capexMultHp":       "Heat-pump capital cost",
+    "capexMultDh":       "District-heating connection cost",
+    "energyPrice":       "Energy price path (gas + electricity)",
+    "learningRateMult":  "Economic learning rate",
+    "gumbelScaleUtil":   "Choice randomness (utility)",
+    "gumbelScaleEac":    "Choice randomness (cost)",
+    "salienceThreshold": "Salience: novelty threshold",
+    "salienceK":         "Salience: novelty steepness",
+    "salienceSteepness": "Salience: momentum steepness",
+    "lifetimeJitterSd":  "Equipment lifetime spread",
 }
 
 def scope_tag(scope):

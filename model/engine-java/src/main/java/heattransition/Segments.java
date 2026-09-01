@@ -15,6 +15,12 @@ import java.util.List;
 public final class Segments {
     private Segments() {}
 
+    /** Segment labels are drawn from a few hundred distinct values but were being built per dwelling,
+     *  so every dwelling held its own copy (~2 GB at national scale). Share one instance per label. */
+    private static final java.util.concurrent.ConcurrentHashMap<String, String> POOL =
+            new java.util.concurrent.ConcurrentHashMap<>();
+    private static String shared(String s) { return POOL.computeIfAbsent(s, k -> k); }
+
     public static final String[] ROGERS = {"1_innovators","2_early_adopters","3_early_majority",
                                            "4_late_majority","5_laggards"};
     /** Percentile FLOOR of each category, from the top: innovators are the highest-propensity 2.5 %,
@@ -52,7 +58,7 @@ public final class Segments {
         String arch = d.archetype == null ? "NA" : d.archetype;
         String dem = d.heatDemandKWh < 6000 ? "demLow"
                    : (d.heatDemandKWh > 10000 ? "demHigh" : "demMed");
-        return own + "-" + arch + "-" + dem;
+        return shared(own + "-" + arch + "-" + dem);
     }
 
     /** Coarse dwelling segment: archetype x floor-area band x construction-era x insulation band. */
@@ -63,6 +69,6 @@ public final class Segments {
                     : (d.constructionYear < 2000 ? "1975-1999" : "post2000");
         int ln = Vesta.labelNum(d.energyLabel);
         String ins = ln <= 2 ? "labelAB" : (ln <= 4 ? "labelCD" : "labelEFG");
-        return type + "-" + area + "-" + era + "-" + ins;   // "-" not "|": | is the map-key delimiter
+        return shared(type + "-" + area + "-" + era + "-" + ins);   // "-" not "|": | is the key delimiter
     }
 }

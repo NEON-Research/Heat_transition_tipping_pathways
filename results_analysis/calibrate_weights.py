@@ -15,11 +15,20 @@ The engine is rebuilt first (--skip-build to opt out) so a sweep never uses stal
 Modes
   evaluate  one weight set (default = AL defaults) -> error
   search    random / Latin-hypercube sample of weight space -> ranked table + retained ensemble
-  morris    Morris elementary effects -> which weights matter most (uses the baseline weights)
+
+Two retention rules are computed on every search, so one sweep supports both cuts:
+  tolerance       keep sets whose mean absolute deviation over 2023-24 is below --tolerance.
+                  Simple, but the threshold is a choice with no external justification.
+  implausibility  keep sets whose worst single output satisfies
+                      I = |sim - obs| / sqrt(Var_MC + Var_obs + Var_discrepancy) < --implaus-cut
+                  the standard history-matching criterion. The threshold (3) is conventional; the
+                  judgement moves into the variance components, which are stated rather than hidden.
+Every sampled set's simulated mix is stored in calibration_search.json, so a different rule -- or a
+different discrepancy allowance -- can be applied afterwards without re-running the sweep.
 
 What is varied: the TPB formulas are NORMALISED weighted averages, so we sample the SHARES within
 each group (they sum to 1) rather than raw weights -- 4 free parameters, directly interpretable, and
-a Morris step means the same thing everywhere in the space:
+a step of a given size means the same thing everywhere in the space:
   shareAttitude, shareSocialnorm   -> sharePbc    = 1 - the two   (intention group)
   shareAffordability               -> shareEffort = 1 - it        (PBC group)
   shareIntention                   -> sharePbcBeh = 1 - it        (behaviour group)
@@ -28,8 +37,8 @@ HT_RAW_WEIGHTS=1 falls back to sampling raw weights with a fixed numeraire.
 
 Examples
   python calibrate_weights.py evaluate --scope province:Noord-Brabant
-  python calibrate_weights.py search   --scope province:Noord-Brabant --samples 60 --iterations 2
-  python calibrate_weights.py morris   --scope province:Noord-Brabant --levels 4 --trajectories 8
+  python calibrate_weights.py search   --scope province:Noord-Brabant --samples 500 --iterations 1 \
+      --outdir results/calib --skip-build
 """
 import argparse
 import csv
@@ -67,9 +76,8 @@ OBS_KEY = {"NATURAL_GAS_BOILER": "gasCV", "NATURAL_GAS_BLOCK": "gasBlock",
 #
 # We therefore sample the SHARES directly (each group sums to 1). Two advantages over sampling raw
 # weights:
-#   1. A Morris step of e.g. 0.05 always means the same thing. With raw weights the same absolute
-#      step is a huge compositional change when the weights sum to 0.6 and a tiny one when they sum
-#      to 3.0 -- which is why the first screen came back with sigma > mu* for every factor.
+#   1. A step of e.g. 0.05 always means the same thing. With raw weights the same absolute step is
+#      a huge compositional change when the weights sum to 0.6 and a tiny one when they sum to 3.0.
 #   2. Shares are what TPB actually interprets ("attitude 25 %, norm 50 %, control 25 %"), so the
 #      sampled parameter, the engine input and the reported number are all the same quantity --
 #      shares are passed straight through as weights and the engine's normalisation is a no-op.
@@ -91,11 +99,15 @@ SHARE_MODE = not os.environ.get("HT_RAW_WEIGHTS")
 SEED_OFFSET = [0]        # set from --seed-offset in main(); engine world-seed shift
 
 # sampled share -> (default, low, high)
+# Bounds follow from MIN_RESIDUAL alone, so every group is explored over its whole feasible
+# range and no bound is a hidden judgement.
+#   two-element group: one share in [m, 1-m], the partner is 1 - it
+#   three-element group: each share in [m, 1-2m], sampled as a composition (see sample_lhs)
 WEIGHTS = {
-    "shareAttitude":      (1/3, 0.15, 0.60),   # intention group; residual = sharePbc
-    "shareSocialnorm":    (1/3, 0.15, 0.60),
-    "shareAffordability": (0.5/0.7, 0.30, 0.90),  # pbc group; residual = shareEffort
-    "shareIntention":     (0.5, 0.20, 0.80),   # behaviour group; residual = sharePbcBeh
+    "shareAttitude":      (1/3, 0.10, 0.80),   # intention group; residual = sharePbc
+    "shareSocialnorm":    (1/3, 0.10, 0.80),
+    "shareAffordability": (0.5/0.7, 0.10, 0.90),  # pbc group; residual = shareEffort
+    "shareIntention":     (0.5, 0.10, 0.90),   # behaviour group; residual = sharePbcBeh
 }
 MIN_RESIDUAL = 0.10          # keep every implied share meaningfully positive
 FIXED = {}
@@ -116,9 +128,11 @@ def shares_to_weights(p):
     if not SHARE_MODE:
         return dict(p)
     a, sn = p["shareAttitude"], p["shareSocialnorm"]
-    if a + sn > 1.0 - MIN_RESIDUAL:                 # keep the residual (sharePbc) positive
-        scale = (1.0 - MIN_RESIDUAL) / (a + sn)
-        a, sn = a * scale, sn * scale
+    if a + sn > 1.0 - MIN_RESIDUAL + 1e-9:
+        # sample_lhs only emits feasible compositions, so this is a caller error, not something to
+        # silently repair -- rescaling here is what used to distort the prior.
+        raise ValueError(f"infeasible intention group: attitude {a:.3f} + socialnorm {sn:.3f} "
+                         f"exceeds {1.0 - MIN_RESIDUAL:.2f}")
     pbc = 1.0 - a - sn
     aff = min(max(p["shareAffordability"], MIN_RESIDUAL), 1.0 - MIN_RESIDUAL)
     inten = min(max(p["shareIntention"], MIN_RESIDUAL), 1.0 - MIN_RESIDUAL)
@@ -349,6 +363,79 @@ def objective(scope, weights, a):
     return float(np.mean([error(sim[y], observed_mix(scope, y)[0]) for y in ys]))
 
 
+# ---------------------------------------------------------------- implausibility
+
+def mixes_per_iteration(scope, weights, a, iterations=None):
+    """{iteration: {year: mix(%)}} -- one entry per random world. Used to MEASURE the
+    Monte-Carlo standard deviation of each technology share, rather than assume it."""
+    n = iterations or a.iterations
+    ys = scored_years(a.start, a.end)
+    stock = stock_path(scope)
+    bfilter = ensure_buurt_filter()
+    out = os.path.join(tempfile.gettempdir(), f"calibsd_{os.getpid()}.csv")
+    cmd = ["java", f"-Xmx{a.xmx}", f"-Dht.heatingYear={a.start}", f"-Dht.buurtFilter={bfilter}",
+           f"-Dht.seedOffset={a.seed_offset}"]
+    cmd += [f"-Dht.{k}={v}" for k, v in {**FIXED, **shares_to_weights(weights)}.items()]
+    cmd += ["-cp", ENGINE_CP, "heattransition.Cli", "--real", stock, "--scenario", "baseline",
+            "--iterations", str(n), "--start", str(a.start), "--end", str(a.end), "--out", out]
+    r = subprocess.run(cmd, capture_output=True, text=True)
+    if r.returncode != 0:
+        print(r.stdout[-2000:], r.stderr[-2000:], file=sys.stderr); sys.exit("engine run failed")
+    acc = {}
+    with open(out, newline="", encoding="utf-8") as f:
+        for row in csv.DictReader(f):
+            if row["ownership"] != "TOTAL":
+                continue
+            y, it = int(row["year"]), int(row["iteration"])
+            if y in ys:
+                acc.setdefault((it, y), {s2: 0.0 for s2 in SYSTEMS})[row["heating_system"]] += float(row["installed_current"])
+    os.remove(out)
+    mixes = {}
+    for (it, y), d in acc.items():
+        tot = sum(d.values()) or 1.0
+        mixes.setdefault(it, {})[y] = {k: 100.0 * v / tot for k, v in d.items()}
+    return mixes
+
+
+def measure_sd_mc(scope, a, iterations=8):
+    """Between-world SD of each scored technology share (%pt), measured at the default weights.
+    Pooled over the scored years (SD computed within a year, then averaged over years)."""
+    w = {k: v[0] for k, v in WEIGHTS.items()}
+    mixes = mixes_per_iteration(scope, w, a, iterations)
+    ys = scored_years(a.start, a.end)
+    sd = {}
+    for sysname in FOCUS:
+        per_year = [float(np.std([mixes[it][y][sysname] for it in mixes], ddof=1)) for y in ys]
+        sd[sysname] = float(np.mean(per_year))
+    return sd
+
+
+def implausibility(sim, obs, sd_mc, sd_obs, sd_disc, focus=FOCUS):
+    """Per-output implausibility, the standard history-matching measure (Craig et al. 1997;
+    Vernon et al. 2010; Andrianakis et al. 2015):
+
+        I = |simulated - observed| / sqrt(Var_MC + Var_obs + Var_discrepancy)
+
+    Var_MC is measured from replication; Var_obs comes from the observed series; Var_discrepancy
+    is the analyst's allowance for the model being an imperfect account of the system. A set is
+    ruled out when max_outputs I exceeds the cutoff (conventionally 3).
+    """
+    out = {}
+    for sysname in focus:
+        var = sd_mc.get(sysname, 0.0) ** 2 + sd_obs ** 2 + sd_disc ** 2
+        out[sysname] = float(abs(sim[sysname] - obs[sysname]) / np.sqrt(var))
+    return out
+
+
+def evaluate_set(scope, weights, a):
+    """Run one weight set -> (MAD, {year: mix}). Keeping the mix, not just the scalar, is what
+    lets any retention rule be re-applied afterwards without re-running the sweep."""
+    ys = scored_years(a.start, a.end)
+    sim = run_engine(scope, weights, a.iterations, a.start, a.end, a.xmx, years=ys)
+    mad = float(np.mean([error(sim[y], observed_mix(scope, y)[0]) for y in ys]))
+    return mad, {y: {k: float(v) for k, v in sim[y].items()} for y in ys}
+
+
 # ---------------------------------------------------------------- modes
 
 def do_evaluate(a):
@@ -371,16 +458,42 @@ def do_evaluate(a):
         check_start_state(a.scope, a.iterations, a.start, a.end, a.xmx, a.start_tol)
 
 
+def feasible(p):
+    """Every group is a normalised weighted average, so a sampled set only means anything if each
+    group sums to 1 with every member at or above MIN_RESIDUAL. The two-element groups satisfy
+    that by construction; the three-element intention group needs the residual checked."""
+    return p["shareAttitude"] + p["shareSocialnorm"] <= 1.0 - MIN_RESIDUAL + 1e-9
+
+
 def sample_lhs(rng, n):
-    """Latin-hypercube sample in the weight box."""
+    """Latin-hypercube sample over the FEASIBLE weight space.
+
+    The intention group has three members that must sum to 1, so it is a point on a simplex, not
+    two independent numbers. Two stratified uniforms are mapped onto that simplex by the standard
+    sorted-gaps construction, floored at MIN_RESIDUAL: every draw is feasible by construction, the
+    corners (0.10, 0.10, 0.80) are reachable, and nothing has to be rejected or rescaled.
+    The two-element groups are sampled directly on [m, 1-m], where the partner follows.
+    """
+    m = MIN_RESIDUAL
     keys = list(WEIGHTS)
-    cut = (np.arange(n)[:, None] + rng.random((n, len(keys)))) / n
-    for j in range(len(keys)):
+    dims = 4                                   # u1,u2 -> intention simplex; u3 -> pbc; u4 -> behaviour
+    cut = (np.arange(n)[:, None] + rng.random((n, dims))) / n
+    for j in range(dims):
         rng.shuffle(cut[:, j])
     out = []
     for i in range(n):
-        out.append({k: WEIGHTS[k][1] + cut[i, j] * (WEIGHTS[k][2] - WEIGHTS[k][1])
-                    for j, k in enumerate(keys)})
+        u1, u2 = sorted(cut[i, :2])            # two cut points split [0,1] into three gaps
+        gaps = (u1, u2 - u1, 1.0 - u2)
+        span = 1.0 - 3.0 * m                   # room left once every member has its floor
+        att, sn = m + span * gaps[0], m + span * gaps[1]
+        p = {"shareAttitude": att,
+             "shareSocialnorm": sn,
+             "shareAffordability": WEIGHTS["shareAffordability"][1] + cut[i, 2] *
+                 (WEIGHTS["shareAffordability"][2] - WEIGHTS["shareAffordability"][1]),
+             "shareIntention": WEIGHTS["shareIntention"][1] + cut[i, 3] *
+                 (WEIGHTS["shareIntention"][2] - WEIGHTS["shareIntention"][1])}
+        assert feasible(p)
+        out.append(p)
     return out
 
 
@@ -394,20 +507,44 @@ def do_search(a):
     samples = sample_lhs(rng, a.samples)
     keys = list(WEIGHTS)
 
+    ys = scored_years(a.start, a.end)
+    obs_by_year = {y: observed_mix(a.scope, y)[0] for y in ys}
+
+    # Monte-Carlo term of the implausibility denominator: measured, not assumed.
+    if str(a.sd_mc).lower() == "auto":
+        print(f"[calib] measuring Monte-Carlo SD per technology over {a.sd_mc_iters} worlds ...")
+        sd_mc = measure_sd_mc(a.scope, a, a.sd_mc_iters)
+    else:
+        sd_mc = {k: float(a.sd_mc) for k in FOCUS}
+    denom = {k: (sd_mc[k] ** 2 + a.sd_obs ** 2 + a.sd_disc ** 2) ** 0.5 for k in FOCUS}
+    print("[calib] implausibility denominator (%pt): " +
+          "  ".join(f"{k.split('_')[0].lower()} sqrt({sd_mc[k]:.3f}^2+{a.sd_obs}^2+{a.sd_disc}^2)={denom[k]:.3f}"
+                    for k in FOCUS))
+    print(f"[calib] a cutoff of I<{a.implaus_cut} therefore admits a deviation of about "
+          f"{a.implaus_cut * min(denom.values()):.2f}-{a.implaus_cut * max(denom.values()):.2f} %pt "
+          f"on EVERY scored technology and year")
+
     rows = []
     for i, p in enumerate(samples, 1):
-        e = objective(a.scope, p, a)
+        e, mix = evaluate_set(a.scope, p, a)
+        imp = {str(y): implausibility(mix[y], obs_by_year[y], sd_mc, a.sd_obs, a.sd_disc) for y in ys}
+        imax = max(v for d in imp.values() for v in d.values())
         eff = shares_to_weights(p)              # effective shares after the residual/bounds fix-up
-        rows.append({"mad": e, "sampled": dict(p), "weights": eff})
-        print(f"  [{i}/{len(samples)}] MAD={e:6.2f}  "
+        rows.append({"mad": e, "implausibility_max": imax, "sampled": dict(p), "weights": eff,
+                     "mix": {str(y): mix[y] for y in ys}, "implausibility": imp})
+        print(f"  [{i}/{len(samples)}] MAD={e:6.2f}  Imax={imax:5.2f}  "
               + " ".join(f"{k.replace('share','')[:4]}={p[k]:.2f}" for k in keys), flush=True)
     rows.sort(key=lambda r: r["mad"])
 
-    base = objective(a.scope, {k: v[0] for k, v in WEIGHTS.items()}, a)
-    keep = [r for r in rows if r["mad"] <= a.tolerance]
+    base, base_mix = evaluate_set(a.scope, {k: v[0] for k, v in WEIGHTS.items()}, a)
+    keep_tol = [r for r in rows if r["mad"] <= a.tolerance]
+    keep_imp = [r for r in rows if r["implausibility_max"] <= a.implaus_cut]
+    keep = keep_imp if a.retention == "implausibility" else keep_tol
     print(f"\n{'='*78}\nAL defaults score MAD = {base:.2f} %pts")
     print(f"best sampled       MAD = {rows[0]['mad']:.2f} %pts")
-    print(f"retained (MAD <= {a.tolerance}): {len(keep)}/{len(rows)} weight sets")
+    print(f"retained by MAD <= {a.tolerance}          : {len(keep_tol)}/{len(rows)} weight sets")
+    print(f"retained by implausibility I < {a.implaus_cut}: {len(keep_imp)}/{len(rows)} weight sets")
+    print(f"--retention {a.retention} -> carrying {len(keep)} sets forward")
 
     if not keep:
         print("nothing retained -- widen --tolerance or the sampled ranges")
@@ -435,7 +572,13 @@ def do_search(a):
     if a.outdir:
         os.makedirs(a.outdir, exist_ok=True)
         out = os.path.join(a.outdir, "calibration_search.json")
-        json.dump({"scope": a.scope, "tolerance": a.tolerance, "default_mad": base,
+        json.dump({"scope": a.scope, "retention": a.retention,
+                   "tolerance": a.tolerance, "implaus_cut": a.implaus_cut,
+                   "sd_mc": sd_mc, "sd_obs": a.sd_obs, "sd_disc": a.sd_disc,
+                   "iterations": a.iterations, "seed": a.seed,
+                   "default_mad": base, "default_mix": {str(y): base_mix[y] for y in ys},
+                   "observed": {str(y): obs_by_year[y] for y in ys},
+                   "n_retained_tolerance": len(keep_tol), "n_retained_implausibility": len(keep_imp),
                    "samples": rows, "retained": keep, "representative": reps}, open(out, "w"), indent=1)
         print(f"\nwrote {out}")
 
@@ -478,56 +621,9 @@ def do_converge(a):
           "scenario runs need MORE replications. Check those on the spread of the 2050 outcome.")
 
 
-def do_morris(a):
-    """Morris elementary effects: mu* (mean |EE|) ranks which weights matter."""
-    obs, _ = observed_mix(a.scope, a.end)
-    if not a.no_start_check:
-        check_start_state(a.scope, a.iterations, a.start, a.end, a.xmx, a.start_tol)
-    keys = list(WEIGHTS)
-    k = len(keys)
-    rng = np.random.default_rng(a.seed)
-    delta = a.levels / (2.0 * (a.levels - 1))
-    ee = {key: [] for key in keys}
-    runs = 0
-    for t in range(a.trajectories):
-        base = rng.integers(0, a.levels // 2, size=k) / (a.levels - 1.0)   # in [0,1]
-        order = rng.permutation(k)
-        x = base.copy()
-
-        def as_w(vec):
-            return {key: WEIGHTS[key][1] + vec[j] * (WEIGHTS[key][2] - WEIGHTS[key][1])
-                    for j, key in enumerate(keys)}
-
-        y_prev = objective(a.scope, as_w(x), a)
-        runs += 1
-        for j in order:
-            x2 = x.copy()
-            x2[j] = x2[j] + delta if x2[j] + delta <= 1.0 else x2[j] - delta
-            y = objective(a.scope, as_w(x2), a)
-            runs += 1
-            ee[keys[j]].append((y - y_prev) / (x2[j] - x[j]))
-            x, y_prev = x2, y
-        print(f"  trajectory {t+1}/{a.trajectories} done ({runs} runs)", flush=True)
-
-    print(f"\nMorris elementary effects ({a.trajectories} trajectories, {runs} model runs)")
-    print(f"{'weight':<26}{'mu*':>9}{'mu':>9}{'sigma':>9}   (mu* = influence, sigma = interaction/non-linearity)")
-    stats = []
-    for key in keys:
-        v = np.array(ee[key])
-        stats.append((key, float(np.mean(np.abs(v))), float(np.mean(v)), float(np.std(v))))
-    for key, mus, mu, sd in sorted(stats, key=lambda s: -s[1]):
-        print(f"{key:<26}{mus:>9.2f}{mu:>9.2f}{sd:>9.2f}")
-    if a.outdir:
-        os.makedirs(a.outdir, exist_ok=True)
-        p = os.path.join(a.outdir, "morris_effects.json")
-        json.dump([{"weight": s[0], "mu_star": s[1], "mu": s[2], "sigma": s[3]} for s in stats],
-                  open(p, "w"), indent=1)
-        print(f"wrote {p}")
-
-
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("mode", choices=["evaluate", "search", "morris", "converge"])
+    ap.add_argument("mode", choices=["evaluate", "search", "converge"])
     ap.add_argument("--scope", default="province:Noord-Brabant",
                     help="calibration region (representative on stock + heating mix)")
     ap.add_argument("--start", type=int, default=2022)
@@ -535,8 +631,19 @@ def main():
     ap.add_argument("--iterations", type=int, default=2, help="MC iterations per evaluation")
     ap.add_argument("--samples", type=int, default=40, help="search: LHS samples")
     ap.add_argument("--tolerance", type=float, default=2.0, help="search: MAD %%pts to retain a set")
-    ap.add_argument("--levels", type=int, default=4, help="morris: grid levels")
-    ap.add_argument("--trajectories", type=int, default=8, help="morris: number of trajectories")
+    ap.add_argument("--retention", choices=["tolerance", "implausibility"], default="implausibility",
+                    help="search: which rule selects the retained ensemble. Both are always\n"
+                         "computed and reported; this only decides which one is written to\n"
+                         "'retained' and used to pick the representative sets.")
+    ap.add_argument("--implaus-cut", type=float, default=3.0,
+                    help="search: rule a set out when max-output implausibility exceeds this (3 = the\nconventional 3-sigma cutoff)")
+    ap.add_argument("--sd-obs", type=float, default=0.25,
+                    help="observation SD per technology share (%%pt); CBS rounding + suppression")
+    ap.add_argument("--sd-disc", type=float, default=0.5,
+                    help="model-discrepancy SD per technology share (%%pt). This is an analyst\njudgement and must be argued for in the write-up, not tuned.")
+    ap.add_argument("--sd-mc", default="auto",
+                    help="Monte-Carlo SD per technology share: 'auto' measures it, or give a %%pt value")
+    ap.add_argument("--sd-mc-iters", type=int, default=8, help="worlds used when --sd-mc auto")
     ap.add_argument("--seed", type=int, default=1)
     ap.add_argument("--seed-offset", type=int, default=0,
                     help="shift the engine's world seeds; use a different value to validate a\ncalibrated weight set on FRESH worlds (out-of-sample over stochastic realisations)")
@@ -548,12 +655,12 @@ def main():
     ap.add_argument("--iter-list", default="1,2,3,5,8",
                     help="converge: iteration counts to test")
     ap.add_argument("--axis", default="shareAffordability",
-                    help="search: share to span with the representative sets (Morris' top lever)")
+                    help="search: share to span with the representative sets")
     ap.add_argument("--outdir", default=None)
     a = ap.parse_args()
     SEED_OFFSET[0] = a.seed_offset
     ensure_built(a.skip_build)
-    {"evaluate": do_evaluate, "search": do_search, "morris": do_morris,
+    {"evaluate": do_evaluate, "search": do_search,
      "converge": do_converge}[a.mode](a)
 
 

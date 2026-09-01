@@ -39,6 +39,17 @@ public final class Constants {
     // this differs from zeroing the social-norm weight, which changes the decision structure itself.
     public static final boolean SALIENCE_FREEZE = p("salienceFreeze", 0.0) != 0.0;
 
+    /** Continuous override of the social-learning multiplier (scenario LOW/MEDIUM/HIGH = 0.5/1/2).
+     *  Negative = use the scenario value. Lets the social channel be swept rather than only stepped,
+     *  so the level at which social reinforcement flips from entrenching the incumbent to
+     *  accelerating the entrant can be located. */
+    public static final double SOCIAL_LEARNING_MULT = p("socialLearningMult", -1.0);
+
+    /** TRUE social-learning knock-out: freeze each household's peer composition at its initial value,
+     *  so the subjective norm no longer responds to what neighbours do. `salienceFreeze` only pins the
+     *  amplifier and leaves peer share free to evolve, so it does NOT sever the diffusion loop. */
+    public static final boolean PEER_FREEZE = p("peerFreeze", 0.0) != 0.0;
+
     // ---- Electricity grid / DSO (GridModel) ----------------------------------------------------
     // Baseload is derived from the dwellings themselves (NOT the privacy-suppressed CBS g_ele).
     public static final double BASELOAD_KWH_PER_DWELLING = p("baseloadKWhPerDwelling", 2500.0);
@@ -89,10 +100,14 @@ public final class Constants {
     public static final double GAS_PRICE_GROWTH  = p("gasPriceGrowth", 0.0);
     public static final double ELEC_PRICE_GROWTH = p("elecPriceGrowth", 0.0);
 
-    // Techno-economic sensitivity multipliers (default 1.0 = data as-is). capexMultHp scales the
-    // investment cost of the heat pumps (hybrid + electric); learningRateMult scales every
-    // technology's economic_learning_rate (the capex-fall speed). For structural sensitivity screens.
+    // Techno-economic sensitivity multipliers (default 1.0 = data as-is).
+    //   capexMultHp  scales the investment cost of the heat pumps (hybrid + electric)
+    //   capexMultDh  scales the household connection cost of district heating, so the collective
+    //                route carries the same cost uncertainty as the individual ones. (The network
+    //                business-case threshold in DistrictHeating is a separate parameter.)
+    //   learningRateMult scales EVERY technology's economic_learning_rate (the capex-fall speed).
     public static final double CAPEX_MULT_HP     = p("capexMultHp", 1.0);
+    public static final double CAPEX_MULT_DH     = p("capexMultDh", 1.0);
     public static final double LEARNING_RATE_MULT = p("learningRateMult", 1.0);
 
     // f_learningFactorToMultiplier(): LOW/MEDIUM/HIGH -> multiplier

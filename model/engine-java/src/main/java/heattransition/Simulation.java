@@ -124,7 +124,8 @@ public final class Simulation {
                           List<Neighbourhood> neighbourhoods) {
         this.startYear = startYear; this.endYear = endYear; this.rng = rng;
         this.legacyTrigger = legacyTrigger;
-        this.slf = Constants.LEARNING_MULTIPLIER.getOrDefault(scen.socialLearningFactor, 1.0);
+        this.slf = Constants.SOCIAL_LEARNING_MULT >= 0 ? Constants.SOCIAL_LEARNING_MULT
+                : Constants.LEARNING_MULTIPLIER.getOrDefault(scen.socialLearningFactor, 1.0);
         this.elf = Constants.LEARNING_MULTIPLIER.getOrDefault(scen.economicLearningFactor, 1.0);
         this.homeowners = homeowners; this.landlords = landlords; this.vesta = vesta;
         this.blocks = new ArrayList<>(socialBlocks); this.blocks.addAll(hoaBlocks);
@@ -449,6 +450,7 @@ public final class Simulation {
         }
     }
     private void notifyPeers(Dwelling d, HeatingSystem oldT, HeatingSystem newT) {
+        if (Constants.PEER_FREEZE) return;   // knock-out: peer composition frozen at t0
         for (Dwelling p : d.network) { p.peerCounts.merge(oldT, -1, Integer::sum); p.peerCounts.merge(newT, 1, Integer::sum); }
     }
 
@@ -485,6 +487,44 @@ public final class Simulation {
     // HT_EACPROBE: dump the global EAC window, its distribution, and a few example dwellings, so the
     // width of the shared cost scale can be judged (is a household's own spread visible on it?).
     private static final boolean EACPROBE = System.getenv("HT_EACPROBE") != null;
+
+    // ---- cost-optimality probe -------------------------------------------------------------
+    // HT_COSTPROBE=<path.csv> records, per year, the cross-tabulation of the option a homeowner
+    // WOULD have taken on equivalent annual cost alone against the option actually chosen through
+    // the full behavioural function, plus the annual cost premium accepted when they differ.
+    // Off unless the variable is set; nothing else in the run changes.
+    private static final String COSTPROBE = System.getenv("HT_COSTPROBE");
+    private boolean costProbeHeader = false;
+
+    /** Cheapest POSSIBLE option on EAC alone (no random-utility term, no behavioural weights). */
+    private static HeatingSystem cheapestPossible(Map<HeatingSystem, long[]> opts) {
+        HeatingSystem best = null; double bestEac = Double.POSITIVE_INFINITY;
+        for (HeatingSystem t : HeatingSystem.values()) {
+            long[] o = opts.get(t);
+            if (o == null || o[1] == 0) continue;          // not available for this dwelling
+            if (o[0] < bestEac) { bestEac = o[0]; best = t; }
+        }
+        return best;
+    }
+
+    private void writeCostProbe(int year, java.util.Map<String, long[]> counts,
+                                java.util.Map<String, double[]> premium) {
+        try (java.io.PrintWriter w = new java.io.PrintWriter(new java.io.FileWriter(COSTPROBE, true))) {
+            if (!costProbeHeader) {
+                java.io.File f = new java.io.File(COSTPROBE);
+                if (f.length() == 0) w.println("year,cheapest_on_cost,chosen,households,mean_eac_premium_eur");
+                costProbeHeader = true;
+            }
+            for (java.util.Map.Entry<String, long[]> e : counts.entrySet()) {
+                String[] kv = e.getKey().split("\\|");
+                long n = e.getValue()[0];
+                double prem = n > 0 ? premium.get(e.getKey())[0] / n : 0.0;
+                w.printf(java.util.Locale.ROOT, "%d,%s,%s,%d,%.1f%n", year, kv[0], kv[1], n, prem);
+            }
+        } catch (java.io.IOException ex) {
+            System.err.println("[costprobe] " + ex.getMessage());
+        }
+    }
     private final java.util.List<Double> probeAll = new ArrayList<>();
 
     private void eacProbe(int year, List<PendingHomeowner> pending) {
@@ -688,6 +728,8 @@ public final class Simulation {
             hoPending.add(new PendingHomeowner(d, eol, eac(d)));  // PASS 1: populate window only
         }
         if (EACPROBE && (year == 2025 || year == 2030)) eacProbe(year, hoPending);
+        java.util.Map<String, long[]> cpCount = COSTPROBE != null ? new java.util.LinkedHashMap<>() : null;
+        java.util.Map<String, double[]> cpPrem  = COSTPROBE != null ? new java.util.LinkedHashMap<>() : null;
         for (PendingHomeowner p : hoPending) {                    // PASS 2: utility + decide
             Dwelling d = p.dwelling;
             boolean eol = p.endOfLife;
@@ -695,6 +737,15 @@ public final class Simulation {
             r.considered++;
             HeatingSystem chosen = chooseByUtility(d, opts, r);
             if (chosen == null) continue;
+            if (COSTPROBE != null) {
+                HeatingSystem cheap = cheapestPossible(opts);
+                if (cheap != null) {
+                    String key = cheap.name() + "|" + chosen.name();
+                    cpCount.computeIfAbsent(key, k -> new long[1])[0]++;
+                    cpPrem.computeIfAbsent(key, k -> new double[1])[0] +=
+                            (double) opts.get(chosen)[0] - (double) opts.get(cheap)[0];
+                }
+            }
             // per-segment tracing: record the DRIVER TERMS OF THE OPTION ACTUALLY CHOSEN, so each
             // segment's adoption can be attributed to attitude / social norm / affordability.
             double[] tm = lastTerms.get(chosen);
@@ -721,6 +772,8 @@ public final class Simulation {
                 d.currentType = chosen; d.age = 0; d.lifeDraw = drawLife(chosen);
             }
         }
+
+        if (COSTPROBE != null) writeCostProbe(year, cpCount, cpPrem);
 
         updateGrid(year);      // DSO reacts to this year's adoption before the next year's decisions
         updateSalience();

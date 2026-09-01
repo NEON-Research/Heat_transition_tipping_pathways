@@ -29,12 +29,30 @@ HEATING_SYSTEM_COLORS = {
     'DISTRICT_HEATING': '#CD853F'      # peru
 }
 
+# Scenarios grouped by the tipping MECHANISM they perturb (one row per mechanism,
+# low/weak variant left, high/strong variant right). Covers all 16 scenarios the
+# engine runs, so nothing is silently dropped from the comparison figures.
 SCENARIO_PAIRS = [
     ("baseline", "actor_allignment_strategy"),
-    ("social_learning_factor_low", "social_learning_factor_high"),
     ("economic_learning_factor_low", "economic_learning_factor_high"),
-    ("policy_driven_dh_strategy", "policy_driven_sha_strategy"),
+    ("social_learning_factor_low", "social_learning_factor_high"),
+    ("dh_policy_based_connection_obligation", "grid_congestion_HP_ban"),
     ("individual_technologies", "collective_technologies"),
+    ("policy_driven_dh_strategy", "policy_driven_sha_strategy"),
+    ("individual_tech_dh_connection_obligation", "individual_tech_grid_congestion_ban"),
+    ("collective_tech_dh_connection_obligation", "collective_tech_grid_congestion_ban"),
+]
+
+# Row labels for the paired grids, in the same order as SCENARIO_PAIRS.
+MECHANISM_LABELS = [
+    "Reference",
+    "Economic learning",
+    "Social learning",
+    "Rules & infrastructure",
+    "Coordination",
+    "Policy strategy",
+    "Individual + rules",
+    "Collective + rules",
 ]
 
 figwidth = 6.3+1  # A4 width in inches minus margins (21cm - 2*2.54cm) converted to inches
@@ -314,18 +332,8 @@ def create_total_ownership_scenario_comparison(
     df: pd.DataFrame,
     output_file="plots/scenario_comparison_TOTAL.png"
 ):
-    SCENARIOS = [
-    "baseline",
-    "actor_allignment_strategy",
-    "social_learning_factor_low",
-    "social_learning_factor_high",
-    "economic_learning_factor_low",
-    "economic_learning_factor_high",
-    "policy_driven_dh_strategy",
-    "policy_driven_sha_strategy",
-    "individual_technologies",
-    "collective_technologies",
-    ]
+    # derived from SCENARIO_PAIRS so the summary and the panels can never disagree
+    SCENARIOS = [s for pair in SCENARIO_PAIRS for s in pair]
     result = (
         df[
             (df["ownership"] == "TOTAL") &
@@ -775,16 +783,11 @@ def create_installed_current_grid_plot(
     output_file : str
         Output file path
     """
-    SCENARIO_PAIRS = [
-        ("baseline", "actor_allignment_strategy"),
-        ("social_learning_factor_low", "social_learning_factor_high"),
-        ("economic_learning_factor_low", "economic_learning_factor_high"),
-        ("policy_driven_dh_strategy", "policy_driven_sha_strategy"),
-        ("individual_technologies", "collective_technologies"),
-    ]
-    
-    # Create figure with 5 rows x 2 columns subplots with shared axes
-    fig, axes = plt.subplots(5, 2, figsize=(figwidth, 1.8 * 5), sharex=True, sharey=True)
+    # uses the module-level SCENARIO_PAIRS (mechanism-grouped, all 16 scenarios)
+    n_rows = len(SCENARIO_PAIRS)
+
+    # Create figure with one row per mechanism x 2 columns, shared axes
+    fig, axes = plt.subplots(n_rows, 2, figsize=(figwidth, 1.8 * n_rows), sharex=True, sharey=True)
     
     # Track if we've collected legend handles yet
     legend_handles = None
@@ -872,7 +875,7 @@ def create_installed_current_grid_plot(
             ax.set_title(scen.replace('_', ' ').title(), fontsize=9, pad=9)
             
             # Only show x-label on bottom row
-            if row_idx == 4:
+            if row_idx == n_rows - 1:
                 ax.set_xlabel("Year", fontsize=7)
             
             # Only show y-label on left column

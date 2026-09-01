@@ -10,7 +10,8 @@ Each results CSV is read once. Usage:
 """
 import argparse, csv, glob, json, os, re
 from collections import defaultdict
-import numpy as np, matplotlib; matplotlib.use("Agg"); import matplotlib.pyplot as plt
+import numpy as np
+from structural_sensitivity import FACTOR_LABEL, matplotlib; matplotlib.use("Agg"); import matplotlib.pyplot as plt
 from matplotlib import cm; from matplotlib.colors import Normalize
 
 HERE=os.path.dirname(os.path.abspath(__file__))
@@ -97,15 +98,23 @@ def main():
 
     # global: Morris heatmap
     try:
-        mor={v:json.load(open(os.path.join(ROOT,"results","calib",f"structural_morris_{v}.json"))) for v in ("median","high_shareAffordability","best_fit")}
-        factors=sorted(mor["median"]["total"],key=lambda f:-mor["median"]["total"][f])
+        _mjs=sorted(glob.glob(os.path.join(ROOT,"results","calib","structural_morris_*.json")))
+        mor={os.path.basename(p_)[len("structural_morris_"):-5]:json.load(open(p_)) for p_ in _mjs}
+        # sort by the SAME quantity that is plotted -- the mean over the three weight vectors.
+        # sorting by the median vector alone left the TOTAL bars non-monotonic.
+        _meantot={f_:np.mean([mor[v]["total"][f_] for v in mor]) for f_ in next(iter(mor.values()))["total"]}
+        factors=sorted(_meantot,key=lambda f_:-_meantot[f_])
+        if not mor: raise RuntimeError("no structural_morris_*.json found")
         M=np.array([[np.mean([mor[v]["mu_star"][f][te] for v in mor]) for te in TECHS] for f in factors])
-        fig,ax=plt.subplots(figsize=(8,5)); im=ax.imshow(M,cmap="magma",aspect="auto")
-        ax.set_xticks(range(4)); ax.set_xticklabels([SHORT[te] for te in TECHS]); ax.set_yticks(range(len(factors))); ax.set_yticklabels(factors)
+        fig,ax=plt.subplots(figsize=(8.6,5)); im=ax.imshow(M,cmap="Blues",aspect="auto",vmin=0)
+        ax.set_xticks(range(4)); ax.set_xticklabels([SHORT[te] for te in TECHS]); ax.set_yticks(range(len(factors)))
+        ax.set_yticklabels([FACTOR_LABEL.get(f_,f_) for f_ in factors],fontsize=9)
+        _hi=M.max() or 1.0
         for i in range(len(factors)):
-            for j in range(4): ax.text(j,i,f"{M[i,j]:.1f}",ha="center",va="center",color="w",fontsize=8)
-        ax.set_title("Structural Morris $\\mu^*$ (mean over 3 weight vectors)"); fig.colorbar(im,ax=ax,shrink=.8)
-        fp=os.path.join(figdir,"fig_structural_morris.png"); fig.savefig(fp,dpi=130,bbox_inches="tight"); plt.close(fig); written.append(fp)
+            for j in range(4): ax.text(j,i,f"{M[i,j]:.1f}",ha="center",va="center",fontsize=8,
+                                       color=("white" if M[i,j] > 0.6*_hi else "#1a1a1a"))
+        ax.set_title("Structural Morris $\\mu^*$ — Noord-Brabant screen\n(mean over 3 weight vectors)"); fig.colorbar(im,ax=ax,shrink=.8)
+        fp=os.path.join(ROOT,"results","calib","fig_structural_morris.png"); fig.savefig(fp,dpi=130,bbox_inches="tight"); plt.close(fig); written.append(fp)
     except Exception as e: print("[skip morris]",e)
 
     # global: price triptych + EHP band-vs-price (baseline)

@@ -648,13 +648,10 @@ python results_analysis\calibrate_weights.py evaluate --scope province:Noord-Bra
 python results_analysis\calibrate_weights.py converge --scope province:Noord-Brabant
 # 4. plausible-weight ensemble (LHS + retain within tolerance)
 python results_analysis\calibrate_weights.py search  --scope province:Noord-Brabant --samples 100 --iterations 1 --tolerance 2 --outdir results\calib
-# 5. Morris screen of the weights
-python results_analysis\calibrate_weights.py morris  --scope province:Noord-Brabant --trajectories 8 --iterations 1 --outdir results\calib
-
-# 6. structural sensitivity at fixed calibrated weights (Morris -> LHS on the survivors)
+# 5. structural sensitivity at fixed calibrated weights (Morris -> LHS on the survivors)
 python results_analysis\structural_batch.py --scope province:Noord-Brabant
 
-# 7. explore: scenarios across the ensemble + price bracket + loop knock-outs + all figures
+# 6. explore: scenarios across the ensemble + price bracket + loop knock-outs + all figures
 python results_analysis\pathway_batch.py --scope province:Noord-Brabant --iterations 5
 ```
 
