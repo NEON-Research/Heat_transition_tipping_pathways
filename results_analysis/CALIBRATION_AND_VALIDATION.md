@@ -86,6 +86,37 @@ stochasticity. This does **not** transfer to the 2024–2050 pathways, which are
 ~15× noisier (SD ≈ 0.4 %pts); `pathway_convergence.py` sizes those separately (≈9–10 iterations for
 ±0.25 %pts, driven by the hybrid heat pump).
 
+### 2.3 Retention criterion (2026-09-28)
+
+Retention is by implausibility, `I_k = |s_k - o_k| / sqrt(sd_MC^2 + sd_obs^2 + sd_disc^2)`, keep
+when `max_k I_k < 3` (Pukelsheim's three-sigma rule; Vernon et al. 2010). Scored outputs: gas boiler,
+hybrid HP, electric HP and **district heating** (added: its observed share is stable and the model
+must not lose it), 2023 and 2024.
+
+- `sd_MC` measured over 8 worlds at default weights (`--sd-mc auto`): 0.01–0.07 %pt.
+- `sd_obs` **derived from the data** (`--sd-obs auto`, `calibrate_weights.py sdobs`): Monte Carlo
+  over CBS rounding to whole percentages (independent per buurt) and the allocation of the
+  unallocated share, 'type onbekend' ≈ 2 % (systematic, one Dirichlet split per replicate).
+  Noord-Brabant: **0.28–0.29 %pt** for every scored technology and year, almost all from the
+  unallocated share.
+- `sd_disc` = 0.5 %pt, a judgement (≈ a tenth of the observed 2022→24 gas change).
+
+Together: a deviation of about 1.7 %pt is admitted on every output. Because `sd_disc` and the
+cutoff are judgements, `search` writes `calibration_retention_sensitivity.csv`: the number retained
+for sd_disc ∈ {0.25, 0.5, 1.0} × cutoff ∈ {2.5, 3, 3.5}. `reanalyse --json <file>` rebuilds it from
+an existing search without model runs. On the previous (pre-DH-change) 1000-sample search the count
+depends far more on sd_disc (17 / 31 / 91 at I<3) than on the cutoff.
+
+District heating in the calibration: with the ACM tariffs alone, leaving DH pays for 73 % of DH
+households (Noord-Brabant, 2023), and the calibration setup lost 0.9 %pt of DH in two years
+against a stable observed share. Over 2022–24 housing associations kept their DH stock connected,
+often in agreement with municipalities: a policy, not a cost decision. So **every calibration run
+fixes `-Dht.dhReviewYears=0`** (`CALIB_FIXED` in `calibrate_weights.py`, stored as
+`engine_fixed` in the search JSON): DH dwellings do not review and stay connected. The baseline
+keeps the 5-year review and so shows the cost-driven decline; policy scenarios counter it.
+`-Dht.dhExitBarrier` (one-off EUR on top of the disconnection fee, default **0**) stays available
+for sensitivity and scenarios; ~3,000 EUR would stop leaving for 90 % of DH households, ~6,500 for 99 %.
+
 ---
 
 ## 3. Calibration region: Noord-Brabant

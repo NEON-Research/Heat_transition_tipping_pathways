@@ -14,7 +14,10 @@ The engine is rebuilt first (--skip-build to opt out) so a sweep never uses stal
 
 Modes
   evaluate  one weight set (default = AL defaults) -> error
-  search    random / Latin-hypercube sample of weight space -> ranked table + retained ensemble
+  search    random / Latin-hypercube sample of weight space -> ranked table + retained ensemble,
+            plus the number retained on a (discrepancy x cutoff) grid
+  sdobs     print the observation SD derived from the CBS series (no model runs)
+  reanalyse re-score an existing calibration_search.json on that grid (no model runs)
 
 Two retention rules are computed on every search, so one sweep supports both cuts:
   tolerance       keep sets whose mean absolute deviation over 2023-24 is below --tolerance.
@@ -120,6 +123,13 @@ if not SHARE_MODE:           # legacy: sample raw weights with a fixed numeraire
         "wEffortToPbc":           (0.2, 0.05, 1.5),
         "wIntentionToBehavior":   (0.5, 0.1, 2.0),
     }
+
+# Engine settings held fixed in EVERY calibration run (not sampled). District-heating dwellings do
+# not review (dhReviewYears = 0), so they stay connected: over 2022-2024 housing associations and
+# municipalities kept their DH stock connected, which is a policy the baseline and the calibration
+# exclude from the cost model. The baseline scenarios keep the review, so there connected
+# dwellings may leave; policy scenarios can counter that.
+CALIB_FIXED = {"dhReviewYears": 0}
 
 
 def shares_to_weights(p):
@@ -261,7 +271,7 @@ def run_engine(scope, weights, iterations, start, end, xmx="6g", years=None):
            f"-Dht.seedOffset={SEED_OFFSET[0]}",
            f"-Dht.heatingYear={start}",
            f"-Dht.buurtFilter={bfilter}"]      # heatingYear picks the observed start-year state
-    cmd += [f"-Dht.{k}={v}" for k, v in {**FIXED, **shares_to_weights(weights)}.items()]
+    cmd += [f"-Dht.{k}={v}" for k, v in {**CALIB_FIXED, **FIXED, **shares_to_weights(weights)}.items()]
     cmd += ["-cp", ENGINE_CP, "heattransition.Cli",
             "--real", stock, "--scenario", "baseline",
             "--iterations", str(iterations), "--start", str(start), "--end", str(end),
@@ -295,7 +305,7 @@ def objective_per_iteration(scope, weights, a, iterations=None):
     out = os.path.join(tempfile.gettempdir(), f"calibit_{os.getpid()}.csv")
     cmd = ["java", f"-Xmx{a.xmx}", f"-Dht.heatingYear={a.start}", f"-Dht.buurtFilter={bfilter}",
            f"-Dht.seedOffset={a.seed_offset}"]
-    cmd += [f"-Dht.{k}={v}" for k, v in {**FIXED, **shares_to_weights(weights)}.items()]
+    cmd += [f"-Dht.{k}={v}" for k, v in {**CALIB_FIXED, **FIXED, **shares_to_weights(weights)}.items()]
     cmd += ["-cp", ENGINE_CP, "heattransition.Cli", "--real", stock, "--scenario", "baseline",
             "--iterations", str(n), "--start", str(a.start), "--end", str(a.end), "--out", out]
     r = subprocess.run(cmd, capture_output=True, text=True)
@@ -342,11 +352,14 @@ def check_start_state(scope, iterations, start, end, xmx, tol=2.0):
     return worst
 
 
-FOCUS = ("NATURAL_GAS_BOILER", "ELECTRIC_HEAT_PUMP", "HYBRID_HEAT_PUMP")
+# Scored technologies. District heating is scored too: its observed share is stable, and a model in
+# which connected dwellings leave (the exit barrier) must reproduce that. Gas block is not scored:
+# it is a closed, shrinking category decided by blocks, not by the calibrated weights.
+FOCUS = ("NATURAL_GAS_BOILER", "ELECTRIC_HEAT_PUMP", "HYBRID_HEAT_PUMP", "DISTRICT_HEATING")
 
 
 def error(sim, obs, focus=FOCUS):
-    """Mean absolute deviation (%pts) for one year. `focus` = the systems that move in 2022-24."""
+    """Mean absolute deviation (%pts) for one year over the scored systems (FOCUS)."""
     return float(np.mean([abs(sim[s] - obs[s]) for s in focus]))
 
 
@@ -375,7 +388,7 @@ def mixes_per_iteration(scope, weights, a, iterations=None):
     out = os.path.join(tempfile.gettempdir(), f"calibsd_{os.getpid()}.csv")
     cmd = ["java", f"-Xmx{a.xmx}", f"-Dht.heatingYear={a.start}", f"-Dht.buurtFilter={bfilter}",
            f"-Dht.seedOffset={a.seed_offset}"]
-    cmd += [f"-Dht.{k}={v}" for k, v in {**FIXED, **shares_to_weights(weights)}.items()]
+    cmd += [f"-Dht.{k}={v}" for k, v in {**CALIB_FIXED, **FIXED, **shares_to_weights(weights)}.items()]
     cmd += ["-cp", ENGINE_CP, "heattransition.Cli", "--real", stock, "--scenario", "baseline",
             "--iterations", str(n), "--start", str(a.start), "--end", str(a.end), "--out", out]
     r = subprocess.run(cmd, capture_output=True, text=True)
@@ -410,21 +423,93 @@ def measure_sd_mc(scope, a, iterations=8):
     return sd
 
 
+def measure_sd_obs(scope, years, draws=1000, seed=0):
+    """Observation uncertainty of the provincial share per technology and year (%pt), derived from
+    the observed series itself rather than assumed.
+
+    The observed provincial mix is a dwelling-weighted aggregate of CBS buurt shares. Two steps in
+    that aggregate are uncertain, and both are simulated:
+      1. rounding: CBS publishes each buurt share as a whole percentage, so the true share lies
+         within +/-0.5 %pt. Drawn independently per buurt and technology, U(-0.5, +0.5).
+      2. the unallocated share: 'Type installaties onbekend' plus rounding residue, i.e.
+         1 - sum of the published shares. The deterministic mix allocates it proportionally; its
+         true allocation is unknown and, being a CBS classification issue, SYSTEMATIC -- the same
+         split for every buurt. Drawn once per replicate as Dirichlet(1,...,1) weights.
+    Returns {year: {technology: sd}} over `draws` replicates."""
+    counts = region_buurten(scope)
+    keep = complete_buurten()
+    path = os.path.join(REF, "observed_heating_by_year.csv")
+    rows = {y: [] for y in years}
+    with open(path, newline="", encoding="utf-8") as f:
+        for r in csv.DictReader(f):
+            y, b = int(r["year"]), r["buurtcode"]
+            if y in rows and b in keep and b in counts:
+                rows[y].append((counts[b], [float(r[OBS_KEY[s]]) for s in SYSTEMS]))
+    rng = np.random.default_rng(seed)
+    out = {}
+    for y in years:
+        w = np.array([c for c, _ in rows[y]], dtype=float)
+        s = np.array([v for _, v in rows[y]])                        # buurt x technology, fractions
+        unalloc = np.clip(1.0 - s.sum(axis=1), 0.0, None)
+        reps = np.empty((draws, len(SYSTEMS)))
+        for k in range(draws):
+            noisy = np.clip(s + rng.uniform(-0.005, 0.005, s.shape), 0.0, None)
+            split = rng.dirichlet(np.ones(len(SYSTEMS)))
+            full = noisy + unalloc[:, None] * split[None, :]
+            agg = (w[:, None] * full).sum(axis=0)
+            reps[k] = 100.0 * agg / agg.sum()
+        out[y] = {sname: float(reps[:, j].std(ddof=1)) for j, sname in enumerate(SYSTEMS)}
+    return out
+
+
 def implausibility(sim, obs, sd_mc, sd_obs, sd_disc, focus=FOCUS):
     """Per-output implausibility, the standard history-matching measure (Craig et al. 1997;
     Vernon et al. 2010; Andrianakis et al. 2015):
 
         I = |simulated - observed| / sqrt(Var_MC + Var_obs + Var_discrepancy)
 
-    Var_MC is measured from replication; Var_obs comes from the observed series; Var_discrepancy
-    is the analyst's allowance for the model being an imperfect account of the system. A set is
-    ruled out when max_outputs I exceeds the cutoff (conventionally 3).
+    Var_MC is measured from replication; Var_obs is derived from the observed series
+    (measure_sd_obs; a dict per technology, or one number); Var_discrepancy is the analyst's
+    allowance for the model being an imperfect account of the system. A set is ruled out when
+    max_outputs I exceeds the cutoff (conventionally 3, Pukelsheim's three-sigma rule).
     """
     out = {}
     for sysname in focus:
-        var = sd_mc.get(sysname, 0.0) ** 2 + sd_obs ** 2 + sd_disc ** 2
+        so = sd_obs.get(sysname, 0.0) if isinstance(sd_obs, dict) else sd_obs
+        var = sd_mc.get(sysname, 0.0) ** 2 + so ** 2 + sd_disc ** 2
         out[sysname] = float(abs(sim[sysname] - obs[sysname]) / np.sqrt(var))
     return out
+
+
+CUTOFFS = (2.5, 3.0, 3.5)
+DISCREPANCIES = (0.25, 0.5, 1.0)
+
+
+def retention_table(rows, obs_by_year, sd_mc, sd_obs_by_year, cutoffs=CUTOFFS, discs=DISCREPANCIES):
+    """How many sampled sets are retained for each (sd_disc, cutoff). Re-scored from the stored
+    mixes, so it costs no model runs. Shows how much the ensemble depends on the two judgements in
+    the criterion: the discrepancy allowance and the cutoff."""
+    table = []
+    for disc in discs:
+        for cut in cutoffs:
+            n = 0
+            for r in rows:
+                imax = max(v for y, obs in obs_by_year.items()
+                           for v in implausibility(r["mix"][str(y)], obs, sd_mc,
+                                                   sd_obs_by_year[y], disc).values())
+                n += imax <= cut
+            table.append({"sd_disc": disc, "cutoff": cut, "n_retained": n, "n_sampled": len(rows)})
+    return table
+
+
+def print_retention_table(table):
+    discs = sorted({t["sd_disc"] for t in table}); cuts = sorted({t["cutoff"] for t in table})
+    n = table[0]["n_sampled"]
+    print(f"\nRetained sets out of {n}, by discrepancy allowance and cutoff:")
+    print(f"{'sd_disc (%pt)':<16}" + "".join(f"{'I < ' + str(c):>10}" for c in cuts))
+    for d in discs:
+        print(f"{d:<16}" + "".join(f"{next(t['n_retained'] for t in table if t['sd_disc'] == d and t['cutoff'] == c):>10}"
+                                   for c in cuts))
 
 
 def evaluate_set(scope, weights, a):
@@ -516,18 +601,20 @@ def do_search(a):
         sd_mc = measure_sd_mc(a.scope, a, a.sd_mc_iters)
     else:
         sd_mc = {k: float(a.sd_mc) for k in FOCUS}
-    denom = {k: (sd_mc[k] ** 2 + a.sd_obs ** 2 + a.sd_disc ** 2) ** 0.5 for k in FOCUS}
-    print("[calib] implausibility denominator (%pt): " +
-          "  ".join(f"{k.split('_')[0].lower()} sqrt({sd_mc[k]:.3f}^2+{a.sd_obs}^2+{a.sd_disc}^2)={denom[k]:.3f}"
-                    for k in FOCUS))
-    print(f"[calib] a cutoff of I<{a.implaus_cut} therefore admits a deviation of about "
-          f"{a.implaus_cut * min(denom.values()):.2f}-{a.implaus_cut * max(denom.values()):.2f} %pt "
-          f"on EVERY scored technology and year")
+    sd_obs = sd_obs_for(a, ys)
+    for y in ys:
+        denom = {k: (sd_mc[k] ** 2 + sd_obs[y][k] ** 2 + a.sd_disc ** 2) ** 0.5 for k in FOCUS}
+        print(f"[calib] {y} implausibility denominator (%pt): " +
+              "  ".join(f"{k.split('_')[0].lower()} sqrt({sd_mc[k]:.3f}^2+{sd_obs[y][k]:.3f}^2+{a.sd_disc}^2)"
+                        f"={denom[k]:.3f}" for k in FOCUS))
+        print(f"[calib] {y}: a cutoff of I<{a.implaus_cut} admits a deviation of "
+              f"{a.implaus_cut * min(denom.values()):.2f}-{a.implaus_cut * max(denom.values()):.2f} %pt "
+              f"on every scored technology")
 
     rows = []
     for i, p in enumerate(samples, 1):
         e, mix = evaluate_set(a.scope, p, a)
-        imp = {str(y): implausibility(mix[y], obs_by_year[y], sd_mc, a.sd_obs, a.sd_disc) for y in ys}
+        imp = {str(y): implausibility(mix[y], obs_by_year[y], sd_mc, sd_obs[y], a.sd_disc) for y in ys}
         imax = max(v for d in imp.values() for v in d.values())
         eff = shares_to_weights(p)              # effective shares after the residual/bounds fix-up
         rows.append({"mad": e, "implausibility_max": imax, "sampled": dict(p), "weights": eff,
@@ -545,9 +632,34 @@ def do_search(a):
     print(f"retained by MAD <= {a.tolerance}          : {len(keep_tol)}/{len(rows)} weight sets")
     print(f"retained by implausibility I < {a.implaus_cut}: {len(keep_imp)}/{len(rows)} weight sets")
     print(f"--retention {a.retention} -> carrying {len(keep)} sets forward")
+    table = retention_table(rows, obs_by_year, sd_mc, sd_obs)
+    print_retention_table(table)
+    if a.outdir:                    # written even when nothing is retained: then it matters most
+        os.makedirs(a.outdir, exist_ok=True)
+        tpath = os.path.join(a.outdir, "calibration_retention_sensitivity.csv")
+        with open(tpath, "w", newline="", encoding="utf-8") as f:
+            wr = csv.DictWriter(f, fieldnames=list(table[0])); wr.writeheader(); wr.writerows(table)
+        print(f"wrote {tpath}")
+
+    def dump(reps):
+        if not a.outdir:
+            return
+        out = os.path.join(a.outdir, "calibration_search.json")
+        json.dump({"scope": a.scope, "retention": a.retention,
+                   "tolerance": a.tolerance, "implaus_cut": a.implaus_cut,
+                   "sd_mc": sd_mc, "sd_obs": {str(y): sd_obs[y] for y in ys}, "sd_disc": a.sd_disc,
+                   "focus": list(FOCUS), "retention_sensitivity": table,
+                   "engine_fixed": CALIB_FIXED,
+                   "iterations": a.iterations, "seed": a.seed,
+                   "default_mad": base, "default_mix": {str(y): base_mix[y] for y in ys},
+                   "observed": {str(y): obs_by_year[y] for y in ys},
+                   "n_retained_tolerance": len(keep_tol), "n_retained_implausibility": len(keep_imp),
+                   "samples": rows, "retained": keep, "representative": reps}, open(out, "w"), indent=1)
+        print(f"\nwrote {out}")
 
     if not keep:
         print("nothing retained -- widen --tolerance or the sampled ranges")
+        dump({})
         return
 
     print(f"\nRetained ranges (effective shares):\n{'share':<22}{'min':>8}{'median':>9}{'max':>8}{'default':>9}")
@@ -569,18 +681,38 @@ def do_search(a):
               " ".join(f"{k}={v:.3f}" for k, v in r["weights"].items() if k != "wPbcToBehavior"))
         print(f"{'':28}-D flags: " + " ".join(f"-Dht.{k}={v}" for k, v in r["weights"].items()))
 
-    if a.outdir:
-        os.makedirs(a.outdir, exist_ok=True)
-        out = os.path.join(a.outdir, "calibration_search.json")
-        json.dump({"scope": a.scope, "retention": a.retention,
-                   "tolerance": a.tolerance, "implaus_cut": a.implaus_cut,
-                   "sd_mc": sd_mc, "sd_obs": a.sd_obs, "sd_disc": a.sd_disc,
-                   "iterations": a.iterations, "seed": a.seed,
-                   "default_mad": base, "default_mix": {str(y): base_mix[y] for y in ys},
-                   "observed": {str(y): obs_by_year[y] for y in ys},
-                   "n_retained_tolerance": len(keep_tol), "n_retained_implausibility": len(keep_imp),
-                   "samples": rows, "retained": keep, "representative": reps}, open(out, "w"), indent=1)
-        print(f"\nwrote {out}")
+    dump(reps)
+
+
+def sd_obs_for(a, ys):
+    """{year: {technology: sd}}: derived from the data (--sd-obs auto, default) or one number."""
+    if str(a.sd_obs).lower() == "auto":
+        sd = measure_sd_obs(a.scope, ys)
+        for y in ys:
+            print(f"[calib] sd_obs {y} (from rounding + unallocated share, %pt): " +
+                  "  ".join(f"{k.split('_')[0].lower()}={sd[y][k]:.3f}" for k in FOCUS))
+        return sd
+    return {y: {k: float(a.sd_obs) for k in SYSTEMS} for y in ys}
+
+
+def do_sdobs(a):
+    """Print the data-derived observation uncertainty and exit (no model runs)."""
+    ys = scored_years(a.start, a.end)
+    sd = measure_sd_obs(a.scope, ys)
+    print(f"\nObservation uncertainty of the provincial share, {a.scope} (%pt, 1 sd):")
+    print(f"{'technology':<22}" + "".join(f"{y:>9}" for y in ys))
+    for k in SYSTEMS:
+        print(f"{k:<22}" + "".join(f"{sd[y][k]:>9.3f}" for y in ys) + ("   scored" if k in FOCUS else ""))
+
+
+def do_reanalyse(a):
+    """Re-score an existing calibration_search.json on the (sd_disc x cutoff) grid, without model
+    runs. Uses the stored sd_mc; sd_obs is recomputed from the data unless --sd-obs is a number."""
+    d = json.load(open(a.json, encoding="utf-8"))
+    ys = sorted(int(y) for y in d["observed"])
+    obs_by_year = {y: d["observed"][str(y)] for y in ys}
+    table = retention_table(d["samples"], obs_by_year, d["sd_mc"], sd_obs_for(a, ys))
+    print_retention_table(table)
 
 
 def do_converge(a):
@@ -623,7 +755,7 @@ def do_converge(a):
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("mode", choices=["evaluate", "search", "converge"])
+    ap.add_argument("mode", choices=["evaluate", "search", "converge", "sdobs", "reanalyse"])
     ap.add_argument("--scope", default="province:Noord-Brabant",
                     help="calibration region (representative on stock + heating mix)")
     ap.add_argument("--start", type=int, default=2022)
@@ -637,8 +769,9 @@ def main():
                          "'retained' and used to pick the representative sets.")
     ap.add_argument("--implaus-cut", type=float, default=3.0,
                     help="search: rule a set out when max-output implausibility exceeds this (3 = the\nconventional 3-sigma cutoff)")
-    ap.add_argument("--sd-obs", type=float, default=0.25,
-                    help="observation SD per technology share (%%pt); CBS rounding + suppression")
+    ap.add_argument("--sd-obs", default="auto",
+                    help="observation SD per technology share (%%pt): 'auto' derives it per technology "
+                         "and year from the CBS series (rounding + unallocated share), or give a number")
     ap.add_argument("--sd-disc", type=float, default=0.5,
                     help="model-discrepancy SD per technology share (%%pt). This is an analyst\njudgement and must be argued for in the write-up, not tuned.")
     ap.add_argument("--sd-mc", default="auto",
@@ -657,11 +790,15 @@ def main():
     ap.add_argument("--axis", default="shareAffordability",
                     help="search: share to span with the representative sets")
     ap.add_argument("--outdir", default=None)
+    ap.add_argument("--json", default=None, help="reanalyse: path to an existing calibration_search.json")
     a = ap.parse_args()
     SEED_OFFSET[0] = a.seed_offset
-    ensure_built(a.skip_build)
-    {"evaluate": do_evaluate, "search": do_search,
-     "converge": do_converge}[a.mode](a)
+    if a.mode == "reanalyse" and not a.json:
+        ap.error("reanalyse needs --json")
+    if a.mode not in ("sdobs", "reanalyse"):          # these two run no model
+        ensure_built(a.skip_build)
+    {"evaluate": do_evaluate, "search": do_search, "converge": do_converge,
+     "sdobs": do_sdobs, "reanalyse": do_reanalyse}[a.mode](a)
 
 
 if __name__ == "__main__":

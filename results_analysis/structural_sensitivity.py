@@ -55,6 +55,9 @@ FACTORS = {
     "energyPrice":       (0.0, 1.0,   price_map),   # coupled gas+electricity
     # years between reviews of a dwelling on district heating (no end of life there); default 5
     "dhReviewYears":     (1.0, 10.0,  lambda v: {"dhReviewYears": int(round(v))}),
+    # non-monetary barrier to leaving DH, EUR one-off; default 0 (cost only). 3000 ~ P90 and
+    # 6500 ~ P99 of the barrier DH households need before leaving stops paying
+    "dhExitBarrier":     (0.0, 6500.0, lambda v: {"dhExitBarrier": v}),
 }
 
 # NOTE on socialLearningMult. It scales the subjective-norm weight: wSn = slf * wSnBase, and only
@@ -80,7 +83,8 @@ FACTOR_GROUPS = {
     # The structural set: modelling choices with no external anchor. Varying these says how much
     # the result depends on assumptions that cannot be observed.
     "structural": ["gumbelScaleUtil", "gumbelScaleEac", "salienceThreshold",
-                   "salienceSteepness", "salienceK", "lifetimeJitterSd", "dhReviewYears"],
+                   "salienceSteepness", "salienceK", "lifetimeJitterSd", "dhReviewYears",
+                   "dhExitBarrier"],
 }
 
 # Readable names for reporting. Keys are the -Dht flags; values are what a reader should see.
@@ -97,6 +101,7 @@ FACTOR_LABEL = {
     "salienceSteepness": "Salience: momentum steepness",
     "lifetimeJitterSd":  "Equipment lifetime spread",
     "dhReviewYears":     "District-heating review interval",
+    "dhExitBarrier":     "District-heating exit barrier",
 }
 
 def scope_tag(scope):

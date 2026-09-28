@@ -811,10 +811,10 @@ years (2022-2024). This short observation window cannot uniquely identify the de
 many combinations reproduce recent adoption equally well. Rather than forcing a best-fit and risking
 overfitting, we use history matching within the Generalized Likelihood Uncertainty Estimation
 (GLUE) framework \citep{beven_future_2006}. Each weight is bounded by a plausible range around the
-values reported by \citet{okurAdoptionRenewableHeating2024}. A Latin-hypercube sample of 100 weight
-sets is drawn across this space and used as simulation input. Every set whose simulated 2022--2024 
-change in the provincial heating mix falls within a tolerance of the observed change is retained, 
-the rest is discarded. To keep the sampling behaviorally interpretable, we vary normalized shares 
+values reported by \citet{okurAdoptionRenewableHeating2024}. A Latin-hypercube sample of 1000 weight
+sets is drawn across this space and used as simulation input. Every set whose simulated 2023 and
+2024 heating mix is not implausible given the observations (defined below) is retained, the rest is
+discarded. To keep the sampling behaviorally interpretable, we vary normalized shares
 within each stage of the decision function rather than raw weights, which reduces the space to
 four free parameters. The retained sets constitute a plausibility ensemble that is carried into 
 the scenario analysis, so that pathways are reported as a band across behaviorally plausible
@@ -823,13 +823,64 @@ was used. The ensemble is itself a result and is reported as such in Section~\re
 
 Calibration is carried out on the province of Noord-Brabant over 2022--2024, the most recent
 window for which the Dutch statistics office reports a methodologically consistent
-per-neighborhood heating-mix series. Each weight set is scored by the mean absolute deviation
-of its simulated 2023 and 2024 mixes from the observed mixes, taken across the three
-technologies that move materially over the window (natural gas boilers, hybrid and electric heat pumps). 
+per-neighborhood heating-mix series. The model is initialized from the observed 2022 mix and
+scored on the simulated 2023 and 2024 provincial shares of four technologies: natural gas
+boilers, hybrid and electric heat pumps, which move materially over the window, and district
+heating. Collective gas heating is not scored, as it is decided by housing blocks rather than by
+the calibrated weights. During calibration, dwellings on district heating stay connected: over
+2022--2024 housing associations kept their district-heating stock connected, often in agreement
+with municipalities, and the observed district-heating share is stable. This is a policy rather
+than a cost decision, so it is excluded from the baseline, where connected dwellings reconsider
+their heating periodically and may leave, and represented in the policy scenarios.
 
-This calibration is done with two iteration per weights set. This is already more than required as 
-the standard deviation between iterations is much smaller than the set tolerance (0.028 compared to 
-2 percentage points). See Appendix~\ref{app:replication} for more detail).
+A weight set is judged by the implausibility of each scored output $k$ (technology and year),
+the standard measure in history matching \citep{vernonGalaxyFormationBayesian2010,
+andrianakisBayesianHistoryMatching2015}:
+\begin{equation}
+  I_k = \frac{\lvert s_k - o_k \rvert}{\sqrt{\sigma_{\mathrm{MC},k}^2 + \sigma_{\mathrm{obs},k}^2 + \sigma_{\mathrm{disc}}^2}},
+  \label{eq:implausibility}
+\end{equation}
+where $s_k$ is the simulated and $o_k$ the observed share in percentage points. The denominator
+collects the three reasons why a plausible weight set need not reproduce the observation exactly.
+$\sigma_{\mathrm{MC},k}$ is the stochastic variation of the model itself, measured as the
+standard deviation of $s_k$ over eight independent Monte-Carlo worlds at the default weights.
+$\sigma_{\mathrm{obs},k}$ is the uncertainty of the observation, derived from the data: the
+provincial share is a dwelling-weighted aggregate of neighborhood shares that CBS publishes as
+whole percentages, next to a share of dwellings whose heating type is unknown (about 2\,\%). We
+propagate both through the aggregate by Monte-Carlo simulation, drawing the rounding error
+independently per neighborhood and the allocation of the unknown share over the technologies
+once per replicate, because a classification issue affects all neighborhoods alike. This gives
+$\sigma_{\mathrm{obs},k} = 0.28$--$0.29$ percentage points for every scored technology and year,
+almost entirely from the unknown share. $\sigma_{\mathrm{disc}}$ is the model discrepancy: the
+allowance for the model being a simplified account of the heat transition. It cannot be
+estimated from the data and is set to 0.5 percentage points, about a tenth of the observed
+2022--2024 change in the natural-gas share. A set is retained when $\max_k I_k < 3$, the
+conventional cutoff that follows from the three-sigma rule for unimodal distributions
+\citep{pukelsheimThreeSigmaRule1994}; with the terms above, this admits a deviation of about
+1.7 percentage points on every scored output. Because $\sigma_{\mathrm{disc}}$ and the cutoff are
+judgements, Table~\ref{tab:retention_sensitivity} reports how many sets are retained when either
+is varied.
+
+\begin{table}[h]
+  \centering
+  \caption{Number of the 1000 sampled weight sets retained, by model-discrepancy allowance
+  $\sigma_{\mathrm{disc}}$ and implausibility cutoff. The central choice is in bold.}
+  \label{tab:retention_sensitivity}
+  \begin{tabular}{lrrr}
+    \toprule
+    $\sigma_{\mathrm{disc}}$ (pp) & $I < 2.5$ & $I < 3.0$ & $I < 3.5$ \\
+    \midrule
+    % TODO fill from calibration_retention_sensitivity.csv after the recalibration
+    0.25 & -- & -- & -- \\
+    0.50 & -- & \textbf{--} & -- \\
+    1.00 & -- & -- & -- \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+This calibration is done with two iterations per weight set. This is more than required, as the
+standard deviation between iterations (0.028 percentage points) is much smaller than the
+deviation the criterion admits (Appendix~\ref{app:replication}).
 
 %% ---------------------------------------------------------------------------
 \subsection{Sensitivity to process and techno-economic parameters}
@@ -1042,11 +1093,12 @@ electrification and district heating.
 \label{sec:res-general}
 
 Matching the sampled weight set results to the observed 2022--2024 heating mix of Noord-Brabant 
-retains 27 of the 1000 weight sets sampled (Figure~\ref{fig:ensemble_fit}). A set is retained 
-when its worst single scored output of the technologies (both heat pump types and natural gas 
-boilers), in either year, 
-deviates from the observation by more than 1.7 percentage points. See
-Section~\ref{sec:calibrating} for how this threshold is determined. The retained sets are well
+retains 27 of the 1000 weight sets sampled (Figure~\ref{fig:ensemble_fit}). % TODO update numbers after the recalibration
+A set is retained when none of its scored outputs (natural gas boilers, both heat pump types and
+district heating, in 2023 and 2024) is implausible, $\max_k I_k < 3$
+(Equation~\ref{eq:implausibility}), which corresponds to a deviation of no more than about 1.7
+percentage points from the observation. See Section~\ref{sec:calibrating} for how this threshold
+is determined and Table~\ref{tab:retention_sensitivity} for its sensitivity. The retained sets are well
 within it; their mean absolute deviation over all years and technologies is 0.19–0.88 percentage 
 points, compared to 2.19 for the same model run at its uncalibrated default weights. They are 
 also clearly separated from the bulk of the sample, which plateaus around five percentage points, so retention is not a matter of where a threshold is drawn within many similar sets

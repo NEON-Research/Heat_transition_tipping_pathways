@@ -18,7 +18,8 @@ public final class Economics {
         // the network belongs to the operator. So its one-off costs are the ACM connection fee for a
         // dwelling that newly connects (minus the subsidy), nothing for a dwelling that is already
         // connected, and the disconnection fee on top of any other option for a dwelling that
-        // leaves. The annual DH costs are in fixedAnnualCost (DistrictHeatingCosts.annualFixed).
+        // leaves, plus the non-monetary exit barrier (Constants.DH_EXIT_BARRIER). The annual DH
+        // costs are in fixedAnnualCost (DistrictHeatingCosts.annualFixed).
         boolean onDH = d.currentType == HeatingSystem.DISTRICT_HEATING;
         double investment, subsidy = hs.subsidy;
         if (hs.type == HeatingSystem.DISTRICT_HEATING) {
@@ -26,7 +27,7 @@ public final class Economics {
             else investment = Constants.CAPEX_MULT_DH * DistrictHeatingCosts.connectionFee();
         } else {
             investment = investmentCostsSupply(hs, d.heatDemandKWh);
-            if (onDH) investment += DistrictHeatingCosts.disconnectionFee();
+            if (onDH) investment += DistrictHeatingCosts.disconnectionFee() + Constants.DH_EXIT_BARRIER;
         }
         if (hs.requiresLowTemp && !d.hasLowTemp) investment += hs.distributionSystemCost;
 

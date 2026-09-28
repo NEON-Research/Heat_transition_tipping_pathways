@@ -107,8 +107,18 @@ public final class Constants {
     /** A dwelling on district heating has no end of life of its own (the network and delivery set
      *  belong to the operator). Instead it reviews its heating every this many years since it
      *  connected, and leaves only if another option wins including the disconnection fee.
-     *  Default 5; a sensitivity parameter. */
+     *  Default 5; a sensitivity parameter. 0 = never review, i.e. DH dwellings stay connected
+     *  (used in the calibration, see calibrate_weights.py CALIB_FIXED). */
     public static final int DH_REVIEW_YEARS = (int) p("dhReviewYears", 5);
+    /** Non-monetary barrier to leaving district heating, EUR one-off, added to every non-DH option
+     *  of a dwelling on DH on top of the ACM disconnection fee (contracts, collective networks,
+     *  tenant consent). Default 0: the baseline is cost-driven, so connected dwellings may leave.
+     *  For reference, on cost alone leaving pays for 73 % of DH households (Noord-Brabant, 2023,
+     *  central prices); a barrier of ~3,000 EUR would stop that for 90 % of them. The calibration
+     *  instead keeps DH dwellings connected by switching the review off (dhReviewYears = 0), because
+     *  over 2022-2024 housing associations and municipalities kept DH stock connected. A sensitivity
+     *  and scenario parameter. */
+    public static final double DH_EXIT_BARRIER = p("dhExitBarrier", 0);
     /** Drop the fixed connection charges from the EAC (isolates the price-path change on its own). */
     public static final boolean FIXED_COSTS_OFF = p("fixedCostsOff", 0.0) != 0.0;
 

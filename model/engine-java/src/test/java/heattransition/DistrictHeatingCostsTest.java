@@ -31,15 +31,20 @@ class DistrictHeatingCostsTest {
         assertEquals(expected, newcomer - connected, 1.0);
     }
 
-    @Test void leavingDistrictHeatingAddsTheDisconnectionFee() {
+    @Test void leavingDistrictHeatingAddsTheDisconnectionFeeAndExitBarrier() {
         Map<HeatingSystem, HeatingSystemSpec> hs = HeatingSystemData.freshSpecs();
         for (HeatingSystem t : new HeatingSystem[]{ HeatingSystem.NATURAL_GAS_BOILER,
                 HeatingSystem.HYBRID_HEAT_PUMP, HeatingSystem.ELECTRIC_HEAT_PUMP }) {
             HeatingSystemSpec h = hs.get(t);
             long fromGas = Economics.computeEAC(h, dwelling(HeatingSystem.NATURAL_GAS_BOILER), NO_INSULATION);
             long fromDH  = Economics.computeEAC(h, dwelling(HeatingSystem.DISTRICT_HEATING), NO_INSULATION);
-            assertEquals(DistrictHeatingCosts.disconnectionFee() / annuity(h), fromDH - fromGas, 1.0, t.name());
+            double oneOff = DistrictHeatingCosts.disconnectionFee() + Constants.DH_EXIT_BARRIER;
+            assertEquals(oneOff / annuity(h), fromDH - fromGas, 1.0, t.name());
         }
+    }
+
+    @Test void exitBarrierDefault() {
+        assertEquals(0, Constants.DH_EXIT_BARRIER, 1e-9);     // baseline: cost-driven, may leave
     }
 
     @Test void reviewTrigger() {
