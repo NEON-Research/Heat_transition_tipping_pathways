@@ -12,7 +12,11 @@ import java.util.List;
  */
 public final class DistrictHeating {
 
-    public static final double REQUIRED_HEAT_DEMAND_GJ_PER_HA = 600;  // p_requiredHeatDemand_GJPerHa
+    /** Heat-density threshold for COST_BASED expansion, GJ/ha (p_requiredHeatDemand_GJPerHa).
+     *  Overridable with -Dht.dhDensityThreshold so the rollout extent can be swept: this and the
+     *  planning time are the ONLY things that move district-heating share once a connection
+     *  obligation is in force. */
+    public static final double REQUIRED_HEAT_DEMAND_GJ_PER_HA = Constants.p("dhDensityThreshold", 600);
     public static final int PLAN_AND_CONSTRUCTION_YEARS = 5;          // scenario dhConstructionTime
     private static final int LATEST_OPERATIONAL_YEAR = 2045;          // hardcoded in AL
 

@@ -112,11 +112,11 @@ def main():
         for j in range(4):
             ax.text(j,i,f"{M[i,j]:.1f}",ha="center",va="center",fontsize=8,
                     color=("white" if M[i,j] > 0.6*_hi else "#1a1a1a"))
-    ax.set_title("Parameter sensitivity, $\\mu^*$ per technology — Noord-Brabant screen\n(mean over 3 weight vectors)")
+    ax.set_title("Mean absolute elementary effect $\\mu^*$ per technology",fontsize=11)
     fig.colorbar(im,ax=ax,shrink=.8,label="$\\mu^*$ (%pt per full-range move)")
     tot=[np.mean([mor[v]["total"][f] for v in mor]) for f in factors]
     axb.barh(range(len(factors)),tot,color="#555"); axb.set_yticks([]); axb.invert_yaxis()
-    axb.set_title("$\\mu^*$ total\n(sum over technologies)",fontsize=10); axb.grid(alpha=.3,axis="x")
+    axb.set_title("summed over technologies",fontsize=10); axb.grid(alpha=.3,axis="x")
     f3=os.path.join(CALDIR,"fig_structural_morris.png"); fig.savefig(f3,dpi=130,bbox_inches="tight"); plt.close(fig)
 
     _written.append(f3)

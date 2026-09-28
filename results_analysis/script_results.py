@@ -37,6 +37,7 @@ SCENARIO_PAIRS = [
     ("economic_learning_factor_low", "economic_learning_factor_high"),
     ("social_learning_factor_low", "social_learning_factor_high"),
     ("dh_policy_based_connection_obligation", "grid_congestion_HP_ban"),
+    # Retired from the scenario matrix (Scenario.RETIRED); present only in archived CSVs.
     ("individual_technologies", "collective_technologies"),
     ("policy_driven_dh_strategy", "policy_driven_sha_strategy"),
     ("individual_tech_dh_connection_obligation", "individual_tech_grid_congestion_ban"),

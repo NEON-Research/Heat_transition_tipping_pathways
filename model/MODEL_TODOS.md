@@ -101,9 +101,30 @@ the current ensemble is defensible — but worth a sensitivity check on the reta
 - **Structural sensitivity.** Separate Morris + LHS screen of process and techno-economic parameters
   at fixed calibrated weights, over the 2050 modal split, repeated at three weight vectors to confirm
   the ranking is weight-stable. Energy price, HP learning rate and HP capex dominate.
-- **Q5 — energy prices.** Real annual growth per fuel wired into the EAC (`-Dht.gasPriceGrowth`,
-  `elecPriceGrowth`; default 0 = static). Coupled low/high bracket derived from **KEV 2025 Table 10**
-  2030 bandwidths, passed through to retail on the commodity component.
+- **Q5 — energy prices.** Replaced the per-fuel CAGR by a year x arm reference table,
+  `model/data/reference/energy_prices_by_year.csv`, built by `build_energy_price_table.py` and
+  loaded by `EnergyPrices.java`; the growth-rate knobs are gone and the table is required.
+  `retail = commodity + energiebelasting`, both incl. 21 % btw, from CBS 85592NED
+  (`Btw=A048944`); only `commodity` differs between arms, tax and fixed charges are policy and are
+  held at their last observed level in real terms. All six 2030 endpoints come from **KEV 2025
+  Table 1.5** — the observed post-crisis CBS range is written to the provenance file as a check and
+  does not move the band. The arms are **decorrelated**: what drives switching is the spark spread,
+  not the level, so `GAS_LOW_ELEC_HIGH` / `CENTRAL` / `GAS_HIGH_ELEC_LOW` take the band corners and
+  give 2050 spreads of 2.39 / 1.97 / 1.48. The 2022-24 crisis years are held at the 2025 level
+  (`CRISIS_BASELINE`), because CBS reports the new-contract price and almost no household paid it.
+  The arm comes from the `energy_prices` column of `data/scenario_settings.csv`; `-Dht.priceT`
+  overrides it continuously so an LHS can sweep it.
+- **Fixed connection costs.** Previously absent everywhere. The table now carries gas, electricity
+  and heat standing charges, entered into the EAC through `hs.fixedAnnualCost` in
+  `Economics.computeEAC`. Electricity (transport + vastrecht - heffingskorting, net **-36 EUR/yr**)
+  cancels between technologies because every dwelling keeps its electricity connection; **gas
+  (344 EUR/yr) is the term that matters**, since a dwelling leaving gas stops paying it, and heat
+  carries 619 EUR/yr (+170 afleverset, off by default). Largest single effect measured so far:
+  2050 gas share 7.2 -> 5.7 % from the price paths, then -> 1.8 % once fixed costs are charged.
+  *Superseded for heat (2026-09-28):* district heating now uses the ACM 2025 tariffs in
+  `data/district_heating_costs.csv` (761 EUR/yr fixed + metering + delivery set; connection fee for
+  new connections, disconnection fee for leaving), has no end of life but a review every
+  `-Dht.dhReviewYears` (default 5), and efficiency 1.0. See CALIBRATION_AND_VALIDATION.md.
 - **Replication analysis.** `pathway_convergence.py` sizes MC iterations for the 2024–2050 pathways
   (the 3-year calibration figure does not transfer — the pathway is ~15× noisier).
 

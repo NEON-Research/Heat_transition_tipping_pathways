@@ -50,15 +50,22 @@ def read(path, year=2050, scen="baseline"):
     """{segment_type: {segment: {tech: stock}}} plus the mean decision terms per segment."""
     stock = defaultdict(lambda: defaultdict(lambda: defaultdict(float)))
     terms = defaultdict(lambda: defaultdict(lambda: defaultdict(list)))
+    iters = set()
     with open(path, newline="") as fh:
         for r in csv.DictReader(fh):
             if r["scenario_name"] != scen or int(float(r["year"])) != year: continue
+            iters.add(r["iteration"])
             te = MERGE.get(r["heating_system"], r["heating_system"])
             stock[r["segment_type"]][r["segment"]][te] += float(r["stock"])
             for c in ("avg_eac", "avg_att", "avg_sub_norm", "avg_pbc"):
                 if r.get(c):
                     try: terms[r["segment_type"]][r["segment"]][c].append(float(r[c]))
                     except ValueError: pass
+    n = max(len(iters), 1)          # stock is summed over MC iterations; report the per-world mean
+    if n > 1:
+        for st in stock.values():
+            for seg in st.values():
+                for te in seg: seg[te] /= n
     return stock, terms
 
 
@@ -96,11 +103,22 @@ def main():
     ap.add_argument("--scope", default="nl")
     ap.add_argument("--year", type=int, default=2050)
     ap.add_argument("--scenario", default="baseline")
+    ap.add_argument("--segments", default=None,
+                    help="segments CSV to read. Default: results/<scope>/knockout_intact/ (the run at\n"
+                         "the ensemble's central weights), falling back to the scope root. The root\n"
+                         "file can be left over from an earlier ensemble, so it is not used blindly.")
     ap.add_argument("--copy-to", default=os.path.join(ROOT, "heat_transition_tipping_dynamics", "figures"))
     a = ap.parse_args()
     base = os.path.join(ROOT, "results", tag(a.scope))
-    src = os.path.join(base, "simulation_results_segments.csv")
+    if a.segments:
+        src = a.segments
+    else:
+        cands = [os.path.join(base, "knockout_intact", "simulation_results_segments.csv"),
+                 os.path.join(base, "simulation_results_segments.csv")]
+        src = next((c for c in cands if os.path.exists(c)), cands[-1])
     if not os.path.exists(src): sys.exit(f"[seg] no segments file at {src}")
+    import time
+    print(f"[seg] source: {src}\n[seg] modified: {time.strftime('%Y-%m-%d %H:%M', time.localtime(os.path.getmtime(src)))}")
     outdir = os.path.join(base, "figures"); os.makedirs(outdir, exist_ok=True)
     stock, terms = read(src, a.year, a.scenario)
     ctx, dwl = stock.get("context", {}), stock.get("dwelling", {})
@@ -151,7 +169,7 @@ def main():
         def part(seg, field):
             m = DWL_RE.match(seg); return m.group(field) if m else None
         for name, field in (("size", "size"), ("construction era", "era"),
-                            ("insulation label", "label")):
+                            ("insulation label (2024)", "label")):
             g, n = group(dwl, lambda s, f=field: part(s, f))
             attr[name] = (g, n); report(f"by {name} (all ownerships)", g, n)
             seps[name] = (max(g[k]["ELECTRIC_HEAT_PUMP"] for k in g)
@@ -185,9 +203,16 @@ def main():
               "c. Owner-occupied, by heat demand", dem_n)
     bar_panel(axes[1, 1], sorted(arc, key=lambda k: -arc[k]["ELECTRIC_HEAT_PUMP"]), arc,
               "d. Owner-occupied, by dwelling type", arc_n)
-    if "insulation label" in attr:
-        g, n = attr["insulation label"]
-        bar_panel(axes[2, 0], sorted(g), g, "e. Insulation label (all ownership classes)", n)
+    if "insulation label (2024)" in attr:
+        g, n = attr["insulation label (2024)"]
+        # The segment key -- including its label band -- is assigned ONCE at initialisation
+        # (Simulation.java: d.segDwelling = Segments.dwellingSegment(d)), so this is the 2024
+        # label, not the 2050 one. Dwellings insulate during the run, both exogenously and when a
+        # heat pump forces an upgrade, so a "2050 label" cut would be endogenous to the choice and
+        # could not be read as a driver. Say 2024 in the title or the panel invites the opposite
+        # reading.
+        bar_panel(axes[2, 0], sorted(g), g,
+                  "e. Insulation label in 2024 (all ownership classes)", n)
     else:
         axes[2, 0].set_visible(False)
     axes[2, 1].set_visible(False)

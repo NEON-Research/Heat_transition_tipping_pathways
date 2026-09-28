@@ -278,24 +278,27 @@ public final class Simulation {
         for (HeatingSystem t : HeatingSystem.values())
             hs.get(t).salienceFactor = Decision.salienceFactor((double) cumInstalled.get(t) / n, prevShare.get(t));
     }
-    /** Apply the real energy-price path for `year`: retail price = base * (1+growth)^(year-startYear),
-     *  gas growth for NATURAL_GAS and HEAT (niet-meer-dan-anders), electricity growth for ELECTRICITY.
-     *  growth=0 (default) keeps prices static. Uses each spec's frozen initial* base. */
+    /** Set this year's energy prices and fixed connection charges on every technology spec, from
+     *  data/reference/energy_prices_by_year.csv (see {@link EnergyPrices}): an absolute retail price
+     *  per year per arm, plus the annual gas and heat connection charges. */
     private void updateEnergyPrices(int year) {
-        double dt = year - startYear;
-        double gasF  = Math.pow(1 + Constants.GAS_PRICE_GROWTH,  dt);
-        double elecF = Math.pow(1 + Constants.ELEC_PRICE_GROWTH, dt);
-        for (HeatingSystem t : HeatingSystem.values()) {
-            HeatingSystemSpec h = hs.get(t);
-            h.primaryCostPerKWh   = h.initialPrimaryCostPerKWh   * priceFactor(h.primarySource,   gasF, elecF);
-            h.secondaryCostPerKWh = h.initialSecondaryCostPerKWh * priceFactor(h.secondarySource, gasF, elecF);
+        // The arm comes from the scenario's energy_prices column; -Dht.priceT overrides it, which is
+        // what the LHS uses to sweep the arm continuously.
+        double t = Constants.PRICE_T >= 0 ? Constants.PRICE_T : scen.priceT();
+        for (HeatingSystem type : HeatingSystem.values()) {
+            HeatingSystemSpec h = hs.get(type);
+            h.primaryCostPerKWh   = EnergyPrices.variable(h.primarySource,   year, t);
+            h.secondaryCostPerKWh = EnergyPrices.variable(h.secondarySource, year, t);
+            // Fixed connection charges. Only the GAS and HEAT connections differ between options;
+            // the electricity connection is common to all of them and so is not charged. The heat
+            // connection costs the ACM fixed charge + metering + delivery-set rental.
+            double fixed = 0;
+            if (!Constants.FIXED_COSTS_OFF) {
+                if (h.gasConnection)  fixed += EnergyPrices.gasFixed(year, t);
+                if (h.heatConnection) fixed += DistrictHeatingCosts.annualFixed();
+            }
+            h.fixedAnnualCost = fixed;
         }
-    }
-    private static double priceFactor(String source, double gasF, double elecF) {
-        if (source == null) return 1.0;
-        if (source.equals("ELECTRICITY")) return elecF;
-        if (source.equals("NATURAL_GAS") || source.equals("HEAT")) return gasF;   // HEAT: niet-meer-dan-anders
-        return 1.0;
     }
     /** DSO step: recompute each neighbourhood's peak load, flag congestion, then let the grid
      *  operator reinforce a share of congested neighbourhoods (scenario rate GRR). Congestion is
@@ -354,12 +357,14 @@ public final class Simulation {
         // 3. electric HP blocked under grid congestion (congestion state set by the DSO model)
         if (t == HeatingSystem.ELECTRIC_HEAT_PUMP && scen.gridCongestionHpBan && d.hasGridCongestion) return false;
         // 4. gas block is a COLLECTIVE system: it may only be kept/replaced by a dwelling that is
-        //    ALREADY on block heating (an apartment). An individual boiler never becomes block
-        //    heating. Combined with rule 5, gas block is a closed category that can only shrink or
-        //    upgrade to HP/DH -- never grow from boilers. (Fixes the privately-rented boiler->block
-        //    ratchet that inflated gas block; MODEL_TODOS A.)
+        //    ALREADY on block heating. An individual boiler never becomes block heating. Combined
+        //    with rule 5, gas block is a closed category that can only shrink or upgrade to HP/DH --
+        //    never grow from boilers. (Fixes the privately-rented boiler->block ratchet that inflated
+        //    gas block; MODEL_TODOS A.) No archetype condition: the loader also puts terraced and
+        //    other dwellings in HOA blocks, and a block can only re-install gas block if every one of
+        //    its households may, so an archetype test locked mixed blocks out of gas altogether.
         if (t == HeatingSystem.NATURAL_GAS_BLOCK)
-            return d.archetype.equals("APARTMENT") && d.currentType == HeatingSystem.NATURAL_GAS_BLOCK;
+            return d.currentType == HeatingSystem.NATURAL_GAS_BLOCK;
         // 5. conversely, a dwelling on collective block heating cannot switch to an INDIVIDUAL gas
         //    boiler (a block can't fragment into per-dwelling boilers; the two gas rows are
         //    byte-identical in the AL data apart from the DB key, so the swap has no cost basis). It
@@ -601,7 +606,9 @@ public final class Simulation {
         // District-heating company expands the grid (Main.f_adoptionProces step 2).
         // COST_BASED runs in the baseline too -- this is not policy-scenario-only.
         nbhWithDHPerc = DistrictHeating.expand(neighbourhoods, year, rng,
-            scen.dhExpansionStrategy, scen.dhConstructionTime, nbhsWithoutDHStartYear);
+            scen.dhExpansionStrategy, Constants.DH_CONSTRUCTION_YEARS >= 0
+                ? (int) Constants.DH_CONSTRUCTION_YEARS : scen.dhConstructionTime,
+            nbhsWithoutDHStartYear);
 
         YearRow r = new YearRow(year);
 
@@ -621,10 +628,12 @@ public final class Simulation {
             }
         }
 
-        // 1. Social-housing + HOA blocks (whole block, avg EAC, end-of-life)
+        // 1. Social-housing + HOA blocks (whole block, avg EAC, end-of-life; a block on district
+        //    heating instead reviews every DH_REVIEW_YEARS and stays unless another option wins)
         for (HousingBlock b : blocks) {
-            int lifetime = b.lifeDraw;
-            if (b.age < lifetime) continue;
+            boolean dhReview = b.currentType == HeatingSystem.DISTRICT_HEATING;
+            if (dhReview ? !Decision.hasDhReviewTrigger(b.age, Constants.DH_REVIEW_YEARS)
+                         : !Decision.hasEndOfLifeTrigger(b.age, b.lifeDraw)) continue;
             Map<HeatingSystem, Double> avg = new EnumMap<>(HeatingSystem.class);
             Map<HeatingSystem, Boolean> poss = new EnumMap<>(HeatingSystem.class);
             for (HeatingSystem t : HeatingSystem.values()) { avg.put(t, 0.0); poss.put(t, true); }
@@ -668,6 +677,7 @@ public final class Simulation {
                 double[] ea = blkEac.get(bt); ea[0] += gEac; ea[1] += hEac;
                 if (hEac < gEac) st[3]++;
             }
+            if (dhReview && chosen == HeatingSystem.DISTRICT_HEATING) chosen = null;   // stays connected
             if (chosen != null) {
                 b.hasLowTemp = hs.get(chosen).requiresLowTemp;   // installNewHeatingMethodInHouseholds
                 for (Dwelling d : b.households) {
@@ -693,10 +703,11 @@ public final class Simulation {
             }
         }
 
-        // 2. Landlords (individual, end-of-life, cost)
+        // 2. Landlords (individual, end-of-life, cost; district heating: periodic review)
         for (Dwelling d : landlords) {
-            int lifetime = d.lifeDraw;
-            if (!Decision.hasEndOfLifeTrigger(d.age, lifetime)) continue;
+            boolean dhReview = d.currentType == HeatingSystem.DISTRICT_HEATING;
+            if (dhReview ? !Decision.hasDhReviewTrigger(d.age, Constants.DH_REVIEW_YEARS)
+                         : !Decision.hasEndOfLifeTrigger(d.age, d.lifeDraw)) continue;
             r.considered++;
             Map<HeatingSystem, long[]> e = eac(d);
             Map<HeatingSystem, double[]> eacByType = new EnumMap<>(HeatingSystem.class);
@@ -705,6 +716,7 @@ public final class Simulation {
             for (HeatingSystem t : HeatingSystem.values()) if (e.get(t)[1] != 0) {
                 r.eacSum.get("PRIVATELY_RENTED")[t.ordinal()] += e.get(t)[0]; r.eacN.get("PRIVATELY_RENTED")[t.ordinal()]++; }
             HeatingSystem chosen = chooseByEAC(eacByType);
+            if (dhReview && chosen == HeatingSystem.DISTRICT_HEATING) chosen = null;   // stays connected
             if (chosen != null) { r.removed.merge(d.currentType, 1, Integer::sum); r.installed.merge(chosen, 1, Integer::sum);
                 cumInstalled.merge(chosen, 1, Integer::sum);
                 if (!d.hasLowTemp) d.hasLowTemp = hs.get(chosen).requiresLowTemp;
@@ -722,8 +734,12 @@ public final class Simulation {
         List<PendingHomeowner> hoPending = new ArrayList<>();
         for (Dwelling d : homeowners) {
             int lifetime = d.lifeDraw;
-            boolean eol = Decision.hasEndOfLifeTrigger(d.age, lifetime);
-            boolean opp = Decision.hasOpportunityTrigger(d.age, lifetime, legacyTrigger);
+            // On district heating there is no end of life: a periodic review acts as an
+            // opportunity trigger, so the dwelling only changes if another option wins.
+            boolean onDH = d.currentType == HeatingSystem.DISTRICT_HEATING;
+            boolean eol = !onDH && Decision.hasEndOfLifeTrigger(d.age, lifetime);
+            boolean opp = onDH ? Decision.hasDhReviewTrigger(d.age, Constants.DH_REVIEW_YEARS)
+                               : Decision.hasOpportunityTrigger(d.age, lifetime, legacyTrigger);
             if (!eol && !opp) continue;
             hoPending.add(new PendingHomeowner(d, eol, eac(d)));  // PASS 1: populate window only
         }

@@ -18,16 +18,26 @@ final class Csv {
         List<Map<String, String>> rows = new ArrayList<>();
         List<String> lines = Files.readAllLines(path);
         if (lines.isEmpty()) return rows;
-        List<String> header = parseLine(lines.get(0).replace("\uFEFF", ""));
-        for (int li = 1; li < lines.size(); li++) {
+        // '#' comment lines are skipped anywhere in the file, so a generated reference table can
+        // carry its provenance in its own header without breaking the reader.
+        int h = 0;
+        while (h < lines.size() && isComment(lines.get(h).replace("\uFEFF", ""))) h++;
+        if (h >= lines.size()) return rows;
+        List<String> header = parseLine(lines.get(h).replace("\uFEFF", ""));
+        for (int li = h + 1; li < lines.size(); li++) {
             String line = lines.get(li);
-            if (line.isEmpty()) continue;
+            if (line.isEmpty() || isComment(line)) continue;
             List<String> vals = parseLine(line);
             Map<String, String> m = new LinkedHashMap<>();
             for (int i = 0; i < header.size(); i++) m.put(header.get(i), i < vals.size() ? vals.get(i) : "");
             rows.add(m);
         }
         return rows;
+    }
+
+    private static boolean isComment(String line) {
+        String t = line.trim();
+        return t.isEmpty() || t.startsWith("#");
     }
 
     static List<String> parseLine(String s) {

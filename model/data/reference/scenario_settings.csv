@@ -1,0 +1,33 @@
+# THE scenario matrix. Single source of truth: the Java engine loads it and parses it strictly, so
+# an unknown value aborts the run rather than silently changing the model. Edit here, then run
+# model/data-export/scripts/export_reference_tables.py, which re-validates and copies it to
+# model/data/reference/scenario_settings.csv (what the engine reads). `--print-scenarios` dumps
+# the matrix as JSON; every run echoes it to the log.
+#
+# energy_prices is a SPARK-SPREAD arm, not a price level. It moves the two fuels to opposite
+# corners of their (independent) KEV bands, because what drives fuel switching is the ratio:
+#   GAS_LOW_ELEC_HIGH  gas 0.114, elec 0.306 EUR/kWh -> spread 2.68, favours staying on gas
+#   CENTRAL            gas 0.123, elec 0.241          -> spread 1.97
+#   GAS_HIGH_ELEC_LOW  gas 0.146, elec 0.216          -> spread 1.48, favours heat pumps
+# Built by results_analysis/build_energy_price_table.py -> energy_prices_by_year.csv.
+#
+# Every row is run by `--scenario all`. status can park a row as 'retired' (buildable by name, not
+# iterated); nothing is parked. scen_id 11 never existed, as in AnyLogic.
+scen_id,scen_name,social_learning_factor,economic_learning_factor,grid_reinforcement_rate,energy_prices,DH_construction_time,DH_expansion_strategy,SHA_strategy,DH_connection_obligation,Grid_congestion_HP_ban,status
+1,baseline,MEDIUM,MEDIUM,MEDIUM,CENTRAL,5,COST_BASED,COST_BASED,FALSE,FALSE,active
+2,social_learning_factor_low,LOW,MEDIUM,MEDIUM,CENTRAL,5,COST_BASED,COST_BASED,FALSE,FALSE,active
+3,social_learning_factor_high,HIGH,MEDIUM,MEDIUM,CENTRAL,5,COST_BASED,COST_BASED,FALSE,FALSE,active
+4,economic_learning_factor_low,MEDIUM,LOW,MEDIUM,CENTRAL,5,COST_BASED,COST_BASED,FALSE,FALSE,active
+5,economic_learning_factor_high,MEDIUM,HIGH,MEDIUM,CENTRAL,5,COST_BASED,COST_BASED,FALSE,FALSE,active
+6,econ_low_social_high,HIGH,LOW,MEDIUM,CENTRAL,5,COST_BASED,COST_BASED,FALSE,FALSE,active
+7,econ_high_social_low,LOW,HIGH,MEDIUM,CENTRAL,5,COST_BASED,COST_BASED,FALSE,FALSE,active
+8,gas_low_elec_high,MEDIUM,MEDIUM,MEDIUM,GAS_LOW_ELEC_HIGH,5,COST_BASED,COST_BASED,FALSE,FALSE,active
+9,gas_high_elec_low,MEDIUM,MEDIUM,MEDIUM,GAS_HIGH_ELEC_LOW,5,COST_BASED,COST_BASED,FALSE,FALSE,active
+10,transition_fast,LOW,HIGH,MEDIUM,GAS_HIGH_ELEC_LOW,5,COST_BASED,COST_BASED,FALSE,FALSE,active
+11,transition_slow,HIGH,LOW,MEDIUM,GAS_LOW_ELEC_HIGH,5,COST_BASED,COST_BASED,FALSE,FALSE,active
+12,dh_connection_obligation,MEDIUM,MEDIUM,MEDIUM,CENTRAL,5,COST_BASED,COST_BASED,TRUE,FALSE,active
+13,dh_policy_based_connection_obligation,MEDIUM,MEDIUM,MEDIUM,CENTRAL,5,POLICY_BASED,COST_BASED,TRUE,FALSE,active
+14,grid_congestion_HP_ban,MEDIUM,MEDIUM,MEDIUM,CENTRAL,5,COST_BASED,COST_BASED,FALSE,TRUE,active
+15,policy_driven_dh_strategy,MEDIUM,MEDIUM,MEDIUM,CENTRAL,5,POLICY_BASED,COST_BASED,FALSE,FALSE,active
+16,policy_driven_sha_strategy,MEDIUM,MEDIUM,MEDIUM,CENTRAL,5,COST_BASED,POLICY_BASED,FALSE,FALSE,active
+17,actor_allignment_strategy,MEDIUM,MEDIUM,MEDIUM,CENTRAL,5,POLICY_BASED,POLICY_BASED,FALSE,FALSE,active

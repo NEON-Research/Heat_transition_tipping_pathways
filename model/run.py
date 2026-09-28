@@ -179,8 +179,8 @@ def main():
     ap.add_argument("--weights-file", default=SEARCH_JSON,
                     help=f"calibration search JSON to read --weights from (default: {SEARCH_JSON})")
     ap.add_argument("--prop", action="append", default=[], metavar="KEY=VALUE",
-                    help="inject a JVM system property, e.g. --prop ht.gasPriceGrowth=0.0262 "
-                         "(repeatable). Use for energy-price paths and other -Dht.* overrides.")
+                    help="inject a JVM system property, e.g. --prop ht.priceT=0.25 "
+                         "(repeatable). Use for the energy-price arm and other -Dht.* overrides.")
     args, engine_args = ap.parse_known_args()
 
     tag = scope_tag(args.scope)

@@ -118,6 +118,9 @@ def main():
     ap.add_argument("--min-adopters", type=int, default=100,
                     help="hide segment-technology lines with fewer adopters per year (small-sample noise)")
     ap.add_argument("--outdir", default=None)
+    ap.add_argument("--copy-to", default=os.path.join(ROOT, "heat_transition_tipping_dynamics", "figures"),
+                    help="also copy the figures main.tex references into the LaTeX figures folder;\n"
+                         "'' to skip. Without this the manuscript keeps an older copy, or none.")
     a = ap.parse_args()
     outdir = a.outdir or os.path.join(os.path.dirname(a.run), "mechanism")
     os.makedirs(outdir, exist_ok=True)
@@ -297,6 +300,26 @@ def main():
         w()
         w("figures:"); [w(f"   {x}") for x in [f1, f2] + driver_figs]
     print(f"\nwrote {rep}")
+
+
+    _copy_to_manuscript(a.outdir, a.copy_to)
+
+
+def _copy_to_manuscript(outdir, dest):
+    """Copy the figures main.tex includes into the LaTeX figures folder.
+
+    Only these two are referenced; the rest of this script's output stays in results/ as working
+    material. Without this step the manuscript silently keeps a stale copy -- or, as of Sept 2026,
+    had none at all and the build showed two missing-image boxes."""
+    import shutil
+    if not dest or not os.path.isdir(dest):
+        return
+    for name in ("mech_segment_scurves.png", "seg_clusters_context_2050.png"):
+        src = os.path.join(outdir, name)
+        if os.path.exists(src):
+            shutil.copy2(src, dest)
+            print(f"[mech] -> {os.path.join(dest, name)}")
+
 
 if __name__ == "__main__":
     main()

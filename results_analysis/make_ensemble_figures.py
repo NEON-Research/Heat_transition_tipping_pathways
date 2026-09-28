@@ -73,18 +73,40 @@ else:
 # Works with either retention score. `implausibility_max` is a single number per set (the worst
 # output), so it sorts and thresholds exactly like the MAD does -- and the per-output values can be
 # shown behind it, which the MAD cannot do.
+def _worst_dev_pp(s):
+    """The retained set's worst single scored deviation, in percentage points. Implausibility is
+    that deviation divided by the combined uncertainty of the comparison, and because the three
+    variance terms are shared across technologies the divisor is effectively one constant (0.56 pp
+    here): the two orderings are identical and retain the same sets. Reporting percentage points
+    keeps the figure in the same units as the text, where 'off by 1.7 points' needs no machinery
+    to read; the implausibility framing belongs with the retention rule in the methods."""
+    obs, mix = cal["observed"], s.get("mix")
+    if not mix: return np.nan
+    scored = cal.get("sd_mc", {})
+    try:
+        return max(abs(mix[y][t] - obs[y][t]) for y in obs for t in scored)
+    except (KeyError, TypeError):
+        return np.nan
+
 S = pd.DataFrame([{**s["sampled"], "mad": s["mad"],
-                   "imax": s.get("implausibility_max", np.nan)} for s in cal["samples"]])
-HAS_I = S["imax"].notna().all()
+                   "imax": s.get("implausibility_max", np.nan),
+                   "worst_pp": _worst_dev_pp(s)} for s in cal["samples"]])
+HAS_I = S["imax"].notna().all() and S["worst_pp"].notna().all()
 if HAS_I:
-    SCORE, CUT = "imax", cal.get("implaus_cut", 3.0)
-    YLAB = "implausibility  $I$  (worst technology and year)"
-    CUTLAB = f"cutoff $I$ = {CUT:g}"
+    # cutoff in points = the implausibility cutoff times the combined uncertainty
+    _sd = cal.get("sd_mc", {}); _so = cal.get("sd_obs", 0.0); _sdisc = cal.get("sd_disc", 0.0)
+    _den = np.mean([np.sqrt(v ** 2 + _so ** 2 + _sdisc ** 2) for v in _sd.values()])
+    SCORE, CUT = "worst_pp", cal.get("implaus_cut", 3.0) * _den
+    YLAB = "worst scored deviation from observed (%pt)"
+    CUTLAB = f"retention cutoff {CUT:.1f} %pt"
 else:
     SCORE, CUT = "mad", tol
     YLAB = "mean absolute deviation, 2023–2024 (%pt)"
     CUTLAB = f"retention tolerance {CUT:g} %pt"
-S["kept"] = S[SCORE] <= CUT
+# Colour by the ACTUAL retention decision, not by the plotted quantity. The cutoff line is drawn
+# at three times the MEAN combined uncertainty, but the rule divides each technology by its own,
+# and the two differ by ~1%: thresholding the plotted value would show 28 kept where 27 are.
+S["kept"] = (S["imax"] <= cal.get("implaus_cut", 3.0)) if HAS_I else (S[SCORE] <= CUT)
 KEEP, DROP = "#2c7fb8", "#cccccc"
 
 fig, axA = plt.subplots(1, 1, figsize=(6.6, 4.2))

@@ -91,14 +91,26 @@ public final class Constants {
     public static final double LIFETIME_JITTER_SD  = p("lifetimeJitterSd", 1.0);
     public static final int    LIFETIME_JITTER_MAX = (int) p("lifetimeJitterMax", 3.0);
 
-    // Energy-price paths: real annual growth applied to the RETAIL price of each fuel, price(y) =
-    // p0*(1+g)^(y-startYear), for all simulation years (myopic: each year's EAC uses that year's price
-    // held flat over the equipment horizon). Defaults 0 = today's static prices (parity). Scenario
-    // values are derived from KEV 2025 Table 10 wholesale 2030 bandwidth passed through additively to
-    // the retail base (taxes/network fixed) -- see CALIBRATION_AND_VALIDATION.md sec 6.5. HEAT (DH)
-    // follows the gas growth ("niet meer dan anders"). Only gas & electricity are varied.
-    public static final double GAS_PRICE_GROWTH  = p("gasPriceGrowth", 0.0);
-    public static final double ELEC_PRICE_GROWTH = p("elecPriceGrowth", 0.0);
+    // ---- Energy prices + fixed connection costs (EnergyPrices) ----------------------------------
+    // data/reference/energy_prices_by_year.csv holds, per year and per arm, the retail price split
+    // into commodity + tax, and the annual connection charges. It is required: a missing or
+    // malformed table aborts the run.
+    //
+    // priceT selects the arm continuously so an LHS can sweep it: 0 = low (gas low / elec high),
+    // 0.5 = central, 1 = high (gas high / elec low).
+    /** Override the scenario's energy-price arm. Negative (the default) = use the scenario's own
+     *  energy_prices column, so the matrix controls it; 0/0.5/1 forces low/central/high. */
+    public static final double PRICE_T = p("priceT", -1.0);
+    /** Override the scenario's DH planning+construction time, in years. Negative = use the
+     *  scenario value. Together with dhDensityThreshold this is the rollout speed/extent knob. */
+    public static final double DH_CONSTRUCTION_YEARS = p("dhConstructionYears", -1);
+    /** A dwelling on district heating has no end of life of its own (the network and delivery set
+     *  belong to the operator). Instead it reviews its heating every this many years since it
+     *  connected, and leaves only if another option wins including the disconnection fee.
+     *  Default 5; a sensitivity parameter. */
+    public static final int DH_REVIEW_YEARS = (int) p("dhReviewYears", 5);
+    /** Drop the fixed connection charges from the EAC (isolates the price-path change on its own). */
+    public static final boolean FIXED_COSTS_OFF = p("fixedCostsOff", 0.0) != 0.0;
 
     // Techno-economic sensitivity multipliers (default 1.0 = data as-is).
     //   capexMultHp  scales the investment cost of the heat pumps (hybrid + electric)

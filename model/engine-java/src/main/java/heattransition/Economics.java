@@ -14,7 +14,20 @@ public final class Economics {
     }
 
     public static long computeEAC(HeatingSystemSpec hs, Dwelling d, InsulationCost insulationCost) {
-        double investment = investmentCostsSupply(hs, d.heatDemandKWh);
+        // District heating has no equipment of the household's own: the delivery set is rented and
+        // the network belongs to the operator. So its one-off costs are the ACM connection fee for a
+        // dwelling that newly connects (minus the subsidy), nothing for a dwelling that is already
+        // connected, and the disconnection fee on top of any other option for a dwelling that
+        // leaves. The annual DH costs are in fixedAnnualCost (DistrictHeatingCosts.annualFixed).
+        boolean onDH = d.currentType == HeatingSystem.DISTRICT_HEATING;
+        double investment, subsidy = hs.subsidy;
+        if (hs.type == HeatingSystem.DISTRICT_HEATING) {
+            if (onDH) { investment = 0; subsidy = 0; }
+            else investment = Constants.CAPEX_MULT_DH * DistrictHeatingCosts.connectionFee();
+        } else {
+            investment = investmentCostsSupply(hs, d.heatDemandKWh);
+            if (onDH) investment += DistrictHeatingCosts.disconnectionFee();
+        }
         if (hs.requiresLowTemp && !d.hasLowTemp) investment += hs.distributionSystemCost;
 
         // Insulation upgrade to the system's required label. Call unconditionally and let
@@ -27,6 +40,11 @@ public final class Economics {
             investment += insulationCost.cost(d, hs.requiredLabel);
         }
 
+        // Annual running cost = energy + maintenance + the FIXED connection charge for this
+        // technology. The fixed term is what makes leaving gas worth something on its own: a
+        // dwelling on an electric heat pump drops the gas connection, a hybrid keeps paying it,
+        // and a district-heating connection carries its own (larger) standing charge. The
+        // electricity connection is common to every option and is therefore not charged.
         double energyPerYear = hs.primaryCostPerKWh * d.heatDemandKWh * hs.fractionPrimary / hs.efficiencyPrimary;
         if (hs.secondarySource != null && !hs.secondarySource.equals("NOT_APPLICABLE")) {
             energyPerYear += hs.secondaryCostPerKWh * d.heatDemandKWh * hs.fractionSecondary / hs.efficiencySecondary;
@@ -35,8 +53,8 @@ public final class Economics {
         double r = hs.discountRate;
         double tco = 0;
         for (int t = 0; t < hs.lifetime; t++) {
-            if (t == 0) tco += investment - hs.subsidy;
-            tco += (hs.maintenance + energyPerYear) / Math.pow(1 + r, t);
+            if (t == 0) tco += investment - subsidy;
+            tco += (hs.maintenance + hs.fixedAnnualCost + energyPerYear) / Math.pow(1 + r, t);
         }
         double annuityFactor = (1 - Math.pow(1 + r, -hs.lifetime)) / r;
         return Math.round(tco / annuityFactor);

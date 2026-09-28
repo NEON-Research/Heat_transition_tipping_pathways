@@ -51,6 +51,9 @@ MECHANISMS=[
                             ("social_learning_factor_high","Strong peer effect")),
  ("Rules & infrastructure", ("dh_policy_based_connection_obligation","DH connection obligation"),
                             ("grid_congestion_HP_ban","HP ban under congestion")),
+ # NOTE: the individual_/collective_technologies scenarios and their rule variants were retired
+ # from the scenario matrix (Scenario.RETIRED) in Sept 2026 -- they moved several switches at
+ # once. These rows only populate from an archived results CSV, and are empty for a new run.
  ("Coordination",           ("individual_technologies","Individual only"),
                             ("collective_technologies","Collective allowed")),
  ("Policy strategy",        ("policy_driven_dh_strategy","DH-led"),

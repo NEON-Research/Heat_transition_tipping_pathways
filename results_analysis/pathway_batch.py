@@ -24,10 +24,14 @@ RUNPY = os.path.join(ROOT, "model", "run.py")
 ANALYZE_ALL = os.path.join(HERE, "analyze_all.py")
 PAPER_FIGS  = os.path.join(HERE, "paper_figures.py")
 MIX_GRID    = os.path.join(HERE, "scenario_mix_grid.py")
+LOOP_EFFECTS = os.path.join(HERE, "loop_effects.py")
 SEARCH_DEFAULT = os.path.join(ROOT, "results", "calib", "calibration_search.json")
-# coupled price ends (KEV 2025 Table 10 2030 bandwidth -> retail; gas & electricity move together)
-PRICE = {"low":  {"ht.gasPriceGrowth": -0.0100, "ht.elecPriceGrowth": -0.0157},
-         "high": {"ht.gasPriceGrowth":  0.0262, "ht.elecPriceGrowth":  0.0141}}
+# Coupled price arms. The engine reads the whole price path from
+# model/data/reference/energy_prices_by_year.csv (built by build_energy_price_table.py); -Dht.priceT
+# picks the arm, 0 = low, 0.5 = central (the default), 1 = high. Gas and electricity move together,
+# as they did under the previous pair of growth rates.
+PRICE = {"low":  {"ht.priceT": 0.0},
+         "high": {"ht.priceT": 1.0}}
 # Knock-out runs: disable ONE reinforcing loop at a time, everything else identical (same seeds,
 # stock, weights). The gap versus the intact run is that loop's causal contribution -- the evidence
 # that the transition depends on the feedback, rather than merely correlating with it (Q8).
@@ -41,6 +45,17 @@ KNOCKOUT = {"nolearn":   {"ht.learningRateMult": 0},      # economic learning lo
             "nocongest": {"ht.congestionOff": 1}}         # grid constraint removed (control)
 # opt-in extra: bounds the salience amplifier alone, which is a weaker claim than the loop knock-out
 KNOCKOUT_EXTRA = {"nosalience": {"ht.salienceFreeze": 1}}
+
+def newest_search():
+    """The most recently written calibration_search.json under results/. Picking the newest and
+    printing it is safer than a fixed path: a hardcoded default silently keeps pointing at a
+    superseded calibration long after a new one has been run."""
+    import glob as _glob
+    c = _glob.glob(os.path.join(ROOT, "results", "*", "calibration_search.json"))
+    if not c:
+        sys.exit("[batch] no calibration_search.json under results/ -- run calibrate_weights first")
+    return max(c, key=os.path.getmtime)
+
 
 def tag(scope):
     s = scope.strip().lower()
@@ -80,7 +95,10 @@ def resolve_weights(search_json, which):
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--scope", default="province:Noord-Brabant")
+    ap.add_argument("--scope", required=True,
+                    help="nl | province:<Name> | gemeente:<Name>. Required: this job costs hours and\n"
+                         "writes to results/<scope>/, so it must not have a default that silently\n"
+                         "sends a national run to the calibration province.")
     ap.add_argument("--iterations", type=int, default=3, help="MC iters per scenario (band spread dominates; 3-5 is enough)")
     ap.add_argument("--ensemble-weights", default="all", help="run.py --weights value for the band (all | representative)")
     ap.add_argument("--price-weights", default="median",
@@ -95,20 +113,39 @@ def main():
     ap.add_argument("--no-price", action="store_true")
     ap.add_argument("--no-knockout", action="store_true",
                     help="skip the loop knock-out runs (causal evidence for the tipping mechanisms)")
-    ap.add_argument("--search", default=SEARCH_DEFAULT,
-                    help="calibration search JSON holding the retained ensemble "
-                         "(default: results/calib/calibration_search.json)")
+    ap.add_argument("--search", default=None,
+                    help="calibration search JSON holding the retained ensemble. Default: the most\n"
+                         "recently written calibration_search.json under results/ -- a fixed default\n"
+                         "goes stale the moment a new calibration is run, and the weights then differ\n"
+                         "silently from the ensemble everything else uses.")
     ap.add_argument("--knockout-salience", action="store_true",
                     help="also run the salience-amplifier freeze (bounds the amplifier, not the loop)")
     ap.add_argument("--knockout-scenario", default="baseline",
                     help="scenario for the knock-out runs (default baseline; 'all' for the full matrix)")
     a = ap.parse_args()
-    if not os.path.exists(a.search):
-        sys.exit(f"[batch] no calibration search file at {a.search}")
-    SEARCH = a.search
+    SEARCH = a.search or newest_search()
+    if not os.path.exists(SEARCH):
+        sys.exit(f"[batch] no calibration search file at {SEARCH}")
     resdir = os.path.join(ROOT, "results", tag(a.scope)); os.makedirs(resdir, exist_ok=True)
     XMX = ["--xmx", a.xmx] if a.xmx else []   # forwarded to every run.py invocation
     t0 = time.time()
+
+    # Echo what was actually resolved, and record it next to the output. Every provenance problem
+    # in this project has come from a run whose scope or ensemble was not what the reader assumed.
+    n_ret = len((json.load(open(SEARCH)).get("retained") or []))
+    steps = [n for n, on in (("band", not a.no_band), ("price", not a.no_price),
+                             ("knock-out", not a.no_knockout)) if on]
+    print("=" * 72)
+    print(f"  scope      {a.scope}  ->  results/{tag(a.scope)}/")
+    print(f"  ensemble   {os.path.relpath(SEARCH, ROOT)}  ({n_ret} retained sets)")
+    print(f"  steps      {', '.join(steps) or 'none'}   iterations {a.iterations}")
+    print("=" * 72, flush=True)
+    manifest = {"scope": a.scope, "tag": tag(a.scope), "search": os.path.relpath(SEARCH, ROOT),
+                "n_retained": n_ret, "iterations": a.iterations, "steps": steps,
+                "price_weights": a.price_weights, "ensemble_weights": a.ensemble_weights,
+                "started": time.strftime("%Y-%m-%d %H:%M:%S")}
+    with open(os.path.join(resdir, "run_manifest.json"), "w") as fh:
+        json.dump(manifest, fh, indent=2)
 
     # 1. preference band
     if not a.no_band:
@@ -156,7 +193,9 @@ def main():
              "--run", out, "--knockout"] + ko + ["--outdir", os.path.join(resdir, "mechanism")],
             os.path.join(resdir, "log_mechanism.txt"))
 
-    # 3. full cross-set analysis: per-scenario bands + global figures (Morris, price triptych, EHP)
+    # 3. figures. The two band-dependent scripts need the ensemble runs, but the scenario-mix
+    #    grid reads the price and knock-out folders too, so it must also run after a --no-band
+    #    job -- otherwise a knock-out re-run silently leaves its own figure stale.
     if not a.no_band:
         run([sys.executable, ANALYZE_ALL, "--scope", a.scope],
             os.path.join(resdir, "log_analyze.txt"))
@@ -164,10 +203,15 @@ def main():
         # separate script because they cut across scopes; run them so one command yields every figure
         run([sys.executable, PAPER_FIGS, "--scope", a.scope, "--calib", os.path.dirname(SEARCH)],
             os.path.join(resdir, "log_paper_figures.txt"))
+    if not (a.no_band and a.no_price and a.no_knockout):
         # small multiples: stacked-to-100% mix 2024-2050, one panel per scenario (ensemble median,
         # price bracket, knock-outs) -- the replacement for the single-year price triptych
-        run([sys.executable, MIX_GRID, "--scope", a.scope],
+        run([sys.executable, MIX_GRID, "--scope", a.scope, "--search", SEARCH],
             os.path.join(resdir, "log_mix_grid.txt"))
+        # loop effects: the divergence-from-baseline figure main.tex includes, plus the lever chart.
+        # Reads the cache scenario_mix_grid.py just wrote, so it must run AFTER it.
+        run([sys.executable, LOOP_EFFECTS, "--scope", a.scope],
+            os.path.join(resdir, "log_loop_effects.txt"))
 
     print(f"\n[batch] done in {(time.time()-t0)/3600:.2f} h.\n"
           f"  band      -> {resdir}/calib/\n"

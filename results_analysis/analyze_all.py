@@ -11,7 +11,8 @@ Each results CSV is read once. Usage:
 import argparse, csv, glob, json, os, re
 from collections import defaultdict
 import numpy as np
-from structural_sensitivity import FACTOR_LABEL, matplotlib; matplotlib.use("Agg"); import matplotlib.pyplot as plt
+from structural_sensitivity import FACTOR_LABEL
+import matplotlib; matplotlib.use("Agg"); import matplotlib.pyplot as plt
 from matplotlib import cm; from matplotlib.colors import Normalize
 
 HERE=os.path.dirname(os.path.abspath(__file__))

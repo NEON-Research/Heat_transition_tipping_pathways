@@ -1,0 +1,9 @@
+# 2030 commodity endpoints per arm. All six come from KEV 2025 Table 1.5; the
+# observed columns are a CHECK against monthly CBS data from 2025 onwards and do not move the band. Constant 2024 EUR/kWh.
+fuel,arm,endpoint_2030,source,observed_min,observed_max,endpoint_within_observed_range
+gas,low,0.043119,KEV 2025 Table 1.5 bandwidth,0.055372,0.066883,no
+gas,central,0.051308,KEV 2025 Table 1.5 basispad,0.055372,0.066883,no
+gas,high,0.074852,KEV 2025 Table 1.5 bandwidth,0.055372,0.066883,no
+elec,low,0.110136,KEV 2025 Table 1.5 bandwidth,0.13262,0.158685,no
+elec,central,0.135136,KEV 2025 Table 1.5 basispad,0.13262,0.158685,yes
+elec,high,0.167136,KEV 2025 Table 1.5 bandwidth,0.13262,0.158685,no

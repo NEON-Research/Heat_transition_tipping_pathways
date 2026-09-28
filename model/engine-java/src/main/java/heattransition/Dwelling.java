@@ -40,6 +40,7 @@ public final class Dwelling {
     public double insulToB = 0, insulToC = 0;
     public String numid = "";
     public String buurt = "NA";
+    public String pc6 = "";                      // postcode; social blocks are formed per PC6
     public int category = 0, networkSize = 0;
 
     public Dwelling(int id, HeatingSystem currentType, int age, double heatDemandKWh, String energyLabel,

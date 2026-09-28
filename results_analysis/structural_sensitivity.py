@@ -28,13 +28,16 @@ STOCK = os.path.join(MODEL, "data", "stock")
 ENGINE_CP = os.environ.get("HT_ENGINE_CP", os.path.join(MODEL, "engine-java", "build", "classes", "java", "main"))
 SYSTEMS = ["NATURAL_GAS_BOILER", "NATURAL_GAS_BLOCK", "HYBRID_HEAT_PUMP", "ELECTRIC_HEAT_PUMP", "DISTRICT_HEATING"]
 
-# Energy price is ONE coupled factor (gas & electricity move together — power price is gas-linked at the
-# margin). t in [0,1] interpolates LOW (both fall) -> HIGH (both rise); endpoints = KEV 2025 Table 10
-# 2030 bandwidth passed through to retail (see sec 6.5).
-PRICE_LOW  = {"gasPriceGrowth": -0.0100, "elecPriceGrowth": -0.0157}
-PRICE_HIGH = {"gasPriceGrowth":  0.0262, "elecPriceGrowth":  0.0141}
+# Energy price is ONE coupled factor (gas & electricity move together — power price is gas-linked at
+# the margin). t in [0,1] selects the arm of model/data/reference/energy_prices_by_year.csv:
+# 0 = low, 0.5 = central, 1 = high, linearly interpolated in between. The engine reads the whole
+# path from that table, so there is nothing to map here beyond passing t through.
+#
+# This replaces the earlier pair of constant growth rates. A single CAGR escalated the energy tax and
+# the network charge at the commodity's rate and could not express KEV's ramp-to-2030-then-flat
+# shape; the table separates commodity from tax and varies only the commodity.
 def price_map(t):
-    return {k: PRICE_LOW[k] + t * (PRICE_HIGH[k] - PRICE_LOW[k]) for k in PRICE_LOW}
+    return {"priceT": t}
 
 # name -> (low, high, map(actual)->{-Dht key: value}). Only parameters the user retained (efficiency,
 # discount, lifetime, subsidy, network size are deliberately excluded and held fixed).
@@ -48,7 +51,36 @@ FACTORS = {
     "capexMultHp":       (0.85, 1.15, lambda v: {"capexMultHp": v}),
     "capexMultDh":       (0.85, 1.15, lambda v: {"capexMultDh": v}),
     "learningRateMult":  (0.5, 2.0,   lambda v: {"learningRateMult": v}),
+    "socialLearningMult": (0.5, 2.0,  lambda v: {"socialLearningMult": v}),
     "energyPrice":       (0.0, 1.0,   price_map),   # coupled gas+electricity
+    # years between reviews of a dwelling on district heating (no end of life there); default 5
+    "dhReviewYears":     (1.0, 10.0,  lambda v: {"dhReviewYears": int(round(v))}),
+}
+
+# NOTE on socialLearningMult. It scales the subjective-norm weight: wSn = slf * wSnBase, and only
+# the PRODUCT enters the intention. wSnBase is itself a calibrated weight, and the retained ensemble
+# already spans it 0.104-0.438 (a 4.2x range). Sweeping slf over the SCENARIO interval [0.5, 2] is
+# therefore not an independent uncertainty: at the ensemble median it moves wSn over 0.137-0.547,
+# largely retracing ground the ensemble already covers. It is included because the paper treats the
+# social channel as a scenario LEVER -- "how far could an intervention strengthen or weaken peer
+# influence" -- on the same footing as the price arms and the economic learning rate, not as an
+# unknown to be propagated. Reported mu* must be read that way, and it partly double-counts the
+# ensemble spread that the screen averages over.
+
+# Named subsets for --factors. "structural" is the set the scenarios do NOT explore: energy price and
+# the learning rate are scenario arms, and heat-pump / district-heating capex has no sourced uncertainty
+# range, so quantifying it here would report a rank that follows from an assumed interval.
+FACTOR_GROUPS = {
+    "all":        list(FACTORS),
+    # The scenario levers: quantities with an external range and a policy reading, carried as
+    # scenario arms rather than propagated as uncertainty. Screening them together is what
+    # justifies that split.
+    "levers":     ["energyPrice", "learningRateMult", "socialLearningMult",
+                   "capexMultHp", "capexMultDh"],
+    # The structural set: modelling choices with no external anchor. Varying these says how much
+    # the result depends on assumptions that cannot be observed.
+    "structural": ["gumbelScaleUtil", "gumbelScaleEac", "salienceThreshold",
+                   "salienceSteepness", "salienceK", "lifetimeJitterSd", "dhReviewYears"],
 }
 
 # Readable names for reporting. Keys are the -Dht flags; values are what a reader should see.
@@ -57,12 +89,14 @@ FACTOR_LABEL = {
     "capexMultDh":       "District-heating connection cost",
     "energyPrice":       "Energy price path (gas + electricity)",
     "learningRateMult":  "Economic learning rate",
+    "socialLearningMult": "Social learning strength",
     "gumbelScaleUtil":   "Choice randomness (utility)",
     "gumbelScaleEac":    "Choice randomness (cost)",
     "salienceThreshold": "Salience: novelty threshold",
     "salienceK":         "Salience: novelty steepness",
     "salienceSteepness": "Salience: momentum steepness",
     "lifetimeJitterSd":  "Equipment lifetime spread",
+    "dhReviewYears":     "District-heating review interval",
 }
 
 def scope_tag(scope):
@@ -220,12 +254,17 @@ def main():
     ap.add_argument("--scenario", default="baseline")
     ap.add_argument("--sort", default="total", choices=list(SORTCOL),
                     help="which column ranks the factor table (default: total = whole-mix influence)")
-    ap.add_argument("--factors", default=",".join(FACTORS), help="comma list; subset for lhs after morris screens")
+    ap.add_argument("--factors", default=",".join(FACTORS), help="comma list, or a named group: " + "|".join(FACTOR_GROUPS) +
+                         ". 'structural' is everything the scenarios do not explore.")
     ap.add_argument("--weights", default="median",
                     help="weight vector to hold fixed: median | best_fit | high_shareAffordability | "
                          "low_shareAffordability | retained:<i>  (run the screen at 2-3 to check the "
                          "ranking is weight-stable)")
-    ap.add_argument("--weights-file", default=os.path.join(ROOT, "results", "calib", "calibration_search.json"))
+    ap.add_argument("--weights-file", default=None,
+                    help="calibration search JSON to take --weights from. Default: the most recently\n"
+                         "written calibration_search.json under results/. A fixed default goes stale\n"
+                         "the moment a new calibration is run, and the screen then silently sits at a\n"
+                         "different point in weight space than everything else.")
     ap.add_argument("--iterations", type=int, default=1,
                     help="MC iters per point. morris ranking is robust at 1 (effects >> the ~0.4%%pt "
                          "2050 noise); lhs quantification needs 5-10.")
@@ -237,10 +276,17 @@ def main():
     ap.add_argument("--skip-build", action="store_true", help="skip the gradlew rebuild (only if just built)")
     ap.add_argument("--outdir", default=None)
     a = ap.parse_args()
+    if not a.weights_file:
+        import glob as _glob
+        c = _glob.glob(os.path.join(ROOT, "results", "*", "calibration_search.json"))
+        if not c: sys.exit("[struct] no calibration_search.json under results/")
+        a.weights_file = max(c, key=os.path.getmtime)
+    print(f"weights file: {os.path.relpath(a.weights_file, ROOT)}")
     ensure_built(a.skip_build)
     if not os.path.exists(os.path.join(ENGINE_CP, "heattransition", "Cli.class")):
         sys.exit(f"engine not built at {ENGINE_CP} — run `gradlew build` in model/engine-java first")
-    names = [n.strip() for n in a.factors.split(",") if n.strip()]
+    names = (list(FACTOR_GROUPS[a.factors]) if a.factors in FACTOR_GROUPS
+             else [n.strip() for n in a.factors.split(",") if n.strip()])
     bad = [n for n in names if n not in FACTORS]
     if bad: sys.exit(f"unknown factor(s): {bad}. Valid: {list(FACTORS)}")
     w, wlabel = get_weights(a.weights_file, a.weights)

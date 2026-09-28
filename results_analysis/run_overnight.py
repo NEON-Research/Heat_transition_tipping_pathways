@@ -62,7 +62,9 @@ def pick_vectors(search, n=3):
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--scope", default="province:Noord-Brabant")
+    ap.add_argument("--scope", required=True,
+                    help="nl | province:<Name> | gemeente:<Name>. Required rather than defaulted:\n"
+                         "this driver runs for hours and writes under results/<scope>/.")
     ap.add_argument("--outdir", default=os.path.join(ROOT, "results", "calib500b"))
     ap.add_argument("--samples", type=int, default=500)
     ap.add_argument("--iterations", type=int, default=1, help="MC replications per weight set")

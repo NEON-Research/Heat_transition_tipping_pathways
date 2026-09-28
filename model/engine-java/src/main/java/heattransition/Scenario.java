@@ -1,5 +1,7 @@
 package heattransition;
 
+import java.nio.file.Path;
+
 /** Scenario switches, from the AnyLogic scenario matrix (= JS SCEN table). Learning factors and
  *  the DH/SHA strategy + obligation/congestion flags. Use {@link #byName(String)} to build one. */
 public final class Scenario {
@@ -8,53 +10,203 @@ public final class Scenario {
     public String socialLearningFactor = "MEDIUM";
     public String economicLearningFactor = "MEDIUM";
     public String gridReinforcementRate = "MEDIUM";
+    /** Energy-price arm. NOT a price level: the arm moves the two fuels to OPPOSITE corners of
+     *  their KEV bands, so what it varies is the spark spread that drives fuel switching.
+     *    GAS_LOW_ELEC_HIGH  -> priceT 0    spread ~2.7, favours staying on gas
+     *    CENTRAL            -> priceT 0.5  spread ~2.0
+     *    GAS_HIGH_ELEC_LOW  -> priceT 1    spread ~1.5, favours heat pumps */
+    public String energyPrices = "CENTRAL";
     public int dhConstructionTime = 5;
     public String dhExpansionStrategy = "COST_BASED";   // or POLICY_BASED
     public String shaStrategy = "COST_BASED";           // or POLICY_BASED (social-housing strategy)
     public boolean dhConnectionObligation = false;
     public boolean gridCongestionHpBan = false;
 
+    /** The scenario's energy-price arm as the continuous knob EnergyPrices blends on:
+     *  LOW = 0 (both fuels at the low arm), MEDIUM = 0.5 (central), HIGH = 1. */
+    public double priceT() {
+        switch (energyPrices) {
+            case "GAS_LOW_ELEC_HIGH": return 0.0;
+            case "GAS_HIGH_ELEC_LOW": return 1.0;
+            default:                  return 0.5;   // CENTRAL
+        }
+    }
+
     public Scenario() {}
     public Scenario(int id, String name, String slf, String elf) {
         this.scenId = id; this.scenName = name; this.socialLearningFactor = slf; this.economicLearningFactor = elf;
     }
 
-    /** All 16 scenario names, in AnyLogic order (scen_id 11 is intentionally skipped, as in AL). */
-    public static final String[] NAMES = {
-        "baseline",
-        "social_learning_factor_low", "social_learning_factor_high",
-        "economic_learning_factor_low", "economic_learning_factor_high",
-        "policy_driven_dh_strategy", "policy_driven_sha_strategy", "actor_allignment_strategy",
-        "grid_congestion_HP_ban", "dh_policy_based_connection_obligation",
-        "individual_technologies", "collective_technologies",
-        "individual_tech_grid_congestion_ban", "collective_tech_grid_congestion_ban",
-        "individual_tech_dh_connection_obligation", "collective_tech_dh_connection_obligation",
-    };
+    // ---- Loaded from data/reference/scenario_settings.csv -------------------------------------
+    // The matrix is DATA, not code: the CSV is the single source of truth and the engine refuses to
+    // run without it. Parsing is strict on purpose -- an unknown column, an unknown enum value, a
+    // duplicate name or a bad status is a hard error, because the failure this design exists to
+    // prevent is a scenario silently differing from what the table says.
 
-    /** Build the scenario for a name (mirrors JS runFull SCEN). Throws on an unknown name. */
-    public static Scenario byName(String name) {
-        Scenario s = new Scenario();
-        s.scenName = name;
-        switch (name) {
-            case "baseline":                                 s.scenId = 1;  break;
-            case "social_learning_factor_low":               s.scenId = 2;  s.socialLearningFactor = "LOW";  break;
-            case "social_learning_factor_high":              s.scenId = 3;  s.socialLearningFactor = "HIGH"; break;
-            case "economic_learning_factor_low":             s.scenId = 4;  s.economicLearningFactor = "LOW";  break;
-            case "economic_learning_factor_high":            s.scenId = 5;  s.economicLearningFactor = "HIGH"; break;
-            case "policy_driven_dh_strategy":                s.scenId = 6;  s.dhExpansionStrategy = "POLICY_BASED"; break;
-            case "policy_driven_sha_strategy":               s.scenId = 7;  s.shaStrategy = "POLICY_BASED"; break;
-            case "actor_allignment_strategy":                s.scenId = 8;  s.dhExpansionStrategy = "POLICY_BASED"; s.shaStrategy = "POLICY_BASED"; break;
-            case "grid_congestion_HP_ban":                   s.scenId = 9;  s.gridCongestionHpBan = true; break;
-            case "dh_policy_based_connection_obligation":    s.scenId = 10; s.dhExpansionStrategy = "POLICY_BASED"; s.dhConnectionObligation = true; break;
-            case "individual_technologies":                  s.scenId = 12; s.socialLearningFactor = "HIGH"; s.economicLearningFactor = "HIGH"; break;
-            case "collective_technologies":                  s.scenId = 13; s.socialLearningFactor = "LOW";  s.economicLearningFactor = "LOW";  s.dhExpansionStrategy = "POLICY_BASED"; s.shaStrategy = "POLICY_BASED"; break;
-            case "individual_tech_grid_congestion_ban":      s.scenId = 14; s.socialLearningFactor = "HIGH"; s.economicLearningFactor = "HIGH"; s.gridCongestionHpBan = true; break;
-            case "collective_tech_grid_congestion_ban":      s.scenId = 15; s.socialLearningFactor = "LOW";  s.economicLearningFactor = "LOW";  s.dhExpansionStrategy = "POLICY_BASED"; s.shaStrategy = "POLICY_BASED"; s.gridCongestionHpBan = true; break;
-            case "individual_tech_dh_connection_obligation": s.scenId = 16; s.socialLearningFactor = "HIGH"; s.economicLearningFactor = "HIGH"; s.dhConnectionObligation = true; break;
-            case "collective_tech_dh_connection_obligation": s.scenId = 17; s.socialLearningFactor = "LOW";  s.economicLearningFactor = "LOW";  s.dhExpansionStrategy = "POLICY_BASED"; s.shaStrategy = "POLICY_BASED"; s.dhConnectionObligation = true; break;
-            default: throw new IllegalArgumentException("unknown scenario: " + name
-                + " (known: " + String.join(", ", NAMES) + ")");
+    private static final java.util.Set<String> LEVEL = java.util.Set.of("LOW", "MEDIUM", "HIGH");
+    private static final java.util.Set<String> STRATEGY = java.util.Set.of("COST_BASED", "POLICY_BASED");
+    private static final java.util.Set<String> PRICE_ARM =
+            java.util.Set.of("GAS_LOW_ELEC_HIGH", "CENTRAL", "GAS_HIGH_ELEC_LOW");
+    private static final String[] REQUIRED = {
+        "scen_id", "scen_name", "social_learning_factor", "economic_learning_factor",
+        "grid_reinforcement_rate", "energy_prices", "DH_construction_time", "DH_expansion_strategy",
+        "SHA_strategy", "DH_connection_obligation", "Grid_congestion_HP_ban", "status" };
+
+    private static java.util.LinkedHashMap<String, Scenario> TABLE;   // every row, by name
+    private static String[] activeNames;                              // status == active, in file order
+    private static String[] retiredNames;
+    private static Path source;
+
+    /** The scenario matrix `--scenario all` runs: the rows marked active, in file order. */
+    public static String[] names() { ensureLoaded(); return activeNames.clone(); }
+    /** Rows marked retired: still buildable by name so archived runs reproduce, never iterated. */
+    public static String[] retired() { ensureLoaded(); return retiredNames.clone(); }
+    /** Where the matrix was read from, for the run log. */
+    public static String sourcePath() { ensureLoaded(); return String.valueOf(source); }
+
+    /** Read the matrix. Call before byName() to control the path; otherwise the default is used. */
+    public static synchronized void loadFrom(Path csv) {
+        java.util.List<java.util.Map<String, String>> rows;
+        try {
+            rows = Csv.read(csv);
+        } catch (java.io.IOException e) {
+            throw new IllegalStateException("cannot read the scenario matrix at " + csv
+                + " -- the engine will not guess it: " + e.getMessage(), e);
         }
+        if (rows.isEmpty()) throw new IllegalStateException("scenario matrix is empty: " + csv);
+        for (String c : REQUIRED)
+            if (!rows.get(0).containsKey(c))
+                throw new IllegalStateException("scenario matrix " + csv + " is missing column '" + c + "'");
+
+        java.util.LinkedHashMap<String, Scenario> t = new java.util.LinkedHashMap<>();
+        java.util.List<String> act = new java.util.ArrayList<>(), ret = new java.util.ArrayList<>();
+        int line = 1;
+        for (java.util.Map<String, String> r : rows) {
+            line++;
+            String name = r.get("scen_name").trim();
+            if (name.isEmpty()) continue;
+            Scenario s = new Scenario();
+            s.scenName = name;
+            s.scenId = (int) num(csv, line, "scen_id", r.get("scen_id"));
+            s.socialLearningFactor   = level(csv, line, "social_learning_factor", r);
+            s.economicLearningFactor = level(csv, line, "economic_learning_factor", r);
+            s.gridReinforcementRate  = level(csv, line, "grid_reinforcement_rate", r);
+            s.energyPrices           = priceArm(csv, line, "energy_prices", r);
+            s.dhConstructionTime = (int) num(csv, line, "DH_construction_time", r.get("DH_construction_time"));
+            s.dhExpansionStrategy = strategy(csv, line, "DH_expansion_strategy", r);
+            s.shaStrategy         = strategy(csv, line, "SHA_strategy", r);
+            s.dhConnectionObligation = bool(csv, line, "DH_connection_obligation", r);
+            s.gridCongestionHpBan    = bool(csv, line, "Grid_congestion_HP_ban", r);
+            if (t.put(name, s) != null)
+                throw new IllegalStateException(csv + " line " + line + ": duplicate scenario '" + name + "'");
+            String st = r.get("status").trim().toLowerCase();
+            if (st.equals("active")) act.add(name);
+            else if (st.equals("retired")) ret.add(name);
+            else throw new IllegalStateException(csv + " line " + line + ": status must be 'active' or "
+                    + "'retired', got '" + r.get("status") + "'");
+        }
+        if (act.isEmpty()) throw new IllegalStateException("scenario matrix has no active rows: " + csv);
+        TABLE = t; activeNames = act.toArray(new String[0]); retiredNames = ret.toArray(new String[0]);
+        source = csv;
+    }
+
+    private static String level(Path f, int line, String col, java.util.Map<String, String> r) {
+        String v = String.valueOf(r.get(col)).trim().toUpperCase();
+        if (!LEVEL.contains(v)) throw new IllegalStateException(f + " line " + line + ": " + col
+            + " must be LOW/MEDIUM/HIGH, got '" + r.get(col) + "'");
+        return v;
+    }
+    private static String priceArm(Path f, int line, String col, java.util.Map<String, String> r) {
+        String v = String.valueOf(r.get(col)).trim().toUpperCase();
+        if (!PRICE_ARM.contains(v)) throw new IllegalStateException(f + " line " + line + ": " + col
+            + " must be GAS_LOW_ELEC_HIGH / CENTRAL / GAS_HIGH_ELEC_LOW (it is a spark-spread arm, "
+            + "not a price level), got '" + r.get(col) + "'");
+        return v;
+    }
+    private static String strategy(Path f, int line, String col, java.util.Map<String, String> r) {
+        String v = String.valueOf(r.get(col)).trim().toUpperCase();
+        if (!STRATEGY.contains(v)) throw new IllegalStateException(f + " line " + line + ": " + col
+            + " must be COST_BASED/POLICY_BASED, got '" + r.get(col) + "'");
+        return v;
+    }
+    private static boolean bool(Path f, int line, String col, java.util.Map<String, String> r) {
+        String v = String.valueOf(r.get(col)).trim().toUpperCase();
+        if (v.equals("TRUE") || v.equals("1")) return true;
+        if (v.equals("FALSE") || v.equals("0")) return false;
+        throw new IllegalStateException(f + " line " + line + ": " + col
+            + " must be TRUE/FALSE, got '" + r.get(col) + "'");
+    }
+    private static double num(Path f, int line, String col, String v) {
+        try { return Double.parseDouble(String.valueOf(v).trim()); }
+        catch (NumberFormatException e) {
+            throw new IllegalStateException(f + " line " + line + ": " + col + " must be a number, got '" + v + "'");
+        }
+    }
+
+    /** Default search path, for callers that did not loadFrom() explicitly (tests, SelfTest). */
+    private static synchronized void ensureLoaded() {
+        if (TABLE != null) return;
+        for (String p : new String[]{ "../data/reference/scenario_settings.csv",
+                                      "model/data/reference/scenario_settings.csv",
+                                      "data/reference/scenario_settings.csv" }) {
+            Path c = Path.of(p);
+            if (java.nio.file.Files.exists(c)) { loadFrom(c); return; }
+        }
+        throw new IllegalStateException("scenario matrix not found; pass --scenarios <file> or run "
+            + "from the engine directory (looked for data/reference/scenario_settings.csv)");
+    }
+
+    /** One line per active scenario, for the run log -- so a result CSV can be traced to its matrix. */
+    public static String describeMatrix() {
+        ensureLoaded();
+        StringBuilder b = new StringBuilder("[scenarios] ").append(activeNames.length)
+            .append(" active, ").append(retiredNames.length).append(" retired  <- ").append(source).append('\n');
+        for (String n : activeNames) {
+            Scenario s = TABLE.get(n);
+            b.append(String.format("  %-3d %-38s slf=%-6s elf=%-6s price=%-17s dh=%-12s sha=%-12s obligation=%-5b hpBan=%b%n",
+                s.scenId, s.scenName, s.socialLearningFactor, s.economicLearningFactor, s.energyPrices,
+                s.dhExpansionStrategy, s.shaStrategy, s.dhConnectionObligation, s.gridCongestionHpBan));
+        }
+        return b.toString();
+    }
+
+    /** The active matrix as JSON -- the array the deprecated JS engine takes via --scenarios. */
+    public static String toJson() {
+        ensureLoaded();
+        StringBuilder b = new StringBuilder("[\n");
+        for (int i = 0; i < activeNames.length; i++) {
+            Scenario s = TABLE.get(activeNames[i]);
+            b.append(String.format("  {\"scenId\": %d, \"scenName\": \"%s\", \"socialLearningFactor\": \"%s\", "
+                + "\"economicLearningFactor\": \"%s\", \"gridReinforcementRate\": \"%s\", "
+                + "\"energyPrices\": \"%s\", "
+                + "\"dhConstructionTime\": %d, \"dhExpansionStrategy\": \"%s\", \"shaStrategy\": \"%s\", "
+                + "\"dhConnectionObligation\": %b, \"gridCongestionHpBan\": %b}%s%n",
+                s.scenId, s.scenName, s.socialLearningFactor, s.economicLearningFactor,
+                s.gridReinforcementRate, s.energyPrices, s.dhConstructionTime, s.dhExpansionStrategy, s.shaStrategy,
+                s.dhConnectionObligation, s.gridCongestionHpBan, i < activeNames.length - 1 ? "," : ""));
+        }
+        return b.append("]").toString();
+    }
+
+    /** Build the scenario for a name. Returns a COPY, so a caller mutating it cannot corrupt the
+     *  loaded table. Throws on an unknown name, listing what the matrix does contain. */
+    public static Scenario byName(String name) {
+        ensureLoaded();
+        Scenario src = TABLE.get(name);
+        if (src == null) throw new IllegalArgumentException("unknown scenario: " + name
+            + " (active: " + String.join(", ", activeNames)
+            + "; retired but still buildable: " + String.join(", ", retiredNames) + ")");
+        Scenario s = new Scenario();
+        s.scenId = src.scenId; s.scenName = src.scenName;
+        s.socialLearningFactor = src.socialLearningFactor;
+        s.economicLearningFactor = src.economicLearningFactor;
+        s.gridReinforcementRate = src.gridReinforcementRate;
+        s.energyPrices = src.energyPrices;
+        s.dhConstructionTime = src.dhConstructionTime;
+        s.dhExpansionStrategy = src.dhExpansionStrategy;
+        s.shaStrategy = src.shaStrategy;
+        s.dhConnectionObligation = src.dhConnectionObligation;
+        s.gridCongestionHpBan = src.gridCongestionHpBan;
         return s;
     }
 }

@@ -28,8 +28,28 @@ public final class Cli {
         if (out == null) out = "simulation_results_" +
                 LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss")) + ".csv";
 
-        // --scenario all runs the full 16-scenario matrix into one CSV (like the AL batch run).
-        String[] scenarios = scName.equalsIgnoreCase("all") ? Scenario.NAMES : new String[]{ scName };
+        // The scenario matrix is DATA: data/reference/scenario_settings.csv, resolved next to the
+        // stock file unless --scenarios points elsewhere. Rows marked retired stay buildable by name
+        // so archived runs reproduce, but --scenario all iterates only the active ones.
+        String scenFile = arg(args, "scenarios", null);
+        if (scenFile != null) {
+            Scenario.loadFrom(Path.of(scenFile));
+        } else {
+            Path dir = Path.of(csv).toAbsolutePath().getParent();
+            if (dir != null && dir.getParent() != null) {
+                Path ref = dir.getParent().resolve("reference").resolve("scenario_settings.csv");
+                if (Files.exists(ref)) Scenario.loadFrom(ref);
+            }
+        }
+        // --print-scenarios dumps the active matrix as JSON and exits: the definitive answer to
+        // "which scenarios does this build actually run", and the array the JS engine takes.
+        if (!arg(args, "print-scenarios", "false").equals("false")) {
+            System.out.println(Scenario.toJson());
+            return;
+        }
+        // Echo the matrix into the run log, so a result CSV can always be traced to the table it came from.
+        System.out.print(Scenario.describeMatrix());
+        String[] scenarios = scName.equalsIgnoreCase("all") ? Scenario.names() : new String[]{ scName };
 
         long t0 = System.currentTimeMillis();
         StringBuilder sb = new StringBuilder(Results.HEADER).append('\n');
@@ -56,7 +76,7 @@ public final class Cli {
                 ag = null;   // drop the last iteration's graph now -> GC can reclaim it during load,
                              // keeping peak heap ~1x instead of ~2x (MODEL_TODOS C). Each iteration
                              // still rebuilds/redraws the stock -- that's the Monte-Carlo variance.
-                ag = StockLoader.load(csv, rng, everyNth);
+                ag = StockLoader.load(csv, rng, everyNth, startYear);
                 nAgents = ag.total(); nBlocks = ag.socialBlocks.size() + ag.hoaBlocks.size();
                 Simulation sim = new Simulation(startYear, endYear, rng, scen, false, 10,
                         ag.homeowners, ag.landlords, ag.socialBlocks, ag.hoaBlocks, ag.vesta,

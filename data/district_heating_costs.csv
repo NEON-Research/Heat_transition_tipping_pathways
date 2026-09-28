@@ -1,0 +1,15 @@
+# District-heating tariffs for a small connection (<= 100 kW), 2025, EUR incl. VAT.
+# Source: ACM, "Tarieven warmte en koude", maximum tariffs 2025,
+#   https://www.acm.nl/nl/energie/warmte-en-koude/warmtetarieven/tarieven-warmte-en-koude
+# annual   : paid every year by a dwelling on district heating
+# one-off  : connection_fee when a dwelling newly connects (incl. the first 25 m of pipe; the
+#            per-metre surcharge beyond 25 m is not modelled), disconnection_fee when a dwelling
+#            on district heating permanently leaves for any other heating method
+# The variable heat price (ACM 2025: EUR 43.79/GJ) is NOT taken from here: the engine uses the
+# year- and arm-dependent heat_variable_eur_kwh from energy_prices_by_year.csv.
+component,value,unit,applies,description
+connection_fee,5251.45,EUR,one-off,new connection incl. 25 m pipe (aansluitbijdrage)
+disconnection_fee,5250.99,EUR,one-off,permanent disconnection (afsluiten permanent)
+fixed_charge,577.48,EUR/yr,annual,fixed charge heating + hot water (vastrecht)
+metering,32.80,EUR/yr,annual,metering fee (meettarief)
+delivery_set_rental,150.49,EUR/yr,annual,delivery set rental heating + hot water (huur afleverset CW4 25 kW)

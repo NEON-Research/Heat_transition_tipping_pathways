@@ -48,11 +48,11 @@ public final class HeatingSystemData {
             catch (IllegalArgumentException | NullPointerException e) { continue; }   // skip non-enum rows
             String primary = r.get("energy_source_primary");
             String secondary = r.get("energy_source_secondary");
-            double capexF = 1.0;                       // capex sensitivity multipliers
+            double capexF = 1.0;                       // capex sensitivity multiplier (heat pumps)
             if (type == HeatingSystem.HYBRID_HEAT_PUMP || type == HeatingSystem.ELECTRIC_HEAT_PUMP)
                 capexF = Constants.CAPEX_MULT_HP;
-            else if (type == HeatingSystem.DISTRICT_HEATING)
-                capexF = Constants.CAPEX_MULT_DH;
+            // District heating: its investment columns are not used; Economics takes the ACM
+            // connection fee from DistrictHeatingCosts and applies CAPEX_MULT_DH there.
             m.put(type, new HeatingSystemSpec(type,
                     capexF * Csv.d(r.get("investment_costs_eur_per_unit_small")),
                     capexF * Csv.d(r.get("investment_costs_eur_per_unit_medium")),
@@ -74,6 +74,17 @@ public final class HeatingSystemData {
                     Csv.d(r.get("subsidy_eur")),
                     (int) Csv.d(r.get("sustainability_score")),
                     Csv.d(r.get("social_learning_rate"))));
+            // Which network connections this technology needs. Drives the fixed annual charge in
+            // Economics.computeEAC: leaving gas saves the gas standing charge, district heating
+            // brings its own. Defaults keep old CSVs working: gas for anything burning gas.
+            HeatingSystemSpec sp = m.get(type);
+            String gc = r.get("gas_connection"), hc = r.get("heat_connection");
+            sp.gasConnection  = (gc == null || gc.isEmpty())
+                    ? ("NATURAL_GAS".equals(primary) || "NATURAL_GAS".equals(secondary))
+                    : Csv.d(gc) != 0.0;
+            sp.heatConnection = (hc == null || hc.isEmpty())
+                    ? "HEAT".equals(primary)
+                    : Csv.d(hc) != 0.0;
         }
         // min-max sustainability normalization across all systems (AL f_setHeatingSystemOptions)
         int minS = Integer.MAX_VALUE, maxS = Integer.MIN_VALUE;

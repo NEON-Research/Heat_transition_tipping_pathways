@@ -94,6 +94,12 @@ public final class Decision {
     // --- Triggers -----------------------------------------------------------
     public static boolean hasEndOfLifeTrigger(int age, int lifetime) { return age >= lifetime; }
 
+    /** Periodic review of a dwelling on district heating, which has no end of life of its own:
+     *  every reviewYears years since it connected (never in the connection year itself). */
+    public static boolean hasDhReviewTrigger(int age, int reviewYears) {
+        return reviewYears > 0 && age > 0 && age % reviewYears == 0;
+    }
+
     /** CORRECTED opportunity trigger: real division -> fires past 75% of life.
      *  legacyIntDivision=true reproduces the original AnyLogic integer-division bug
      *  (only fired at age>=lifetime) for validating a faithful port vs the old golden. */

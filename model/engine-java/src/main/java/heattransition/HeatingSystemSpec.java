@@ -15,8 +15,7 @@ public final class HeatingSystemSpec {
     public final double economicLearningRate;
     public final String primarySource, secondarySource;
     public final double efficiencyPrimary, efficiencySecondary, fractionPrimary, fractionSecondary;
-    public double primaryCostPerKWh, secondaryCostPerKWh;                 // current-year (price-path adjusted)
-    public final double initialPrimaryCostPerKWh, initialSecondaryCostPerKWh;  // base (year 0), frozen
+    public double primaryCostPerKWh, secondaryCostPerKWh;   // current year, set by Simulation.updateEnergyPrices
     public final double subsidy;
     public final int sustainabilityScore;
     public final double socialLearningRate;
@@ -25,6 +24,16 @@ public final class HeatingSystemSpec {
     public double salienceFactor = 0;
     public double minEAC = Double.POSITIVE_INFINITY, maxEAC = Double.NEGATIVE_INFINITY;
     public double initialUnits = 1;
+
+    /** Annual fixed connection charge for this technology, EUR/yr, constant 2024 EUR. Refreshed
+     *  each year by Simulation.updateEnergyPrices from the EnergyPrices table; 0 when fixed costs
+     *  are switched off (-Dht.fixedCostsOff=1). The ELECTRICITY connection is deliberately not
+     *  charged: every dwelling keeps one whatever it heats with, so it cancels between options. */
+    public double fixedAnnualCost = 0;
+    /** Does a dwelling on this system still need a gas connection? (gas boiler, gas block, hybrid) */
+    public boolean gasConnection = false;
+    /** Does it need a heat-network connection? (district heating) */
+    public boolean heatConnection = false;
 
     public HeatingSystemSpec(HeatingSystem type, double investSmall, double investMedium, double investLarge,
                              double distributionSystemCost, boolean requiresLowTemp, String requiredLabel,
@@ -44,7 +53,6 @@ public final class HeatingSystemSpec {
         this.efficiencyPrimary = efficiencyPrimary; this.efficiencySecondary = efficiencySecondary;
         this.fractionPrimary = fractionPrimary; this.fractionSecondary = fractionSecondary;
         this.primaryCostPerKWh = primaryCostPerKWh; this.secondaryCostPerKWh = secondaryCostPerKWh;
-        this.initialPrimaryCostPerKWh = primaryCostPerKWh; this.initialSecondaryCostPerKWh = secondaryCostPerKWh;
         this.subsidy = subsidy; this.sustainabilityScore = sustainabilityScore;
         this.socialLearningRate = socialLearningRate;
         this.sustainabilityScoreNorm = (double) sustainabilityScore / Constants.MAX_SUSTAINABILITY_SCORE;

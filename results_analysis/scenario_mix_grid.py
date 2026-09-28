@@ -21,7 +21,7 @@ Views (each written as its own figure, so a results subsection can show only its
 Writes results/<scope>/figures/fig_scenario_mix_<view>.png plus the tidy cache
 results/<scope>/figures/scenario_mix_grid.csv.
 """
-import argparse, csv, glob, os, sys
+import argparse, csv, glob, json, os, sys
 from collections import defaultdict
 import numpy as np
 import matplotlib; matplotlib.use("Agg")
@@ -40,26 +40,32 @@ NICE  = {"NATURAL_GAS_BOILER": "Natural gas", "HYBRID_HEAT_PUMP": "Hybrid heat p
 # Okabe-Ito, colour-blind safe. Grey incumbent; the two heat pumps share a blue family and are
 # ordered light -> dark with the degree of electrification; district heating sits outside that
 # family in vermillion because it is a different kind of option (collective, not individual).
-COLOR = {"NATURAL_GAS_BOILER": "#999999", "HYBRID_HEAT_PUMP": "#56B4E9",
+COLOR = {"NATURAL_GAS_BOILER": "#7F7F7F", "HYBRID_HEAT_PUMP": "#56B4E9",
          "ELECTRIC_HEAT_PUMP": "#0072B2", "DISTRICT_HEATING": "#D55E00"}
 
 SCEN_LABEL = {
     "baseline":                                  "Baseline",
-    "individual_technologies":                   "Individual technologies only",
-    "collective_technologies":                   "Collective technologies only",
-    "actor_allignment_strategy":                 "Actor-alignment DH strategy",
-    "policy_driven_dh_strategy":                 "Policy-driven DH strategy",
-    "policy_driven_sha_strategy":                "Policy-driven SHA strategy",
-    "dh_policy_based_connection_obligation":     "DH connection obligation",
-    "individual_tech_dh_connection_obligation":  "DH obligation + individual tech",
-    "collective_tech_dh_connection_obligation":  "DH obligation + collective tech",
-    "grid_congestion_HP_ban":                    "Congestion: HP ban",
-    "individual_tech_grid_congestion_ban":       "HP ban + individual tech",
-    "collective_tech_grid_congestion_ban":       "HP ban + collective tech",
-    "economic_learning_factor_low":              "Economic learning LOW",
-    "economic_learning_factor_high":             "Economic learning HIGH",
+    # the two reinforcing loops
     "social_learning_factor_low":                "Social learning LOW",
     "social_learning_factor_high":               "Social learning HIGH",
+    "economic_learning_factor_low":              "Economic learning LOW",
+    "economic_learning_factor_high":             "Economic learning HIGH",
+    "econ_low_social_high":                      "Econ LOW + social HIGH",
+    "econ_high_social_low":                      "Econ HIGH + social LOW",
+    # heat-network rollout
+    "dh_connection_obligation":                  "Obligation, cost-based rollout",
+    "dh_policy_based_connection_obligation":     "Obligation, policy-based rollout",
+    # grid congestion
+    "gas_low_elec_high":                         "Gas cheap, electricity dear",
+    "gas_high_elec_low":                         "Gas dear, electricity cheap",
+    "transition_fast":                           "All three levers, fast",
+    "transition_slow":                           "All three levers, slow",
+    "grid_congestion_HP_ban":                    "Congestion: HP ban",
+    # coordination between collective actors
+    "policy_driven_dh_strategy":                 "Policy-driven DH strategy",
+    "policy_driven_sha_strategy":                "Policy-driven SHA strategy",
+    "actor_allignment_strategy":                 "Actor-alignment DH strategy",
+    # price arms and loop knock-outs: -D flags on the baseline, run into their own folders
     "price_low":                                 "Energy price LOW",
     "price_high":                                "Energy price HIGH",
     "knockout_intact":                           "Reference (central weights)",
@@ -68,11 +74,48 @@ SCEN_LABEL = {
     "knockout_nosalience":                       "Salience amplifier frozen",
     "knockout_nocongest":                        "No grid congestion",
 }
-ENSEMBLE = list(SCEN_LABEL)[:16]          # the scenario matrix, run across every retained set
+
+# Retired from the scenario matrix (Scenario.RETIRED) because each moved several switches at once
+# and could not be read as one effect. Labels are kept so an archived cache still plots.
+RETIRED_LABEL = {
+    "individual_technologies":                   "Individual technologies only",
+    "collective_technologies":                   "Collective technologies only",
+    "individual_tech_dh_connection_obligation":  "DH obligation + individual tech",
+    "collective_tech_dh_connection_obligation":  "DH obligation + collective tech",
+    "individual_tech_grid_congestion_ban":       "HP ban + individual tech",
+    "collective_tech_grid_congestion_ban":       "HP ban + collective tech",
+}
+SCEN_LABEL.update(RETIRED_LABEL)
+
+# Composite panels: one scenario taken from a price-arm folder, so a panel can combine a learning
+# setting with a price arm. Key format "<folder>:<scenario_name>". The price folders were run with
+# --scenario all at the SAME central weight vector as knockout_intact, so these are directly
+# comparable with it (and not with the ensemble medians).
+COMPOSITE = {
+    # the user's crossed extremes: the two learning loops pulling against each other
+    "price_low:econ_low_social_high":   "Econ learning LOW + social HIGH + price LOW",
+    "price_high:econ_high_social_low":  "Econ learning HIGH + social LOW + price HIGH",
+}
+SCEN_LABEL.update(COMPOSITE)
+
+# The scenario matrix, run across every retained weight set. Mirrors Scenario.NAMES; spelled out
+# rather than sliced off SCEN_LABEL, which silently mis-selected whenever a label was added.
+ENSEMBLE = ["baseline",
+            "social_learning_factor_low", "social_learning_factor_high",
+            "economic_learning_factor_low", "economic_learning_factor_high",
+            "econ_low_social_high", "econ_high_social_low",
+            "gas_low_elec_high", "gas_high_elec_low",
+            "transition_fast", "transition_slow",
+            "dh_connection_obligation", "dh_policy_based_connection_obligation",
+            "grid_congestion_HP_ban",
+            "policy_driven_dh_strategy", "policy_driven_sha_strategy",
+            "actor_allignment_strategy"]
 PRICE    = ["price_low", "price_high"]
 KNOCKOUT = ["knockout_intact", "knockout_nolearn", "knockout_nosocial",
             "knockout_nosalience", "knockout_nocongest"]
-SINGLE   = set(PRICE) | set(KNOCKOUT)     # single runs at the central weights, not medians
+# single runs at the central weight vector, not ensemble medians. The composite panels come from
+# the price-arm folders, which were run at those same weights.
+SINGLE   = set(PRICE) | set(KNOCKOUT) | set(COMPOSITE)
 
 BLOCKS = [("scenario matrix (ensemble median)", ENSEMBLE),
           ("energy-price bracket", PRICE),
@@ -94,15 +137,69 @@ VIEWS = {
     "knockouts": (["knockout_intact", "knockout_nolearn", "knockout_nosocial",
                    "knockout_nosalience", "knockout_nocongest"], 5,
                   "Loop knock-outs against the intact reference (central weights)"),
-    "policy":  (["baseline", "dh_policy_based_connection_obligation",
-                 "individual_tech_dh_connection_obligation", "collective_tech_dh_connection_obligation",
-                 "policy_driven_dh_strategy", "policy_driven_sha_strategy",
-                 "grid_congestion_HP_ban", "individual_tech_grid_congestion_ban",
-                 "collective_tech_grid_congestion_ban"], 3,
-                "Rules, regulation and infrastructure"),
-    "coordination": (["baseline", "actor_allignment_strategy", "policy_driven_sha_strategy",
-                      "individual_technologies", "collective_technologies"], 3,
-                     "Coordination between collective actors, and the technology settings"),
+    # One figure per loop, so a results paragraph can show only the experiment it argues from.
+    # These three are ensemble medians over the retained weight sets, like the baseline.
+    "loop_econ":   (["baseline", "economic_learning_factor_low", "economic_learning_factor_high"], 3,
+                    "Economic learning loop: baseline against a halved and a doubled learning rate"),
+    "loop_social": (["baseline", "social_learning_factor_low", "social_learning_factor_high"], 3,
+                    "Social learning loop: baseline against a halved and a doubled social weight"),
+    # The price arms are single runs at the central weight vector, so the reference panel is the
+    # matching single run (knockout_intact), NOT the ensemble median baseline.
+    "loop_price":  (["knockout_intact", "price_low", "price_high"], 3,
+                    "Energy-price arms, against the reference at the same weights"),
+    # Both loops and the price arm moved together. Crossed: the loops pull against each other.
+    "extremes":    (["baseline", "transition_slow", "transition_fast"], 3,
+                    "All three levers moved together: the slowest and fastest transition"),
+    # Aligned extremes, available from the existing runs.
+    # --- the three policy comparisons, one per results paragraph -----------------------------
+    # 1. Grid rollout. Under a connection obligation the mix is set by WHERE the network reaches,
+    #    not by how households learn: the four crossed learning combinations span 0.4 pp of DH
+    #    share, against ~20 pp between the two expansion rules.
+    "rollout": (["baseline", "dh_connection_obligation",
+                 "dh_policy_based_connection_obligation"], 3,
+                "Heat-network rollout: a connection obligation under each expansion rule"),
+    # 2. Grid congestion. The ban substitutes hybrids for electric heat pumps; it does not slow the
+    #    exit from gas. The individual/collective variants are omitted deliberately -- their headline
+    #    difference is the social-learning setting, which the loop figures already isolate.
+    "congestion": (["baseline", "grid_congestion_HP_ban"], 2,
+                   "Grid congestion: banning electric heat pumps in congested neighbourhoods"),
+    # 3. Coordination between collective actors. Kept as four panels, not three: the social-housing
+    #    strategy is what moves district heating, while the DH-expansion strategy moves it the other
+    #    way, so the combined panel alone would be read as the sum of two positives.
+    "coordination_policy": (["baseline", "policy_driven_dh_strategy", "policy_driven_sha_strategy",
+                             "actor_allignment_strategy"], 4,
+                            "Coordination between collective actors: heat-network planning and "
+                            "social-housing strategy"),
+    # superseded by rollout / congestion / coordination_policy above, which take one lever at a
+    # time; kept only so an archived cache can still be re-plotted.
+    "policy_legacy": (["baseline", "dh_policy_based_connection_obligation",
+                       "individual_tech_dh_connection_obligation",
+                       "collective_tech_dh_connection_obligation",
+                       "policy_driven_dh_strategy", "policy_driven_sha_strategy",
+                       "grid_congestion_HP_ban", "individual_tech_grid_congestion_ban",
+                       "collective_tech_grid_congestion_ban"], 3,
+                      "Rules, regulation and infrastructure (legacy scenario set)"),
+    "coordination_legacy": (["baseline", "actor_allignment_strategy", "policy_driven_sha_strategy",
+                             "individual_technologies", "collective_technologies"], 3,
+                            "Coordination and technology settings (legacy scenario set)"),
+}
+
+# Explicit-layout views. Each entry is a list of ROWS; None leaves that cell empty. Used where the
+# reading order matters more than packing: the loop grid puts the reference once at the top left and
+# lines the LOW arms up in one column and the HIGH arms in the next, so a lever is read across and
+# an arm is read down. The third element is the in-figure footnote; "" means none, because the
+# LaTeX caption carries the explanation instead.
+GRID_VIEWS = {
+    "loops_grid": (
+        [["baseline",
+          "social_learning_factor_low",    "social_learning_factor_high"],
+         [None,
+          "economic_learning_factor_low",  "economic_learning_factor_high"],
+         [None,
+          "gas_low_elec_high",             "gas_high_elec_low"]],
+        "Heating-system mix 2024\u20132050 under each lever, against the baseline pathway",
+        "",
+    ),
 }
 
 
@@ -132,9 +229,26 @@ def shares(path, want=None):
     return out
 
 
-def extract(base, cache):
+def expected_sets(base, search):
+    """Run folders are named set<i>_mad<mad> from the retained list (model/run.py). Rebuilding the
+    names from the search file selects exactly this ensemble's runs -- results/<scope>/calib/ also
+    holds the folders of earlier calibrations, and a bare glob silently mixes the ensembles."""
+    ret = json.load(open(search)).get("retained") or []
+    if not ret: sys.exit(f"[grid] no retained sets in {search}")
+    width = len(str(len(ret) - 1))
+    want = [f"set{str(i).zfill(width)}_mad{e['mad']:.2f}" for i, e in enumerate(ret)]
+    have = [w for w in want
+            if os.path.exists(os.path.join(base, "calib", w, "simulation_results.csv"))]
+    if len(have) < len(want):
+        print(f"[grid] {len(have)} of {len(want)} sets present -- the pathway batch is still "
+              f"running or was interrupted; the medians are provisional")
+    return [os.path.join(base, "calib", w, "simulation_results.csv") for w in have]
+
+
+def extract(base, cache, search=None):
     rows = []
-    sets = sorted(glob.glob(os.path.join(base, "calib", "*", "simulation_results.csv")))
+    sets = expected_sets(base, search) if search else \
+        sorted(glob.glob(os.path.join(base, "calib", "*", "simulation_results.csv")))
     if sets:
         print(f"[grid] ensemble: {len(sets)} weight sets")
         pooled = defaultdict(lambda: defaultdict(lambda: defaultdict(list)))
@@ -155,6 +269,24 @@ def extract(base, cache):
         print(f"[grid] {extra}", flush=True)
         for y, d in shares(p, want={"baseline"}).get("baseline", {}).items():
             for te in TECHS: rows.append((extra, y, te, d[te]))
+    # composite panels: <folder>:<scenario_name>
+    by_folder = defaultdict(list)
+    for key in COMPOSITE:
+        folder, _, scen = key.partition(":")
+        by_folder[folder].append(scen)
+    for folder, scens in by_folder.items():
+        p = os.path.join(base, folder, "simulation_results.csv")
+        if not os.path.exists(p):
+            print(f"[grid] missing {folder} — composite panels skipped"); continue
+        got = shares(p, want=set(scens))
+        for scen in scens:
+            if scen not in got:
+                print(f"[grid] {folder} has no scenario '{scen}' — panel skipped "
+                      f"(add it to Scenario.java and re-run the batch)")
+                continue
+            print(f"[grid] {folder}:{scen}", flush=True)
+            for y, d in got[scen].items():
+                for te in TECHS: rows.append((f"{folder}:{scen}", y, te, d[te]))
     with open(cache, "w", newline="") as fh:
         w = csv.writer(fh); w.writerow(["panel", "year", "tech", "share_pct"]); w.writerows(rows)
     print(f"[grid] cache -> {cache}  ({len(rows)} rows)")
@@ -168,9 +300,15 @@ def load(cache):
     return data
 
 
-def draw(data, keys, nc, title, path, blocked=False, note=None):
-    """One figure: `keys` laid out `nc` wide. blocked=True starts each design block on a new row."""
-    if blocked:
+def draw(data, keys, nc, title, path, blocked=False, note=None, mark_single=True, grid=None):
+    """One figure: `keys` laid out `nc` wide, or an explicit `grid` of rows (None = empty cell).
+    blocked=True starts each design block on a new row."""
+    if grid is not None:
+        grid = [[(k if k in data else None) for k in row] for row in grid]
+        nc = max(len(row) for row in grid)
+        grid = [row + [None] * (nc - len(row)) for row in grid]
+        blocks, row_block = [], []
+    elif blocked:
         grid, row_block, blocks = [], [], [(nm, [k for k in ks if k in data]) for nm, ks in BLOCKS]
         blocks = [(nm, ks) for nm, ks in blocks if ks]
         for bi, (_, ks) in enumerate(blocks):
@@ -198,13 +336,18 @@ def draw(data, keys, nc, title, path, blocked=False, note=None):
             ax.stackplot(years, Y, colors=[COLOR[te] for te in TECHS], linewidth=0)
             ax.set_ylim(0, 100); ax.set_xlim(min(years), max(years))
             lab = SCEN_LABEL.get(key, key)
-            if key in SINGLE and not blocked: lab += "*"
+            if key in SINGLE and not blocked and mark_single: lab += "*"
             ax.set_title(lab, fontsize=9.5 if single else 8.5, pad=3)
             ax.tick_params(labelsize=8 if single else 7.5)
             ax.set_xticks([y for y in (2024, 2030, 2040, 2050) if min(years) <= y <= max(years)])
             ax.set_yticks([0, 25, 50, 75, 100])
             for sp in ("top", "right"): ax.spines[sp].set_visible(False)
-            if c == 0: ax.set_ylabel("% of dwellings", fontsize=9 if single else 8)
+            # sharey only labels column 0; in a ragged grid that column can be empty, stranding the
+            # whole row without a scale. Label the leftmost VISIBLE cell of each row instead.
+            first_vis = next((i for i, k in enumerate(grid[r]) if k is not None), 0)
+            if c == first_vis:
+                ax.set_ylabel("% of dwellings", fontsize=9 if single else 8)
+                ax.tick_params(labelleft=True)
             # sharex only labels the last ROW; with ragged grids that strands whole columns
             if r == nr - 1 or grid[r + 1][c] is None: ax.tick_params(labelbottom=True)
 
@@ -230,28 +373,58 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--scope", default="nl")
     ap.add_argument("--no-extract", action="store_true", help="re-plot from the cached CSV")
-    ap.add_argument("--view", default="all,baseline,loops,knockouts,policy,coordination",
-                    help="comma-separated views to write: " + ", ".join(VIEWS))
+    ap.add_argument("--search", default=os.path.join(ROOT, "results", "calib1000", "calibration_search.json"),
+                    help="calibration_search.json whose retained sets define the ensemble; only its\n"
+                         "run folders are read. Pass '' to read every folder under calib/ instead.")
+    ap.add_argument("--view",
+                    default="loops_grid,rollout,congestion,coordination_policy,extremes",
+                    # exactly the views main.tex includes, plus `extremes` for the combined-scenario
+                    # TODO in the loops section. The other views still exist and can be asked for by
+                    # name; they are off by default so the LaTeX figures folder does not fill up with
+                    # panels the manuscript never shows, which then go stale without anyone noticing,
+                    help="comma-separated views to write: " + ", ".join(list(VIEWS) + list(GRID_VIEWS)))
     ap.add_argument("--copy-to", default=os.path.join(ROOT, "heat_transition_tipping_dynamics", "figures"),
                     help="also copy the figures here (the LaTeX figures folder); '' to skip")
     a = ap.parse_args()
     base = os.path.join(ROOT, "results", tag(a.scope))
     outdir = os.path.join(base, "figures"); os.makedirs(outdir, exist_ok=True)
     cache = os.path.join(outdir, "scenario_mix_grid.csv")
-    if not a.no_extract: extract(base, cache)
+    if not a.no_extract: extract(base, cache, a.search or None)
     if not os.path.exists(cache): sys.exit(f"[grid] no cache at {cache}")
     data = load(cache)
     if not data: sys.exit("[grid] cache holds no usable rows — re-run without --no-extract")
 
-    note = ("* single run at the central weights; all other panels are the median "
-            "over the retained weight ensemble")
+    MIXED_NOTE = ("* single run at the central weights; all other panels are the median "
+                  "over the retained weight ensemble")
+    ALL_SINGLE_NOTE = ("all panels are single runs at the same central weight vector, "
+                       "not medians over the weight ensemble")
     written = []
     for v in [x.strip() for x in a.view.split(",") if x.strip()]:
-        if v not in VIEWS: sys.exit(f"[grid] unknown view '{v}'. Choose from {list(VIEWS)}")
-        keys, nc, title = VIEWS[v]
+        if v in GRID_VIEWS:
+            g, title, grid_note = GRID_VIEWS[v]
+            keys = [k for row in g for k in row if k]
+            nc = max(len(row) for row in g)
+        elif v in VIEWS:
+            g, grid_note = None, None
+            keys, nc, title = VIEWS[v]
+        else:
+            sys.exit(f"[grid] unknown view '{v}'. Choose from {list(VIEWS) + list(GRID_VIEWS)}")
         p = os.path.join(outdir, f"fig_scenario_mix_{v}.png")
-        n = note if (keys and any(k in SINGLE for k in keys)) else None
-        got = draw(data, keys, nc, title, p, blocked=(v == "all"), note=n)
+        # Only warn about mixing when the view actually mixes: a view whose panels are ALL single
+        # runs is internally consistent and the asterisk would misdescribe it.
+        present = [k for k in (keys or []) if k in data]
+        if g is not None:
+            # an explicit-grid view sets its own footnote; "" means deliberately none, so that the
+            # LaTeX caption can carry the explanation instead
+            n = grid_note or None
+        elif present and all(k in SINGLE for k in present):
+            n = ALL_SINGLE_NOTE
+        elif present and any(k in SINGLE for k in present):
+            n = MIXED_NOTE
+        else:
+            n = None
+        got = draw(data, keys, nc, title, p, blocked=(v == "all"), note=n,
+                   mark_single=(n is not ALL_SINGLE_NOTE), grid=g)
         if got: written.append(got)
         else: print(f"[grid] view '{v}': no panels available, skipped")
     if a.copy_to and os.path.isdir(a.copy_to):

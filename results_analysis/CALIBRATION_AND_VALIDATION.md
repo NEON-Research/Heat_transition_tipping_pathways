@@ -455,8 +455,10 @@ so faster learning tips the system toward *full* electrification. Salience is al
 proof → subjective norm), but its gain is the social-norm weight, which the calibration set to a moderate
 ~0.28 — a weaker loop than the learning loop acting on the doubly-weighted cost channel.
 
-**4. The economic factors move their input by large, *compounding*, always-on amounts.** The price path
-compounds annually (gas +2.62 %/yr ≈ ×2 by 2050); capex and learning act every year and through the loop;
+**4. The economic factors move their input by large, always-on amounts.** Relative to the central path
+the arms move 2050 retail gas −6.7 % / +19.2 % and electricity +13.3 % / −10.4 %, i.e. the **spark
+spread** by +21 % / −25 %, sustained from 2030 to 2050 (this was measured when the path still
+compounded at gas +2.62 %/yr); capex and learning act every year and through the loop;
 and because affordability is normalised on the **log-EAC scale** (§4.1), proportional cost shifts
 map directly onto `eacNorm`. Since the hybrid-vs-gas EAC is close for many dwellings, a modest shift in
 price or capex flips the cheaper option for a large sub-population → big share swings. The behavioural-shape
@@ -574,64 +576,206 @@ unaffected by the congestion port.
 
 ## 6. Energy prices (exogenous scenario axis)
 
-**Current state (verified).** Prices are **static**: `Economics.computeEAC` uses a fixed
-`primaryCostPerKWh` (gas 0.14, electricity 0.32 €/kWh) for every year and every point in the EAC
-horizon; the `cost_trend` column in `energy_source_data.csv` is read nowhere. So today the model has no
-gas-vs-electricity price dynamics at all — a material simplification given the spark spread drives
-HP-vs-gas economics.
+**Superseded twice. This section describes the mechanism as it now stands (2026-09-28); the two
+earlier designs are kept at the end as history, because runs made under them are still on disk.**
 
-**Implemented (2026-07-30).** A per-fuel real annual growth rate is applied to the **retail** price:
-`price(y) = p0·(1+g)^(y−startYear)`, set each simulation year before any EAC is computed (myopic: that
-year's price is held flat over the equipment horizon). `Constants.GAS_PRICE_GROWTH` /
-`ELEC_PRICE_GROWTH` (`-Dht.gasPriceGrowth` / `-Dht.elecPriceGrowth`), default **0 = static** (parity).
-HEAT (district heating) follows the gas growth ("niet meer dan anders"); only gas and electricity are
-varied. Base prices are the frozen `initial*` on each `HeatingSystemSpec`.
+### 6.1 Current mechanism — a year x arm reference table
 
-**Bounds — KEV 2025 Table 10** (wholesale, constant-2024 prices; 2030 bandwidth → LOW/HIGH, trend
-extrapolated to 2050). The model prices are **retail**, so the wholesale 2030 bandwidth is passed
-through **additively on the commodity component** (energy tax + network + VAT held fixed), then
-converted to an effective retail CAGR (gas 1 m³ = 9.769 kWh; retail base gas 0.14, electricity 0.32
-€/kWh):
+Prices are no longer a growth rate applied to a base price. `Simulation.updateEnergyPrices` reads
+`model/data/reference/energy_prices_by_year.csv`, built by
+`results_analysis/build_energy_price_table.py` and loaded by `EnergyPrices.java`. The table is
+**required**: a missing or malformed one aborts the run, and the old `gasPriceGrowth` /
+`elecPriceGrowth` / `pricePathOff` switches no longer exist.
 
-| fuel | KEV wholesale 2024 → 2030 band | retail 2030 (LOW/HIGH) | effective retail CAGR |
-|---|---|---|---|
-| natural gas | 0.23 €/m³ → **0.15 / 0.46** | 0.132 / 0.164 €/kWh | **−1.00 % / +2.62 %/yr** |
-| electricity | 77 €/MWh → **48 / 105** | 0.291 / 0.348 €/kWh | **−1.57 % / +1.41 %/yr** |
+The retail price is decomposed, and only one part moves:
 
-*(Applying the wholesale CAGR directly to retail would be wrong — retail gas would rise ~20× by 2050 —
-so the additive-commodity passthrough is the defensible choice. ETS2 from 2027 is the main upside-gas
-risk and sits inside the HIGH path.)*
-
-**Run the 2×2 corner grid** (via `run.py --prop`, which injects the `-D` flags; combine with
-`--weights` to sweep the ensemble):
-```powershell
-# max HP advantage (gas dear, power cheap):
-python run.py --scope province:Noord-Brabant --scenario all --iterations 10 --analyze `
-    --prop ht.gasPriceGrowth=0.0262 --prop ht.elecPriceGrowth=-0.0157 --out results
-oord-brabant\price_gasHI_elLO\simulation_results.csv
-# min HP advantage (gas cheap, power dear):
-python run.py --scope province:Noord-Brabant --scenario all --iterations 10 --analyze `
-    --prop ht.gasPriceGrowth=-0.0100 --prop ht.elecPriceGrowth=0.0141 --out results
-oord-brabant\price_gasLO_elHI\simulation_results.csv
+```
+retail(fuel, year, arm) = commodity(fuel, year, arm) + energiebelasting(fuel, year)
 ```
 
-**Demonstrated effect (NB baseline, 1 iter, 2050 TOTAL mix)** — the spark spread is decisive and
-*reorders* the low-carbon winner, not just the gas residual:
+Both components are **inclusive of 21 % btw**, taken from CBS StatLine 85592NED with `Btw=A048944`.
+VAT is not carried separately. The 2026 tax line reproduces the published energiebelasting of
+0.11085 EUR/kWh incl. btw to the cent, which is the check that the split is clean. `commodity` is
+the only part that differs between arms; the tax and every fixed charge are policy and are held at
+their last observed level in real terms. Everything is in **constant 2024 EUR**, deflated with CBS
+CPI.
+
+History 2021-2026 is identical in all three arms -- it happened. From 2026 each arm ramps linearly
+to a 2030 endpoint and is flat to 2050, matching KEV's projection horizon. Endpoints are anchored on
+the **last observation**, not on 2024: the KEV 2024->2030 trajectory is interpolated to 2026 and only
+the remaining KEV change is applied additively to the observed 2026 commodity price. This matters --
+two further years of data exist and for electricity they point the other way from the 2024 anchor.
+
+**Crisis-year substitution.** CBS 85592NED reports the contract price for *new* contracts. In
+2022-23 that was far above what households actually paid (the 2023 prijsplafond capped gas at
+1.45 EUR/m3 and electricity at 0.40 EUR/kWh up to 1200 m3 / 2900 kWh; most households were on fixed
+contracts signed before the spike). Left raw the series peaks at 0.174 EUR/kWh for gas and 0.449 for
+electricity in 2023 -- and **the calibration window is 2022-24**, so the model would be fitting
+household decisions to a price almost nobody was charged. 2022, 2023 and 2024 are therefore held at
+the 2025 level (`CRISIS_BASELINE = 2025`); the raw series is retained in the
+`*_retail_raw_eur_kwh` columns.
+
+### 6.2 Decorrelated arms
+
+The arms move the two fuels in **opposite** directions, because what drives fuel switching is the
+spark spread, not the price level. KEV publishes an independent band per commodity, so taking the
+corners is legitimate. The arm is set per scenario by the `energy_prices` column of
+`data/scenario_settings.csv`; `-Dht.priceT` overrides it continuously so an LHS can sweep it.
+
+| scenario value | `priceT` | gas | electricity | 2050 spread |
+|---|---|---|---|---|
+| `GAS_LOW_ELEC_HIGH` | 0 | lower bound | upper bound | 2.39 -- favours staying on gas |
+| `CENTRAL` | 0.5 | basispad | basispad | 1.97 |
+| `GAS_HIGH_ELEC_LOW` | 1 | upper bound | lower bound | 1.48 -- favours heat pumps |
+
+The first design moved both fuels the same way. That arm was nearly **inert** -- 0.2 pp on the 2050
+gas share across the whole range -- and pointed the *wrong way*: because electricity varies
+proportionally more than gas, "both high" gave the worst spread for heat pumps. Coupled arms answer
+"what if energy gets expensive"; this model's question is "what if gas gets expensive *relative to*
+electricity", which is the corner pair.
+
+### 6.3 Endpoints -- all six from KEV 2025 Table 1.5
+
+The band is set by **KEV alone**. An earlier version widened the arms to the union of the KEV bound
+and the observed post-crisis min/max, which let a single month of observation set an arm and made
+the two fuels rest on different evidence. The observed range is still written to
+`energy_price_arms_provenance.csv` as a **consistency check**, and both fuels' observed post-crisis
+ranges sit inside their KEV bands.
+
+| fuel | arm | 2030 endpoint | source | observed post-crisis |
+|---|---|---|---|---|
+| gas | low | 0.0431 | KEV bandwidth | 0.0554 - 0.0669 |
+| gas | central | 0.0513 | KEV basispad | -- |
+| gas | high | 0.0749 | KEV bandwidth | 0.0554 - 0.0669 |
+| elec | low | 0.1101 | KEV bandwidth | 0.1326 - 0.1587 |
+| elec | central | 0.1351 | KEV basispad | -- |
+| elec | high | 0.1671 | KEV bandwidth | 0.1326 - 0.1587 |
+
+Resulting 2050 retail, constant 2024 EUR/kWh (arm labels are the *scenario* arms, so "low" is
+gas-low / elec-high):
+
+| arm | gas | elec | heat | spark spread |
+|---|---|---|---|---|
+| low  | 0.1144 | 0.2733 | 0.1242 | 2.39 |
+| central | 0.1226 | 0.2413 | 0.1331 | 1.97 |
+| high | 0.1461 | 0.2163 | 0.1586 | 1.48 |
+
+Observed 2026 sits inside the band on all three counts and close to the central path: gas 0.1294,
+electricity 0.2440, spread 1.89. Applying the wholesale CAGR directly to retail would be wrong --
+retail gas would rise ~20x by 2050 -- so the additive-commodity passthrough is the defensible
+choice. ETS2 from 2027 is the main upside-gas risk and sits inside the gas-high arm.
+
+### 6.4 Fixed connection charges
+
+Previously absent everywhere: every technology had `maintenance_costs_eur_per_year = 0` and nothing
+in `Economics.computeEAC` carried an annual fixed term, so the model could not see that a dwelling
+leaving gas stops paying the gas standing charge. The same table now carries them, and they enter
+the EAC through `hs.fixedAnnualCost`:
+
+```java
+tco += (hs.maintenance + hs.fixedAnnualCost + energyPerYear) / Math.pow(1 + r, t);
+```
+
+| block | constant 2024 EUR/yr, 2026 on | charged to |
+|---|---|---|
+| electricity (transport + vastrecht - heffingskorting) | **-35.68** | nobody -- cancels |
+| gas (transport + vastrecht) | **344.15** | gas boiler, gas block, hybrid HP |
+| heat (ACM max vastrecht + meettarief) | 618.52 | *superseded, see below* |
+| heat afleverset (ACM 2026) | 170.03 | *superseded, see below* |
+
+**District heating (2026-09-28).** The heat rows above are no longer read by the engine. District
+heating now takes its costs from `data/district_heating_costs.csv` (ACM maximum tariffs 2025, EUR
+incl. VAT, source in the file header), exported to `model/data/reference/`:
+
+| component | EUR | applies |
+|---|---|---|
+| fixed charge heating + hot water | 577.48 /yr | annual, every dwelling on DH |
+| metering | 32.80 /yr | annual |
+| delivery-set rental | 150.49 /yr | annual (the delivery set is rented, not owned) |
+| connection fee (incl. 25 m pipe) | 5,251.45 | one-off, a dwelling that newly connects (minus the DH subsidy) |
+| permanent disconnection | 5,250.99 | one-off, added to every non-DH option of a dwelling on DH |
+
+A dwelling already on DH pays no connection fee and gets no subsidy when it stays. DH also has no
+end of life for the household: a dwelling on DH reviews its heating every `-Dht.dhReviewYears`
+(default 5) years since connecting and leaves only if another option wins including the
+disconnection fee. DH efficiency is 1.0 (the tariff is per GJ delivered). The variable heat price
+still comes from `energy_prices_by_year.csv`. The `heatAfleverset` switch is removed.
+
+The electricity block is **net negative** because the heffingskorting (628.96 EUR/yr incl. btw in
+2026, a fixed credit per connection) exceeds the standing charges. It is deliberately not charged to
+anyone: every dwelling keeps its electricity connection whatever it heats with, so it cancels in any
+EAC comparison. **Gas is the term that matters.** Against the gas boiler an electric heat pump saves
+344 EUR/yr and district heating costs 275 EUR/yr more; over DH's 30-year lifetime at its 3 % discount
+rate that is ~5,400 EUR present value against a DH capex of 5,250 EUR.
+
+`-Dht.fixedCostsOff=1` drops the block and decomposes the change. Measured on a single national run,
+the 2050 gas share moves 7.2 -> 5.7 % from the price paths alone and then -> 1.8 % once the fixed
+charges are charged, with hybrids collapsing 50.3 -> 16.4 % and electric rising to 75.7 %. **The
+fixed-cost term is the larger of the two effects by a wide margin.**
+
+### 6.5 Known limitation
+
+The model uses a **flat annual electricity price**. A household on a dynamic contract faces a
+consumption-weighted average, and heat-pump demand is concentrated in winter evenings when the
+exchange price is high, so the model mildly flatters heat-pump economics for that subset and the
+bias grows as dynamic contracts spread. Worth a limitation sentence in the manuscript rather than a
+model change.
+
+Related, for anyone checking these figures against a bill: the table's basis is the CBS **variable**
+tariff, which excludes the fixed block on both sides -- netbeheerkosten, leveringsvastrecht *and*
+the heffingskorting. A dynamic contract's quoted EUR/kWh is on the same basis; a comparison site's
+"all-in EUR/kWh" (annual bill / kWh) is not, and lands *lower*. And the table is in constant 2024
+EUR, so a nominal 2026 figure differs by ~7 %: the 2050 electricity band of 0.2163-0.2733 constant
+2024 EUR is 0.2280-0.2881 in nominal August-2026 EUR.
+
+### 6.6 Effect on the outcome
+
+Measured under the **first** (growth-rate) mechanism on a Noord-Brabant baseline, 1 iteration, 2050
+TOTAL mix. The arm labels map onto the current decorrelated arms, and the qualitative result is what
+motivated decorrelating them, but **the magnitudes predate both the corner-pair endpoints and the
+fixed charges and must be re-measured on the national batch**:
 
 | price path | gas | hybrid HP | electric HP | DH |
 |---|---|---|---|---|
-| static (current model) | 11.0 % | 60.6 % | 23.0 % | 5.3 % |
+| static (no price dynamics) | 11.0 % | 60.6 % | 23.0 % | 5.3 % |
 | gas HIGH + elec LOW | **0.4 %** | 43.8 % | **54.0 %** | 1.9 % |
 | gas LOW + elec HIGH | **36.3 %** | 35.9 % | 17.1 % | 10.7 % |
 
-Cheap power + dear gas drives **full electrification** (electric HP 23→54 %, gas ≈ 0); dear power + cheap
-gas keeps a **third of dwellings on gas** and lifts DH. So energy price is at least as decisive as the
-weight uncertainty, and it flips the hybrid-vs-electric question — confirming it was a major missing
-driver. Report the **spark spread** (gas:electricity, and per-useful-kWh after COP) as the summary
-variable and state which tipping conclusions survive the price grid.
+Cheap power + dear gas drives **full electrification** (electric HP 23 -> 54 %, gas ~ 0); dear power
++ cheap gas keeps a **third of dwellings on gas** and lifts DH. So energy price is at least as
+decisive as the weight uncertainty, and it flips the hybrid-vs-electric question. Report the **spark
+spread** as the summary variable and state which tipping conclusions survive the price arms.
 
-**Priority.** Wiring done; the outstanding work is running the price grid across the retained weight
-ensemble and folding the result into the tiered report (preference band × price scenarios).
+In the Morris screen at fixed calibrated weights, `energyPrice` sits in the top tier
+(mu* ~ 24-26) alongside `learningRateMult` and `capexMultHp`; the `energyPrice` factor now passes
+`priceT` straight through rather than a growth rate.
+
+### 6.7 Outstanding
+
+Wiring is done and verified (the engine compiles clean under JDK 21; the table loads, arms blend,
+history is arm-invariant across 2021-2026, years outside 2021-2050 clamp, connection flags resolve
+to 344 / 0 / 619 EUR/yr). **Nothing has been re-run.** The calibration window now sees the
+crisis-flattened series *and* the fixed charges, so `calibrate_weights.py` must be re-run first --
+**this invalidates the present 27-set ensemble** and everything derived from it -- before the
+national pathway batch and the structural LHS.
+
+### 6.8 History (superseded designs)
+
+*Design 0, to 2026-07-30.* Prices were **static**: `Economics.computeEAC` used a fixed
+`primaryCostPerKWh` (gas 0.14, electricity 0.32 EUR/kWh) for every year and every point in the EAC
+horizon, and the `cost_trend` column in `energy_source_data.csv` was read nowhere -- no
+gas-vs-electricity dynamics at all.
+
+*Design 1, 2026-07-30 to 2026-09-24.* A per-fuel real annual growth rate on the retail price,
+`price(y) = p0*(1+g)^(y-startYear)`, via `Constants.GAS_PRICE_GROWTH` / `ELEC_PRICE_GROWTH`
+(`-Dht.gasPriceGrowth` / `-Dht.elecPriceGrowth`), default 0 = static. Bounds came from **KEV 2025
+Table 10** wholesale 2030 bandwidths, passed through additively on the commodity component and
+converted to an effective retail CAGR: gas -1.00 % / +2.62 %/yr, electricity -1.57 % / +1.41 %/yr;
+central defaults `gasPriceGrowth = 0.0`, `elecPriceGrowth = -0.00209` from 2026-09-23. HEAT followed
+the gas growth ("niet meer dan anders"). Both knobs and the `pricePathOff` fallback were removed on
+2026-09-24; runs on disk from before that date are on one of these two paths.
+
+
 ---
 
 ## 7. How to run
@@ -693,9 +837,11 @@ Each run also emits `<out>_loop_state.csv` (decision-time loop intermediates) an
   homes electrify; apartments and high-rise do not.
 - **Economics gate the pathway** (§5.2), and the HP learning rate specifically decides hybrid versus
   full electrification.
-- **Energy prices can exceed the preference band**: under the high-price path the 2050 electric-HP
-  share reaches 47.5 %, above anything any weight set produces at static prices, while gas falls to
-  2.4 %. Price uncertainty is not a subset of preference uncertainty.
+- **Energy prices can exceed the preference band**: under the heat-pump-favouring path the 2050
+  electric-HP share reaches 47.5 %, above anything any weight set produces at static prices, while
+  gas falls to 2.4 %. Price uncertainty is not a subset of preference uncertainty. *(Measured under
+  the superseded growth-rate mechanism, §6.8 — the direction holds under the decorrelated arms and
+  is strengthened by the fixed charges, but the magnitude must be re-measured.)*
 - **The AL default weights under-produce heat-pump adoption** — electric HP is under-predicted in two
   independent regions (−1.7 %pts Utrecht, −3.2 Noord-Brabant), so this is a model property rather than
   a regional quirk, and it is exactly the gap calibration closes. Hybrid is close (+0.2/+0.3).

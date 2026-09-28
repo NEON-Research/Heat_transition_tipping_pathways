@@ -12,6 +12,9 @@ Added columns:
   gasCV_<yr>, gasBlock_<yr>, ehp_<yr>, hhp_<yr>, dh_<yr>   share (0-1) per year 2022/2023/2024
   complete_<yr>                                            1 = no CBS cell suppression that year
   complete_all                                             1 = usable in every year (calibration set)
+  own_koop, own_corp, own_other                            % owner-occupied / housing corporation /
+                                                           other landlords (CBS KWB p_koopw, p_wcorpw,
+                                                           p_ov_hw); blank where CBS suppresses them
   buurtnaam, wijkcode, gemeentecode                        labels from the shapes file
 
 Existing columns are preserved, so the engine's current loader keeps working.
@@ -71,6 +74,26 @@ def heating_by_year():
     return out
 
 
+OWNERSHIP = (("own_koop", "p_koopw"), ("own_corp", "p_wcorpw"), ("own_other", "p_ov_hw"))
+
+
+def ownership_by_buurt():
+    """buurtcode -> {own_koop, own_corp, own_other} in % from the CBS KWB buurt table. Negative
+    values are CBS suppression sentinels; such a buurt (or one summing to 0) is left out."""
+    src = os.path.join(DATA, "neighborhoods_data_2023.csv")
+    out = {}
+    with open(src, newline="", encoding="utf-8-sig") as f:
+        for r in csv.DictReader(f):
+            code = (r.get("gwb_code_10") or "").strip()
+            if not code.startswith("BU"):
+                continue
+            v = {k: val(r.get(src_col)) for k, src_col in OWNERSHIP}
+            if any(x is None or x < 0 for x in v.values()) or sum(v.values()) <= 0:
+                continue
+            out[code] = v
+    return out
+
+
 def shape_labels():
     """buurtcode -> (buurtnaam, wijkcode, gemeentecode); geometry columns are ignored."""
     src = os.path.join(DATA, "neighborhood_shapes_2023.xlsx")
@@ -107,13 +130,18 @@ def main():
         base_cols = list(rows[0].keys()) if rows else []
 
     # 2. join heating shares per year + shape labels
-    print("  [2/3] heating shares 2022/2023/2024 + completeness flags")
+    print("  [2/3] heating shares 2022/2023/2024 + completeness flags + ownership shares")
     heat = heating_by_year()
+    own = ownership_by_buurt()
     labels = shape_labels()
     new_cols = [f"{s}_{y}" for y in YEARS for s in SHARES] + [f"complete_{y}" for y in YEARS] \
-               + ["complete_all"] + (["buurtnaam", "wijkcode", "gemeentecode"] if labels else [])
+               + ["complete_all"] + [k for k, _ in OWNERSHIP] \
+               + (["buurtnaam", "wijkcode", "gemeentecode"] if labels else [])
     for row in rows:
         b = row["buurtcode"]
+        ov = own.get(b)
+        for k, _ in OWNERSHIP:
+            row[k] = ov[k] if ov else ""
         h = heat.get(b, {})
         for y in YEARS:
             hv = h.get(y)
