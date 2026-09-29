@@ -8,7 +8,7 @@
 Each results CSV is read once. Usage:
     python analyze_all.py --scope province:Noord-Brabant
 """
-import argparse, csv, glob, json, os, re
+import argparse, csv, glob, json, os, re, sys
 from collections import defaultdict
 import numpy as np
 from structural_sensitivity import FACTOR_LABEL
@@ -43,18 +43,34 @@ def load(path):
     return out
 
 def main():
-    ap=argparse.ArgumentParser(); ap.add_argument("--scope",default="province:Noord-Brabant"); a=ap.parse_args()
+    ap=argparse.ArgumentParser(); ap.add_argument("--scope",default="province:Noord-Brabant")
+    ap.add_argument("--search",default=None,
+                    help="calibration file the runs were made with; default: the 'search' recorded in "
+                         "results/<scope>/run_manifest.json by pathway_batch.py, else results/calib/")
+    a=ap.parse_args()
     t=tag(a.scope); base=os.path.join(ROOT,"results",t)
     figdir=os.path.join(base,"figures"); scndir=os.path.join(figdir,"scenarios"); os.makedirs(scndir,exist_ok=True)
-    retained=json.load(open(os.path.join(ROOT,"results","calib","calibration_search.json")))["retained"]
+    # the calibration the runs were MADE with: the set numbers and representative keys below refer to it
+    search=a.search
+    man=os.path.join(base,"run_manifest.json")
+    if search is None and os.path.exists(man):
+        search=os.path.join(ROOT,json.load(open(man))["search"])
+    if search is None:
+        search=os.path.join(ROOT,"results","calib","calibration_search.json")
+    print(f"weight sets from {os.path.relpath(search,ROOT)}")
+    cal=json.load(open(search))
+    retained=cal["retained"]
     # every run folder under calib/, not just set* -- `--weights representative` writes best_fit/ etc.
     setpaths=sorted(glob.glob(os.path.join(base,"calib","*","simulation_results.csv")))
-    reps=json.load(open(os.path.join(ROOT,"results","calib","calibration_search.json"))).get("representative",{})
+    reps=cal.get("representative",{})
     def afford(p):
         lab=os.path.basename(os.path.dirname(p))
         m=re.search(r"set(\d+)_",lab)
         if m: return retained[int(m.group(1))]["sampled"]["shareAffordability"]
         if lab in reps: return reps[lab]["sampled"]["shareAffordability"]
+        if lab=="central":
+            sys.path.insert(0,HERE); from select_subsample import screen_indices
+            return retained[screen_indices(search)[1]]["sampled"]["shareAffordability"]
         return float("nan")
     # warn about runs produced by an older engine (no per-segment output) -- mixing them into one
     # band would compare different model versions

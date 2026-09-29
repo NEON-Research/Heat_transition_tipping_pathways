@@ -22,6 +22,7 @@ import matplotlib.pyplot as plt
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.normpath(os.path.join(HERE, ".."))
+PAPER_FIGS_DIR = os.path.join(ROOT, "heat_transition_tipping_dynamics", "figures")
 MERGE = {"NATURAL_GAS_BLOCK": "NATURAL_GAS_BOILER"}
 TECHS = ["NATURAL_GAS_BOILER", "HYBRID_HEAT_PUMP", "ELECTRIC_HEAT_PUMP", "DISTRICT_HEATING"]
 NICE  = {"NATURAL_GAS_BOILER": "Natural gas", "HYBRID_HEAT_PUMP": "Hybrid heat pump",
@@ -107,8 +108,10 @@ def main():
                     help="segments CSV to read. Default: results/<scope>/knockout_intact/ (the run at\n"
                          "the ensemble's central weights), falling back to the scope root. The root\n"
                          "file can be left over from an earlier ensemble, so it is not used blindly.")
-    ap.add_argument("--copy-to", default=os.path.join(ROOT, "heat_transition_tipping_dynamics", "figures"))
+    ap.add_argument("--copy-to", default=None)
     a = ap.parse_args()
+    if a.copy_to is None:       # manuscript figures are national: never overwrite them from a province
+        a.copy_to = PAPER_FIGS_DIR if a.scope.strip().lower() in ("nl", "netherlands") else ""
     base = os.path.join(ROOT, "results", tag(a.scope))
     if a.segments:
         src = a.segments

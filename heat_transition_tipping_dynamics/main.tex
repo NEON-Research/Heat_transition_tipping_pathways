@@ -516,8 +516,17 @@ initial costs and learning rate. As described in Section~\ref{sec:tipping}, the
 learning rate differs per technology. A more detailed description of the EAC and
 economic learning calculations can be found in Appendix~\ref{app:cost}.
 
-Two further elements shape the cost signal over time. First, equipment does not fail deterministically: each installed system's end-of-life age is drawn from a normal distribution around its nominal lifetime ($\pm 3$ years), so that replacements are spread out. Second, gas and electricity retail prices evolve along an assumed annual growth path, kept constant in
-the baseline scenario and varied as a coupled low/high bracket in the sensitivity analysis (Section~\ref{sec:calibration}), with bounds taken from the Dutch national Climate and Energy Outlook \citep{pbl_kev_2025}. 
+Two further elements shape the cost signal over time. First, equipment does not fail deterministically: each installed system's end-of-life age is drawn from a normal distribution around its nominal lifetime ($\pm 3$ years), so that replacements are spread out. Second, energy prices follow a year-by-year path in constant 2024 euros. Up to 2026 the gas and electricity retail prices are the observed consumer tariffs \citep{cbsEnergietarieven85592NED}, with the crisis years 2022--2024 held at the 2025 level, because the reported prices for new contracts were far above what most households paid. From there the commodity part moves linearly to its 2030 value in the Dutch national Climate and Energy Outlook \citep{pbl_kev_2025} and stays flat to 2050; the energy tax is held at its last observed level. Besides the central path, two arms take the opposite corners of the outlook's bandwidths for gas and electricity, so that they vary the ratio of the two prices that drives fuel switching. The district-heat price is the regulated maximum tariff \citep{acmTarievenWarmteKoude2025} and moves by the same percentage as the gas retail price, in line with the principle that district heat may not cost more than heating with gas.
+
+District heating is costed differently from the other options, because the network and the
+delivery set belong to the operator. A dwelling on district heating pays the regulated annual
+fixed charge, metering fee and delivery-set rental, and the variable heat price per kWh
+delivered \citep{acmTarievenWarmteKoude2025}. A dwelling that newly connects pays the one-off
+connection fee (minus the connection subsidy); a dwelling that is already connected pays no
+investment to stay; and a connected dwelling that leaves pays the permanent disconnection fee on
+top of the investment in its new system. For the same reason a district-heating connection has
+no end of life of its own: a connected dwelling or block reconsiders its heating every five years
+and leaves only when another option is preferred including the disconnection fee.
 
 \subsubsection{Homeowners (households)}
 
@@ -818,8 +827,9 @@ discarded. To keep the sampling behaviorally interpretable, we vary normalized s
 within each stage of the decision function rather than raw weights, which reduces the space to
 four free parameters. The retained sets constitute a plausibility ensemble that is carried into 
 the scenario analysis, so that pathways are reported as a band across behaviorally plausible
-preferences rather than a single fitted line. In the sensitivity analysis, the median weight-set 
-was used. The ensemble is itself a result and is reported as such in Section~\ref{sec:res-ensemble}.
+preferences rather than a single fitted line. The sensitivity analysis uses a small number of
+retained sets chosen to span the ensemble (described below). The ensemble is itself a result and
+is reported as such in Section~\ref{sec:res-ensemble}.
 
 Calibration is carried out on the province of Noord-Brabant over 2022--2024, the most recent
 window for which the Dutch statistics office reports a methodologically consistent
@@ -882,6 +892,40 @@ This calibration is done with two iterations per weight set. This is more than r
 standard deviation between iterations (0.028 percentage points) is much smaller than the
 deviation the criterion admits (Appendix~\ref{app:replication}).
 
+Running every retained set through every scenario at national scale is not feasible, so the
+scenario analysis uses a subsample of 25 retained sets. The subsample is chosen in the space of
+the effective weights that the retained sets differ in (Section~\ref{sec:res-ensemble}): the
+effective weight of attitude, which gives the position on the cost--attitude line of
+Equation~\ref{eq:ridge}, the effective weight of the subjective norm, which the observation window
+leaves largely open but which drives adoption once heat pumps become common, and the effective
+weight of effort, each standardized over the retained sets. The subsample starts from three
+anchors, the best-fitting set and the two ends of the cost--attitude line, and is then grown by a
+space-filling pick, also known as greedy maximin selection: at each step the retained set is added
+whose distance to the nearest set already chosen is largest. The subsample thereby spreads evenly
+over the retained sets, reaches the edges of their range and never contains two near-identical
+sets, which a random draw of the same size does not guarantee. The chosen sets count equally.
+History matching only establishes that a set is not ruled out by the observations; it does not make
+the retained sets a probability sample, so how densely they populate a region reflects the
+sampling design rather than evidence, and reweighting the subsample to that density would add no
+information. Results are therefore reported as bands over the chosen sets, with the median as a
+descriptive centre. To check that the subsample stands in for the full ensemble, the baseline
+scenario is run for all retained sets in Noord-Brabant: the subsample covers the 5--95\,\% range
+of the full ensemble for every technology in 2030 and 2050. % TODO confirm with select_subsample.py validate
+
+The sensitivity analysis (Section~\ref{sec:sensitivity}) takes its weight sets from the same
+subsample. The Morris screening is repeated at four sets, the minimum that spans the two ways the
+retained sets differ: the best-fitting set, the two ends of the cost--attitude line (the most
+cost-driven and the most attitude-driven retained set), and the set with the highest effective
+weight of the subjective norm. The influence of the cost and price parameters is expected to
+depend on the position on the line, and that of the salience parameters on the subjective norm,
+through which they act. The Latin-hypercube quantification is run at a single set, the central
+set: the retained set closest to the centre of the retained sets in the same standardized
+effective-weight space. Using an actual retained set rather than the median of each weight
+separately ensures that the combination is itself plausible, which the marginal medians do not
+guarantee given the trade-off of Equation~\ref{eq:ridge}. The experiments that are run at a
+single weight set, the energy-price arms and the feedback-loop knock-outs, use the same central
+set, so that all single-set results refer to one and the same point in the ensemble.
+
 %% ---------------------------------------------------------------------------
 \subsection{Sensitivity to process and techno-economic parameters}
 \label{sec:sensitivity}
@@ -894,22 +938,30 @@ Morris works by moving one factor at a time along a small number of random traje
 the parameter space. Each step changes a single factor and records the resulting change in the
 outcome, an elementary effect, and the mean absolute elementary effect, $\mu^{*}$, ranks the 
 factors by influence. The standard deviation of the elementary effects, $\sigma$, indicates 
-whether a factor acts on its own or only in combination with others. For this analysis the 
-decision weights are held constant at the median of the ensemble, and the elementary effects 
-are compared on the full 2050 technology mix. 
+whether a factor acts on its own or only in combination with others. For this analysis the
+decision weights are held constant at each of the four screening sets described in
+Section~\ref{sec:calibrating}, and the elementary effects are compared on the full 2050
+technology mix.
 
 The highest-ranked parameters are then quantified by Latin-hypercube sampling 
-\citep{mckayComparisonThreeMethods1979} over those parameters alone (step 3). In this we use 
+\citep{mckayComparisonThreeMethods1979} over those parameters alone (step 3), at the central
+screening set (Section~\ref{sec:calibrating}). In this we use
 standardised regression coefficients giving the direction and relative magnitude of each 
 effect, and the coefficient of determination indicating how much of the variation in each 
 technology's 2050 share they jointly explain \citep{saltelli_global_2008}. 
 
-Two special cases of parameters are treated separately. Three of the nine parameters govern 
+The screened parameters include two that concern district heating: the interval at which a
+connected dwelling reviews its heating (1--10 years, default 5) and a non-monetary barrier to
+leaving the network (0--6\,500 EUR, default 0), which stands for contracts, collective networks
+and tenant consent that the cost model leaves out.
+
+Two special cases of parameters are treated separately. Three of the screened parameters govern
 the salience factor of the decision-making algorithm. This mechanism specifically affects the 
 peer-adoption share and, with that, the subjective norm. So in weight sets from the ensemble in
 which the subjective norm weight is low, these parameters may seem like they have little influence, 
 whereas they would have more influence in sets with a large weight for subjective norms. For this 
-reason, the analysis is repeated across several weight sets. Second, gas and electricity prices 
+reason, the analysis is repeated across the four screening sets, which include the set with the
+highest effective subjective-norm weight. Second, gas and electricity prices
 are treated as a coupled factor. The range of these are taken by extrapolating prices from the high 
 and low bounds in Dutch policy scenarios \citep{pbl_kev_2025}. These are coupled in high and low 
 combined gas and electricity prices, as in the current electricity system natural gas prices strongly 
@@ -1030,10 +1082,11 @@ reveal.
 \section{Results}
 \label{sec:results}
 %% ===========================================================================
-The Netherlands is simulated over 2024--2050 for each of the twenty-one retained weight sets
-across sixteen scenarios, except for the sensitivity analysis which is done for the province of
-Noord-Brabant. Pathways are reported as ensemble bands rather than as single lines and scenario 
-effects as the median across the ensemble.
+The Netherlands is simulated over 2024--2050 for each of the 25 weight sets selected from the
+161 retained sets (Section~\ref{sec:calibrating}) across sixteen scenarios, except for the
+sensitivity analysis which is done for the province of Noord-Brabant. Pathways are reported as
+ensemble bands rather than as single lines and scenario effects as the median across the
+ensemble.
 
 % Five findings organize what follows and are stated here before being substantiated.
 
@@ -1092,81 +1145,92 @@ electrification and district heating.
 \label{sec:res-ensemble}
 \label{sec:res-general}
 
-Matching the sampled weight set results to the observed 2022--2024 heating mix of Noord-Brabant 
-retains 27 of the 1000 weight sets sampled (Figure~\ref{fig:ensemble_fit}). % TODO update numbers after the recalibration
-A set is retained when none of its scored outputs (natural gas boilers, both heat pump types and
-district heating, in 2023 and 2024) is implausible, $\max_k I_k < 3$
-(Equation~\ref{eq:implausibility}), which corresponds to a deviation of no more than about 1.7
-percentage points from the observation. See Section~\ref{sec:calibrating} for how this threshold
-is determined and Table~\ref{tab:retention_sensitivity} for its sensitivity. The retained sets are well
-within it; their mean absolute deviation over all years and technologies is 0.19–0.88 percentage 
-points, compared to 2.19 for the same model run at its uncalibrated default weights. They are 
-also clearly separated from the bulk of the sample, which plateaus around five percentage points, so retention is not a matter of where a threshold is drawn within many similar sets
+Matching the sampled weight sets to the observed 2022--2024 heating mix of Noord-Brabant
+retains 161 of the 1000 sets (Figure~\ref{fig:ensemble_fit}). A set is retained when none of its
+scored outputs (natural gas boilers, both heat pump types and district heating, in 2023 and 2024)
+is implausible, $\max_k I_k < 3$ (Equation~\ref{eq:implausibility}), which corresponds to a
+deviation of no more than about 1.7 percentage points from the observation. See
+Section~\ref{sec:calibrating} for how this threshold is determined and
+Table~\ref{tab:retention_sensitivity} for its sensitivity. The mean absolute deviation of the
+retained sets over both years and all scored technologies is 0.21--0.82 percentage points. The model
+at its default weights already lies within this range (0.55), with 7.6\,\% electric heat pumps in
+2024 against 8.2\,\% observed and 79.9\,\% gas boilers against 79.0\,\%. The retained sets are not
+separated from the rest by a gap: just above the cutoff the sample levels off at a worst deviation
+of about 2.4 percentage points, where the gas share in 2024 stays too high because homeowners
+switch too slowly. The number retained therefore depends on where the threshold is drawn, most of
+all through the discrepancy allowance (Table~\ref{tab:retention_sensitivity}).
 
 \begin{figure}[htbp]\centering
   \includegraphics[width=0.75\linewidth]{figures/fig_ensemble_fit.png}
-  \caption{Implausibility of all 1000 sampled weight sets, ranked, with the retained ensemble in colour. }
+  \caption{Worst scored deviation from the observation of all 1000 sampled weight sets, ranked, with
+  the retained ensemble in colour.}
   \label{fig:ensemble_fit}
 \end{figure}
 
-Looking at the retained weight set, three of the four weights are strongly bounded, from the broad
-sampled window, just affordability remains open across the range based on calibrating to this
-limited data set (see (Figure~\ref{fig:ensemble_weights} and Table~\ref{tab:ensemble}). 
-Attitude, subjective norm, and the weight of intention in the behavior
-step are each narrowed to roughly half their prior range, affordability is narrowed by only
-a fifth, and retained sets are found across almost its entire range. 
-The retained ranges also show that weights from the non-financial factors are required to
-replicate historic behavior, highlighting the premise that household decision making is often
-not simply cost-optimization.
+Taken one at a time, the decision weights are hardly narrowed by the observations
+(Table~\ref{tab:ensemble}). Only the extremes are ruled out: very high subjective-norm weights
+(no set above 0.60) and, less sharply, low attitude weights. This does not mean the observations
+carry little information. Two thirds of the gas boilers removed in 2022--2024 are replaced by
+housing associations and landlords, who decide on cost alone, so the weights only govern the
+remaining third. Within that third, the observations constrain a combination of the weights
+rather than the weights themselves (Figure~\ref{fig:ensemble_structure}).
 
-The  resulting ranges can be explained by taking a closer look at the results and decision-making
-framework. Attitude and intention require strong weights (above 0.35 for attitude and 0.48
-for intention), whereas subjective norm requires a weak weight (below 0.44). The reason is 
-visible in the uncalibrated run. With default weights, the model reaches 4.5\% electric heat 
-pumps in 2024 compared to 8.2\% observed, and 83.1\% gas compared to 79.0\% 
-observed. In other words, it under-predicts the novel methods and over-predicts the incumbent.
-Lowering the weight of subjective norms is the strongest weight to counteract this, as the 
-dominance of natural gas boilers has led to a strong status-quo. The weight of intention is then 
-required for these effects to carry through from intention to behavior.
-Note that this status-quo effect in subjective norms operates within small-world networks, which
-also produce like-minded clusters of environmental enthusiasts who adopt novel methods early.
-These clusters are not numerous enough to outweigh the status-quo effect in the population at 
-large.
-Lastly, these attitude and subjective norm effects are more prominent than affordability, 
-which itself is spread across the weight range, and its importance is reduced by the low 
-intention factor.
-The resulting weight sets still cover a wide range of potential decision-making weights,
-reducing the risk of overfitting on a small calibration window. These are carried through to
+Because the decision function is a chain of normalized weighted averages, the effective weight of
+each driver in the final decision is a product of the sampled shares. The effective weight of cost
+is the affordability share times the total weight of perceived behavioral control, and the
+effective weight of attitude is the attitude share times the intention share. In the retained sets
+these two are almost perfectly opposed (correlation $-0.98$, against $-0.39$ across all sampled
+sets): the retained sets lie on the line
+\begin{equation}
+  w_{\mathrm{cost}} \approx 0.85 - 2.3\, w_{\mathrm{att}},
+  \label{eq:ridge}
+\end{equation}
+with a residual spread of 0.04. The distance to this line almost fully determines whether a set
+is retained: 94\,\% of the sets within 0.03 of it are retained, and 0.1\,\% of those further than
+0.10 away. While the retained range of each individual weight spans 79--102\,\% of its sampled
+range, the combination in Equation~\ref{eq:ridge} spans 15\,\%.
+
+The interpretation is that the observation window fixes how strongly homeowners are pushed
+towards a new heating method in total, not where that push comes from. Cost and attitude substitute
+for each other: one unit of effective attitude weight does the same as about 2.3 units of effective
+cost weight, and too much of both produces too many heat pumps, too little of both too few. The
+subjective norm hardly contributes over this window, as the peer signal is weak while heat pumps
+are still rare, which is why it is only bounded from above. The retained ensemble therefore spans
+a range of behaviorally distinct households, from cost-driven to attitude-driven, that reproduce
+the same recent history. They are expected to respond differently to price and subsidy changes,
+which is what opens the pathway band in the scenario analysis. These sets are carried through to
 the scenario analysis.
 
 \begin{table}[htbp]
   \centering
-  \caption{Marginal range of each decision weight in the retained ensemble against the range it was
-  sampled from, with the share of the prior range eliminated. Weights are expressed as normalised
-  shares within their stage of the decision function.}
+  \caption{Range of each decision weight in the retained ensemble against the range it was sampled
+  from, as normalized shares within their stage of the decision function, and the same for the
+  combination that the observations constrain (Equation~\ref{eq:ridge}). The last column gives the
+  width of the retained range as a share of the sampled one (10th--90th percentile).}
   \label{tab:ensemble}
   \small
-  \begin{tabular}{@{}lccccc@{}}
+  \begin{tabular}{@{}lccc@{}}
     \toprule
-    \textbf{Weight} & \textbf{Sampled} & \textbf{Retained} & \textbf{Sets retained}\\
+    \textbf{Weight} & \textbf{Sampled} & \textbf{Retained} & \textbf{Retained width}\\
     \midrule
-    Attitude (of intention)        & 0.10--0.79 & 0.35--0.67 & none below 0.35\\
-    Subjective norm (of intention) & 0.10--0.78 & 0.10--0.44 & none above 0.44\\
-    Affordability (of PBC)         & 0.10--0.90 & 0.11--0.74 & across the range\\
-    Intention (of behaviour)       & 0.10--0.90 & 0.48--0.89 & none below 0.48\\
+    Attitude (of intention)        & 0.10--0.79 & 0.11--0.71 & 91\,\%\\
+    Subjective norm (of intention) & 0.10--0.78 & 0.10--0.60 & 79\,\%\\
+    Affordability (of PBC)         & 0.10--0.90 & 0.10--0.90 & 90\,\%\\
+    Intention (of behavior)        & 0.10--0.90 & 0.10--0.88 & 102\,\%\\
+    \midrule
+    $w_{\mathrm{cost}} + 2.3\,w_{\mathrm{att}}$ (effective) & & & 15\,\%\\
     \bottomrule
   \end{tabular}
 \end{table}
 
-
-
 \begin{figure}[htbp]\centering
-  \includegraphics[width=\linewidth]{figures/fig_ensemble_weights.png}
-  \caption{Sampled (grey) and retained (colour) values of each decision weight, as normalised shares
-  within their stage of the decision function. The observation window rules out low attitude weights,
-  high subjective-norm weights and low intention weights, but retains sets across almost the whole
-  sampled range of affordability---which is therefore the axis along which the pathway band opens.}
-  \label{fig:ensemble_weights}
+  \includegraphics[width=0.7\linewidth]{figures/fig_ensemble_structure.png}
+  \caption{Effective weight of cost against effective weight of attitude in the final decision, for
+  all 1000 sampled weight sets. The retained sets (colour) lie on one line
+  (Equation~\ref{eq:ridge}): the observations constrain the trade-off between the two weights rather
+  than either weight on its own. The line is a least-squares fit through the retained sets; of the
+  sampled sets within 0.03 of it, 94\,\% are retained.}
+  \label{fig:ensemble_structure}
 \end{figure}
  
 
@@ -1532,7 +1596,8 @@ amplifier term rather than the full social feedback.
 
 We set out to identify where path dependency and tipping dynamics arise in the Dutch residential heat
 transition, and which mechanisms govern them. Using an agent-based model calibrated by history matching
-against observed 2022--2024 adoption and run across a twenty-one member weight ensemble, three
+against observed 2022--2024 adoption and run across a 25-member weight ensemble drawn from the
+161 retained weight sets, three
 conclusions hold across the plausible parameter space.
 
 First, \textbf{the displacement of gas heating is robust but the route is not}. In every
@@ -1680,7 +1745,8 @@ Each simulated year executes the following schedule (Figure~\ref{fig:flowchart})
     threshold is met.
   \item \textbf{Adoption decisions}, in fixed actor order: social-housing blocks and
     landlords whose systems have reached end-of-life, then homeowners triggered by
-    end-of-life or an opportunity. Homeowners are processed in \emph{two passes}: the
+    end-of-life or an opportunity. Dwellings on district heating are instead triggered by
+    their five-yearly review. Homeowners are processed in \emph{two passes}: the
     first computes the equivalent annual cost of every option for every triggered
     homeowner so that the population-wide cost scale used to normalize affordability
     is complete; the second evaluates the theory-of-planned-behavior utility and makes
@@ -1867,8 +1933,10 @@ energy-label transitions from VestaMAIS
 \citep{pblHetVestaMAIS2017,vandermolenFunctioneelOntwerpVesta2021}; ownership from
 the CBS neighborhood and postcode key figures
 \citep{cbsKerncijfersWijkenBuurten2023,cbsKerncijfersPostcode2023}; observed
-per-neighborhood heating mixes and their recent change from CBS; energy-price
-trajectories from the national Climate and Energy Outlook \citep{pbl_kev_2025}; and
+per-neighborhood heating mixes and their recent change from CBS; observed consumer energy
+prices from CBS \citep{cbsEnergietarieven85592NED} and their trajectories from the national
+Climate and Energy Outlook \citep{pbl_kev_2025}; district-heating tariffs from the ACM
+\citep{acmTarievenWarmteKoude2025}; and
 technology investment cost, lifetime, efficiency, subsidy and learning-rate
 assumptions as listed in Appendix~\ref{app:cost}.
  
@@ -1876,7 +1944,9 @@ assumptions as listed in Appendix~\ref{app:cost}.
 \emph{Triggering.} A decision is triggered when a system reaches the end of its (drawn)
 life (problem-based) or, for homeowners only, once its age exceeds 75\% of its life
 (opportunity-based); the trigger type governs whether an agent evaluates options, not
-the option costs directly. \emph{Homeowner adoption} evaluates, for each available
+the option costs directly. A dwelling on district heating has no end of life; it is reviewed
+every five years since connecting and only changes if another option is chosen (in the
+calibration the review is switched off, see Section~\ref{sec:calibrating}). \emph{Homeowner adoption} evaluates, for each available
 option, attitude, the salience-mediated subjective norm and perceived behavioral
 control, combines them into an intention and a utility
 (Equations~\ref{eq:sn}--\ref{eq:utility}), and selects the highest-utility available
@@ -1973,6 +2043,30 @@ Where:
   \item $C_i$ = Costs per unit of fuel type $i$
 \end{itemize}
  
+For district heating the terms differ (Table~\ref{tab:dh-costs}): $IC_{heat}$ is the connection
+fee for a dwelling that newly connects and zero for one that is already connected, and the fixed
+charge, metering fee and delivery-set rental are annual costs. A dwelling that leaves district
+heating adds the disconnection fee to the investment cost of its new system. The heat price is
+per kWh delivered, so no conversion efficiency applies.
+
+\begin{table}[htbp]
+  \centering
+  \caption{District-heating costs, regulated maximum tariffs for a small connection, 2025, EUR incl.
+  VAT \citep{acmTarievenWarmteKoude2025}.}
+  \label{tab:dh-costs}
+  \begin{tabular}{lrl}
+    \toprule
+    Component & EUR & Applies to \\
+    \midrule
+    Fixed charge (heating and hot water) & 577.48 /yr & every connected dwelling \\
+    Metering fee & 32.80 /yr & every connected dwelling \\
+    Delivery-set rental & 150.49 /yr & every connected dwelling \\
+    Connection fee (incl.\ 25\,m pipe) & 5\,251.45 & new connection, minus the subsidy \\
+    Permanent disconnection & 5\,250.99 & a connected dwelling that leaves \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
 Insulation costs and benefits in heat demand reduction are based on a table with,
 for each dwelling type and building year category, insulation costs from label x to
 y, calculated with a fixed and a variable per-m$^2$ part as follows:

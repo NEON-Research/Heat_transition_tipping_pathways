@@ -58,7 +58,14 @@ FACTORS = {
     # non-monetary barrier to leaving DH, EUR one-off; default 0 (cost only). 3000 ~ P90 and
     # 6500 ~ P99 of the barrier DH households need before leaving stops paying
     "dhExitBarrier":     (0.0, 6500.0, lambda v: {"dhExitBarrier": v}),
+    # the two heat pumps separately (group 'hp_split'; NOT in the default screen): capex on top of
+    # capexMultHp, and each one's learning rate per doubling (data: hybrid 0.05, electric 0.10)
+    "capexMultHhp":      (0.7, 1.3,   lambda v: {"capexMultHhp": v}),
+    "capexMultEhp":      (0.7, 1.6,   lambda v: {"capexMultEhp": v}),
+    "learningRateHhp":   (0.0, 0.25,  lambda v: {"learningRateHhp": v}),
+    "learningRateEhp":   (0.0, 0.25,  lambda v: {"learningRateEhp": v}),
 }
+HP_SPLIT = ["capexMultHhp", "capexMultEhp", "learningRateHhp", "learningRateEhp"]
 
 # NOTE on socialLearningMult. It scales the subjective-norm weight: wSn = slf * wSnBase, and only
 # the PRODUCT enters the intention. wSnBase is itself a calibrated weight, and the retained ensemble
@@ -74,7 +81,9 @@ FACTORS = {
 # the learning rate are scenario arms, and heat-pump / district-heating capex has no sourced uncertainty
 # range, so quantifying it here would report a rank that follows from an assumed interval.
 FACTOR_GROUPS = {
-    "all":        list(FACTORS),
+    "all":        [k for k in FACTORS if k not in HP_SPLIT],
+    # the hybrid-versus-electric split: which of capex and learning, and for which heat pump, decides it
+    "hp_split":   HP_SPLIT,
     # The scenario levers: quantities with an external range and a policy reading, carried as
     # scenario arms rather than propagated as uncertainty. Screening them together is what
     # justifies that split.
@@ -102,6 +111,10 @@ FACTOR_LABEL = {
     "lifetimeJitterSd":  "Equipment lifetime spread",
     "dhReviewYears":     "District-heating review interval",
     "dhExitBarrier":     "District-heating exit barrier",
+    "capexMultHhp":      "Hybrid heat-pump capital cost",
+    "capexMultEhp":      "Electric heat-pump capital cost",
+    "learningRateHhp":   "Hybrid heat-pump learning rate",
+    "learningRateEhp":   "Electric heat-pump learning rate",
 }
 
 def scope_tag(scope):
@@ -112,10 +125,17 @@ def scope_tag(scope):
     return slug if kind == "province" else "gemeente_" + slug
 
 def get_weights(path, which):
-    """which = 'median' (marginal median of the retained ensemble), a representative key
-    (best_fit / low_shareAffordability / high_shareAffordability), or 'retained:<i>'."""
+    """which = 'central' (the central retained set, select_subsample.screen_indices; default),
+    'median' (marginal median of the retained ensemble: synthetic, for comparison only), a
+    representative key (best_fit / low_shareAffordability / high_shareAffordability), or
+    'retained:<i>'."""
     d = json.load(open(path))
     ret = d.get("retained") or d.get("samples")
+    if which == "central":
+        sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+        from select_subsample import screen_indices
+        _, c, src = screen_indices(path)
+        return dict(ret[c]["weights"]), f"central set retained[{c}] ({src})"
     if which == "median":
         keys = list(ret[0]["weights"])
         return {k: float(np.median([e["weights"][k] for e in ret])) for k in keys}, "retained-ensemble median"
@@ -124,7 +144,7 @@ def get_weights(path, which):
         return dict(reps[which]["weights"]), which
     if which.startswith("retained:"):
         i = int(which.split(":", 1)[1]); return dict(ret[i]["weights"]), f"retained[{i}]"
-    sys.exit(f"unknown --weights '{which}'. Use median, {', '.join(reps)}, or retained:<i>")
+    sys.exit(f"unknown --weights '{which}'. Use central, median, {', '.join(reps)}, or retained:<i>")
 
 def dflags_for(x_actual):
     """x_actual: {factor: actual value} -> merged -Dht dict."""
@@ -190,7 +210,7 @@ def do_morris(a, names, w):
     total = {n: sum(mus[n].values()) for n in names}
     col = SORTCOL[a.sort]
     order = sorted(names, key=lambda n: -(total[n] if col is None else mus[n][col]))
-    print(f"\nStructural Morris — 2050 modal split, {a.scenario}, {runs} runs, weights=median")
+    print(f"\nStructural Morris — 2050 modal split, {a.scenario}, {runs} runs, weights={a.weights}")
     print(f"  mu* per factor x technology (%pt change per full-range move); TOTAL = sum|mu*| over the mix")
     print(f"  {'factor':<20}" + "".join(f"{SHORT[t]:>10}" for t in MIX_KEYS) + f"{'TOTAL':>10}")
     for n in order:
@@ -215,7 +235,7 @@ def do_lhs(a, names, w):
         rows.append((x.copy(), mix))
         if (i + 1) % 10 == 0: print(f"  {i+1}/{a.samples}", flush=True)
     X = np.array([r[0] for r in rows]); Xs = (X - X.mean(0)) / (X.std(0) + 1e-12)
-    print(f"\nStructural LHS — 2050 modal split, {a.samples} samples, {a.scenario}, weights=median")
+    print(f"\nStructural LHS — 2050 modal split, {a.samples} samples, {a.scenario}, weights={a.weights}")
     print(f"  standardized regression coefficients (|SRC| = share of 2050 variance; sign = direction)")
     print(f"  {'factor':<20}" + "".join(f"{SHORT[t]:>10}" for t in MIX_KEYS))
     src = {}
@@ -259,12 +279,12 @@ def main():
     ap.add_argument("--scenario", default="baseline")
     ap.add_argument("--sort", default="total", choices=list(SORTCOL),
                     help="which column ranks the factor table (default: total = whole-mix influence)")
-    ap.add_argument("--factors", default=",".join(FACTORS), help="comma list, or a named group: " + "|".join(FACTOR_GROUPS) +
+    ap.add_argument("--factors", default=",".join(k for k in FACTORS if k not in HP_SPLIT), help="comma list, or a named group: " + "|".join(FACTOR_GROUPS) +
                          ". 'structural' is everything the scenarios do not explore.")
-    ap.add_argument("--weights", default="median",
-                    help="weight vector to hold fixed: median | best_fit | high_shareAffordability | "
-                         "low_shareAffordability | retained:<i>  (run the screen at 2-3 to check the "
-                         "ranking is weight-stable)")
+    ap.add_argument("--weights", default="central",
+                    help="weight set to hold fixed: central (default) | best_fit | "
+                         "high_shareAffordability | low_shareAffordability | retained:<i> | median "
+                         "(synthetic, comparison only)")
     ap.add_argument("--weights-file", default=None,
                     help="calibration search JSON to take --weights from. Default: the most recently\n"
                          "written calibration_search.json under results/. A fixed default goes stale\n"

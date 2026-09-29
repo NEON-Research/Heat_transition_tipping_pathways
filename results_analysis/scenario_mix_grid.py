@@ -29,6 +29,7 @@ import matplotlib.pyplot as plt
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.normpath(os.path.join(HERE, ".."))
+PAPER_FIGS_DIR = os.path.join(ROOT, "heat_transition_tipping_dynamics", "figures")
 
 # block-heated gas dwellings are reported separately by the engine but are the same incumbent
 # technology from the household's point of view, so they are folded into natural gas here.
@@ -233,12 +234,22 @@ def expected_sets(base, search):
     """Run folders are named set<i>_mad<mad> from the retained list (model/run.py). Rebuilding the
     names from the search file selects exactly this ensemble's runs -- results/<scope>/calib/ also
     holds the folders of earlier calibrations, and a bare glob silently mixes the ensembles."""
-    ret = json.load(open(search)).get("retained") or []
+    d = json.load(open(search))
+    ret = d.get("retained") or []
     if not ret: sys.exit(f"[grid] no retained sets in {search}")
     width = len(str(len(ret) - 1))
     want = [f"set{str(i).zfill(width)}_mad{e['mad']:.2f}" for i, e in enumerate(ret)]
     have = [w for w in want
             if os.path.exists(os.path.join(base, "calib", w, "simulation_results.csv"))]
+    if not have:
+        # a quick run with `--weights representative` (or central) writes folders named after the
+        # representative keys of the same search file instead of set<i>_mad<mad>
+        reps = list(d.get("representative", {})) + ["central"]
+        have = [w for w in reps if os.path.exists(os.path.join(base, "calib", w, "simulation_results.csv"))]
+        if have:
+            print(f"[grid] no full-ensemble folders; using the representative runs {', '.join(have)} "
+                  f"-- medians over {len(have)} sets only")
+            return [os.path.join(base, "calib", w, "simulation_results.csv") for w in have]
     if len(have) < len(want):
         print(f"[grid] {len(have)} of {len(want)} sets present -- the pathway batch is still "
               f"running or was interrupted; the medians are provisional")
@@ -383,9 +394,11 @@ def main():
                     # name; they are off by default so the LaTeX figures folder does not fill up with
                     # panels the manuscript never shows, which then go stale without anyone noticing,
                     help="comma-separated views to write: " + ", ".join(list(VIEWS) + list(GRID_VIEWS)))
-    ap.add_argument("--copy-to", default=os.path.join(ROOT, "heat_transition_tipping_dynamics", "figures"),
+    ap.add_argument("--copy-to", default=None,
                     help="also copy the figures here (the LaTeX figures folder); '' to skip")
     a = ap.parse_args()
+    if a.copy_to is None:       # manuscript figures are national: never overwrite them from a province
+        a.copy_to = PAPER_FIGS_DIR if a.scope.strip().lower() in ("nl", "netherlands") else ""
     base = os.path.join(ROOT, "results", tag(a.scope))
     outdir = os.path.join(base, "figures"); os.makedirs(outdir, exist_ok=True)
     cache = os.path.join(outdir, "scenario_mix_grid.csv")

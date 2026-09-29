@@ -3,7 +3,7 @@
 Overnight structural-sensitivity pipeline: one command, runs unattended.
 
   1. Rebuild the engine once.
-  2. Morris screen at each weight vector (default: median, high_shareAffordability, best_fit) --
+  2. Morris screen at each weight set (default: the four screen sets, see select_subsample.py) --
      the ranking + the weight-stability check.
   3. Pick the survivors = top-K factors by mean mu* TOTAL across those runs.
   4. LHS quantification on the survivors at the median weights (more samples + iters -> clean SRC).
@@ -12,7 +12,7 @@ Each step shells out to structural_sensitivity.py, logs to results/calib/, and c
 step failure (so a single bad run does not abort the night). Summary printed at the end.
 
     python structural_sensitivity_batch.py --scope province:Noord-Brabant
-    python structural_batch.py --scope province:Noord-Brabant --weights median,best_fit --topk 5 --no-lhs
+    python structural_batch.py --scope province:Noord-Brabant --weights best_fit,retained:3 --topk 5 --no-lhs
 """
 import argparse, json, os, subprocess, sys, time
 
@@ -31,14 +31,17 @@ def run(cmd, log):
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--scope", default="province:Noord-Brabant")
-    ap.add_argument("--weights", default="median,high_shareAffordability,best_fit",
-                    help="comma list of weight vectors to run Morris at")
+    ap.add_argument("--weights", default="morris",
+                    help="comma list of weight sets to run Morris at, or 'morris' (default): the four "
+                         "screen sets of select_subsample.screen_indices -- best fit, both ends of the "
+                         "cost-attitude line, highest effective social norm")
     ap.add_argument("--trajectories", type=int, default=8)
     ap.add_argument("--morris-iters", type=int, default=1)
     ap.add_argument("--topk", type=int, default=5, help="survivors carried into the LHS")
     ap.add_argument("--lhs-samples", type=int, default=80)
     ap.add_argument("--lhs-iters", type=int, default=8)
-    ap.add_argument("--lhs-weights", default="median", help="weight vector for the LHS quantification")
+    ap.add_argument("--lhs-weights", default="central", help="weight set for the LHS quantification "
+                    "(default: the central retained set, the same set the pathway price runs use)")
     ap.add_argument("--no-lhs", action="store_true")
     ap.add_argument("--search", "--weights-file", dest="search", default=None,
                     help="calibration_search.json holding the ensemble the weight vectors are read\n"
@@ -53,6 +56,12 @@ def main():
     os.makedirs(outdir, exist_ok=True)
     print(f"[batch] weights from {search}\n[batch] outputs to  {outdir}")
     vectors = [w.strip() for w in a.weights.split(",") if w.strip()]
+    if vectors == ["morris"]:
+        sys.path.insert(0, HERE)
+        from select_subsample import screen_indices
+        morris, _, src = screen_indices(search)
+        vectors = [f"retained:{i}" for i in morris]
+        print(f"[batch] Morris sets {', '.join(vectors)} ({src})")
     t0 = time.time(); results = {}
 
     for i, wv in enumerate(vectors):

@@ -15,6 +15,9 @@ import argparse, csv, os, re
 from collections import defaultdict
 import numpy as np, matplotlib; matplotlib.use("Agg"); import matplotlib.pyplot as plt
 
+HERE = os.path.dirname(os.path.abspath(__file__))
+ROOT = os.path.normpath(os.path.join(HERE, ".."))
+
 HP = ["HYBRID_HEAT_PUMP", "ELECTRIC_HEAT_PUMP"]
 # (key, csv column, axis label, filename) -- every decision term recorded for the CHOSEN option
 DRIVERS = [("att","avg_att"), ("sn","avg_sub_norm"), ("pbc","avg_pbc"),
@@ -118,9 +121,10 @@ def main():
     ap.add_argument("--min-adopters", type=int, default=100,
                     help="hide segment-technology lines with fewer adopters per year (small-sample noise)")
     ap.add_argument("--outdir", default=None)
-    ap.add_argument("--copy-to", default=os.path.join(ROOT, "heat_transition_tipping_dynamics", "figures"),
-                    help="also copy the figures main.tex references into the LaTeX figures folder;\n"
-                         "'' to skip. Without this the manuscript keeps an older copy, or none.")
+    ap.add_argument("--copy-to", default=None,
+                    help="also copy the figures main.tex references into this folder. Default: the "
+                         "LaTeX figures folder for a NATIONAL run (results/nl/...) only, so a provincial "
+                         "check never overwrites the manuscript's figures; '' to skip.")
     a = ap.parse_args()
     outdir = a.outdir or os.path.join(os.path.dirname(a.run), "mechanism")
     os.makedirs(outdir, exist_ok=True)
@@ -302,7 +306,13 @@ def main():
     print(f"\nwrote {rep}")
 
 
-    _copy_to_manuscript(a.outdir, a.copy_to)
+    dest = a.copy_to
+    if dest is None:
+        national = os.sep + os.path.join("results", "nl") + os.sep in os.path.abspath(a.run)
+        dest = os.path.join(ROOT, "heat_transition_tipping_dynamics", "figures") if national else ""
+        if not national:
+            print("[mechanism] not a national run: figures stay in results/ (pass --copy-to to override)")
+    _copy_to_manuscript(a.outdir, dest)
 
 
 def _copy_to_manuscript(outdir, dest):

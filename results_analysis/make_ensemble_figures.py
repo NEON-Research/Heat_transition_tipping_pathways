@@ -95,7 +95,11 @@ HAS_I = S["imax"].notna().all() and S["worst_pp"].notna().all()
 if HAS_I:
     # cutoff in points = the implausibility cutoff times the combined uncertainty
     _sd = cal.get("sd_mc", {}); _so = cal.get("sd_obs", 0.0); _sdisc = cal.get("sd_disc", 0.0)
-    _den = np.mean([np.sqrt(v ** 2 + _so ** 2 + _sdisc ** 2) for v in _sd.values()])
+    # sd_obs is one number in older searches, {year: {technology: sd}} since it is data-derived
+    def _obs(tech):
+        if not isinstance(_so, dict): return _so
+        return float(np.mean([per.get(tech, 0.0) for per in _so.values()]))
+    _den = np.mean([np.sqrt(v ** 2 + _obs(t) ** 2 + _sdisc ** 2) for t, v in _sd.items()])
     SCORE, CUT = "worst_pp", cal.get("implaus_cut", 3.0) * _den
     YLAB = "worst scored deviation from observed (%pt)"
     CUTLAB = f"retention cutoff {CUT:.1f} %pt"

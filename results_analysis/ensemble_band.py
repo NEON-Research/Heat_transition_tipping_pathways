@@ -22,6 +22,7 @@ from matplotlib.ticker import FuncFormatter
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.normpath(os.path.join(HERE, ".."))
+PAPER_FIGS_DIR = os.path.join(ROOT, "heat_transition_tipping_dynamics", "figures")
 
 MERGE = {"NATURAL_GAS_BLOCK": "NATURAL_GAS_BOILER"}
 TECHS = ["NATURAL_GAS_BOILER", "HYBRID_HEAT_PUMP", "ELECTRIC_HEAT_PUMP", "DISTRICT_HEATING"]
@@ -54,12 +55,22 @@ def expected_sets(base, search):
     """Run folders are named set<i>_mad<mad> from the retained list (model/run.py). Rebuilding the
     names from the search file selects exactly this ensemble's runs and ignores any folders left
     behind by an earlier calibration that happen to sit in the same directory."""
-    ret = json.load(open(search)).get("retained") or []
+    d = json.load(open(search))
+    ret = d.get("retained") or []
     if not ret: sys.exit(f"[band] no retained sets in {search}")
     width = len(str(len(ret) - 1))
     want = [f"set{str(i).zfill(width)}_mad{e['mad']:.2f}" for i, e in enumerate(ret)]
     have = [w for w in want
             if os.path.exists(os.path.join(base, "calib", w, "simulation_results.csv"))]
+    if not have:
+        # a quick run with `--weights representative` (or central) writes folders named after the
+        # representative keys of the same search file instead of set<i>_mad<mad>
+        reps = list(d.get("representative", {})) + ["central"]
+        have = [w for w in reps if os.path.exists(os.path.join(base, "calib", w, "simulation_results.csv"))]
+        if have:
+            print(f"[band] no full-ensemble folders; using the representative runs {', '.join(have)} "
+                  f"-- a band over {len(have)} sets only")
+            return [os.path.join(base, "calib", w, "simulation_results.csv") for w in have]
     if len(have) < len(want):
         print(f"[band] {len(have)} of {len(want)} sets present -- the pathway batch is still "
               f"running or was interrupted; the band is provisional")
@@ -77,8 +88,10 @@ def main():
                          "leftovers of earlier ensembles, and globbing mixes them together)")
     ap.add_argument("--any-set", action="store_true",
                     help="ignore --search and read every set* folder found (not recommended)")
-    ap.add_argument("--copy-to", default=os.path.join(ROOT, "heat_transition_tipping_dynamics", "figures"))
+    ap.add_argument("--copy-to", default=None)
     a = ap.parse_args()
+    if a.copy_to is None:       # manuscript figures are national: never overwrite them from a province
+        a.copy_to = PAPER_FIGS_DIR if a.scope.strip().lower() in ("nl", "netherlands") else ""
     base = os.path.join(ROOT, "results", tag(a.scope))
     outdir = os.path.join(base, "figures"); os.makedirs(outdir, exist_ok=True)
 

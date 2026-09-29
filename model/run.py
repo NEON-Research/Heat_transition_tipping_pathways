@@ -47,7 +47,7 @@ SEARCH_JSON = os.path.join(RESULTS_DIR, "calib", "calibration_search.json")
 
 def load_weight_sets(name, path):
     """Resolve --weights <name> against a calibration_search.json into a list of
-    (label, {weight: value}) pairs. Accepts a representative key (best_fit,
+    (label, {weight: value}) pairs. Accepts `central` (the central retained set), a representative key (best_fit,
     low_shareAffordability, high_shareAffordability), `retained:<i>` for a single
     retained set, or `all` to sweep every retained set."""
     if not os.path.exists(path):
@@ -56,6 +56,13 @@ def load_weight_sets(name, path):
     with open(path, encoding="utf-8") as fh:
         d = json.load(fh)
     reps, retained = d.get("representative", {}), d.get("retained", [])
+    if name == "central":
+        # the central retained set, resolved exactly as the price runs and the LHS resolve it
+        sys.path.insert(0, os.path.join(ROOT, "results_analysis"))
+        from select_subsample import screen_indices
+        _, c, src = screen_indices(path)
+        print(f"[run] central set: retained:{c} ({src})")
+        return [("central", retained[c]["weights"])]
     if name in ("representative", "reps"):
         if not reps:
             sys.exit(f"[run] no representative sets in {path}")
@@ -81,7 +88,7 @@ def load_weight_sets(name, path):
         return [(f"retained{i}", retained[i]["weights"])]
     if name in reps:
         return [(name, reps[name]["weights"])]
-    valid = ", ".join(list(reps) + ["retained:<i>", "all"])
+    valid = ", ".join(list(reps) + ["central", "retained:<i>", "all"])
     sys.exit(f"[run] unknown --weights '{name}'. Choose one of: {valid}")
 
 

@@ -75,12 +75,21 @@ def resolve_weights(search_json, which):
     """Same semantics as structural_sensitivity.get_weights, so the price bracket and the
     parameter screen can be run at the SAME point in weight space.
 
-      median        marginal median of the retained ensemble (what the screen uses by default)
+      central       the central retained set (select_subsample.screen_indices): the default, and
+                    the same set the LHS runs at
+      median        marginal median of the retained ensemble (a synthetic combination that need
+                    not itself be plausible; kept for comparison only)
       retained:<i>  an actual retained set, ranked by fit (0 = best)
       <key>         a representative set stored by calibrate_weights (best_fit, low_/high_<axis>)
     """
     d = json.load(open(search_json))
     ret = d.get("retained") or d.get("samples")
+    if which == "central":
+        sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+        from select_subsample import screen_indices
+        _, c, src = screen_indices(search_json)
+        print(f"[batch] central set: retained:{c} ({src})")
+        return dict(ret[c]["weights"])
     if which == "median":
         import statistics
         keys = list(ret[0]["weights"])
@@ -90,7 +99,7 @@ def resolve_weights(search_json, which):
     reps = d.get("representative", {})
     if which in reps:
         return dict(reps[which]["weights"])
-    raise SystemExit(f"unknown --price-weights '{which}'. Use median, retained:<i>, or one of {list(reps)}")
+    raise SystemExit(f"unknown --price-weights '{which}'. Use central, median, retained:<i>, or one of {list(reps)}")
 
 
 def main():
@@ -101,11 +110,11 @@ def main():
                          "sends a national run to the calibration province.")
     ap.add_argument("--iterations", type=int, default=3, help="MC iters per scenario (band spread dominates; 3-5 is enough)")
     ap.add_argument("--ensemble-weights", default="all", help="run.py --weights value for the band (all | representative)")
-    ap.add_argument("--price-weights", default="median",
-                    help="weight point for the price bracket: 'median' (the marginal median of the\n"
-                         "retained ensemble, i.e. the same point the structural screen uses),\n"
-                         "'retained:<i>' for an actual retained set, or a representative key\n"
-                         "(best_fit / low_shareAffordability / high_shareAffordability)")
+    ap.add_argument("--price-weights", default="central",
+                    help="weight set for the price bracket and the knock-outs: 'central' (default:\n"
+                         "the central retained set, the same set the LHS runs at), 'retained:<i>',\n"
+                         "a representative key (best_fit / low_/high_shareAffordability), or\n"
+                         "'median' (marginal median; synthetic, for comparison only)")
     ap.add_argument("--xmx", default=None,
                     help="JVM heap for every engine run (nl scale needs ~48g; run.py defaults to 8g)")
     ap.add_argument("--price-scenario", default="all", help="--scenario for the price runs (all | baseline)")
@@ -186,6 +195,11 @@ def main():
         run([sys.executable, RUNPY, "--scope", a.scope, "--scenario", a.knockout_scenario,
              "--iterations", a.iterations, "--out", out] + XMX + wprops,
             os.path.join(resdir, "log_knockout_intact.txt"))
+        # segment heatmap (seg_clusters_context_2050.png): written into mechanism/ BEFORE the
+        # mechanism report, which copies it to the manuscript for a national run
+        run([sys.executable, os.path.join(HERE, "segment_clusters.py"), "--run", out,
+             "--segment-type", "context", "--outdir", os.path.join(resdir, "mechanism")],
+            os.path.join(resdir, "log_segment_clusters.txt"))
         # mechanism report: loop state + segments + the knock-out table
         ko = [f"{lab}={os.path.join(resdir, f'knockout_{lab}', 'simulation_results.csv')}"
               for lab in ko_runs]

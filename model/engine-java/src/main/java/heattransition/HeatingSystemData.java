@@ -48,9 +48,15 @@ public final class HeatingSystemData {
             catch (IllegalArgumentException | NullPointerException e) { continue; }   // skip non-enum rows
             String primary = r.get("energy_source_primary");
             String secondary = r.get("energy_source_secondary");
-            double capexF = 1.0;                       // capex sensitivity multiplier (heat pumps)
-            if (type == HeatingSystem.HYBRID_HEAT_PUMP || type == HeatingSystem.ELECTRIC_HEAT_PUMP)
-                capexF = Constants.CAPEX_MULT_HP;
+            double capexF = 1.0;                       // capex sensitivity multipliers (heat pumps)
+            double learning = Csv.d(r.get("economic_learning_rate_per_unit"));
+            if (type == HeatingSystem.HYBRID_HEAT_PUMP) {
+                capexF = Constants.CAPEX_MULT_HP * Constants.CAPEX_MULT_HHP;
+                if (Constants.LEARNING_RATE_HHP >= 0) learning = Constants.LEARNING_RATE_HHP;
+            } else if (type == HeatingSystem.ELECTRIC_HEAT_PUMP) {
+                capexF = Constants.CAPEX_MULT_HP * Constants.CAPEX_MULT_EHP;
+                if (Constants.LEARNING_RATE_EHP >= 0) learning = Constants.LEARNING_RATE_EHP;
+            }
             // District heating: its investment columns are not used; Economics takes the ACM
             // connection fee from DistrictHeatingCosts and applies CAPEX_MULT_DH there.
             m.put(type, new HeatingSystemSpec(type,
@@ -63,7 +69,7 @@ public final class HeatingSystemData {
                     Csv.d(r.get("maintenance_costs_eur_per_year")),
                     (int) Csv.d(r.get("lifetime_years")),
                     Csv.d(r.get("discount_rate")),
-                    Constants.LEARNING_RATE_MULT * Csv.d(r.get("economic_learning_rate_per_unit")),
+                    Constants.LEARNING_RATE_MULT * learning,
                     primary, secondary,
                     Csv.d(r.get("efficiency_primary_source")),
                     Csv.d(r.get("efficiency_secondary_source")),

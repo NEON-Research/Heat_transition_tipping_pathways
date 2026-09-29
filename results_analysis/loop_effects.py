@@ -31,6 +31,7 @@ from matplotlib.lines import Line2D
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.normpath(os.path.join(HERE, ".."))
+PAPER_FIGS_DIR = os.path.join(ROOT, "heat_transition_tipping_dynamics", "figures")
 
 TECHS = ["NATURAL_GAS_BOILER", "HYBRID_HEAT_PUMP", "ELECTRIC_HEAT_PUMP", "DISTRICT_HEATING"]
 NICE  = {"NATURAL_GAS_BOILER": "Natural gas", "HYBRID_HEAT_PUMP": "Hybrid heat pump",
@@ -160,10 +161,17 @@ def main():
     ap.add_argument("--scope", default="nl")
     ap.add_argument("--start", type=int, default=2024)
     ap.add_argument("--end", type=int, default=2050)
-    ap.add_argument("--copy-to", default=os.path.join(ROOT, "heat_transition_tipping_dynamics", "figures"))
+    ap.add_argument("--copy-to", default=None)
     a = ap.parse_args()
+    if a.copy_to is None:       # manuscript figures are national: never overwrite them from a province
+        a.copy_to = PAPER_FIGS_DIR if a.scope.strip().lower() in ("nl", "netherlands") else ""
 
-    outdir = os.path.join(ROOT, "results", a.scope, "figures")
+    # results/<tag>/figures, where the tag is the folder name the batch writes (province:Noord-Brabant
+    # -> noord-brabant); the raw scope string is not a folder name
+    k, _, n = a.scope.partition(":")
+    scope_dir = "nl" if k.strip().lower() in ("nl", "netherlands") else (
+        n.strip().lower().replace(" ", "-") if k.strip().lower() == "province" else "gemeente_" + n.strip().lower())
+    outdir = os.path.join(ROOT, "results", scope_dir, "figures")
     cache = os.path.join(outdir, "scenario_mix_grid.csv")
     if not os.path.exists(cache):
         raise SystemExit(f"no cache at {cache} -- run scenario_mix_grid.py first")

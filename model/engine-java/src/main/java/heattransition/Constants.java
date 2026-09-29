@@ -131,6 +131,15 @@ public final class Constants {
     public static final double CAPEX_MULT_HP     = p("capexMultHp", 1.0);
     public static final double CAPEX_MULT_DH     = p("capexMultDh", 1.0);
     public static final double LEARNING_RATE_MULT = p("learningRateMult", 1.0);
+    // The two heat pumps separately, to find where the hybrid overtakes the electric heat pump:
+    //   capexMultHhp / capexMultEhp  multiply that heat pump's investment cost, ON TOP of capexMultHp
+    //   learningRateHhp / learningRateEhp  replace that heat pump's economic_learning_rate (cost fall
+    //                per doubling of its cumulative installs); negative (default) = the data value.
+    //                learningRateMult still applies on top, as for every technology.
+    public static final double CAPEX_MULT_HHP    = p("capexMultHhp", 1.0);
+    public static final double CAPEX_MULT_EHP    = p("capexMultEhp", 1.0);
+    public static final double LEARNING_RATE_HHP = p("learningRateHhp", -1.0);
+    public static final double LEARNING_RATE_EHP = p("learningRateEhp", -1.0);
 
     // f_learningFactorToMultiplier(): LOW/MEDIUM/HIGH -> multiplier
     public static final Map<String, Double> LEARNING_MULTIPLIER =

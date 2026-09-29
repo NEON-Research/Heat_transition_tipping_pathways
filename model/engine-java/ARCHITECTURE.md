@@ -106,14 +106,20 @@ no manual install. The `application` plugin + custom `JavaExec` tasks give named
 
 ## 3. How a run works (execution model)
 
-**Setup** — `StockLoader.load(csv, rng, everyNth)`:
-1. Read `limburg_dwellings.csv` row by row; for each dwelling draw an **ownership**
-   (`PRIVATELY_OWNED` / `PRIVATELY_RENTED` / `SOCIAL_HOUSING`) from the neighbourhood's koop/huur/corp
-   percentages, and a heat demand `fac*space + fac²*dhw` (fac ~ truncNormal).
-2. Group by neighbourhood; assign each neighbourhood's **initial heating mix** from `nbh_heating.json`
-   (gasCV/gasBlock/ehp/hhp/dh shares); build one **social-housing block** and one **HOA block** per
-   neighbourhood from the social dwellings.
-3. Build peer **networks** (homophily: same attitude band, biased local), seed `cumInstalled`
+**Setup** — `StockLoader.load(csv, rng, everyNth, startYear)`:
+1. Read the stock CSV row by row (heat demand `fac*space + fac²*dhw`, fac ~ truncNormal) and group by
+   neighbourhood. Required reference tables: `energy_prices_by_year.csv` (EnergyPrices) and
+   `district_heating_costs.csv` (DistrictHeatingCosts); a missing or malformed one aborts the run.
+2. **Ownership** (`PRIVATELY_OWNED` / `PRIVATELY_RENTED` / `SOCIAL_HOUSING`) per neighbourhood: the
+   CBS buurt shares (`own_koop` / `own_corp` / `own_other` in `neighborhoods.csv`) fix how many of each;
+   the PC6 figures place them. Social housing is clustered: PC6s with a corporation count get that
+   count, the rest fills whole PC6s without a known count (`aantal_corp = 0` with rented dwellings is
+   treated as unknown). Private rental is drawn per dwelling from the rest. Totals match CBS 82900NED.
+3. Assign each neighbourhood's **initial heating mix** (gasCV/gasBlock/ehp/hhp/dh shares of
+   `-Dht.heatingYear`); build one **social-housing block per PC6** (multi-family complexes take DH
+   and gas block first) and one **HOA block** per neighbourhood. Initial system ages are counted to
+   `startYear`.
+4. Build peer **networks** (homophily: same attitude band, biased local), seed `cumInstalled`
    (= starting stock) and each technology's learning base `initialUnits` and initial `salienceFactor`.
 
 **Annual loop** — `Simulation.run()` calls `stepYear(year)` for 2025..2050. Each `stepYear`:
@@ -124,11 +130,19 @@ no manual install. The `application` plugin + custom `JavaExec` tasks give named
 4. district-heating company expands the grid.
 5. **decisions, in AnyLogic order:**
    - **Social/HOA blocks** — only at end-of-life; the whole block computes an average EAC per option
-     and picks the cheapest (+ Gumbel noise); all its dwellings switch together.
+     and picks the cheapest (+ Gumbel noise); all its dwellings switch together. Social blocks are
+     formed per PC6 (one street / complex), HOA blocks per neighbourhood.
    - **Landlords** — individual, end-of-life only, pick cheapest EAC (+ Gumbel).
    - **Homeowners** — end-of-life OR 75%-of-life opportunity; **two passes**: pass 1 computes every
      triggered homeowner's EACs (completing the global min/max window), pass 2 evaluates TPB utility and
      makes a random-utility (Gumbel) choice.
+   - **District heating has no end of life** for any of the three: the network and delivery set belong
+     to the operator. A dwelling (or block) on DH instead reviews every `-Dht.dhReviewYears` (default 5,
+     0 = never) since connecting, and leaves only if another option wins; staying is not a
+     reinstallation. Its costs (`DistrictHeatingCosts`, ACM 2025): annual fixed charge + metering +
+     delivery-set rental; a one-off connection fee for a new connection (minus the subsidy), nothing for
+     one already connected, and the disconnection fee (+ `-Dht.dhExitBarrier`, default 0) on every
+     non-DH option of a dwelling that leaves. The calibration fixes `dhReviewYears=0`.
 6. update salience (per-technology social visibility from rising adoption).
 7. *(HT_DIAG probe: at 2025/2030/2035 print averaged TPB terms.)*
 8. update the learning curve (cheaper capex as cumulative installs grow) — feeds next year.
@@ -156,7 +170,7 @@ adoption → stronger social norm) — are why small early differences compound;
 | class | role |
 |---|---|
 | **Dwelling** | One dwelling: `currentType`, `age`, ownership, archetype, label, area, heat demand, `hasLowTemp`, peer network, attitude, per-type `peerCounts`. |
-| **HousingBlock** | A social-housing or HOA block: the households sharing one heating system, deciding together at end-of-life. |
+| **HousingBlock** | A social-housing block (the corporation dwellings in one PC6) or HOA block (dwellings on collective gas heating in one neighbourhood): the households sharing one heating system, deciding together at end-of-life (or at a DH review). |
 | **Neighbourhood** | Neighbourhood aggregate for district-heating expansion + grid state. |
 | **HeatingSystem** | Enum of the 5 technologies (order matches the AL enum / DB; ordinal is used for peer-count arrays). |
 | **Ownership** | Enum of ownership types (`TOTAL` is an output aggregate, not stored). |

@@ -6,9 +6,11 @@ draw the figures. Start it and go to bed.
 
 Steps, in order, each logged into --outdir:
   1. calibrate_weights.py search   -- Latin-hypercube sweep + history matching  (~5-6 h at 500)
-  2. pick three weight vectors from the RETAINED ensemble, spanning the social-norm axis
+  2. pick the screen sets from the RETAINED ensemble on their effective weights (from the
+     subsample when calibration_subsample.json exists): Morris at the best fit, both ends of the
+     cost-attitude line and the highest effective social norm; LHS at the central retained set
      (indices are ranks within the new ensemble, so they cannot be reused from an old run)
-  3. structural_batch.py           -- Morris at each vector, then LHS on the survivors  (~8 h)
+  3. structural_batch.py           -- Morris at each set, then LHS on the survivors  (~10 h)
   4. make_ensemble_figures.py      -- fit / weights / observed panels
 
 A failed step is reported and the chain stops there, so a bad sweep never feeds a screen.
@@ -35,11 +37,30 @@ def step(name, cmd, log, dry):
     return rc
 
 
+def screen_vectors(search):
+    """Weight sets for the parameter screen, chosen on the EFFECTIVE weights in the decision (see
+    select_subsample.screen_sets): Morris at the best fit, both ends of the cost-attitude line and the
+    highest effective social-norm weight; LHS at the central retained set. Taken from the subsample
+    (calibration_subsample.json next to the search) when it exists, so the screen and the scenario
+    ensemble share their sets. Returns (['retained:<i>', ...], 'retained:<j>') with indices into the
+    full search file."""
+    sys.path.insert(0, HERE)
+    from select_subsample import screen_indices, effective
+    ret = json.load(open(search))["retained"]
+    morris, central, src = screen_indices(search)
+    print(f"[overnight] screen sets from: {src}")
+    print("\n[overnight] screen sets (effective weights attitude / cost / social):")
+    for lab, i in [("Morris", j) for j in morris] + [("LHS", central)]:
+        e = effective(ret[i])
+        print(f"    {lab:7s} retained:{i:<4d} MAD={ret[i]['mad']:.2f}  "
+              f"{e['attitude']:.2f} / {e['cost']:.2f} / {e['social']:.2f}")
+    return [f"retained:{i}" for i in morris], f"retained:{central}"
+
+
 def pick_vectors(search, n=3):
-    """Three points spanning the social-norm axis of the retained ensemble: the best fit plus the
-    best-fitting sets at the low and high ends. Social norm is the axis that matters because the
-    salience parameters act only through the subjective norm, so their influence is conditional
-    on it -- that is the whole reason for repeating the screen."""
+    """Superseded by screen_vectors (kept for reference): three points spanning the RAW social-norm
+    share. The raw share is a poor proxy -- with a low intention share a high raw social-norm share
+    still gives a low effective social-norm weight -- so this spans the wrong axis."""
     ret = json.load(open(search))["retained"]
     if not ret:
         sys.exit("[overnight] nothing retained -- loosen the retention rule before screening")
@@ -104,9 +125,12 @@ def main():
     if rc: sys.exit("[overnight] sweep failed -- stopping before the screen")
 
     if not a.no_screen:
-        vectors = pick_vectors(search) if not a.dry_run else ["retained:0,retained:i,retained:j"]
+        if a.dry_run and not os.path.exists(search):
+            vectors, lhs = ["retained:0", "retained:i", "retained:j", "retained:k"], "retained:c"
+        else:
+            vectors, lhs = screen_vectors(search)
         cmd = [PY_, os.path.join(HERE, "structural_batch.py"), "--scope", a.scope,
-               "--search", search, "--weights", ",".join(vectors),
+               "--search", search, "--weights", ",".join(vectors), "--lhs-weights", lhs,
                "--trajectories", str(a.trajectories), "--topk", str(a.topk),
                "--lhs-samples", str(a.lhs_samples), "--lhs-iters", str(a.lhs_iters),
                "--outdir", out]
