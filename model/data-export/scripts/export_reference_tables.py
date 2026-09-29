@@ -9,6 +9,7 @@ All three are read by the engine (HeatingSystemData + Vesta).
       sheet 'dwellings_demand_insulation' -> dwellings_demand_insulation.csv   (Vesta: insulation cost)
   data/scenario_settings.csv       -> scenario_settings.csv        (Scenario, validated copy)
   data/district_heating_costs.csv  -> district_heating_costs.csv   (DistrictHeatingCosts, ACM tariffs)
+  data/subsidies.csv               -> subsidies.csv                (Subsidies, ISDE etc. per year)
 
 Output goes to model/data/reference/ where the engine reads it. Column headers are the snake_case of
 the spreadsheet headers (requiredDistributionSystem -> required_distribution_system,
@@ -117,7 +118,8 @@ BOOL = {"TRUE", "FALSE", "0", "1"}
 PRICE_ARM = {"GAS_LOW_ELEC_HIGH", "CENTRAL", "GAS_HIGH_ELEC_LOW"}
 SCEN_COLS = ["scen_id", "scen_name", "social_learning_factor", "economic_learning_factor",
              "grid_reinforcement_rate", "energy_prices", "DH_construction_time", "DH_expansion_strategy",
-             "SHA_strategy", "DH_connection_obligation", "Grid_congestion_HP_ban", "status"]
+             "SHA_strategy", "DH_connection_obligation", "Grid_congestion_HP_ban", "subsidy_policy", "status"]
+SUBSIDY_POLICY = {"CURRENT", "NONE", "PHASE_OUT"}
 
 
 def export_scenarios():
@@ -157,6 +159,8 @@ def export_scenarios():
             if r[c].strip().upper() not in STRATEGY: bad(f"{c} must be COST_BASED/POLICY_BASED, got {r[c]!r}")
         for c in ("DH_connection_obligation", "Grid_congestion_HP_ban"):
             if r[c].strip().upper() not in BOOL: bad(f"{c} must be TRUE/FALSE, got {r[c]!r}")
+        if r["subsidy_policy"].strip().upper() not in SUBSIDY_POLICY:
+            bad(f"subsidy_policy must be one of {sorted(SUBSIDY_POLICY)}, got {r['subsidy_policy']!r}")
         st = r["status"].strip().lower()
         if st not in ("active", "retired"): bad(f"status must be active/retired, got {r['status']!r}")
         if st == "active": active += 1
@@ -203,6 +207,39 @@ def export_district_heating_costs():
     print(f"  district_heating_costs.csv: {len(seen)} components  <- data/district_heating_costs.csv")
 
 
+SUBSIDY_TECH = {"NATURAL_GAS_BOILER", "NATURAL_GAS_BLOCK", "HYBRID_HEAT_PUMP", "ELECTRIC_HEAT_PUMP",
+                "DISTRICT_HEATING"}
+SUBSIDY_OWN = {"PRIVATELY_OWNED", "PRIVATELY_RENTED", "SOCIAL_HOUSING", "HOME_OWNER_ASSOCIATION"}
+
+
+def export_subsidies():
+    """Validate data/subsidies.csv (sources in its '#' header) and copy it, comments included, to
+    the reference dir: known technology and ownership, integer year, non-negative amount, no
+    duplicate (year, technology, ownership)."""
+    src = os.path.join(DATA, "subsidies.csv")
+    if not os.path.exists(src):
+        sys.exit(f"subsidy table not found: {src}")
+    with open(src, encoding="utf-8-sig") as fh:
+        text = fh.read()
+    rows = list(csv.DictReader(ln for ln in text.splitlines() if not ln.lstrip().startswith("#")))
+    seen = set()
+    for i, r in enumerate(rows, start=1):
+        key = (r.get("year"), r.get("technology"), r.get("ownership"))
+        def bad(msg): sys.exit(f"{src} data row {i}: {msg}")
+        if r.get("technology") not in SUBSIDY_TECH: bad(f"unknown technology {r.get('technology')!r}")
+        if r.get("ownership") not in SUBSIDY_OWN: bad(f"unknown ownership {r.get('ownership')!r}")
+        if not str(r.get("year", "")).strip().isdigit(): bad(f"year must be an integer, got {r.get('year')!r}")
+        try:
+            if float(r["amount_eur"]) < 0: bad("negative amount")
+        except (TypeError, ValueError):
+            bad(f"amount_eur must be a number, got {r.get('amount_eur')!r}")
+        if key in seen: bad(f"duplicate {key}")
+        seen.add(key)
+    with open(os.path.join(REF, "subsidies.csv"), "w", encoding="utf-8", newline="") as b:
+        b.write(text)
+    print(f"  subsidies.csv: {len(rows)} rows  <- data/subsidies.csv")
+
+
 def main():
     hs = os.path.join(DATA, "heating_system_data.xlsx")
     vesta = os.path.join(DATA, "energy_demand_and_insulation_costs_VestaMAIS.xlsx")
@@ -215,6 +252,7 @@ def main():
     export(vesta, "dwellings_demand_insulation", "dwellings_demand_insulation.csv")
     export_scenarios()
     export_district_heating_costs()
+    export_subsidies()
 
 
 if __name__ == "__main__":

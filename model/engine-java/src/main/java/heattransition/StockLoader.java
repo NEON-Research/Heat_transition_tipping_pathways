@@ -414,6 +414,8 @@ public final class StockLoader {
         EnergyPrices.loadFrom(refFile(dir, "energy_prices_by_year.csv"));
         // ACM district-heating tariffs (connection/disconnection fee, annual fixed costs). Required.
         DistrictHeatingCosts.loadFrom(refFile(dir, "district_heating_costs.csv"));
+        // Investment subsidies per year, technology and ownership group (ISDE etc.). Required.
+        Subsidies.loadFrom(refFile(dir, "subsidies.csv"));
         // Initial heating shares now live in the combined neighborhoods.csv; pick the vintage with
         // -Dht.heatingYear=2022|2023|2024 (a calibration run starts from the observed 2022 state).
         // -Dht.nbhHeating=<file> can still point at a separate file if ever needed.

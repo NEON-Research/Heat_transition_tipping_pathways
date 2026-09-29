@@ -13,21 +13,27 @@
 #
 # Every row is run by `--scenario all`. status can park a row as 'retired' (buildable by name, not
 # iterated); nothing is parked. scen_id 11 never existed, as in AnyLogic.
-scen_id,scen_name,social_learning_factor,economic_learning_factor,grid_reinforcement_rate,energy_prices,DH_construction_time,DH_expansion_strategy,SHA_strategy,DH_connection_obligation,Grid_congestion_HP_ban,status
-1,baseline,MEDIUM,MEDIUM,MEDIUM,CENTRAL,5,COST_BASED,COST_BASED,FALSE,FALSE,active
-2,social_learning_factor_low,LOW,MEDIUM,MEDIUM,CENTRAL,5,COST_BASED,COST_BASED,FALSE,FALSE,active
-3,social_learning_factor_high,HIGH,MEDIUM,MEDIUM,CENTRAL,5,COST_BASED,COST_BASED,FALSE,FALSE,active
-4,economic_learning_factor_low,MEDIUM,LOW,MEDIUM,CENTRAL,5,COST_BASED,COST_BASED,FALSE,FALSE,active
-5,economic_learning_factor_high,MEDIUM,HIGH,MEDIUM,CENTRAL,5,COST_BASED,COST_BASED,FALSE,FALSE,active
-6,econ_low_social_high,HIGH,LOW,MEDIUM,CENTRAL,5,COST_BASED,COST_BASED,FALSE,FALSE,active
-7,econ_high_social_low,LOW,HIGH,MEDIUM,CENTRAL,5,COST_BASED,COST_BASED,FALSE,FALSE,active
-8,gas_low_elec_high,MEDIUM,MEDIUM,MEDIUM,GAS_LOW_ELEC_HIGH,5,COST_BASED,COST_BASED,FALSE,FALSE,active
-9,gas_high_elec_low,MEDIUM,MEDIUM,MEDIUM,GAS_HIGH_ELEC_LOW,5,COST_BASED,COST_BASED,FALSE,FALSE,active
-10,transition_fast,LOW,HIGH,MEDIUM,GAS_HIGH_ELEC_LOW,5,COST_BASED,COST_BASED,FALSE,FALSE,active
-11,transition_slow,HIGH,LOW,MEDIUM,GAS_LOW_ELEC_HIGH,5,COST_BASED,COST_BASED,FALSE,FALSE,active
-12,dh_connection_obligation,MEDIUM,MEDIUM,MEDIUM,CENTRAL,5,COST_BASED,COST_BASED,TRUE,FALSE,active
-13,dh_policy_based_connection_obligation,MEDIUM,MEDIUM,MEDIUM,CENTRAL,5,POLICY_BASED,COST_BASED,TRUE,FALSE,active
-14,grid_congestion_HP_ban,MEDIUM,MEDIUM,MEDIUM,CENTRAL,5,COST_BASED,COST_BASED,FALSE,TRUE,active
-15,policy_driven_dh_strategy,MEDIUM,MEDIUM,MEDIUM,CENTRAL,5,POLICY_BASED,COST_BASED,FALSE,FALSE,active
-16,policy_driven_sha_strategy,MEDIUM,MEDIUM,MEDIUM,CENTRAL,5,COST_BASED,POLICY_BASED,FALSE,FALSE,active
-17,actor_allignment_strategy,MEDIUM,MEDIUM,MEDIUM,CENTRAL,5,POLICY_BASED,POLICY_BASED,FALSE,FALSE,active
+# subsidy_policy: CURRENT (data/subsidies.csv, observed ISDE etc., held after 2025), NONE (no
+# investment subsidy), PHASE_OUT (as CURRENT until a technology's stock share reaches
+# -Dht.subsidyPhaseOutShare, default 0.20, then none for that technology).
+#
+scen_id,scen_name,social_learning_factor,economic_learning_factor,grid_reinforcement_rate,energy_prices,DH_construction_time,DH_expansion_strategy,SHA_strategy,DH_connection_obligation,Grid_congestion_HP_ban,subsidy_policy,status
+1,baseline,MEDIUM,MEDIUM,MEDIUM,CENTRAL,5,COST_BASED,COST_BASED,FALSE,FALSE,CURRENT,active
+2,social_learning_factor_low,LOW,MEDIUM,MEDIUM,CENTRAL,5,COST_BASED,COST_BASED,FALSE,FALSE,CURRENT,active
+3,social_learning_factor_high,HIGH,MEDIUM,MEDIUM,CENTRAL,5,COST_BASED,COST_BASED,FALSE,FALSE,CURRENT,active
+4,economic_learning_factor_low,MEDIUM,LOW,MEDIUM,CENTRAL,5,COST_BASED,COST_BASED,FALSE,FALSE,CURRENT,active
+5,economic_learning_factor_high,MEDIUM,HIGH,MEDIUM,CENTRAL,5,COST_BASED,COST_BASED,FALSE,FALSE,CURRENT,active
+6,econ_low_social_high,HIGH,LOW,MEDIUM,CENTRAL,5,COST_BASED,COST_BASED,FALSE,FALSE,CURRENT,active
+7,econ_high_social_low,LOW,HIGH,MEDIUM,CENTRAL,5,COST_BASED,COST_BASED,FALSE,FALSE,CURRENT,active
+8,gas_low_elec_high,MEDIUM,MEDIUM,MEDIUM,GAS_LOW_ELEC_HIGH,5,COST_BASED,COST_BASED,FALSE,FALSE,CURRENT,active
+9,gas_high_elec_low,MEDIUM,MEDIUM,MEDIUM,GAS_HIGH_ELEC_LOW,5,COST_BASED,COST_BASED,FALSE,FALSE,CURRENT,active
+10,transition_fast,LOW,HIGH,MEDIUM,GAS_HIGH_ELEC_LOW,5,COST_BASED,COST_BASED,FALSE,FALSE,CURRENT,active
+11,transition_slow,HIGH,LOW,MEDIUM,GAS_LOW_ELEC_HIGH,5,COST_BASED,COST_BASED,FALSE,FALSE,CURRENT,active
+12,dh_connection_obligation,MEDIUM,MEDIUM,MEDIUM,CENTRAL,5,COST_BASED,COST_BASED,TRUE,FALSE,CURRENT,active
+13,dh_policy_based_connection_obligation,MEDIUM,MEDIUM,MEDIUM,CENTRAL,5,POLICY_BASED,COST_BASED,TRUE,FALSE,CURRENT,active
+14,grid_congestion_HP_ban,MEDIUM,MEDIUM,MEDIUM,CENTRAL,5,COST_BASED,COST_BASED,FALSE,TRUE,CURRENT,active
+15,policy_driven_dh_strategy,MEDIUM,MEDIUM,MEDIUM,CENTRAL,5,POLICY_BASED,COST_BASED,FALSE,FALSE,CURRENT,active
+16,policy_driven_sha_strategy,MEDIUM,MEDIUM,MEDIUM,CENTRAL,5,COST_BASED,POLICY_BASED,FALSE,FALSE,CURRENT,active
+17,actor_allignment_strategy,MEDIUM,MEDIUM,MEDIUM,CENTRAL,5,POLICY_BASED,POLICY_BASED,FALSE,FALSE,CURRENT,active
+18,no_subsidy,MEDIUM,MEDIUM,MEDIUM,CENTRAL,5,COST_BASED,COST_BASED,FALSE,FALSE,NONE,active
+19,subsidy_phase_out,MEDIUM,MEDIUM,MEDIUM,CENTRAL,5,COST_BASED,COST_BASED,FALSE,FALSE,PHASE_OUT,active

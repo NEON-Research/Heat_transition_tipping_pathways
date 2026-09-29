@@ -21,6 +21,9 @@ public final class Scenario {
     public String shaStrategy = "COST_BASED";           // or POLICY_BASED (social-housing strategy)
     public boolean dhConnectionObligation = false;
     public boolean gridCongestionHpBan = false;
+    /** Investment subsidies: CURRENT (data/reference/subsidies.csv), NONE, or PHASE_OUT (stops per
+     *  technology once its stock share reaches -Dht.subsidyPhaseOutShare). See Subsidies. */
+    public String subsidyPolicy = "CURRENT";
 
     /** The scenario's energy-price arm as the continuous knob EnergyPrices blends on:
      *  LOW = 0 (both fuels at the low arm), MEDIUM = 0.5 (central), HIGH = 1. */
@@ -50,7 +53,7 @@ public final class Scenario {
     private static final String[] REQUIRED = {
         "scen_id", "scen_name", "social_learning_factor", "economic_learning_factor",
         "grid_reinforcement_rate", "energy_prices", "DH_construction_time", "DH_expansion_strategy",
-        "SHA_strategy", "DH_connection_obligation", "Grid_congestion_HP_ban", "status" };
+        "SHA_strategy", "DH_connection_obligation", "Grid_congestion_HP_ban", "subsidy_policy", "status" };
 
     private static java.util.LinkedHashMap<String, Scenario> TABLE;   // every row, by name
     private static String[] activeNames;                              // status == active, in file order
@@ -97,6 +100,7 @@ public final class Scenario {
             s.shaStrategy         = strategy(csv, line, "SHA_strategy", r);
             s.dhConnectionObligation = bool(csv, line, "DH_connection_obligation", r);
             s.gridCongestionHpBan    = bool(csv, line, "Grid_congestion_HP_ban", r);
+            s.subsidyPolicy          = subsidy(csv, line, "subsidy_policy", r);
             if (t.put(name, s) != null)
                 throw new IllegalStateException(csv + " line " + line + ": duplicate scenario '" + name + "'");
             String st = r.get("status").trim().toLowerCase();
@@ -121,6 +125,12 @@ public final class Scenario {
         if (!PRICE_ARM.contains(v)) throw new IllegalStateException(f + " line " + line + ": " + col
             + " must be GAS_LOW_ELEC_HIGH / CENTRAL / GAS_HIGH_ELEC_LOW (it is a spark-spread arm, "
             + "not a price level), got '" + r.get(col) + "'");
+        return v;
+    }
+    private static String subsidy(Path f, int line, String col, java.util.Map<String, String> r) {
+        String v = String.valueOf(r.get(col)).trim().toUpperCase();
+        if (!Subsidies.POLICIES.contains(v)) throw new IllegalStateException(f + " line " + line + ": " + col
+            + " must be CURRENT/NONE/PHASE_OUT, got '" + r.get(col) + "'");
         return v;
     }
     private static String strategy(Path f, int line, String col, java.util.Map<String, String> r) {
@@ -163,9 +173,9 @@ public final class Scenario {
             .append(" active, ").append(retiredNames.length).append(" retired  <- ").append(source).append('\n');
         for (String n : activeNames) {
             Scenario s = TABLE.get(n);
-            b.append(String.format("  %-3d %-38s slf=%-6s elf=%-6s price=%-17s dh=%-12s sha=%-12s obligation=%-5b hpBan=%b%n",
+            b.append(String.format("  %-3d %-38s slf=%-6s elf=%-6s price=%-17s dh=%-12s sha=%-12s obligation=%-5b hpBan=%-5b subsidy=%s%n",
                 s.scenId, s.scenName, s.socialLearningFactor, s.economicLearningFactor, s.energyPrices,
-                s.dhExpansionStrategy, s.shaStrategy, s.dhConnectionObligation, s.gridCongestionHpBan));
+                s.dhExpansionStrategy, s.shaStrategy, s.dhConnectionObligation, s.gridCongestionHpBan, s.subsidyPolicy));
         }
         return b.toString();
     }
@@ -180,10 +190,10 @@ public final class Scenario {
                 + "\"economicLearningFactor\": \"%s\", \"gridReinforcementRate\": \"%s\", "
                 + "\"energyPrices\": \"%s\", "
                 + "\"dhConstructionTime\": %d, \"dhExpansionStrategy\": \"%s\", \"shaStrategy\": \"%s\", "
-                + "\"dhConnectionObligation\": %b, \"gridCongestionHpBan\": %b}%s%n",
+                + "\"dhConnectionObligation\": %b, \"gridCongestionHpBan\": %b, \"subsidyPolicy\": \"%s\"}%s%n",
                 s.scenId, s.scenName, s.socialLearningFactor, s.economicLearningFactor,
                 s.gridReinforcementRate, s.energyPrices, s.dhConstructionTime, s.dhExpansionStrategy, s.shaStrategy,
-                s.dhConnectionObligation, s.gridCongestionHpBan, i < activeNames.length - 1 ? "," : ""));
+                s.dhConnectionObligation, s.gridCongestionHpBan, s.subsidyPolicy, i < activeNames.length - 1 ? "," : ""));
         }
         return b.append("]").toString();
     }
@@ -207,6 +217,7 @@ public final class Scenario {
         s.shaStrategy = src.shaStrategy;
         s.dhConnectionObligation = src.dhConnectionObligation;
         s.gridCongestionHpBan = src.gridCongestionHpBan;
+        s.subsidyPolicy = src.subsidyPolicy;
         return s;
     }
 }

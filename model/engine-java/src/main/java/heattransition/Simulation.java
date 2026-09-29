@@ -129,6 +129,7 @@ public final class Simulation {
         this.elf = Constants.LEARNING_MULTIPLIER.getOrDefault(scen.economicLearningFactor, 1.0);
         this.homeowners = homeowners; this.landlords = landlords; this.vesta = vesta;
         this.blocks = new ArrayList<>(socialBlocks); this.blocks.addAll(hoaBlocks);
+        Subsidies.start(scen.subsidyPolicy, startYear);   // policy of this run, nothing phased out yet
         // DistrictHeatingCompany state. Policy plan years are drawn ONCE per run, and the
         // "no start year" count feeds chanceOfDHBeingInstalled in the POLICY_BASED branch.
         this.scen = scen;
@@ -572,6 +573,15 @@ public final class Simulation {
 
     private YearRow stepYear(int year) {
         updateEnergyPrices(year);   // apply the fuel price path for THIS year before any EAC is computed
+        {   // subsidies of THIS year; under PHASE_OUT a technology whose stock share reached the threshold loses it
+            Map<HeatingSystem, Double> share = new EnumMap<>(HeatingSystem.class);
+            for (HeatingSystem t : HeatingSystem.values()) share.put(t, 0.0);
+            for (Dwelling d : all) share.merge(d.currentType, 1.0, Double::sum);
+            for (HeatingSystem t : HeatingSystem.values()) share.put(t, share.get(t) / Math.max(1, all.size()));
+            for (HeatingSystem t : Subsidies.setYear(year, share))
+                System.out.printf(java.util.Locale.US, "[subsidy] %d: %s subsidy phased out (stock share %.1f %%)%n",
+                        year, t, 100 * share.get(t));
+        }
         YearRow loopRow = null;     // filled at the end; capture decision-time loop state now
         Map<HeatingSystem, Double> capex0 = new EnumMap<>(HeatingSystem.class),
                                    sal0   = new EnumMap<>(HeatingSystem.class),

@@ -27,7 +27,8 @@ class DistrictHeatingCostsTest {
         HeatingSystemSpec dh = hs.get(HeatingSystem.DISTRICT_HEATING);
         long newcomer = Economics.computeEAC(dh, dwelling(HeatingSystem.NATURAL_GAS_BOILER), NO_INSULATION);
         long connected = Economics.computeEAC(dh, dwelling(HeatingSystem.DISTRICT_HEATING), NO_INSULATION);
-        double expected = (DistrictHeatingCosts.connectionFee() - dh.subsidy) / annuity(dh);
+        double subsidy = Subsidies.amount(HeatingSystem.DISTRICT_HEATING, "PRIVATELY_OWNED");
+        double expected = (DistrictHeatingCosts.connectionFee() - subsidy) / annuity(dh);
         assertEquals(expected, newcomer - connected, 1.0);
     }
 

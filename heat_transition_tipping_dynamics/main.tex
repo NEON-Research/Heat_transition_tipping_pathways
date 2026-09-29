@@ -529,6 +529,16 @@ top of the investment in its new system. For the same reason a district-heating 
 no end of life of its own: a connected dwelling or block reconsiders its heating every five years
 and leaves only when another option is preferred including the disconnection fee.
 
+Investment subsidies lower the up-front cost of heat pumps and heat-network connections. They
+follow the Dutch schemes year by year: for homeowners and owner associations the national
+investment subsidy for sustainable energy (ISDE), which for a typical hybrid heat pump was
+2\,550 euros in 2022--2024 and 1\,925 euros in 2025, for an all-electric heat pump 3\,150 and
+2\,825 euros, and for a heat-network connection 3\,325 euros until 2023 and 3\,775 euros from
+2024 \citep{rvoISDE2025}; for private landlords the corresponding scheme for rental dwellings;
+and for housing associations a contribution to heat-network connections only. After 2025 the
+amounts are held at their 2025 level. The calibration therefore sees the subsidies that applied
+over 2022--2024, and the scenarios vary them (Appendix~\ref{app:scenario-input}).
+
 \subsubsection{Homeowners (households)}
 
 Most dwellings in the Netherlands (57\%) are privately owned. This also means that investment-related decisions are made by the primary residents. All 4.6 million privately-owned dwellings are represented in the model as household agents, who make annual adoption decisions on heating methods. These households combine the technical characteristics of the dwelling with their social network, attitude, and financial preferences in an adoption function.
@@ -2186,6 +2196,11 @@ Table~\ref{tab:scenario-input}.
     -- & Economic learning factor & 0.5, 1, 2 &
       Multiplies the effect of economic learning with an effectiveness factor to
       investigate the impact of learning.\\
+    \addlinespace
+    National government & Investment subsidy & CURRENT, NONE, PHASE\_OUT &
+      Observed subsidies for heat pumps and heat-network connections, held at their
+      2025 level; no subsidy; or the observed subsidy until the technology reaches a
+      given share of the housing stock (20\,\% by default), after which it stops.\\
     \bottomrule
   \end{tabular}
 \end{table}

@@ -21,7 +21,9 @@ public final class Economics {
         // leaves, plus the non-monetary exit barrier (Constants.DH_EXIT_BARRIER). The annual DH
         // costs are in fixedAnnualCost (DistrictHeatingCosts.annualFixed).
         boolean onDH = d.currentType == HeatingSystem.DISTRICT_HEATING;
-        double investment, subsidy = hs.subsidy;
+        // investment subsidy of the simulated year for this technology and ownership group
+        // (Subsidies, from data/reference/subsidies.csv; the spreadsheet's subsidy column is unused)
+        double investment, subsidy = Subsidies.amount(hs.type, d.ownership);
         if (hs.type == HeatingSystem.DISTRICT_HEATING) {
             if (onDH) { investment = 0; subsidy = 0; }
             else investment = Constants.CAPEX_MULT_DH * DistrictHeatingCosts.connectionFee();

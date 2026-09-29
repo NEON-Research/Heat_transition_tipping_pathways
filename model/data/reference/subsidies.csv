@@ -1,0 +1,56 @@
+# Investment subsidies per year, technology and ownership group, nominal EUR per dwelling.
+# The engine applies the amount of the simulated year; before the first year it uses the first, after
+# the last year it holds the last (policy CURRENT). A technology/ownership pair not listed gets 0.
+# Scenario column subsidy_policy: CURRENT (this table), NONE (no subsidy), PHASE_OUT (this table until
+# the technology's share of the stock reaches -Dht.subsidyPhaseOutShare, then 0 for good).
+#
+# ISDE (homeowners): typical units, hybrid 4 kW and all-electric 8 kW, energy label A++ (A+++ adds
+# 225 in 2024 and 200 in 2025, not used). 2022-2023 from the RVO ISDE meldcodelijst warmtepompen
+# (21-03-2023; most common amount per kW, inference); 2024 Milieu Centraal (archived 24-06-2024) and
+# RVO; 2025 from the RVO formula 1250 + 225 per kW above the first. District heating: RVO ISDE
+# aansluiting warmtenet (archived 2022, 2023, 2024 pages).
+#   https://www.rvo.nl/subsidies-financiering/isde/isde-wat-wijzigt-er-2025
+#   https://web.archive.org/web/20240624202536/https://www.milieucentraal.nl/energie-besparen/energiesubsidies-en-leningen/subsidie-warmtepomp/
+#   https://web.archive.org/web/20220526030824/https://www.rvo.nl/subsidies-financiering/isde/woningeigenaren/aansluiting-warmtenet
+#   https://web.archive.org/web/20240710105154/https://www.rvo.nl/subsidies-financiering/isde/woningeigenaren/aansluiting-warmtenet
+# Owner associations (VvE) are assumed to receive the ISDE amounts. Private landlords: SVOH (from
+# April 2022) uses the same heat-pump amounts (search summary only, UNVERIFIED); no district-heating
+# subsidy assumed. Social housing: no heat-pump subsidy; SAH for a heat-network connection, 30 % of
+# the ACM connection fee (5251) capped at 3800 = 1575 (CE Delft 2023 p.69, UNVERIFIED for the years).
+year,technology,ownership,amount_eur,note
+2022,HYBRID_HEAT_PUMP,PRIVATELY_OWNED,2550,ISDE
+2023,HYBRID_HEAT_PUMP,PRIVATELY_OWNED,2550,ISDE
+2024,HYBRID_HEAT_PUMP,PRIVATELY_OWNED,2550,ISDE
+2025,HYBRID_HEAT_PUMP,PRIVATELY_OWNED,1925,ISDE
+2022,ELECTRIC_HEAT_PUMP,PRIVATELY_OWNED,3150,ISDE
+2023,ELECTRIC_HEAT_PUMP,PRIVATELY_OWNED,3150,ISDE
+2024,ELECTRIC_HEAT_PUMP,PRIVATELY_OWNED,3150,ISDE
+2025,ELECTRIC_HEAT_PUMP,PRIVATELY_OWNED,2825,ISDE
+2022,DISTRICT_HEATING,PRIVATELY_OWNED,3325,ISDE warmtenet
+2023,DISTRICT_HEATING,PRIVATELY_OWNED,3325,ISDE warmtenet
+2024,DISTRICT_HEATING,PRIVATELY_OWNED,3775,ISDE warmtenet
+2025,DISTRICT_HEATING,PRIVATELY_OWNED,3775,ISDE warmtenet
+2022,HYBRID_HEAT_PUMP,HOME_OWNER_ASSOCIATION,2550,ISDE (assumed for VvE)
+2023,HYBRID_HEAT_PUMP,HOME_OWNER_ASSOCIATION,2550,ISDE (assumed for VvE)
+2024,HYBRID_HEAT_PUMP,HOME_OWNER_ASSOCIATION,2550,ISDE (assumed for VvE)
+2025,HYBRID_HEAT_PUMP,HOME_OWNER_ASSOCIATION,1925,ISDE (assumed for VvE)
+2022,ELECTRIC_HEAT_PUMP,HOME_OWNER_ASSOCIATION,3150,ISDE (assumed for VvE)
+2023,ELECTRIC_HEAT_PUMP,HOME_OWNER_ASSOCIATION,3150,ISDE (assumed for VvE)
+2024,ELECTRIC_HEAT_PUMP,HOME_OWNER_ASSOCIATION,3150,ISDE (assumed for VvE)
+2025,ELECTRIC_HEAT_PUMP,HOME_OWNER_ASSOCIATION,2825,ISDE (assumed for VvE)
+2022,DISTRICT_HEATING,HOME_OWNER_ASSOCIATION,3325,ISDE warmtenet (assumed for VvE)
+2023,DISTRICT_HEATING,HOME_OWNER_ASSOCIATION,3325,ISDE warmtenet (assumed for VvE)
+2024,DISTRICT_HEATING,HOME_OWNER_ASSOCIATION,3775,ISDE warmtenet (assumed for VvE)
+2025,DISTRICT_HEATING,HOME_OWNER_ASSOCIATION,3775,ISDE warmtenet (assumed for VvE)
+2022,HYBRID_HEAT_PUMP,PRIVATELY_RENTED,2550,SVOH (unverified)
+2023,HYBRID_HEAT_PUMP,PRIVATELY_RENTED,2550,SVOH (unverified)
+2024,HYBRID_HEAT_PUMP,PRIVATELY_RENTED,2550,SVOH (unverified)
+2025,HYBRID_HEAT_PUMP,PRIVATELY_RENTED,1925,SVOH (unverified)
+2022,ELECTRIC_HEAT_PUMP,PRIVATELY_RENTED,3150,SVOH (unverified)
+2023,ELECTRIC_HEAT_PUMP,PRIVATELY_RENTED,3150,SVOH (unverified)
+2024,ELECTRIC_HEAT_PUMP,PRIVATELY_RENTED,3150,SVOH (unverified)
+2025,ELECTRIC_HEAT_PUMP,PRIVATELY_RENTED,2825,SVOH (unverified)
+2022,DISTRICT_HEATING,SOCIAL_HOUSING,1575,SAH (unverified for the year)
+2023,DISTRICT_HEATING,SOCIAL_HOUSING,1575,SAH (unverified for the year)
+2024,DISTRICT_HEATING,SOCIAL_HOUSING,1575,SAH (unverified for the year)
+2025,DISTRICT_HEATING,SOCIAL_HOUSING,1575,SAH (unverified for the year)

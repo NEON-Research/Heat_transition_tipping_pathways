@@ -119,6 +119,9 @@ public final class Constants {
      *  over 2022-2024 housing associations and municipalities kept DH stock connected. A sensitivity
      *  and scenario parameter. */
     public static final double DH_EXIT_BARRIER = p("dhExitBarrier", 0);
+    /** Subsidy policy PHASE_OUT: a technology's investment subsidy stops for good once its share of
+     *  the housing stock reaches this value (0-1). A driver-sweep parameter. */
+    public static final double SUBSIDY_PHASE_OUT_SHARE = p("subsidyPhaseOutShare", 0.20);
     /** Drop the fixed connection charges from the EAC (isolates the price-path change on its own). */
     public static final boolean FIXED_COSTS_OFF = p("fixedCostsOff", 0.0) != 0.0;
 
