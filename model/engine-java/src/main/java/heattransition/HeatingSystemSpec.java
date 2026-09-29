@@ -6,6 +6,11 @@ public final class HeatingSystemSpec {
     public final HeatingSystem type;
     public double investSmall, investMedium, investLarge;
     public final double initialInvestSmall, initialInvestMedium, initialInvestLarge;
+    /** Capacity-based investment (the heat pumps, from heat_pump_capex.csv): fixed + perKw * kW, with
+     *  kW = clamp(kwPerKWh * heat demand, kwMin, kwMax). NaN fixed = use the three demand tiers. */
+    public double investFixed = Double.NaN, investPerKw;
+    public double initialInvestFixed = Double.NaN, initialInvestPerKw;
+    public double kwPerKWh, kwMin, kwMax;
     public final double distributionSystemCost;
     public final boolean requiresLowTemp;
     public final String requiredLabel;

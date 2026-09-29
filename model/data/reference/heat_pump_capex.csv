@@ -1,0 +1,25 @@
+# Heat-pump investment per dwelling, constant 2024 EUR incl. VAT and installation (replaces the
+# small/medium/large investment columns of heating_system_data.xlsx for the two heat pumps):
+#   capacity_kw = clamp(capacity_share * heat demand [kWh, incl. hot water] / full_load_hours, kw_min, kw_max)
+#   investment  = fixed_eur + eur_per_kw * capacity_kw
+# (then x capexMultHp etc. and the learning curve; low-temperature distribution and insulation on top)
+#
+# Level: Milieu Centraal consumer prices (checked 2026-09-29), incl. VAT and installation:
+#   all-electric air/water heat pump 8 kW, terraced/corner/small semi-detached house: EUR 12,000
+#   hybrid heat pump 4 kW with outdoor unit, added to an existing boiler: EUR 6,200; with a new
+#   boiler EUR 8,300. The model's hybrid is one system with one lifetime, so it includes the boiler.
+#   https://www.milieucentraal.nl/energie-besparen/duurzaam-verwarmen-en-koelen/volledige-warmtepomp/
+#   https://www.milieucentraal.nl/energie-besparen/duurzaam-verwarmen-en-koelen/hybride-warmtepomp/
+# Slope: Vesta MAIS 5.0 cost per kW (CE Delft 2023, Table 39), EUR 2020 excl. VAT x 1.4657 (CPI
+#   2021-2024 x VAT, as the other CE Delft values): air/water 320-500 -> midpoint 410 -> 601 EUR/kW;
+#   hybrid 250 -> 366 EUR/kW.
+# fixed_eur = anchor price - slope * anchor capacity: electric 12,000 - 8 x 601 = 7,192;
+#   hybrid 8,300 - 4 x 366 = 6,836.
+# full_load_hours 1,220 = the median heat demand of terraced houses in the Noord-Brabant stock
+#   (9,772 kWh) / 8 kW, so the dwelling Milieu Centraal prices gets its 8 kW.
+# Hybrid capacity is half of the full capacity (so 4 kW for that median terraced house), limited to
+#   Milieu Centraal's 2-6 kW. Electric from 3 kW (smallest air/water unit); no upper limit (a large
+#   dwelling needs a larger or a second unit, and the cost keeps rising with capacity).
+technology,fixed_eur,eur_per_kw,full_load_hours,capacity_share,kw_min,kw_max
+ELECTRIC_HEAT_PUMP,7192,601,1220,1.0,3,1000
+HYBRID_HEAT_PUMP,6836,366,1220,0.5,2,6

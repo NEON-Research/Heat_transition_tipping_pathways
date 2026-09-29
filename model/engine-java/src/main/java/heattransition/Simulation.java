@@ -338,6 +338,8 @@ public final class Simulation {
             h.investSmall = h.initialInvestSmall * f;
             h.investMedium = h.initialInvestMedium * f;
             h.investLarge = h.initialInvestLarge * f;
+            h.investFixed = h.initialInvestFixed * f;
+            h.investPerKw = h.initialInvestPerKw * f;
         }
     }
     /** ONE cost scale shared by all technologies and all dwellings in the year (see eacNorm below). */
@@ -590,7 +592,7 @@ public final class Simulation {
                                    price0 = new EnumMap<>(HeatingSystem.class);
         for (HeatingSystem t : HeatingSystem.values()) {
             HeatingSystemSpec h = hs.get(t);
-            capex0.put(t, h.investMedium); sal0.put(t, h.salienceFactor); price0.put(t, h.primaryCostPerKWh);
+            capex0.put(t, Economics.investmentCostsSupply(h, 10000)); sal0.put(t, h.salienceFactor); price0.put(t, h.primaryCostPerKWh);
         }
         // HT_DYN probe: decision-time dynamic state (learned invest + salience + cumulative) per
         // heating type at the START of the year -- the values this year's decisions will use.
@@ -600,7 +602,7 @@ public final class Simulation {
                 HeatingSystemSpec h = hs.get(t);
                 System.out.printf(java.util.Locale.US,
                     "ENGDYN %d %s invest=%.0f salience=%.4f cumulative=%d initial=%.0f%n",
-                    year, t, h.investMedium, h.salienceFactor, cumInstalled.get(t), h.initialUnits);
+                    year, t, Economics.investmentCostsSupply(h, 10000), h.salienceFactor, cumInstalled.get(t), h.initialUnits);
             }
         }
         diagActive = DIAG && (year == 2025 || year == 2030 || year == 2035);

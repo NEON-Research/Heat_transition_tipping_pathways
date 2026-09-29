@@ -8,6 +8,10 @@ public final class Economics {
     public interface InsulationCost { double cost(Dwelling d, String toLabel); }
 
     public static double investmentCostsSupply(HeatingSystemSpec hs, double heatDemandKWh) {
+        if (!Double.isNaN(hs.investFixed)) {      // heat pumps: priced by capacity
+            double kw = Math.max(hs.kwMin, Math.min(hs.kwMax, hs.kwPerKWh * heatDemandKWh));
+            return hs.investFixed + hs.investPerKw * kw;
+        }
         if (heatDemandKWh < 6000) return hs.investSmall;
         if (heatDemandKWh > 10000) return hs.investLarge;
         return hs.investMedium;

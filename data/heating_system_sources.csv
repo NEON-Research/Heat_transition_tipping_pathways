@@ -4,16 +4,20 @@
 # These are EUR excl. VAT at Arcadis prices of 1 Jan 2020. Converted to constant 2024 EUR incl. VAT:
 #   x 1.2113 (CBS CPI 2021-2024: 2.7, 10.0, 3.8, 3.3 %, as in results_analysis/build_energy_price_table.py)
 #   x 1.21   (VAT)  =  x 1.4657
-# Investment small / medium / large (by heat demand <6,000 / 6,000-10,000 / >10,000 kWh): the report's
-# minimum (at natural replacement), the midpoint, and the maximum (standalone replacement). The report
-# gives a range, not sizes; mapping it onto the demand tiers is a modelling choice.
+# Gas-boiler investment small / medium / large (by heat demand <6,000 / 6,000-10,000 / >10,000 kWh): the
+# report's minimum (at natural replacement; Arcadis defines this as the extra cost over work done anyway),
+# the midpoint, and the maximum (standalone replacement). The report gives a range, not sizes; mapping it
+# onto the demand tiers is a modelling choice.
+# HEAT PUMPS are priced by capacity in data/heat_pump_capex.csv (Milieu Centraal price level, Vesta MAIS
+# 5.0 cost per kW); the heat-pump investment columns of the spreadsheet are NOT used by the engine.
 technology,parameter,value,unit,basis,source
 NATURAL_GAS_BOILER,investment small/medium/large,2288 / 2847 / 3406,EUR,1561 / 1942.5 / 2324 x 1.4657,CE Delft 2023 Table 37 (HR107)
 NATURAL_GAS_BOILER,maintenance,203,EUR/yr,138.82 x 1.4657 (2019 prices; ~8.4 % of investment),CE Delft 2023 Tables 37-38
 NATURAL_GAS_BOILER,lifetime,15,years,modelling choice; CE Delft/Vesta uses 20 years (Table 33) which is high as an average,author
 NATURAL_GAS_BOILER,efficiency,0.94,-,upper-heating-value basis (gas priced at 9.769 kWh/m3 = 35.17 MJ/m3); 104 % on lower heating value,CE Delft 2023 Table 37
 NATURAL_GAS_BLOCK,all,as NATURAL_GAS_BOILER,,no separate figures for collective gas heating,CE Delft 2023 Table 37
-HYBRID_HEAT_PUMP,investment small/medium/large,7843 / 10160 / 12476,EUR,5351 / 6931.5 / 8512 x 1.4657,CE Delft 2023 Table 46 (proposal)
+HYBRID_HEAT_PUMP,investment,6836 + 366/kW (2-6 kW; half the full capacity),EUR,anchor 8300 at 4 kW incl. new boiler; slope 250 x 1.4657; see heat_pump_capex.csv,Milieu Centraal (2026); CE Delft 2023 Table 39
+HYBRID_HEAT_PUMP,investment (spreadsheet; unused),7843 / 10160 / 12476,EUR,5351 / 6931.5 / 8512 x 1.4657; unit added to an existing boiler (boiler excluded),CE Delft 2023 Tables 40 and 46
 HYBRID_HEAT_PUMP,low-temperature distribution,3063,EUR,2090 x 1.4657 (single-family value; multi-family 1649),CE Delft 2023 Table 62 (TNO)
 HYBRID_HEAT_PUMP,maintenance,73,EUR/yr,50 x 1.4657,CE Delft 2023 Table 46
 HYBRID_HEAT_PUMP,lifetime,15,years,not stated in CE Delft 2023; common assumption,author
@@ -21,7 +25,8 @@ HYBRID_HEAT_PUMP,efficiency electric part,3.8,SCOP,one value for space heating a
 HYBRID_HEAT_PUMP,share of heat from the heat pump,0.8,-,kept at 80 %; CE Delft gives 52-65 % by label (Table 45) and Vesta 5.0 78 % (Table 39),author
 HYBRID_HEAT_PUMP,efficiency gas part,0.94,-,as the gas boiler (upper heating value),CE Delft 2023 Table 37
 HYBRID_HEAT_PUMP,learning rate,0.10,per doubling,same as the electric heat pump (shared technology),Louwen et al. 2018 (REFLEX policy brief); range 0-0.28: Renaldi et al. 2021; Weiss et al. 2008
-ELECTRIC_HEAT_PUMP,investment small/medium/large,12633 / 15522 / 18411,EUR,8619 / 10590 / 12561 x 1.4657,CE Delft 2023 Table 46 (proposal)
+ELECTRIC_HEAT_PUMP,investment,7192 + 601/kW (>= 3 kW; kW = heat demand / 1220 h),EUR,anchor 12000 at 8 kW; slope 410 (midpoint 320-500) x 1.4657; see heat_pump_capex.csv,Milieu Centraal (2026); CE Delft 2023 Table 39
+ELECTRIC_HEAT_PUMP,investment (spreadsheet; unused),12633 / 15522 / 18411,EUR,8619 / 10590 / 12561 x 1.4657; excludes low-temperature radiators (Figure 17),CE Delft 2023 Tables 40 and 46
 ELECTRIC_HEAT_PUMP,low-temperature distribution,3063,EUR,2090 x 1.4657 (single-family value; multi-family 1649),CE Delft 2023 Table 62 (TNO)
 ELECTRIC_HEAT_PUMP,maintenance,73,EUR/yr,50 x 1.4657,CE Delft 2023 Table 46
 ELECTRIC_HEAT_PUMP,lifetime,15,years,not stated in CE Delft 2023; common assumption,author

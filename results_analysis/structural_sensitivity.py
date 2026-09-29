@@ -48,9 +48,9 @@ FACTORS = {
     "gumbelScaleEac":    (5.0, 50.0,  lambda v: {"gumbelScaleEac": v}),
     "gumbelScaleUtil":   (0.005, 0.05, lambda v: {"gumbelScaleUtil": v}),
     "lifetimeJitterSd":  (0.0, 3.0,   lambda v: {"lifetimeJitterSd": v}),
-    # heat-pump capex: 0.6 reaches the consumer prices of Milieu Centraal (hybrid ~0.61, electric ~0.77
-    # of the CE Delft midpoints), 1.25 the upper end of the CE Delft ranges
-    "capexMultHp":       (0.6, 1.25,  lambda v: {"capexMultHp": v}),
+    # heat-pump capex on the Milieu Centraal price level (data/heat_pump_capex.csv): 0.8 a further fall
+    # of market prices by a fifth, 1.3 ~ the CE Delft/Arcadis midpoint for the electric heat pump
+    "capexMultHp":       (0.8, 1.3,   lambda v: {"capexMultHp": v}),
     "capexMultDh":       (0.85, 1.15, lambda v: {"capexMultDh": v}),
     # learning rate multiplier on the 10 % per doubling of both heat pumps: 0 (UK installed costs,
     # Renaldi et al. 2021) to 2.8 = 28 % (historical heat-pump prices, Weiss et al. 2008)

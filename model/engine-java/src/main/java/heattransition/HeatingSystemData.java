@@ -17,6 +17,7 @@ public final class HeatingSystemData {
     // Loaded once (idempotent) before any Simulation is built; see StockLoader.load / ensureLoaded.
     private static List<Map<String, String>> hsRows;     // heating_system_data rows
     private static Map<String, Double> energyCost;       // energy_source -> costs_eur_per_k_wh
+    private static Map<String, Map<String, String>> hpCapex;   // technology -> heat_pump_capex row
 
     /** Load the two reference tables from their CSV files (called with the run's reference dir). */
     public static synchronized void loadFrom(Path heatingSystemCsv, Path energySourceCsv) {
@@ -26,6 +27,17 @@ public final class HeatingSystemData {
             for (Map<String, String> r : Csv.read(energySourceCsv))
                 ec.put(r.get("energy_source"), Csv.d(r.get("costs_eur_per_k_wh")));
             energyCost = ec;
+            // Capacity-based heat-pump prices, next to heating_system_data.csv. Required.
+            Path hp = heatingSystemCsv.resolveSibling("heat_pump_capex.csv");
+            Map<String, Map<String, String>> cap = new HashMap<>();
+            for (Map<String, String> r : Csv.read(hp)) {
+                for (String c : new String[]{"fixed_eur", "eur_per_kw", "full_load_hours", "capacity_share", "kw_min", "kw_max"})
+                    if (r.get(c) == null || r.get(c).isBlank()) throw new IllegalStateException(hp + ": " + r.get("technology") + " has no " + c);
+                cap.put(r.get("technology"), r);
+            }
+            for (String t : new String[]{"HYBRID_HEAT_PUMP", "ELECTRIC_HEAT_PUMP"})
+                if (!cap.containsKey(t)) throw new IllegalStateException(hp + ": no row for " + t);
+            hpCapex = cap;
         } catch (IOException e) {
             throw new RuntimeException("cannot read heating/energy reference CSV: " + e.getMessage(), e);
         }
@@ -33,7 +45,7 @@ public final class HeatingSystemData {
 
     /** Fallback for callers that didn't loadFrom() explicitly (tests run from engine-java). */
     private static synchronized void ensureLoaded() {
-        if (hsRows == null || energyCost == null)
+        if (hsRows == null || energyCost == null || hpCapex == null)
             loadFrom(Path.of("../data/reference/heating_system_data.csv"),
                      Path.of("../data/reference/energy_source_data.csv"));
     }
@@ -84,6 +96,13 @@ public final class HeatingSystemData {
             // Economics.computeEAC: leaving gas saves the gas standing charge, district heating
             // brings its own. Defaults keep old CSVs working: gas for anything burning gas.
             HeatingSystemSpec sp = m.get(type);
+            Map<String, String> hc0 = hpCapex.get(type.name());
+            if (hc0 != null) {       // heat pumps: capacity-based price replaces the three tiers
+                sp.investFixed = sp.initialInvestFixed = capexF * Csv.d(hc0.get("fixed_eur"));
+                sp.investPerKw = sp.initialInvestPerKw = capexF * Csv.d(hc0.get("eur_per_kw"));
+                sp.kwPerKWh = Csv.d(hc0.get("capacity_share")) / Csv.d(hc0.get("full_load_hours"));
+                sp.kwMin = Csv.d(hc0.get("kw_min")); sp.kwMax = Csv.d(hc0.get("kw_max"));
+            }
             String gc = r.get("gas_connection"), hc = r.get("heat_connection");
             sp.gasConnection  = (gc == null || gc.isEmpty())
                     ? ("NATURAL_GAS".equals(primary) || "NATURAL_GAS".equals(secondary))

@@ -29,8 +29,10 @@ parameters in the Morris screen (now 19 factors: ~160 runs per screen set, ~5.7 
 .venv\Scripts\python results_analysis\ensemble_structure.py results\calib1000_v2
 ```
 then run a-d with `results\calib1000_v2` in place of `results\calib1000` (a fresh folder keeps the
-old calibration for comparison). At the default weights the new model under-predicts heat pumps
-in 2022-2024 (2024: electric 5.7 % vs 8.2 % observed), so check how many sets are retained.
+old calibration for comparison). Later the same day the heat pumps were repriced by capacity at
+the Milieu Centraal level (`data/heat_pump_capex.csv`: electric 12,000 at 8 kW, hybrid incl. boiler
+8,300 at 4 kW, Vesta MAIS cost per kW); at the default weights the fit is then MAD 0.25 pp
+(2024: electric 8.5 % vs 8.2 %, hybrid 3.1 % vs 2.9 %). Calibration takes ~5.5 h.
 
 ## Status and next phase (2026-09-29)
 

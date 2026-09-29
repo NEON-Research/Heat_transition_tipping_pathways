@@ -240,6 +240,34 @@ def export_subsidies():
     print(f"  subsidies.csv: {len(rows)} rows  <- data/subsidies.csv")
 
 
+HP_CAPEX_COLS = ["fixed_eur", "eur_per_kw", "full_load_hours", "capacity_share", "kw_min", "kw_max"]
+
+
+def export_heat_pump_capex():
+    """Validate data/heat_pump_capex.csv (sources in its '#' header) and copy it, comments included,
+    to the reference dir: one row each for the hybrid and the electric heat pump, positive numbers,
+    kw_min <= kw_max."""
+    src = os.path.join(DATA, "heat_pump_capex.csv")
+    if not os.path.exists(src):
+        sys.exit(f"heat-pump capex table not found: {src}")
+    with open(src, encoding="utf-8-sig") as fh:
+        text = fh.read()
+    rows = list(csv.DictReader(ln for ln in text.splitlines() if not ln.lstrip().startswith("#")))
+    techs = [r.get("technology") for r in rows]
+    if sorted(techs) != ["ELECTRIC_HEAT_PUMP", "HYBRID_HEAT_PUMP"]:
+        sys.exit(f"{src}: need exactly one row each for ELECTRIC_HEAT_PUMP and HYBRID_HEAT_PUMP, got {techs}")
+    for r in rows:
+        try:
+            v = {c: float(r[c]) for c in HP_CAPEX_COLS}
+        except (KeyError, TypeError, ValueError):
+            sys.exit(f"{src}: {r.get('technology')}: all of {HP_CAPEX_COLS} must be numbers")
+        if min(v.values()) <= 0 or v["kw_min"] > v["kw_max"]:
+            sys.exit(f"{src}: {r.get('technology')}: values must be positive and kw_min <= kw_max")
+    with open(os.path.join(REF, "heat_pump_capex.csv"), "w", encoding="utf-8", newline="") as b:
+        b.write(text)
+    print(f"  heat_pump_capex.csv: {len(rows)} rows  <- data/heat_pump_capex.csv")
+
+
 def main():
     hs = os.path.join(DATA, "heating_system_data.xlsx")
     vesta = os.path.join(DATA, "energy_demand_and_insulation_costs_VestaMAIS.xlsx")
@@ -253,6 +281,7 @@ def main():
     export_scenarios()
     export_district_heating_costs()
     export_subsidies()
+    export_heat_pump_capex()
 
 
 if __name__ == "__main__":

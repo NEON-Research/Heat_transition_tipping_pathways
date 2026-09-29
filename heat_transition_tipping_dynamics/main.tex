@@ -965,9 +965,9 @@ The screened parameters include two that concern district heating: the interval 
 connected dwelling reviews its heating (1--10 years, default 5) and a non-monetary barrier to
 leaving the network (0--6\,500 EUR, default 0), which stands for contracts, collective networks
 and tenant consent that the cost model leaves out. The techno-economic ranges follow the sources
-of the cost data: the heat-pump capital cost is scaled between 0.6, which reaches the lower
-consumer prices published by Milieu Centraal, and 1.25, the upper end of the ranges in
-\citet{cedelftUpdateKentallenInstallaties2023}, and the learning rate between zero
+of the cost data: the heat-pump capital cost is scaled between 0.8, a further fall of market prices by a
+fifth, and 1.3, about the midpoint of the \citet{cedelftUpdateKentallenInstallaties2023} range for
+the electric heat pump, and the learning rate between zero
 \citep{renaldiExperienceRatesLowcarbon2021} and 28\,\% per doubling
 \citep{weissLearningEnergyEfficiency2008}. Six behavioral parameters outside the calibrated
 decision weights are screened as well, because the calibration window cannot constrain them: the
@@ -2093,10 +2093,26 @@ per kWh delivered, so no conversion efficiency applies.
 The individual heating systems are parameterized from the cost figures that CE Delft compiled for
 the PBL model Vesta MAIS \citep{cedelftUpdateKentallenInstallaties2023}
 (Table~\ref{tab:hs-costs}). These are given excluding VAT at 2020 prices and are converted to
-constant 2024 euros including VAT with the consumer price index, as the energy prices are. The
-report gives a range per technology, from replacement at the end of life to standalone
-replacement; the lower bound, midpoint and upper bound are assigned to dwellings with a low,
-medium and high heat demand. Both heat pumps use one seasonal performance factor for space
+constant 2024 euros including VAT with the consumer price index, as the energy prices are. For
+the gas boiler the report's range, from replacement at the end of life to standalone
+replacement, is assigned to dwellings with a low, medium and high heat demand. The heat pumps
+are priced by capacity instead, because their cost rises with the capacity a dwelling needs:
+\begin{equation}\label{eq:ic-hp}
+  IC_{hp} = IC_{0} + c_{kW}\,P, \qquad P = \min\!\left(P_{max},\,\max\!\left(P_{min},\, s\,\frac{Q}{h_{fl}}\right)\right)
+\end{equation}
+with $Q$ the dwelling's heat demand, $h_{fl}$ the full-load hours, $s$ the share of the peak
+covered by the heat pump (1 for the electric heat pump, 0.5 for the hybrid, whose capacity is
+limited to 2--6\,kW) and $c_{kW}$ the cost per kW used in Vesta MAIS 5.0 (410\,EUR/kW for an
+air-to-water heat pump, the midpoint of 320--500, and 250\,EUR/kW for a hybrid; 2020 prices
+excluding VAT, converted as above). The price level is set by the current consumer prices of
+Milieu Centraal, including VAT and installation: 12\,000\,EUR for an 8\,kW electric heat pump in a
+terraced house \citep{milieucentraalVolledigeWarmtepomp2026} and 8\,300\,EUR for a 4\,kW hybrid
+with a new boiler \citep{milieucentraalHybrideWarmtepomp2026}; the hybrid includes the boiler
+because the model treats it as one system with one lifetime. $h_{fl}=1\,220$ hours gives the
+median terraced house in the stock (9\,772\,kWh) the 8\,kW of the reference price. The CE Delft
+figures for heat pumps are 25--50\,\% higher, because their upper bound is a standalone
+replacement and a 2020 cost price indexed with general inflation; they bound the sensitivity
+range. Both heat pumps use one seasonal performance factor for space
 heating and hot water together, because the model has a single heat demand per dwelling, and
 the hybrid delivers 80\,\% of the heat from its heat pump. Both heat pumps learn at 10\,\% per
 doubling of their cumulative installations \citep{louwenTechnologicalLearningEnergy2018}; the
@@ -2106,16 +2122,20 @@ for heat-pump prices \citep{weissLearningEnergyEfficiency2008}.
 
 \begin{table}[htbp]
   \centering
-  \caption{Heating-system assumptions, constant 2024 euros including VAT. Investment is given for
-  dwellings with a low / medium / high heat demand. Sources: \citet{cedelftUpdateKentallenInstallaties2023}
-  unless noted; the lifetimes and the hybrid's heat-pump share are modelling choices.}
+  \caption{Heating-system assumptions, constant 2024 euros including VAT. Gas-boiler investment is
+  given for dwellings with a low / medium / high heat demand; heat-pump investment follows
+  Eq.~\eqref{eq:ic-hp} and is shown for heat demands of 5\,500 / 9\,772 / 17\,400\,kWh (about the
+  median apartment, terraced and detached house). Sources: \citet{cedelftUpdateKentallenInstallaties2023}
+  and, for the heat-pump price level, Milieu Centraal; the lifetimes and the hybrid's heat-pump share
+  are modelling choices.}
   \label{tab:hs-costs}
   \footnotesize
   \begin{tabular}{@{}lcccc@{}}
     \toprule
      & Gas boiler & Hybrid heat pump & Electric heat pump & District heating\\
     \midrule
-    Investment (EUR) & 2\,288 / 2\,847 / 3\,406 & 7\,843 / 10\,160 / 12\,476 & 12\,633 / 15\,522 / 18\,411 & 5\,251 (connection)\\
+    Investment (EUR) & 2\,288 / 2\,847 / 3\,406 & 7\,661 / 8\,302 / 9\,032 & 9\,901 / 12\,006 / 15\,764 & 5\,251 (connection)\\
+    \quad fixed + per kW & -- & 6\,836 + 366/kW (2--6\,kW) & 7\,192 + 601/kW ($\geq$3\,kW) & --\\
     Low-temperature distribution (EUR) & -- & 3\,063 & 3\,063 & --\\
     Maintenance (EUR/yr) & 203 & 73 & 73 & -- \\
     Lifetime (years) & 15 & 15 & 15 & no end of life\\

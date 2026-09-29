@@ -5,7 +5,7 @@ flag,label,group,low,high,default,unit,basis
 energyPrice,Energy price path (gas + electricity),levers,0,1,0.5 (scenario),arm of energy_prices_by_year.csv,0 = low / 0.5 = central / 1 = high KEV arm; interpolated
 learningRateMult,Economic learning rate,levers,0,2.8,1,x 10 % per doubling,0 % (Renaldi et al. 2021) to 28 % (Weiss et al. 2008); both heat pumps
 socialLearningMult,Social learning strength,levers,0.5,2,1 (scenario),x subjective-norm weight,scenario LOW/HIGH
-capexMultHp,Heat-pump capital cost,levers,0.6,1.25,1,x CE Delft investment,0.6 ~ Milieu Centraal consumer prices; 1.25 ~ CE Delft upper range
+capexMultHp,Heat-pump capital cost,levers,0.8,1.3,1,x heat-pump investment (heat_pump_capex.csv),0.8 = market prices a fifth lower; 1.3 ~ CE Delft/Arcadis midpoint for the electric heat pump
 capexMultDh,District-heating connection cost,levers,0.85,1.15,1,x ACM connection fee,assumed +/-15 %
 gumbelScaleUtil,Choice randomness (utility),structural,0.005,0.05,0.02,-,modelling choice
 gumbelScaleEac,Choice randomness (cost),structural,5,50,20,EUR,modelling choice
