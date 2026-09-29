@@ -70,7 +70,7 @@ FACTORS = {
     "networkSize":       (10.0, 50.0, lambda v: {"networkSize": int(round(v))}), # data 25
     "networkShareSimilar": (0.5, 0.95, lambda v: {"networkShareSimilar": v}),    # data 0.8
     # the two heat pumps separately (group 'hp_split'; NOT in the default screen): capex on top of
-    # capexMultHp, and each one's learning rate per doubling (data: hybrid 0.05, electric 0.10)
+    # capexMultHp, and each one's learning rate per doubling (data: 0.10 for both)
     "capexMultHhp":      (0.7, 1.3,   lambda v: {"capexMultHhp": v}),
     "capexMultEhp":      (0.7, 1.6,   lambda v: {"capexMultEhp": v}),
     "learningRateHhp":   (0.0, 0.25,  lambda v: {"learningRateHhp": v}),
