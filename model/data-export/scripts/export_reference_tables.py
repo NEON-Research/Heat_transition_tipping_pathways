@@ -243,29 +243,30 @@ def export_subsidies():
 HP_CAPEX_COLS = ["fixed_eur", "eur_per_kw", "full_load_hours", "capacity_share", "kw_min", "kw_max"]
 
 
-def export_heat_pump_capex():
-    """Validate data/heat_pump_capex.csv (sources in its '#' header) and copy it, comments included,
-    to the reference dir: one row each for the hybrid and the electric heat pump, positive numbers,
-    kw_min <= kw_max."""
-    src = os.path.join(DATA, "heat_pump_capex.csv")
+def export_heating_system_capex():
+    """Validate data/heating_system_capex.csv (sources in its '#' header) and copy it, comments
+    included, to the reference dir: one row each for the two heat pumps, the gas boiler and the gas
+    block, numbers (eur_per_kw may be 0, the others positive), kw_min <= kw_max."""
+    src = os.path.join(DATA, "heating_system_capex.csv")
     if not os.path.exists(src):
-        sys.exit(f"heat-pump capex table not found: {src}")
+        sys.exit(f"heating-system capex table not found: {src}")
     with open(src, encoding="utf-8-sig") as fh:
         text = fh.read()
     rows = list(csv.DictReader(ln for ln in text.splitlines() if not ln.lstrip().startswith("#")))
     techs = [r.get("technology") for r in rows]
-    if sorted(techs) != ["ELECTRIC_HEAT_PUMP", "HYBRID_HEAT_PUMP"]:
-        sys.exit(f"{src}: need exactly one row each for ELECTRIC_HEAT_PUMP and HYBRID_HEAT_PUMP, got {techs}")
+    need = ["ELECTRIC_HEAT_PUMP", "HYBRID_HEAT_PUMP", "NATURAL_GAS_BLOCK", "NATURAL_GAS_BOILER"]
+    if sorted(techs) != need:
+        sys.exit(f"{src}: need exactly one row each for {need}, got {techs}")
     for r in rows:
         try:
             v = {c: float(r[c]) for c in HP_CAPEX_COLS}
         except (KeyError, TypeError, ValueError):
             sys.exit(f"{src}: {r.get('technology')}: all of {HP_CAPEX_COLS} must be numbers")
-        if min(v.values()) <= 0 or v["kw_min"] > v["kw_max"]:
-            sys.exit(f"{src}: {r.get('technology')}: values must be positive and kw_min <= kw_max")
-    with open(os.path.join(REF, "heat_pump_capex.csv"), "w", encoding="utf-8", newline="") as b:
+        if v["eur_per_kw"] < 0 or min(x for c, x in v.items() if c != "eur_per_kw") <= 0 or v["kw_min"] > v["kw_max"]:
+            sys.exit(f"{src}: {r.get('technology')}: values must be positive (eur_per_kw >= 0) and kw_min <= kw_max")
+    with open(os.path.join(REF, "heating_system_capex.csv"), "w", encoding="utf-8", newline="") as b:
         b.write(text)
-    print(f"  heat_pump_capex.csv: {len(rows)} rows  <- data/heat_pump_capex.csv")
+    print(f"  heating_system_capex.csv: {len(rows)} rows  <- data/heating_system_capex.csv")
 
 
 def main():
@@ -281,7 +282,7 @@ def main():
     export_scenarios()
     export_district_heating_costs()
     export_subsidies()
-    export_heat_pump_capex()
+    export_heating_system_capex()
 
 
 if __name__ == "__main__":

@@ -4,9 +4,9 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 import java.util.Map;
 
-/** Heat pumps are priced by capacity (heat_pump_capex.csv): fixed + per kW, with kW from the heat
- *  demand and the full-load hours, clamped to the unit range. The gas boiler keeps its demand tiers. */
-class HeatPumpCapexTest {
+/** Investment from heating_system_capex.csv: heat pumps fixed + per kW, with kW from the heat demand
+ *  and the full-load hours, clamped to the unit range; the gas boiler one price whatever the demand. */
+class HeatingSystemCapexTest {
 
     private static final double TERRACED_MEDIAN = 9772;   // kWh, the dwelling Milieu Centraal prices
 
@@ -28,11 +28,10 @@ class HeatPumpCapexTest {
         assertEquals(hhp.investFixed + hhp.investPerKw * 6, Economics.investmentCostsSupply(hhp, 40000), 1e-9);
     }
 
-    @Test void gasBoilerKeepsDemandTiers() {
-        HeatingSystemSpec gas = HeatingSystemData.freshSpecs().get(HeatingSystem.NATURAL_GAS_BOILER);
-        assertTrue(Double.isNaN(gas.investFixed));
-        assertEquals(gas.investSmall, Economics.investmentCostsSupply(gas, 5000), 1e-9);
-        assertEquals(gas.investMedium, Economics.investmentCostsSupply(gas, 8000), 1e-9);
-        assertEquals(gas.investLarge, Economics.investmentCostsSupply(gas, 12000), 1e-9);
+    @Test void gasBoilerOnePrice() {
+        Map<HeatingSystem, HeatingSystemSpec> hs = HeatingSystemData.freshSpecs();
+        for (HeatingSystem t : new HeatingSystem[]{HeatingSystem.NATURAL_GAS_BOILER, HeatingSystem.NATURAL_GAS_BLOCK})
+            for (double dem : new double[]{3000, 8000, 25000})
+                assertEquals(2100, Economics.investmentCostsSupply(hs.get(t), dem), 1e-9);
     }
 }

@@ -27,15 +27,15 @@ public final class HeatingSystemData {
             for (Map<String, String> r : Csv.read(energySourceCsv))
                 ec.put(r.get("energy_source"), Csv.d(r.get("costs_eur_per_k_wh")));
             energyCost = ec;
-            // Capacity-based heat-pump prices, next to heating_system_data.csv. Required.
-            Path hp = heatingSystemCsv.resolveSibling("heat_pump_capex.csv");
+            // Investment per dwelling (fixed + per kW), next to heating_system_data.csv. Required.
+            Path hp = heatingSystemCsv.resolveSibling("heating_system_capex.csv");
             Map<String, Map<String, String>> cap = new HashMap<>();
             for (Map<String, String> r : Csv.read(hp)) {
                 for (String c : new String[]{"fixed_eur", "eur_per_kw", "full_load_hours", "capacity_share", "kw_min", "kw_max"})
                     if (r.get(c) == null || r.get(c).isBlank()) throw new IllegalStateException(hp + ": " + r.get("technology") + " has no " + c);
                 cap.put(r.get("technology"), r);
             }
-            for (String t : new String[]{"HYBRID_HEAT_PUMP", "ELECTRIC_HEAT_PUMP"})
+            for (String t : new String[]{"HYBRID_HEAT_PUMP", "ELECTRIC_HEAT_PUMP", "NATURAL_GAS_BOILER", "NATURAL_GAS_BLOCK"})
                 if (!cap.containsKey(t)) throw new IllegalStateException(hp + ": no row for " + t);
             hpCapex = cap;
         } catch (IOException e) {
@@ -97,7 +97,7 @@ public final class HeatingSystemData {
             // brings its own. Defaults keep old CSVs working: gas for anything burning gas.
             HeatingSystemSpec sp = m.get(type);
             Map<String, String> hc0 = hpCapex.get(type.name());
-            if (hc0 != null) {       // heat pumps: capacity-based price replaces the three tiers
+            if (hc0 != null) {       // heating_system_capex.csv replaces the three demand tiers
                 sp.investFixed = sp.initialInvestFixed = capexF * Csv.d(hc0.get("fixed_eur"));
                 sp.investPerKw = sp.initialInvestPerKw = capexF * Csv.d(hc0.get("eur_per_kw"));
                 sp.kwPerKWh = Csv.d(hc0.get("capacity_share")) / Csv.d(hc0.get("full_load_hours"));
