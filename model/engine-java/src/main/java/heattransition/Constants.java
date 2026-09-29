@@ -122,6 +122,22 @@ public final class Constants {
     /** Subsidy policy PHASE_OUT: a technology's investment subsidy stops for good once its share of
      *  the housing stock reaches this value (0-1). A driver-sweep parameter. */
     public static final double SUBSIDY_PHASE_OUT_SHARE = p("subsidyPhaseOutShare", 0.20);
+
+    // ---- Behavioural parameters, exposed for the sensitivity screen (defaults = the model as it was)
+    /** Perceived sustainability score of the hybrid heat pump (scale 1-5; data 3). Negative = data.
+     *  The scores enter the attitude term through their min-max normalisation, so this sets where
+     *  the hybrid sits between gas (1) and the electric heat pump (5). */
+    public static final double SUSTAINABILITY_HHP = p("sustainabilityHhp", -1.0);
+    /** Homeowner attitude ~ Beta(attitudeAlpha, 2) on [0,1]; 5 gives mean 0.71. */
+    public static final double ATTITUDE_ALPHA = p("attitudeAlpha", 5.0);
+    /** Multiplier on the effort of switching (0.5 to another system, 0.8 when a low-temperature
+     *  system must be installed; capped at 1). The effort of keeping the current system (0.2) is fixed. */
+    public static final double EFFORT_SWITCH_MULT = p("effortSwitchMult", 1.0);
+    /** Share of its lifetime after which a homeowner's system triggers an opportunity decision. */
+    public static final double OPPORTUNITY_FRACTION = p("opportunityFraction", 0.75);
+    /** Homeowner peer network: mean size and the share of links to similar-attitude households. */
+    public static final int    NETWORK_SIZE          = (int) Math.round(p("networkSize", 25));
+    public static final double NETWORK_SHARE_SIMILAR = p("networkShareSimilar", 0.8);
     /** Drop the fixed connection charges from the EAC (isolates the price-path change on its own). */
     public static final boolean FIXED_COSTS_OFF = p("fixedCostsOff", 0.0) != 0.0;
 

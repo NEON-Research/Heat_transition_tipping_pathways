@@ -15,6 +15,23 @@ only on this disk).
 
 ---
 
+## Update 2026-09-29 (afternoon): the calibration must be rerun first
+
+Three model changes since the calibration of 2026-09-28 (commits 7d134f3, af8d374 and the
+behavioural-screen commit): heating-system costs from CE Delft (2024 EUR incl. VAT; lifetimes
+15 years; SCOP 3.8; gas efficiency 0.94 on the upper heating value), time-dependent subsidies
+(ISDE etc., `data/subsidies.csv`, scenario column `subsidy_policy`), and six behavioural
+parameters in the Morris screen (now 19 factors: ~160 runs per screen set, ~5.7 h for the four).
+`results\calib1000\` therefore describes the OLD model. Before step a-d below:
+```powershell
+.venv\Scripts\python results_analysis\calibrate_weights.py search --samples 1000 --outdir results\calib1000_v2
+.venv\Scripts\python results_analysis\select_subsample.py select results\calib1000_v2 --n 25
+.venv\Scripts\python results_analysis\ensemble_structure.py results\calib1000_v2
+```
+then run a-d with `results\calib1000_v2` in place of `results\calib1000` (a fresh folder keeps the
+old calibration for comparison). At the default weights the new model under-predicts heat pumps
+in 2022-2024 (2024: electric 5.7 % vs 8.2 % observed), so check how many sets are retained.
+
 ## Status and next phase (2026-09-29)
 
 Done: calibration (161 of 1000 retained), ensemble figures, `ensemble_structure.py`, subsample
@@ -36,7 +53,8 @@ $env:PYTHONIOENCODING="utf-8"
 # b. check that the 25 stand in for all 161 (~1.5 h)
 .venv\Scripts\python results_analysis\select_subsample.py validate results\calib1000 --scope province:Noord-Brabant
 # c. Morris at the 4 screen sets + LHS at the central set + figures (~10 h)
-.venv\Scripts\python results_analysisun_overnight.py --scope province:Noord-Brabant --outdir results\calib1000 --skip-search
+.venv\Scripts\python results_analysis
+un_overnight.py --scope province:Noord-Brabant --outdir results\calib1000 --skip-search
 # d. national scenarios on the 25 (long)
 .venv\Scripts\python results_analysis\pathway_batch.py --scope nl --search results\calib1000\calibration_subsample.json
 ```

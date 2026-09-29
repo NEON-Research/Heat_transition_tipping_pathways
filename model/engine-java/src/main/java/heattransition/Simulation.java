@@ -220,7 +220,9 @@ public final class Simulation {
     private void buildNetwork(int k) {
         // Faithful port of Main.f_setNetworkSimilar (SMALL_WORLD_SIMILAR, the AL default).
         // networkSizeMean 25, shareLocal 0.8, shareSimilar 0.8; 6 attitude categories.
-        final int NB_CAT = 6, MEAN_SIZE = 25; final double SHARE_LOCAL = 0.8, SHARE_SIMILAR = 0.8;
+        // mean size and share-similar are sensitivity parameters (-Dht.networkSize / networkShareSimilar)
+        final int NB_CAT = 6, MEAN_SIZE = Constants.NETWORK_SIZE;
+        final double SHARE_LOCAL = 0.8, SHARE_SIMILAR = Constants.NETWORK_SHARE_SIMILAR;
         int n = Math.max(1, homeowners.size());
         double sum = 0; for (Dwelling h : homeowners) sum += h.attitude;
         double mean = sum / n;

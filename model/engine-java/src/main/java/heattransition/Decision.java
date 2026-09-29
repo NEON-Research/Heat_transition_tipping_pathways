@@ -25,8 +25,8 @@ public final class Decision {
     /** effort: 0.2 same system | 0.8 needs low-temp retrofit | 0.5 otherwise */
     public static double effort(boolean typeIsCurrent, boolean requiresLowTemp, boolean dwellingHasLowTemp) {
         if (typeIsCurrent) return 0.2;
-        if (requiresLowTemp && !dwellingHasLowTemp) return 0.8;
-        return 0.5;
+        if (requiresLowTemp && !dwellingHasLowTemp) return Math.min(1.0, 0.8 * Constants.EFFORT_SWITCH_MULT);
+        return Math.min(1.0, 0.5 * Constants.EFFORT_SWITCH_MULT);
     }
 
     /** PBC = weighted mean of (1-EAC_norm) and (1-effort) */
@@ -105,7 +105,7 @@ public final class Decision {
      *  (only fired at age>=lifetime) for validating a faithful port vs the old golden. */
     public static boolean hasOpportunityTrigger(int age, int lifetime, boolean legacyIntDivision) {
         if (legacyIntDivision) return (age / lifetime) > 0.75;   // int/int — the original bug
-        return ((double) age / lifetime) > 0.75;                 // corrected
+        return ((double) age / lifetime) > Constants.OPPORTUNITY_FRACTION;   // corrected (default 0.75)
     }
 
     /** RUM score = utility + scale * Gumbel noise (choose argmax over feasible options). */

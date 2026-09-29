@@ -48,9 +48,13 @@ FACTORS = {
     "gumbelScaleEac":    (5.0, 50.0,  lambda v: {"gumbelScaleEac": v}),
     "gumbelScaleUtil":   (0.005, 0.05, lambda v: {"gumbelScaleUtil": v}),
     "lifetimeJitterSd":  (0.0, 3.0,   lambda v: {"lifetimeJitterSd": v}),
-    "capexMultHp":       (0.85, 1.15, lambda v: {"capexMultHp": v}),
+    # heat-pump capex: 0.6 reaches the consumer prices of Milieu Centraal (hybrid ~0.61, electric ~0.77
+    # of the CE Delft midpoints), 1.25 the upper end of the CE Delft ranges
+    "capexMultHp":       (0.6, 1.25,  lambda v: {"capexMultHp": v}),
     "capexMultDh":       (0.85, 1.15, lambda v: {"capexMultDh": v}),
-    "learningRateMult":  (0.5, 2.0,   lambda v: {"learningRateMult": v}),
+    # learning rate multiplier on the 10 % per doubling of both heat pumps: 0 (UK installed costs,
+    # Renaldi et al. 2021) to 2.8 = 28 % (historical heat-pump prices, Weiss et al. 2008)
+    "learningRateMult":  (0.0, 2.8,   lambda v: {"learningRateMult": v}),
     "socialLearningMult": (0.5, 2.0,  lambda v: {"socialLearningMult": v}),
     "energyPrice":       (0.0, 1.0,   price_map),   # coupled gas+electricity
     # years between reviews of a dwelling on district heating (no end of life there); default 5
@@ -58,6 +62,13 @@ FACTORS = {
     # non-monetary barrier to leaving DH, EUR one-off; default 0 (cost only). 3000 ~ P90 and
     # 6500 ~ P99 of the barrier DH households need before leaving stops paying
     "dhExitBarrier":     (0.0, 6500.0, lambda v: {"dhExitBarrier": v}),
+    # behaviour (hard-coded before; defaults = the model as it was)
+    "sustainabilityHhp": (2.0, 4.0,   lambda v: {"sustainabilityHhp": v}),       # data 3 (scale 1-5)
+    "attitudeAlpha":     (3.0, 7.0,   lambda v: {"attitudeAlpha": v}),           # Beta(a,2): mean 0.60-0.78
+    "effortSwitchMult":  (0.5, 1.25,  lambda v: {"effortSwitchMult": v}),        # switching effort 0.5/0.8
+    "opportunityFraction": (0.6, 0.9, lambda v: {"opportunityFraction": v}),     # data 0.75
+    "networkSize":       (10.0, 50.0, lambda v: {"networkSize": int(round(v))}), # data 25
+    "networkShareSimilar": (0.5, 0.95, lambda v: {"networkShareSimilar": v}),    # data 0.8
     # the two heat pumps separately (group 'hp_split'; NOT in the default screen): capex on top of
     # capexMultHp, and each one's learning rate per doubling (data: hybrid 0.05, electric 0.10)
     "capexMultHhp":      (0.7, 1.3,   lambda v: {"capexMultHhp": v}),
@@ -93,7 +104,11 @@ FACTOR_GROUPS = {
     # the result depends on assumptions that cannot be observed.
     "structural": ["gumbelScaleUtil", "gumbelScaleEac", "salienceThreshold",
                    "salienceSteepness", "salienceK", "lifetimeJitterSd", "dhReviewYears",
-                   "dhExitBarrier"],
+                   "dhExitBarrier"] + ["sustainabilityHhp", "attitudeAlpha", "effortSwitchMult",
+                   "opportunityFraction", "networkSize", "networkShareSimilar"],
+    # behavioural parameters outside the calibrated weights
+    "behaviour":  ["sustainabilityHhp", "attitudeAlpha", "effortSwitchMult", "opportunityFraction",
+                   "networkSize", "networkShareSimilar"],
 }
 
 # Readable names for reporting. Keys are the -Dht flags; values are what a reader should see.
@@ -111,6 +126,12 @@ FACTOR_LABEL = {
     "lifetimeJitterSd":  "Equipment lifetime spread",
     "dhReviewYears":     "District-heating review interval",
     "dhExitBarrier":     "District-heating exit barrier",
+    "sustainabilityHhp": "Hybrid heat pump: perceived sustainability",
+    "attitudeAlpha":     "Attitude distribution (mean)",
+    "effortSwitchMult":  "Effort of switching",
+    "opportunityFraction": "Opportunity trigger (share of lifetime)",
+    "networkSize":       "Peer network size",
+    "networkShareSimilar": "Peer network homophily",
     "capexMultHhp":      "Hybrid heat-pump capital cost",
     "capexMultEhp":      "Electric heat-pump capital cost",
     "learningRateHhp":   "Hybrid heat-pump learning rate",

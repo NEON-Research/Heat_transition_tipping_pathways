@@ -451,7 +451,7 @@ public final class StockLoader {
                 Perc perc = nbhData.getOrDefault(buurt, def);
                 Dwelling d = new Dwelling(id++, HeatingSystem.NATURAL_GAS_BOILER, rng.nextInt(0, 12),
                         fac * space + fac * fac * dhwBase, label, Double.parseDouble(f[c.get("area_m2")]),
-                        dtype, false, perc.grid, rng.beta(5, 2, 0, 1));   // hasLowTemp set from initial heating system below
+                        dtype, false, perc.grid, rng.beta(Constants.ATTITUDE_ALPHA, 2, 0, 1));   // hasLowTemp set from initial heating system below
                 // split off the hot-water part and keep the stochastic factor: insulation reduces the
                 // SPACE-heat component only, so demand can be rebuilt when the label improves
                 d.dhwKWh = fac * fac * dhwBase;

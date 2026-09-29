@@ -93,9 +93,13 @@ public final class HeatingSystemData {
                     : Csv.d(hc) != 0.0;
         }
         // min-max sustainability normalization across all systems (AL f_setHeatingSystemOptions)
-        int minS = Integer.MAX_VALUE, maxS = Integer.MIN_VALUE;
-        for (HeatingSystemSpec sp : m.values()) { minS = Math.min(minS, sp.sustainabilityScore); maxS = Math.max(maxS, sp.sustainabilityScore); }
-        for (HeatingSystemSpec sp : m.values()) sp.sustainabilityScoreNorm = (double) (sp.sustainabilityScore - minS) / (maxS - minS);
+        // (the hybrid's score can be overridden for the sensitivity screen: -Dht.sustainabilityHhp)
+        java.util.function.ToDoubleFunction<HeatingSystemSpec> score = sp ->
+                sp.type == HeatingSystem.HYBRID_HEAT_PUMP && Constants.SUSTAINABILITY_HHP >= 0
+                        ? Constants.SUSTAINABILITY_HHP : sp.sustainabilityScore;
+        double lo = Double.POSITIVE_INFINITY, hi = Double.NEGATIVE_INFINITY;
+        for (HeatingSystemSpec sp : m.values()) { lo = Math.min(lo, score.applyAsDouble(sp)); hi = Math.max(hi, score.applyAsDouble(sp)); }
+        for (HeatingSystemSpec sp : m.values()) sp.sustainabilityScoreNorm = (score.applyAsDouble(sp) - lo) / (hi - lo);
         return m;
     }
 }

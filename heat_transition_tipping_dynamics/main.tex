@@ -964,7 +964,19 @@ technology's 2050 share they jointly explain \citep{saltelli_global_2008}.
 The screened parameters include two that concern district heating: the interval at which a
 connected dwelling reviews its heating (1--10 years, default 5) and a non-monetary barrier to
 leaving the network (0--6\,500 EUR, default 0), which stands for contracts, collective networks
-and tenant consent that the cost model leaves out.
+and tenant consent that the cost model leaves out. The techno-economic ranges follow the sources
+of the cost data: the heat-pump capital cost is scaled between 0.6, which reaches the lower
+consumer prices published by Milieu Centraal, and 1.25, the upper end of the ranges in
+\citet{cedelftUpdateKentallenInstallaties2023}, and the learning rate between zero
+\citep{renaldiExperienceRatesLowcarbon2021} and 28\,\% per doubling
+\citep{weissLearningEnergyEfficiency2008}. Six behavioral parameters outside the calibrated
+decision weights are screened as well, because the calibration window cannot constrain them: the
+perceived sustainability of the hybrid heat pump (2--4 on the 1--5 scale, default 3), which sets
+its position between gas and the electric heat pump in the attitude term; the attitude
+distribution, Beta$(\alpha,2)$ with $\alpha$ from 3 to 7 (mean 0.60--0.78, default 5); the effort
+of switching to another system (0.5--1.25 times the default); the share of its lifetime after
+which a system triggers an opportunity decision (0.6--0.9, default 0.75); and the size (10--50,
+default 25) and homophily (0.5--0.95, default 0.8) of the peer network.
 
 Two special cases of parameters are treated separately. Three of the screened parameters govern
 the salience factor of the decision-making algorithm. This mechanism specifically affects the 
