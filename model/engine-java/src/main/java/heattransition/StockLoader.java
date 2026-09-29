@@ -62,9 +62,17 @@ public final class StockLoader {
     private static boolean requiresLowTemp(HeatingSystem t) {
         return t == HeatingSystem.HYBRID_HEAT_PUMP || t == HeatingSystem.ELECTRIC_HEAT_PUMP;
     }
+    /** Technical lifetime from heating_system_data (the same value the simulation uses for end of
+     *  life), cached per load because it is asked once per dwelling. Was a hard-coded copy. */
+    private static java.util.Map<HeatingSystem, Integer> lifetimes;
     private static int lifetimeOf(HeatingSystem t) {
-        switch (t) { case NATURAL_GAS_BOILER: case NATURAL_GAS_BLOCK: return 12;
-            case HYBRID_HEAT_PUMP: case ELECTRIC_HEAT_PUMP: return 15; case DISTRICT_HEATING: return 30; default: return 12; }
+        if (lifetimes == null) {
+            java.util.Map<HeatingSystem, Integer> m = new java.util.EnumMap<>(HeatingSystem.class);
+            for (java.util.Map.Entry<HeatingSystem, HeatingSystemSpec> e : HeatingSystemData.freshSpecs().entrySet())
+                m.put(e.getKey(), e.getValue().lifetime);
+            lifetimes = m;
+        }
+        return lifetimes.get(t);
     }
     // J_Dwelling/J_HousingBlock.f_setInitialHeatingMethod: age = startYear - constructionYear; if >= lifetime, random(0,lifetime)
     private static int initialHsAge(Rng rng, int startYear, int constructionYear, HeatingSystem type) {
@@ -399,6 +407,7 @@ public final class StockLoader {
         out.vesta = Vesta.load(refFile(dir, "dwellings_demand_insulation.csv").toString());
         // heating-system + energy-source specs from the reference CSVs (single source of truth,
         // generated from the data/ spreadsheets by export_reference_tables.py).
+        lifetimes = null;                                   // re-read from the (re)loaded specs
         HeatingSystemData.loadFrom(refFile(dir, "heating_system_data.csv"),
                                    refFile(dir, "energy_source_data.csv"));
         // Year x arm price + fixed-cost table. Required: a missing or malformed file aborts here.

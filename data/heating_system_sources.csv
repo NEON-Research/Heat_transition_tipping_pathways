@@ -1,0 +1,30 @@
+# Sources of the heating-system assumptions in heating_system_data.xlsx (sheet heating_system_data).
+# Cost values: CE Delft (Naber & Dehens, 2023), "Update kentallen installaties Vesta MAIS 2022", report
+# 23.210348.003 for PBL, https://ce.nl/wp-content/uploads/2023/03/CE_Delft_210348_Update_kentallen_installaties_Vesta_MAIS_Def.pdf
+# These are EUR excl. VAT at Arcadis prices of 1 Jan 2020. Converted to constant 2024 EUR incl. VAT:
+#   x 1.2113 (CBS CPI 2021-2024: 2.7, 10.0, 3.8, 3.3 %, as in results_analysis/build_energy_price_table.py)
+#   x 1.21   (VAT)  =  x 1.4657
+# Investment small / medium / large (by heat demand <6,000 / 6,000-10,000 / >10,000 kWh): the report's
+# minimum (at natural replacement), the midpoint, and the maximum (standalone replacement). The report
+# gives a range, not sizes; mapping it onto the demand tiers is a modelling choice.
+technology,parameter,value,unit,basis,source
+NATURAL_GAS_BOILER,investment small/medium/large,2288 / 2847 / 3406,EUR,1561 / 1942.5 / 2324 x 1.4657,CE Delft 2023 Table 37 (HR107)
+NATURAL_GAS_BOILER,maintenance,203,EUR/yr,138.82 x 1.4657 (2019 prices; ~8.4 % of investment),CE Delft 2023 Tables 37-38
+NATURAL_GAS_BOILER,lifetime,15,years,modelling choice; CE Delft/Vesta uses 20 years (Table 33) which is high as an average,author
+NATURAL_GAS_BOILER,efficiency,0.94,-,upper-heating-value basis (gas priced at 9.769 kWh/m3 = 35.17 MJ/m3); 104 % on lower heating value,CE Delft 2023 Table 37
+NATURAL_GAS_BLOCK,all,as NATURAL_GAS_BOILER,,no separate figures for collective gas heating,CE Delft 2023 Table 37
+HYBRID_HEAT_PUMP,investment small/medium/large,7843 / 10160 / 12476,EUR,5351 / 6931.5 / 8512 x 1.4657,CE Delft 2023 Table 46 (proposal)
+HYBRID_HEAT_PUMP,low-temperature distribution,3063,EUR,2090 x 1.4657 (single-family value; multi-family 1649),CE Delft 2023 Table 62 (TNO)
+HYBRID_HEAT_PUMP,maintenance,73,EUR/yr,50 x 1.4657,CE Delft 2023 Table 46
+HYBRID_HEAT_PUMP,lifetime,15,years,not stated in CE Delft 2023; common assumption,author
+HYBRID_HEAT_PUMP,efficiency electric part,3.8,SCOP,one value for space heating and hot water (the model has one heat demand),CE Delft 2023 Table 46
+HYBRID_HEAT_PUMP,share of heat from the heat pump,0.8,-,kept at 80 %; CE Delft gives 52-65 % by label (Table 45) and Vesta 5.0 78 % (Table 39),author
+HYBRID_HEAT_PUMP,efficiency gas part,0.94,-,as the gas boiler (upper heating value),CE Delft 2023 Table 37
+HYBRID_HEAT_PUMP,learning rate,0.10,per doubling,same as the electric heat pump (shared technology),Louwen et al. 2018 (REFLEX policy brief); range 0-0.28: Renaldi et al. 2021; Weiss et al. 2008
+ELECTRIC_HEAT_PUMP,investment small/medium/large,12633 / 15522 / 18411,EUR,8619 / 10590 / 12561 x 1.4657,CE Delft 2023 Table 46 (proposal)
+ELECTRIC_HEAT_PUMP,low-temperature distribution,3063,EUR,2090 x 1.4657 (single-family value; multi-family 1649),CE Delft 2023 Table 62 (TNO)
+ELECTRIC_HEAT_PUMP,maintenance,73,EUR/yr,50 x 1.4657,CE Delft 2023 Table 46
+ELECTRIC_HEAT_PUMP,lifetime,15,years,not stated in CE Delft 2023; common assumption,author
+ELECTRIC_HEAT_PUMP,efficiency,3.8,SCOP,one value for space heating and hot water; CE Delft gives 4.3 space heating and 1.75 hot water,CE Delft 2023 Table 46; author
+ELECTRIC_HEAT_PUMP,learning rate,0.10,per doubling,as the hybrid,Louwen et al. 2018; range 0-0.28: Renaldi et al. 2021; Weiss et al. 2008
+DISTRICT_HEATING,connection / disconnection / annual costs,see district_heating_costs.csv,EUR,regulated maximum tariffs 2025,ACM

@@ -301,9 +301,10 @@ new, small-scale, 5th generation district heating \citep{buffa5thGenerationDistr
 with substantial subsidies or public investment, new techno-economic triggers and
 feedback loops are expected. On the other hand, (hybrid) heat pumps have seen a
 rapid increase in deployment in recent years. This has resulted in a rapid
-learning curve, where with a doubling in unit capacity the price per unit drops
-on average by 27\% \citep{jakobChapter11Heating2020}, while slower learning is expected with a
-22\% decrease in investment costs between 2025 and 2050 \citep{europeancommissiondirectorate-generalforenergyBarriersActionDrivers2024}.
+learning curve, where with a doubling in cumulative sales the price per unit dropped
+historically by 25--35\,\% \citep{weissLearningEnergyEfficiency2008,jakobChapter11Heating2020},
+while slower learning is expected ahead, with a 22\,\% decrease in investment costs between 2025
+and 2050 \citep{voltCETOHeatPumps2025}.
 
 From a more theoretical perspective we can distinguish heat pumps as granular
 technologies, while district heating systems are `one-of-a-kind' systems. Where
@@ -2063,6 +2064,41 @@ per kWh delivered, so no conversion efficiency applies.
     Delivery-set rental & 150.49 /yr & every connected dwelling \\
     Connection fee (incl.\ 25\,m pipe) & 5\,251.45 & new connection, minus the subsidy \\
     Permanent disconnection & 5\,250.99 & a connected dwelling that leaves \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+The individual heating systems are parameterized from the cost figures that CE Delft compiled for
+the PBL model Vesta MAIS \citep{cedelftUpdateKentallenInstallaties2023}
+(Table~\ref{tab:hs-costs}). These are given excluding VAT at 2020 prices and are converted to
+constant 2024 euros including VAT with the consumer price index, as the energy prices are. The
+report gives a range per technology, from replacement at the end of life to standalone
+replacement; the lower bound, midpoint and upper bound are assigned to dwellings with a low,
+medium and high heat demand. Both heat pumps use one seasonal performance factor for space
+heating and hot water together, because the model has a single heat demand per dwelling, and
+the hybrid delivers 80\,\% of the heat from its heat pump. Both heat pumps learn at 10\,\% per
+doubling of their cumulative installations \citep{louwenTechnologicalLearningEnergy2018}; the
+sensitivity analysis varies this between zero, as observed for recent installed costs in the
+United Kingdom \citep{renaldiExperienceRatesLowcarbon2021}, and the 28\,\% found historically
+for heat-pump prices \citep{weissLearningEnergyEfficiency2008}.
+
+\begin{table}[htbp]
+  \centering
+  \caption{Heating-system assumptions, constant 2024 euros including VAT. Investment is given for
+  dwellings with a low / medium / high heat demand. Sources: \citet{cedelftUpdateKentallenInstallaties2023}
+  unless noted; the lifetimes and the hybrid's heat-pump share are modelling choices.}
+  \label{tab:hs-costs}
+  \footnotesize
+  \begin{tabular}{@{}lcccc@{}}
+    \toprule
+     & Gas boiler & Hybrid heat pump & Electric heat pump & District heating\\
+    \midrule
+    Investment (EUR) & 2\,288 / 2\,847 / 3\,406 & 7\,843 / 10\,160 / 12\,476 & 12\,633 / 15\,522 / 18\,411 & 5\,251 (connection)\\
+    Low-temperature distribution (EUR) & -- & 3\,063 & 3\,063 & --\\
+    Maintenance (EUR/yr) & 203 & 73 & 73 & -- \\
+    Lifetime (years) & 15 & 15 & 15 & no end of life\\
+    Efficiency & 0.94 (upper heating value) & 3.8 (80\,\% of heat) / 0.94 & 3.8 & 1.0 (heat delivered)\\
+    Learning rate (per doubling) & 1\,\% & 10\,\% & 10\,\% & --\\
     \bottomrule
   \end{tabular}
 \end{table}
