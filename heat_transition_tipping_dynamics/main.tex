@@ -612,7 +612,9 @@ calculated by the sum of intention and PBC multiplied by their weights
 (Equation~\ref{eq:utility}). Lastly, the utilities of all options are filtered to
 exclude non-available options (e.g.\ no district heating if there is no heating
 grid in the neighborhood), and from the filtered set the option with the highest
-utility is selected and adopted (Equation~\ref{eq:argmax}).
+utility plus a random term is selected and adopted (Equation~\ref{eq:argmax}). The random term
+stands for everything the utility does not capture, so that a household does not always choose
+the option with the highest modelled utility.
 
 \begin{equation}\label{eq:intention}
   Intention_{hm} = \frac{Att_{hm,n}\cdot w_{Att}
@@ -628,8 +630,10 @@ utility is selected and adopted (Equation~\ref{eq:argmax}).
 \end{equation}
 
 \begin{equation}\label{eq:argmax}
-  \text{Selected heating method} = \argmax_{hm \in HM} U_{hm}
+  \text{Selected heating method} = \argmax_{hm \in HM} \left( Utility_{hm} + \lambda\,\varepsilon_{hm} \right)
 \end{equation}
+where $\varepsilon_{hm}$ is an independent standard Gumbel draw per option and decision, and
+$\lambda$ its scale, so that the choice follows a multinomial logit in $Utility_{hm}/\lambda$.
 
 Note, this is a simplified adoption model. Many more elaborate approaches and
 different frameworks exist; however, in this study the focus is on evaluating
@@ -816,11 +820,21 @@ right description of social visibility. This uncertainty is not quantified, but 
 through the model's grounding in the literature (Section~\ref{sec:model}) and its verification 
 (Section~\ref{sec:verification}).
 
-\emph{Parametric} uncertainty concerns the numerical assumptions of the model. 
+\emph{Parametric} uncertainty concerns the numerical assumptions of the model.
 Most parametric uncertainty occurs from process assumptions (e.g. salience factor),
-techno-economic assumptions (e.g. energy prices) and weights in the decision-making framework. 
-The process and techno-economic parameters are analyzed in a sensitivity analysis, while the 
-decision weights are filtered plausible weight-sets based on historic matching, as described in the next section.
+techno-economic assumptions (e.g. energy prices) and weights in the decision-making framework.
+Which of the two treatments a parameter receives depends on one question: can the observed
+2022--2024 adoption constrain it? Parameters that shape adoption within that window are
+calibrated jointly with the decision weights, so that the data decide which combinations remain
+plausible (Section~\ref{sec:calibrating}). Varying such a parameter afterwards at fixed weights
+would move the model away from the fit it was calibrated to, and part of its apparent influence
+would then reflect a model that no longer reproduces the observations. Parameters whose effect only
+appears once low-carbon systems become common, such as the salience of adoption, or which follow
+the future course of prices and costs, cannot be constrained by the window: the fit is nearly
+insensitive to them, so the calibrated weights remain valid when they are varied. These are
+analyzed in the sensitivity analysis (Section~\ref{sec:sensitivity}). The assignment is tested
+rather than assumed, by screening the effect of every candidate parameter on the calibration fit
+(Section~\ref{sec:sensitivity}).
 
 %% ---------------------------------------------------------------------------
 \subsection{Calibrating to plausible decision weights}
@@ -835,8 +849,20 @@ values reported by \citet{okurAdoptionRenewableHeating2024}. A Latin-hypercube s
 sets is drawn across this space and used as simulation input. Every set whose simulated 2023 and
 2024 heating mix is not implausible given the observations (defined below) is retained, the rest is
 discarded. To keep the sampling behaviorally interpretable, we vary normalized shares
-within each stage of the decision function rather than raw weights, which reduces the space to
-four free parameters. The retained sets constitute a plausibility ensemble that is carried into 
+within each stage of the decision function rather than raw weights, which reduces the weights to
+four free parameters.
+
+The scale $\lambda$ of the random term in the choice (Equation~\ref{eq:argmax}) is calibrated together with the weights, as a fifth free parameter. In a random-utility choice
+only the ratio of the utility differences to the scale of the random term matters. Because the
+weights are normalized, their magnitude is fixed, and the scale is what sets how strongly
+households prefer the option with the highest utility over the others, and with that how many
+switch system in a given year: exactly what the observation window measures. Its effect is
+large because the terms of the utility pull in opposite directions (a low-carbon option scores
+higher on attitude, the incumbent on subjective norm and effort) and largely offset, so that the
+options of a household typically differ by a few hundredths in utility. Fixing the scale and
+varying it only afterwards would therefore misrepresent a quantity the data constrain. It is
+sampled between 0.005 and 0.05 on the 0--1 utility scale. % TODO range as used in the calibration
+The retained sets constitute a plausibility ensemble that is carried into 
 the scenario analysis, so that pathways are reported as a band across behaviorally plausible
 preferences rather than a single fitted line. The sensitivity analysis uses a small number of
 retained sets chosen to span the ensemble (described below). The ensemble is itself a result and
@@ -969,14 +995,28 @@ of the cost data: the heat-pump capital cost is scaled between 0.8, a further fa
 fifth, and 1.3, about the midpoint of the \citet{cedelftUpdateKentallenInstallaties2023} range for
 the electric heat pump, and the learning rate between zero
 \citep{renaldiExperienceRatesLowcarbon2021} and 28\,\% per doubling
-\citep{weissLearningEnergyEfficiency2008}. Six behavioral parameters outside the calibrated
-decision weights are screened as well, because the calibration window cannot constrain them: the
-perceived sustainability of the hybrid heat pump (2--4 on the 1--5 scale, default 3), which sets
-its position between gas and the electric heat pump in the attitude term; the attitude
-distribution, Beta$(\alpha,2)$ with $\alpha$ from 3 to 7 (mean 0.60--0.78, default 5); the effort
-of switching to another system (0.5--1.25 times the default); the share of its lifetime after
-which a system triggers an opportunity decision (0.6--0.9, default 0.75); and the size (10--50,
-default 25) and homophily (0.5--0.95, default 0.8) of the peer network.
+\citep{weissLearningEnergyEfficiency2008}. Behavioral parameters outside the decision weights
+are screened as well: the perceived sustainability of the hybrid heat pump (2--4 on the 1--5
+scale, default 3), which sets its position between gas and the electric heat pump in the attitude
+term; the attitude distribution, Beta$(\alpha,2)$ with $\alpha$ from 3 to 7 (mean 0.60--0.78,
+default 5); the share of its lifetime after which a system triggers an opportunity decision
+(0.6--0.9, default 0.75); and the size (10--50, default 25) and homophily (0.5--0.95, default
+0.8) of the peer network.
+
+Only parameters that the observation window cannot constrain belong in this analysis
+(Section~\ref{sec:uncertainty}): the weights are held at calibrated values, so varying a parameter
+that the 2022--2024 data do constrain would partly measure the loss of the calibration rather than
+genuine uncertainty. Which parameters qualify is established with a second Morris screening that
+uses the calibration fit, the mean absolute deviation from the observed 2023 and 2024 shares, as
+its outcome instead of the 2050 mix. Parameters that change the fit materially are moved into the
+calibration; the others are screened on the pathway. % TODO result of the fit-window screening (which parameters moved into the calibration)
+On this basis the scale of the random term in the choice is calibrated (Section~\ref{sec:calibrating}). The effort
+of switching to another system is not varied separately: it enters the decision only through its
+product with the calibrated effort weight, whose retained range already spans 0.12--0.90, % TODO update after recalibration
+so varying it at a fixed weight would count the same uncertainty twice. The same holds in part
+for the social learning factor, which scales the calibrated subjective-norm weight; it is
+nevertheless screened because it is also a scenario lever that represents how far an
+intervention could strengthen or weaken peer influence.
 
 Two special cases of parameters are treated separately. Three of the screened parameters govern
 the salience factor of the decision-making algorithm. This mechanism specifically affects the 
