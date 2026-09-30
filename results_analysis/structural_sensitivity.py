@@ -77,6 +77,11 @@ FACTORS = {
     "learningRateEhp":   (0.0, 0.25,  lambda v: {"learningRateEhp": v}),
 }
 HP_SPLIT = ["capexMultHhp", "capexMultEhp", "learningRateHhp", "learningRateEhp"]
+# Not in the default screen: gumbelScaleUtil is calibrated jointly with the weights (the 2022-2024
+# window constrains it; each retained set carries its own value), and effortSwitchMult only rescales
+# the effort term whose weight is calibrated, so varying it at fixed weights counts that twice.
+# Both remain available by name (--factors) and are used by fit_screen.py.
+NOT_SCREENED = ["gumbelScaleUtil", "effortSwitchMult"]
 
 # NOTE on socialLearningMult. It scales the subjective-norm weight: wSn = slf * wSnBase, and only
 # the PRODUCT enters the intention. wSnBase is itself a calibrated weight, and the retained ensemble
@@ -92,7 +97,7 @@ HP_SPLIT = ["capexMultHhp", "capexMultEhp", "learningRateHhp", "learningRateEhp"
 # the learning rate are scenario arms, and heat-pump / district-heating capex has no sourced uncertainty
 # range, so quantifying it here would report a rank that follows from an assumed interval.
 FACTOR_GROUPS = {
-    "all":        [k for k in FACTORS if k not in HP_SPLIT],
+    "all":        [k for k in FACTORS if k not in HP_SPLIT + NOT_SCREENED],
     # the hybrid-versus-electric split: which of capex and learning, and for which heat pump, decides it
     "hp_split":   HP_SPLIT,
     # The scenario levers: quantities with an external range and a policy reading, carried as
@@ -102,12 +107,12 @@ FACTOR_GROUPS = {
                    "capexMultHp", "capexMultDh"],
     # The structural set: modelling choices with no external anchor. Varying these says how much
     # the result depends on assumptions that cannot be observed.
-    "structural": ["gumbelScaleUtil", "gumbelScaleEac", "salienceThreshold",
+    "structural": ["gumbelScaleEac", "salienceThreshold",
                    "salienceSteepness", "salienceK", "lifetimeJitterSd", "dhReviewYears",
-                   "dhExitBarrier"] + ["sustainabilityHhp", "attitudeAlpha", "effortSwitchMult",
+                   "dhExitBarrier"] + ["sustainabilityHhp", "attitudeAlpha",
                    "opportunityFraction", "networkSize", "networkShareSimilar"],
     # behavioural parameters outside the calibrated weights
-    "behaviour":  ["sustainabilityHhp", "attitudeAlpha", "effortSwitchMult", "opportunityFraction",
+    "behaviour":  ["sustainabilityHhp", "attitudeAlpha", "opportunityFraction",
                    "networkSize", "networkShareSimilar"],
 }
 
@@ -300,7 +305,7 @@ def main():
     ap.add_argument("--scenario", default="baseline")
     ap.add_argument("--sort", default="total", choices=list(SORTCOL),
                     help="which column ranks the factor table (default: total = whole-mix influence)")
-    ap.add_argument("--factors", default=",".join(k for k in FACTORS if k not in HP_SPLIT), help="comma list, or a named group: " + "|".join(FACTOR_GROUPS) +
+    ap.add_argument("--factors", default=",".join(k for k in FACTORS if k not in HP_SPLIT + NOT_SCREENED), help="comma list, or a named group: " + "|".join(FACTOR_GROUPS) +
                          ". 'structural' is everything the scenarios do not explore.")
     ap.add_argument("--weights", default="central",
                     help="weight set to hold fixed: central (default) | best_fit | "

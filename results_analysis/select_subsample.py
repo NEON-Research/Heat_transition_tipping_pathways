@@ -60,9 +60,14 @@ def effective(r):
 
 
 def standardised(R):
-    """Retained sets in standardised (attitude, social-norm, effort) effective-weight space."""
+    """Retained sets in standardised (attitude, social-norm, effort) effective-weight space, plus
+    log(noise scale) when the calibration sampled it (gumbelScaleUtil): it sets how strongly the
+    utility differences decide, so sets that differ only in it can behave very differently."""
     E = [effective(r) for r in R]
-    X = np.array([[e[k] for k in ("attitude", "social", "effort")] for e in E])
+    cols = [[e[k] for k in ("attitude", "social", "effort")] for e in E]
+    if all("gumbelScaleUtil" in r["sampled"] for r in R):
+        cols = [c + [float(np.log(r["sampled"]["gumbelScaleUtil"]))] for c, r in zip(cols, R)]
+    X = np.array(cols)
     return E, (X - X.mean(0)) / X.std(0)
 
 

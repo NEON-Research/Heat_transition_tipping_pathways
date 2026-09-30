@@ -4,14 +4,17 @@
 # Each step logs to <OUT>/log_<step>.txt; progress (start, end, exit code) goes to
 # <OUT>/overnight_chain.log. Stops only if the calibration fails or retains nothing; a later step
 # that fails is logged and the chain goes on.
-# Usage (Git Bash, from the repo root):  bash results_analysis/overnight_chain.sh [OUT] [OLD_NB]
-#   OUT     calibration folder (fresh), default results/calib1000_v2
-#   OLD_NB  where the current results/noord-brabant is moved to before the quick run
+# Usage (Git Bash, from the repo root):  bash results_analysis/overnight_chain.sh [OUT] [OLD_NB] [FIT_FROM]
+#   OUT       calibration folder (fresh), default results/calib1000_v2
+#   OLD_NB    where the current results/noord-brabant is moved to before the quick run
+#   FIT_FROM  optional: a previous calibration folder; first run fit_screen.py on its central set
+#             (which parameters the 2022-2024 window constrains), output fit_screen.csv there
 cd "$(dirname "$0")/.." || exit 1
 export PYTHONIOENCODING=utf-8
 PY=.venv/Scripts/python.exe
 OUT=${1:-results/calib1000_v2}
 OLD_NB=${2:-results/noord-brabant_calib1000_2026-09-29}
+FIT_FROM=${3:-}
 SCOPE=province:Noord-Brabant
 mkdir -p "$OUT"
 LOG="$OUT/overnight_chain.log"
@@ -24,6 +27,10 @@ step() {
     echo "=== $(date '+%F %T') END   $name rc=$rc" | tee -a "$LOG"
     return $rc
 }
+
+if [ -n "$FIT_FROM" ]; then
+    step fitscreen $PY results_analysis/fit_screen.py "$FIT_FROM" --weights central --scope "$SCOPE"
+fi
 
 if [ -e "$OUT/calibration_search.json" ]; then
     echo "=== $OUT/calibration_search.json exists: skipping the calibration" | tee -a "$LOG"

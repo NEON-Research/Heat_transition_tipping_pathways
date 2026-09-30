@@ -115,6 +115,16 @@ WEIGHTS = {
 MIN_RESIDUAL = 0.10          # keep every implied share meaningfully positive
 FIXED = {}
 
+# Engine parameters calibrated JOINTLY with the weights: the ones the 2022-2024 window constrains
+# (see fit_screen.py). name -> (default, low, high), sampled LOG-uniformly (scale parameters).
+# gumbelScaleUtil = the scale lambda of the Gumbel term in the choice. In a logit choice only
+# utility/lambda matters; the weights are normalised, so lambda alone sets how strongly households
+# prefer the best option, i.e. how many switch per year -- what the window measures. Its default is
+# the engine's (Constants.GUMBEL_SCALE_UTIL). --fixed-noise leaves it out (weights only).
+EXTRA = {"gumbelScaleUtil": (0.02, 0.005, 0.05)}
+if os.environ.get("HT_FIXED_NOISE"):
+    EXTRA = {}
+
 if not SHARE_MODE:           # legacy: sample raw weights with a fixed numeraire per group
     FIXED = {"wAttitudeToIntention": 0.5, "wAffordabilityToPbc": 0.5}
     WEIGHTS = {
@@ -146,7 +156,8 @@ def shares_to_weights(p):
     pbc = 1.0 - a - sn
     aff = min(max(p["shareAffordability"], MIN_RESIDUAL), 1.0 - MIN_RESIDUAL)
     inten = min(max(p["shareIntention"], MIN_RESIDUAL), 1.0 - MIN_RESIDUAL)
-    return {
+    extra = {k: round(float(p[k]), 6) for k in EXTRA if k in p}   # jointly calibrated engine params
+    return {**extra,
         "wAttitudeToIntention": round(a, 6),
         "wSocialnormToIntention": round(sn, 6),
         "wPbcToIntention": round(pbc, 6),
@@ -561,7 +572,9 @@ def sample_lhs(rng, n):
     """
     m = MIN_RESIDUAL
     keys = list(WEIGHTS)
-    dims = 4                                   # u1,u2 -> intention simplex; u3 -> pbc; u4 -> behaviour
+    extra = list(EXTRA)
+    dims = 4 + len(extra)                      # u1,u2 -> intention simplex; u3 -> pbc; u4 -> behaviour;
+                                               # then one per jointly calibrated engine parameter
     cut = (np.arange(n)[:, None] + rng.random((n, dims))) / n
     for j in range(dims):
         rng.shuffle(cut[:, j])
@@ -577,6 +590,9 @@ def sample_lhs(rng, n):
                  (WEIGHTS["shareAffordability"][2] - WEIGHTS["shareAffordability"][1]),
              "shareIntention": WEIGHTS["shareIntention"][1] + cut[i, 3] *
                  (WEIGHTS["shareIntention"][2] - WEIGHTS["shareIntention"][1])}
+        for j, k in enumerate(extra):          # log-uniform between low and high
+            lo, hi = np.log(EXTRA[k][1]), np.log(EXTRA[k][2])
+            p[k] = float(np.exp(lo + cut[i, 4 + j] * (hi - lo)))
         assert feasible(p)
         out.append(p)
     return out
@@ -620,7 +636,8 @@ def do_search(a):
         rows.append({"mad": e, "implausibility_max": imax, "sampled": dict(p), "weights": eff,
                      "mix": {str(y): mix[y] for y in ys}, "implausibility": imp})
         print(f"  [{i}/{len(samples)}] MAD={e:6.2f}  Imax={imax:5.2f}  "
-              + " ".join(f"{k.replace('share','')[:4]}={p[k]:.2f}" for k in keys), flush=True)
+              + " ".join(f"{k.replace('share','')[:4]}={p[k]:.2f}" for k in keys)
+              + "".join(f" {k[:6]}={p[k]:.4f}" for k in EXTRA), flush=True)
     rows.sort(key=lambda r: r["mad"])
 
     base, base_mix = evaluate_set(a.scope, {k: v[0] for k, v in WEIGHTS.items()}, a)
@@ -649,7 +666,7 @@ def do_search(a):
                    "tolerance": a.tolerance, "implaus_cut": a.implaus_cut,
                    "sd_mc": sd_mc, "sd_obs": {str(y): sd_obs[y] for y in ys}, "sd_disc": a.sd_disc,
                    "focus": list(FOCUS), "retention_sensitivity": table,
-                   "engine_fixed": CALIB_FIXED,
+                   "engine_fixed": CALIB_FIXED, "engine_calibrated": EXTRA,
                    "iterations": a.iterations, "seed": a.seed,
                    "default_mad": base, "default_mix": {str(y): base_mix[y] for y in ys},
                    "observed": {str(y): obs_by_year[y] for y in ys},
@@ -668,6 +685,10 @@ def do_search(a):
         v = sorted(r["weights"][w] for r in keep)
         dflt = shares_to_weights({k: x[0] for k, x in WEIGHTS.items()})[w]
         print(f"{w:<22}{v[0]:>8.3f}{v[len(v)//2]:>9.3f}{v[-1]:>8.3f}{dflt:>9.3f}")
+    for k in EXTRA:
+        v = sorted(r["sampled"][k] for r in keep)
+        print(f"{k:<22}{v[0]:>8.4f}{v[len(v)//2]:>9.4f}{v[-1]:>8.4f}{EXTRA[k][0]:>9.4f}"
+              f"   (sampled {EXTRA[k][1]}-{EXTRA[k][2]}, log-uniform)")
 
     # --- representative sets for the 2050 scenario runs -------------------------------------
     # actual evaluated points (not synthetic medians): the best fit plus the retained extremes of

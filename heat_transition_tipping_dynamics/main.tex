@@ -861,7 +861,9 @@ large because the terms of the utility pull in opposite directions (a low-carbon
 higher on attitude, the incumbent on subjective norm and effort) and largely offset, so that the
 options of a household typically differ by a few hundredths in utility. Fixing the scale and
 varying it only afterwards would therefore misrepresent a quantity the data constrain. It is
-sampled between 0.005 and 0.05 on the 0--1 utility scale. % TODO range as used in the calibration
+sampled log-uniformly between 0.005 and 0.05 on the 0--1 utility scale, as a scale
+parameter, around the 0.02 used before, and each retained set carries its own value into the
+scenarios. The subsample of Section~ef{sec:calibrating} spreads over it as a fourth dimension.
 The retained sets constitute a plausibility ensemble that is carried into 
 the scenario analysis, so that pathways are reported as a band across behaviorally plausible
 preferences rather than a single fitted line. The sensitivity analysis uses a small number of
