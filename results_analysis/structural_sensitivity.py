@@ -82,6 +82,11 @@ HP_SPLIT = ["capexMultHhp", "capexMultEhp", "learningRateHhp", "learningRateEhp"
 # the effort term whose weight is calibrated, so varying it at fixed weights counts that twice.
 # Both remain available by name (--factors) and are used by fit_screen.py.
 NOT_SCREENED = ["gumbelScaleUtil", "effortSwitchMult"]
+# Screened factors that also act in the 2022-2024 calibration window (fit_screen.py: mu* >= 0.5 pp on a
+# scored share at fixed weights). The screen holds the weights at calibrated values and does not refit
+# them, so their mu* includes some loss of fit: read it as an upper bound. The others are 'clean'.
+IN_WINDOW = ["opportunityFraction", "attitudeAlpha", "sustainabilityHhp",
+             "capexMultHp", "learningRateMult", "socialLearningMult", "lifetimeJitterSd"]
 
 # NOTE on socialLearningMult. It scales the subjective-norm weight: wSn = slf * wSnBase, and only
 # the PRODUCT enters the intention. wSnBase is itself a calibrated weight, and the retained ensemble

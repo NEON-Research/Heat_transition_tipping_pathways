@@ -97,7 +97,12 @@ def main():
               f"first; skipping the parameter-sensitivity figure")
         print("wrote:"); [print("  ", f) for f in _written]; return
     _meantot={f_:np.mean([mor[v]["total"][f_] for v in mor]) for f_ in next(iter(mor.values()))["total"]}
-    factors=sorted(_meantot,key=lambda f_:-_meantot[f_])
+    # two blocks: factors that also act in the calibration window (upper bound, weights not refitted)
+    # first, then the 'clean' ones; each sorted by the plotted mean
+    from structural_sensitivity import IN_WINDOW
+    _win=sorted([f_ for f_ in _meantot if f_ in IN_WINDOW],key=lambda f_:-_meantot[f_])
+    _cln=sorted([f_ for f_ in _meantot if f_ not in IN_WINDOW],key=lambda f_:-_meantot[f_])
+    factors=_win+_cln
     short={"NATURAL_GAS_BOILER":"gas","HYBRID_HEAT_PUMP":"hybrid","ELECTRIC_HEAT_PUMP":"electric","DISTRICT_HEATING":"dh"}
     M=np.array([[np.mean([mor[v]["mu_star"][f][te] for v in mor]) for te in TECHS] for f in factors])
     fig,(ax,axb)=plt.subplots(1,2,figsize=(11,5),gridspec_kw={"width_ratios":[3,1]})
@@ -115,8 +120,19 @@ def main():
     ax.set_title("Mean absolute elementary effect $\\mu^*$ per technology",fontsize=11)
     fig.colorbar(im,ax=ax,shrink=.8,label="$\\mu^*$ (%pt per full-range move)")
     tot=[np.mean([mor[v]["total"][f] for v in mor]) for f in factors]
-    axb.barh(range(len(factors)),tot,color="#555"); axb.set_yticks([]); axb.invert_yaxis()
+    _w=[f in IN_WINDOW for f in factors]
+    axb.barh(range(len(factors)),tot,color=["#bbbbbb" if w else "#555" for w in _w],
+             hatch=None,edgecolor="#555",linewidth=0.6)
+    for i,w in enumerate(_w):
+        if w: axb.patches[i].set_hatch("///")
+    axb.set_yticks([]); axb.invert_yaxis()
     axb.set_title("summed over technologies",fontsize=10); axb.grid(alpha=.3,axis="x")
+    if _win and _cln:                                 # divider + block labels
+        for a_ in (ax,axb): a_.axhline(len(_win)-0.5,color="#222",lw=1.2)
+        axb.text(1.02,(len(_win)-1)/2,"acts in calibration\nwindow: upper bound",transform=axb.get_yaxis_transform(),
+                 va="center",fontsize=8,rotation=90)
+        axb.text(1.02,len(_win)+(len(_cln)-1)/2,"not constrained\nby the window",transform=axb.get_yaxis_transform(),
+                 va="center",fontsize=8,rotation=90)
     f3=os.path.join(CALDIR,"fig_structural_morris.png"); fig.savefig(f3,dpi=130,bbox_inches="tight"); plt.close(fig)
 
     _written.append(f3)

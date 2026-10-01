@@ -450,7 +450,26 @@ public final class Simulation {
             double s = Decision.rumScore(e.getValue(), rng.gumbel());
             if (s > bestScore) { bestScore = s; best = e.getKey(); }
         }
+        if (NONMAX) {   // diagnostic: did the random term overrule the highest modelled utility?
+            HeatingSystem top = null; double topU = Double.NEGATIVE_INFINITY;
+            for (Map.Entry<HeatingSystem, Double> e : util.entrySet())
+                if (e.getValue() > topU) { topU = e.getValue(); top = e.getKey(); }
+            long[] c = NONMAX_COUNT.computeIfAbsent(r.year, y -> new long[2]);
+            synchronized (c) { c[0]++; if (best != top) c[1]++; }
+        }
         return best;
+    }
+    // HT_NONMAX=1: per year, the share of homeowner decisions in which the chosen option is NOT the one
+    // with the highest modelled utility (the random term decided). Printed at exit; draws no random
+    // numbers, so results are identical with and without it.
+    private static final boolean NONMAX = System.getenv("HT_NONMAX") != null;
+    private static final Map<Integer, long[]> NONMAX_COUNT = new java.util.concurrent.ConcurrentSkipListMap<>();
+    static {
+        if (NONMAX) Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            for (Map.Entry<Integer, long[]> e : NONMAX_COUNT.entrySet())
+                System.out.printf(java.util.Locale.US, "NONMAX %d decisions=%d nonmax=%d share=%.4f%n",
+                        e.getKey(), e.getValue()[0], e.getValue()[1], (double) e.getValue()[1] / Math.max(1, e.getValue()[0]));
+        }));
     }
     /** A triggered homeowner whose EACs were computed in pass 1, carried into pass 2. */
     private static final class PendingHomeowner {
