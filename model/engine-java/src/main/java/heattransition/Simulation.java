@@ -483,7 +483,7 @@ public final class Simulation {
     private static final Map<Integer, long[]> TRIG_COUNT = new java.util.concurrent.ConcurrentSkipListMap<>();
     private static final String[] TRIG_NAMES = {"hoEol", "hoEolSwitch", "hoOpp", "hoOppSwitch", "hoDhReview",
             "hoDhLeave", "llEol", "llEolSwitch", "llDhReview", "llDhLeave", "blkEol", "blkEolSwitch",
-            "blkDhReview", "blkDhLeave"};
+            "blkDhReview", "blkDhLeave", "blkShaConnectOnArrival"};
     private static void trig(int year, int slot, long n) {
         if (!TRIG) return;
         long[] c = TRIG_COUNT.computeIfAbsent(year, y -> new long[TRIG_NAMES.length]);
@@ -497,6 +497,19 @@ public final class Simulation {
                 System.out.println(sb);
             }
         }));
+    }
+    /** Install {@code chosen} in every household of a block (installNewHeatingMethodInHouseholds). */
+    private void switchBlock(HousingBlock b, HeatingSystem chosen, YearRow r) {
+        b.hasLowTemp = hs.get(chosen).requiresLowTemp;
+        for (Dwelling d : b.households) {
+            d.hasLowTemp = b.hasLowTemp;
+            applyRequiredInsulation(d, chosen);
+            r.removed.merge(d.currentType, 1, Integer::sum);
+            r.installed.merge(chosen, 1, Integer::sum);
+            cumInstalled.merge(chosen, 1, Integer::sum);
+            d.currentType = chosen; d.age = 0; d.lifeDraw = drawLife(chosen);
+        }
+        b.currentType = chosen; b.age = 0; b.lifeDraw = drawLife(chosen);
     }
     /** A triggered homeowner whose EACs were computed in pass 1, carried into pass 2. */
     private static final class PendingHomeowner {
@@ -665,10 +678,16 @@ public final class Simulation {
 
         // District-heating company expands the grid (Main.f_adoptionProces step 2).
         // COST_BASED runs in the baseline too -- this is not policy-scenario-only.
+        boolean shaPolicy = "POLICY_BASED".equals(scen.shaStrategy);
+        java.util.Set<String> gridBefore = new java.util.HashSet<>();
+        if (shaPolicy) for (Neighbourhood nb : neighbourhoods) if (nb.hasDH) gridBefore.add(nb.buurt);
         nbhWithDHPerc = DistrictHeating.expand(neighbourhoods, year, rng,
             scen.dhExpansionStrategy, Constants.DH_CONSTRUCTION_YEARS >= 0
                 ? (int) Constants.DH_CONSTRUCTION_YEARS : scen.dhConstructionTime,
             nbhsWithoutDHStartYear);
+        // neighbourhoods whose heat network became operational this year (SHA POLICY_BASED only)
+        java.util.Set<String> gridNew = new java.util.HashSet<>();
+        if (shaPolicy) for (Neighbourhood nb : neighbourhoods) if (nb.hasDH && !gridBefore.contains(nb.buurt)) gridNew.add(nb.buurt);
 
         YearRow r = new YearRow(year);
 
@@ -692,6 +711,16 @@ public final class Simulation {
         //    heating instead reviews every DH_REVIEW_YEARS and stays unless another option wins)
         for (HousingBlock b : blocks) {
             boolean dhReview = b.currentType == HeatingSystem.DISTRICT_HEATING;
+            // SHA POLICY_BASED, plan = district heating: the housing association connects the block
+            // in the year the heat network arrives in its neighbourhood, whatever the age of its
+            // current system (network and connection go hand in hand).
+            boolean shaPlanDH = shaPolicy && "SOCIAL".equals(b.blockType) && !b.households.isEmpty()
+                    && "DISTRICT_HEATING".equals(nbhPolicyPlan.get(b.buurt));
+            if (shaPlanDH && !dhReview && gridNew.contains(b.buurt)) {
+                if (TRIG) { trig(year, 14, b.households.size()); }
+                switchBlock(b, HeatingSystem.DISTRICT_HEATING, r);
+                continue;
+            }
             if (dhReview ? !Decision.hasDhReviewTrigger(b.age, dhReviewYears)
                          : !Decision.hasEndOfLifeTrigger(b.age, b.lifeDraw)) continue;
             Map<HeatingSystem, Double> avg = new EnumMap<>(HeatingSystem.class);
@@ -716,11 +745,17 @@ public final class Simulation {
             HeatingSystem chosen = chooseByEAC(eacByType);
             // SHA POLICY_BASED: a triggered social block follows its neighbourhood's TVW policy plan
             // instead of the cost choice (AL J_SocialHousingBlock.f_adoptHeatingMethodSHA). HOA blocks
-            // are unaffected (they use f_adoptHeatingMethodHOA, always cost-based).
-            if ("POLICY_BASED".equals(scen.shaStrategy) && "SOCIAL".equals(b.blockType)) {
+            // are unaffected (they use f_adoptHeatingMethodHOA, always cost-based). Unlike AL, a
+            // district-heating plan is only followed where the network is already there; before it
+            // arrives the block makes the cost choice, and connects once it does (see above).
+            if (shaPolicy && "SOCIAL".equals(b.blockType)) {
                 String pp = nbhPolicyPlan.getOrDefault(b.buurt, "NONE");
                 if (!"NONE".equals(pp)) {
-                    try { chosen = HeatingSystem.valueOf(pp); } catch (IllegalArgumentException ignore) {}
+                    try {
+                        HeatingSystem plan = HeatingSystem.valueOf(pp);
+                        if (plan != HeatingSystem.DISTRICT_HEATING || b.households.get(0).hasDistrictHeatingGrid)
+                            chosen = plan;
+                    } catch (IllegalArgumentException ignore) {}
                 }
             }
             if (BLK && chosen != null) {
@@ -743,18 +778,7 @@ public final class Simulation {
                 trig(year, dhReview ? 12 : 10, nh0);
                 if (chosen != null && chosen != b.currentType) trig(year, dhReview ? 13 : 11, nh0);
             }
-            if (chosen != null) {
-                b.hasLowTemp = hs.get(chosen).requiresLowTemp;   // installNewHeatingMethodInHouseholds
-                for (Dwelling d : b.households) {
-                    d.hasLowTemp = b.hasLowTemp;
-                    applyRequiredInsulation(d, chosen);
-                    r.removed.merge(d.currentType, 1, Integer::sum);
-                    r.installed.merge(chosen, 1, Integer::sum);
-                    cumInstalled.merge(chosen, 1, Integer::sum);
-                    d.currentType = chosen; d.age = 0; d.lifeDraw = drawLife(chosen);
-                }
-                b.currentType = chosen; b.age = 0; b.lifeDraw = drawLife(chosen);
-            }
+            if (chosen != null) switchBlock(b, chosen, r);
         }
         if (BLK) {
             for (String bt : new String[]{"SOCIAL", "HOA"}) {
@@ -892,7 +916,17 @@ public final class Simulation {
             r0.stockOwn.get(d.ownership).merge(d.currentType, 1, Integer::sum); }
         for (HeatingSystem t : HeatingSystem.values()) r0.cumInstalled.put(t, cumInstalled.get(t));
         rows.add(r0);
+        java.util.Set<String> dh0 = new java.util.HashSet<>();
+        for (Neighbourhood nb : neighbourhoods) if (nb.hasDH) dh0.add(nb.buurt);
         for (int y = startYear + 1; y <= endYear; y++) rows.add(stepYear(y));
+        if (System.getenv("HT_DHNET") != null) {
+            // HT_DHNET=1: one line per neighbourhood, heat-network state at the end of the run.
+            for (Neighbourhood nb : neighbourhoods)
+                System.out.printf(java.util.Locale.US, "DHNET %s start=%b end=%b costYear=%d plan=%s planYear=%d "
+                        + "planStart=%d planEnd=%d dwellings=%d social=%d%n", nb.buurt, dh0.contains(nb.buurt), nb.hasDH,
+                        nb.dhYearOfOperation, nb.policyPlan, nb.policyPlanYear, nb.policyStartJaar, nb.policyEindJaar,
+                        nb.allDwellings.size(), nb.allDwellings.stream().filter(d -> "SOCIAL_HOUSING".equals(d.ownership)).count());
+        }
         return rows;
     }
 }
