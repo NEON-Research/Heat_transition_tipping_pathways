@@ -684,7 +684,7 @@ public final class Simulation {
         nbhWithDHPerc = DistrictHeating.expand(neighbourhoods, year, rng,
             scen.dhExpansionStrategy, Constants.DH_CONSTRUCTION_YEARS >= 0
                 ? (int) Constants.DH_CONSTRUCTION_YEARS : scen.dhConstructionTime,
-            nbhsWithoutDHStartYear);
+            nbhsWithoutDHStartYear, endYear);
         // neighbourhoods whose heat network became operational this year (SHA POLICY_BASED only)
         java.util.Set<String> gridNew = new java.util.HashSet<>();
         if (shaPolicy) for (Neighbourhood nb : neighbourhoods) if (nb.hasDH && !gridBefore.contains(nb.buurt)) gridNew.add(nb.buurt);

@@ -50,12 +50,16 @@ public final class DistrictHeating {
 
     /** f_DHExpansionPlanPolicy — build where the TVW plan says district heating. */
     private static void planPolicy(List<Neighbourhood> nbhs, int year, Rng rng,
-                                   int planYears, int nbhsWithoutDHStartYear) {
+                                   int planYears, int nbhsWithoutDHStartYear, int endYear) {
         double chance = nbhs.isEmpty() ? 0 : (double) nbhsWithoutDHStartYear / nbhs.size();
         for (Neighbourhood n : nbhs) {
             if (!n.hasDH && n.policyPlan.equals("DISTRICT_HEATING")) {
                 if (n.policyPlanYear > 0) {
-                    if (n.policyPlanYear + planYears == year) n.hasDH = true;
+                    // the plan year is when the network should be there; the construction time is
+                    // dropped where adding it would push the network past the end of the run
+                    int operational = n.policyPlanYear + planYears;
+                    if (operational > endYear) operational = n.policyPlanYear;
+                    if (operational <= year) n.hasDH = true;   // <=: a plan date before the run starts is built in its first year
                 } else if (rng.next() < chance) {
                     n.hasDH = true;
                 }
@@ -65,9 +69,10 @@ public final class DistrictHeating {
 
     /** f_DHExpansion — dispatch on the scenario strategy. Returns nbh_with_dh_perc. */
     public static double expand(List<Neighbourhood> nbhs, int year, Rng rng,
-                                String strategy, int planYears, int nbhsWithoutDHStartYear) {
+                                String strategy, int planYears, int nbhsWithoutDHStartYear,
+                                int endYear) {
         if ("POLICY_BASED".equals(strategy)) {
-            planPolicy(nbhs, year, rng, planYears, nbhsWithoutDHStartYear);
+            planPolicy(nbhs, year, rng, planYears, nbhsWithoutDHStartYear, endYear);
         } else {
             planCosts(nbhs, year, rng, planYears);
         }
