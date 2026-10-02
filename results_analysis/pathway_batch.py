@@ -25,6 +25,7 @@ ANALYZE_ALL = os.path.join(HERE, "analyze_all.py")
 PAPER_FIGS  = os.path.join(HERE, "paper_figures.py")
 MIX_GRID    = os.path.join(HERE, "scenario_mix_grid.py")
 LOOP_EFFECTS = os.path.join(HERE, "loop_effects.py")
+ENSEMBLE_BAND = os.path.join(HERE, "ensemble_band.py")
 SEARCH_DEFAULT = os.path.join(ROOT, "results", "calib", "calibration_search.json")
 # Coupled price arms. The engine reads the whole price path from
 # model/data/reference/energy_prices_by_year.csv (built by build_energy_price_table.py); -Dht.priceT
@@ -230,6 +231,10 @@ def main():
         # separate script because they cut across scopes; run them so one command yields every figure
         run([sys.executable, PAPER_FIGS, "--scope", a.scope, "--calib", os.path.dirname(SEARCH)],
             os.path.join(resdir, "log_paper_figures.txt"))
+        # baseline pathway per technology: median across the sets, interquartile and 5-95 % bands
+        run([sys.executable, ENSEMBLE_BAND, "--scope", a.scope, "--search", SEARCH,
+             "--outer", "5", "--panels"],
+            os.path.join(resdir, "log_ensemble_band.txt"))
     if not (a.no_band and a.no_price and a.no_knockout):
         # small multiples: stacked-to-100% mix 2024-2050, one panel per scenario (ensemble median,
         # price bracket, knock-outs) -- the replacement for the single-year price triptych

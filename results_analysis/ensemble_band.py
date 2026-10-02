@@ -88,6 +88,13 @@ def main():
                          "leftovers of earlier ensembles, and globbing mixes them together)")
     ap.add_argument("--any-set", action="store_true",
                     help="ignore --search and read every set* folder found (not recommended)")
+    ap.add_argument("--runs", default=None,
+                    help="glob of result CSVs to read instead of results/<scope>/calib/, e.g. the\n"
+                         "baseline of every retained set from select_subsample.py validate:\n"
+                         "results/calib1000_v3/subsample_validation/set[0-9][0-9][0-9].csv")
+    ap.add_argument("--outer", type=float, default=0,
+                    help="outer band percentile: 0 = full min-max range (default), 5 = 5-95 %%")
+    ap.add_argument("--tag", default="", help="suffix for the output file names")
     ap.add_argument("--copy-to", default=None)
     a = ap.parse_args()
     if a.copy_to is None:       # manuscript figures are national: never overwrite them from a province
@@ -95,8 +102,11 @@ def main():
     base = os.path.join(ROOT, "results", tag(a.scope))
     outdir = os.path.join(base, "figures"); os.makedirs(outdir, exist_ok=True)
 
-    sets = expected_sets(base, a.search) if not a.any_set else \
-        sorted(glob.glob(os.path.join(base, "calib", "set*", "simulation_results.csv")))
+    if a.runs:
+        sets = sorted(glob.glob(a.runs))
+    else:
+        sets = expected_sets(base, a.search) if not a.any_set else \
+            sorted(glob.glob(os.path.join(base, "calib", "set*", "simulation_results.csv")))
     if not sets: sys.exit(f"[band] no weight-set runs under {base}/calib for this ensemble")
     print(f"[band] {len(sets)} weight sets, scenario '{a.scenario}'")
 
@@ -112,12 +122,15 @@ def main():
     if not years: sys.exit(f"[band] scenario '{a.scenario}' not found in any run")
     n_sets = len(series[TECHS[0]][years[0]])
 
+    lo, hi = a.outer, 100 - a.outer
     stats = {t: {q: np.array([np.percentile(series[t][y], q) for y in years])
-                 for q in (0, 25, 50, 75, 100)} for t in TECHS}
+                 for q in (lo, 25, 50, 75, hi)} for t in TECHS}
+    stats = {t: {**v, 0: v[lo], 100: v[hi]} for t, v in stats.items()}   # 0/100 = the outer band
 
-    cache = os.path.join(outdir, f"ensemble_band_{a.scenario}.csv")
+    cache = os.path.join(outdir, f"ensemble_band_{a.scenario}{a.tag}.csv")
     with open(cache, "w", newline="") as fh:
-        w = csv.writer(fh); w.writerow(["tech", "year", "min", "p25", "median", "p75", "max"])
+        w = csv.writer(fh); w.writerow(["tech", "year", "min" if not lo else f"p{lo:g}", "p25", "median", "p75",
+                    "max" if not lo else f"p{hi:g}"])
         for t in TECHS:
             for j, y in enumerate(years):
                 w.writerow([t, y] + [f"{stats[t][q][j]:.0f}" for q in (0, 25, 50, 75, 100)])
@@ -147,15 +160,16 @@ def main():
         ax.legend(handles=lines, fontsize=9.5, frameon=False, loc="upper right", ncol=2)
     fig.suptitle(f"Dwellings per heating technology, {a.scenario} scenario\n"
                  f"median across the {n_sets} retained weight sets; bands are the interquartile "
-                 f"and full range", fontsize=11.5)
+                 + ("and full range" if not lo else f"and {lo:g}-{hi:g} % range"), fontsize=11.5)
     fig.tight_layout(rect=(0, 0, 1, 0.94 if not a.panels else 0.93))
-    f = os.path.join(outdir, f"fig_ensemble_band_{a.scenario}.png")
+    f = os.path.join(outdir, f"fig_ensemble_band_{a.scenario}{a.tag}.png")
     fig.savefig(f, dpi=150, bbox_inches="tight"); plt.close(fig)
     if a.copy_to and os.path.isdir(a.copy_to):
         import shutil; shutil.copy2(f, a.copy_to)
 
     print(f"\n2050 spread across the ensemble ({n_sets} sets), thousand dwellings")
-    print(f"{'technology':22s}{'min':>9s}{'p25':>9s}{'median':>9s}{'p75':>9s}{'max':>9s}{'max-min':>10s}")
+    l, h = ("min", "max") if not lo else (f"p{lo:g}", f"p{hi:g}")
+    print(f"{'technology':22s}{l:>9s}{'p25':>9s}{'median':>9s}{'p75':>9s}{h:>9s}{h + '-' + l:>10s}")
     for t in TECHS:
         v = [stats[t][q][-1] / 1e3 for q in (0, 25, 50, 75, 100)]
         print(f"{NICE[t]:22s}" + "".join(f"{x:9.0f}" for x in v) + f"{v[4]-v[0]:10.0f}")
