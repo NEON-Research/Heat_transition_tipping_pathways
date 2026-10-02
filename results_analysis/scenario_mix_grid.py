@@ -66,6 +66,11 @@ SCEN_LABEL = {
     "policy_driven_dh_strategy":                 "Policy-driven DH strategy",
     "policy_driven_sha_strategy":                "Policy-driven SHA strategy",
     "actor_allignment_strategy":                 "Actor-alignment DH strategy",
+    # investment subsidies
+    "no_subsidy":                                "No investment subsidy",
+    "subsidy_phase_out":                         "Subsidy phased out at 20 % share",
+    # district heating: connected dwellings may leave (every other scenario: they stay)
+    "dh_exit_allowed":                           "Leaving DH allowed (review every 5 yr)",
     # price arms and loop knock-outs: -D flags on the baseline, run into their own folders
     "price_low":                                 "Energy price LOW",
     "price_high":                                "Energy price HIGH",
@@ -110,7 +115,9 @@ ENSEMBLE = ["baseline",
             "dh_connection_obligation", "dh_policy_based_connection_obligation",
             "grid_congestion_HP_ban",
             "policy_driven_dh_strategy", "policy_driven_sha_strategy",
-            "actor_allignment_strategy"]
+            "actor_allignment_strategy",
+            "no_subsidy", "subsidy_phase_out",
+            "dh_exit_allowed"]
 PRICE    = ["price_low", "price_high"]
 KNOCKOUT = ["knockout_intact", "knockout_nolearn", "knockout_nosocial",
             "knockout_nosalience", "knockout_nocongest"]
@@ -171,6 +178,13 @@ VIEWS = {
                              "actor_allignment_strategy"], 4,
                             "Coordination between collective actors: heat-network planning and "
                             "social-housing strategy"),
+    # 4. Investment subsidies: none at all, and a phase-out once a technology reaches 20 % of the stock.
+    "subsidy": (["baseline", "no_subsidy", "subsidy_phase_out"], 3,
+                "Investment subsidies: current, none, and phased out at a 20 % stock share"),
+    # 5. District heating: every scenario keeps connected dwellings connected; this one lets them
+    #    review every 5 years and leave on cost, to show what that assumption is worth.
+    "dh_exit": (["baseline", "dh_exit_allowed"], 2,
+                "District heating: connected dwellings stay (reference) or may leave"),
     # superseded by rollout / congestion / coordination_policy above, which take one lever at a
     # time; kept only so an archived cache can still be re-plotted.
     "policy_legacy": (["baseline", "dh_policy_based_connection_obligation",
@@ -388,7 +402,7 @@ def main():
                     help="calibration_search.json whose retained sets define the ensemble; only its\n"
                          "run folders are read. Pass '' to read every folder under calib/ instead.")
     ap.add_argument("--view",
-                    default="loops_grid,rollout,congestion,coordination_policy,extremes",
+                    default="loops_grid,rollout,congestion,coordination_policy,extremes,subsidy,dh_exit",
                     # exactly the views main.tex includes, plus `extremes` for the combined-scenario
                     # TODO in the loops section. The other views still exist and can be asked for by
                     # name; they are off by default so the LaTeX figures folder does not fill up with

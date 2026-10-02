@@ -107,9 +107,11 @@ public final class Constants {
     /** A dwelling on district heating has no end of life of its own (the network and delivery set
      *  belong to the operator). Instead it reviews its heating every this many years since it
      *  connected, and leaves only if another option wins including the disconnection fee.
-     *  Default 5; a sensitivity parameter. 0 = never review, i.e. DH dwellings stay connected
-     *  (used in the calibration, see calibrate_weights.py CALIB_FIXED). */
-    public static final int DH_REVIEW_YEARS = (int) p("dhReviewYears", 5);
+     *  Set per scenario (scenario_settings.csv DH_review_years: 0 = never review, so connected
+     *  dwellings stay; only dh_exit_allowed reviews). Negative (the default) = use the scenario's
+     *  value; >= 0 overrides it for every scenario (the Morris screen, and the calibration, which
+     *  fixes 0, see calibrate_weights.py CALIB_FIXED). */
+    public static final int DH_REVIEW_YEARS = (int) p("dhReviewYears", -1);
     /** Non-monetary barrier to leaving district heating, EUR one-off, added to every non-DH option
      *  of a dwelling on DH on top of the ACM disconnection fee (contracts, collective networks,
      *  tenant consent). Default 0: the baseline is cost-driven, so connected dwellings may leave.

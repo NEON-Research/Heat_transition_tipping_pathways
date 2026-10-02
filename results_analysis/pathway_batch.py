@@ -108,7 +108,10 @@ def main():
                     help="nl | province:<Name> | gemeente:<Name>. Required: this job costs hours and\n"
                          "writes to results/<scope>/, so it must not have a default that silently\n"
                          "sends a national run to the calibration province.")
-    ap.add_argument("--iterations", type=int, default=3, help="MC iters per scenario (band spread dominates; 3-5 is enough)")
+    ap.add_argument("--iterations", type=int, default=1,
+                    help="MC iterations per scenario and weight set. Default 1: at national scale two\n"
+                         "iterations differ by a median 0.06 pp in the 2050 shares (95th pct 0.33 pp), against\n"
+                         "~14 pp across weight sets (results/nl, Sept 2026), so a second iteration buys nothing")
     ap.add_argument("--ensemble-weights", default="all", help="run.py --weights value for the band (all | representative)")
     ap.add_argument("--price-weights", default="central",
                     help="weight set for the price bracket and the knock-outs: 'central' (default:\n"
@@ -116,12 +119,20 @@ def main():
                          "a representative key (best_fit / low_/high_shareAffordability), or\n"
                          "'median' (marginal median; synthetic, for comparison only)")
     ap.add_argument("--xmx", default=None,
-                    help="JVM heap for every engine run (nl scale needs ~48g; run.py defaults to 8g)")
+                    help="JVM heap for every engine run. nl scale: pass 20g (measured Oct 2026: ~8.8 GB live,\n"
+                         "13 GB peak; the 8g run.py default is too small, 48g is more than this laptop has)")
     ap.add_argument("--price-scenario", default="all", help="--scenario for the price runs (all | baseline)")
     ap.add_argument("--no-band", action="store_true")
-    ap.add_argument("--no-price", action="store_true")
-    ap.add_argument("--no-knockout", action="store_true",
-                    help="skip the loop knock-out runs (causal evidence for the tipping mechanisms)")
+    # The price arms and the loop knock-outs are OFF by default: the price arms are scenarios in the
+    # matrix now (gas_low_elec_high / gas_high_elec_low, across the whole ensemble), and the
+    # knock-outs were dropped from the analysis. --price / --knockout still run them on request.
+    ap.add_argument("--price", action="store_true",
+                    help="also run the separate price bracket at the central weights (superseded by the\n"
+                         "price scenarios in the matrix)")
+    ap.add_argument("--knockout", action="store_true",
+                    help="also run the loop knock-outs (causal evidence for the tipping mechanisms)")
+    ap.add_argument("--no-price", action="store_true", help=argparse.SUPPRESS)      # old flag: now the default
+    ap.add_argument("--no-knockout", action="store_true", help=argparse.SUPPRESS)   # old flag: now the default
     ap.add_argument("--search", default=None,
                     help="calibration search JSON holding the retained ensemble. Default: the most\n"
                          "recently written calibration_search.json under results/ -- a fixed default\n"
@@ -132,6 +143,8 @@ def main():
     ap.add_argument("--knockout-scenario", default="baseline",
                     help="scenario for the knock-out runs (default baseline; 'all' for the full matrix)")
     a = ap.parse_args()
+    a.no_price = a.no_price or not a.price
+    a.no_knockout = a.no_knockout or not a.knockout
     SEARCH = a.search or newest_search()
     if not os.path.exists(SEARCH):
         sys.exit(f"[batch] no calibration search file at {SEARCH}")

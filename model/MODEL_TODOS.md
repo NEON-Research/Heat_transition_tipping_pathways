@@ -124,7 +124,7 @@ the current ensemble is defensible — but worth a sensitivity check on the reta
   *Superseded for heat (2026-09-28):* district heating now uses the ACM 2025 tariffs in
   `data/district_heating_costs.csv` (761 EUR/yr fixed + metering + delivery set; connection fee for
   new connections, disconnection fee for leaving), has no end of life but a review every
-  `-Dht.dhReviewYears` (default 5), and efficiency 1.0. See CALIBRATION_AND_VALIDATION.md.
+  the scenario column `DH_review_years` (0 = never, except `dh_exit_allowed`: 5), and efficiency 1.0. See CALIBRATION_AND_VALIDATION.md.
 - **Replication analysis.** `pathway_convergence.py` sizes MC iterations for the 2024–2050 pathways
   (the 3-year calibration figure does not transfer — the pathway is ~15× noisier).
 

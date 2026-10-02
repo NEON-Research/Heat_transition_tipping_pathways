@@ -162,12 +162,18 @@ On FAIL: rerun `select` with a larger `--n`.
 
 ## 4. Scenarios (the pathways)
 
-Preference band (every retained set x every scenario), the price arms and the knock-outs:
+Preference band: every subsample set x every scenario (20, incl. the price arms, the subsidy
+policies and `dh_exit_allowed`), 1 iteration (the default since 2026-10-02; a second iteration moves
+the 2050 shares by a median 0.06 pp). The separate price bracket and the knock-outs are off by default
+(`--price` / `--knockout`). Heap: ~8.8 GB live, 13 GB peak per national run, so pass `--xmx 20g`.
+~500 runs x ~5 min = ~42 h, sequential:
 ```powershell
-.venv\Scripts\python results_analysis\pathway_batch.py --scope nl --search results\calib1000\calibration_subsample.json
+$env:PYTHONIOENCODING="utf-8"
+.venv\Scripts\python results_analysis\pathway_batch.py --scope nl --search results\calib1000_v3\calibration_subsample.json --xmx 20g
 ```
-(`--scope province:Noord-Brabant` first for a faster check.) The baseline now shows the cost-driven
-DH decline; `dh_connection_obligation` counters it. Then the figures:
+District heating: connected dwellings stay in every scenario (`DH_review_years` = 0 in the matrix, as in
+the calibration); only `dh_exit_allowed` lets them review every 5 years and leave. Then the figures
+(replace `calib1000` by `calib1000_v3` below):
 ```powershell
 .venv\Scripts\python results_analysis\scenario_mix_grid.py --scope nl --search results\calib1000\calibration_subsample.json
 .venv\Scripts\python results_analysis\ensemble_band.py --scope nl --search results\calib1000\calibration_subsample.json

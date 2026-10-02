@@ -137,8 +137,9 @@ no manual install. The `application` plugin + custom `JavaExec` tasks give named
      triggered homeowner's EACs (completing the global min/max window), pass 2 evaluates TPB utility and
      makes a random-utility (Gumbel) choice.
    - **District heating has no end of life** for any of the three: the network and delivery set belong
-     to the operator. A dwelling (or block) on DH instead reviews every `-Dht.dhReviewYears` (default 5,
-     0 = never) since connecting, and leaves only if another option wins; staying is not a
+     to the operator. A dwelling (or block) on DH instead reviews every `DH_review_years` years (a scenario column:
+     0 = never, the default in every scenario except `dh_exit_allowed`, which uses 5;
+     `-Dht.dhReviewYears` >= 0 overrides it) since connecting, and leaves only if another option wins; staying is not a
      reinstallation. Its costs (`DistrictHeatingCosts`, ACM 2025): annual fixed charge + metering +
      delivery-set rental; a one-off connection fee for a new connection (minus the subsidy), nothing for
      one already connected, and the disconnection fee (+ `-Dht.dhExitBarrier`, default 0) on every

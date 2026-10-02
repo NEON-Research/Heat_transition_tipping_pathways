@@ -1,6 +1,7 @@
 # Factors of the Morris screen (results_analysis/structural_sensitivity.py, FACTORS; default screen = all except group hp_split).
 # default = the value the model uses when the factor is not set (-Dht.<flag>). For energyPrice and socialLearningMult the
-# default comes from the scenario (central arm = 0.5; social learning MEDIUM = 1).
+# default comes from the scenario (central arm = 0.5; social learning MEDIUM = 1). dhReviewYears too: 0 (never leave) in every
+# scenario except dh_exit_allowed (5); the screen samples 1-10, i.e. it measures the interval given that leaving is allowed.
 flag,label,group,low,high,default,unit,basis
 energyPrice,Energy price path (gas + electricity),levers,0,1,0.5 (scenario),arm of energy_prices_by_year.csv,0 = low / 0.5 = central / 1 = high KEV arm; interpolated
 learningRateMult,Economic learning rate,levers,0,2.8,1,x 10 % per doubling,0 % (Renaldi et al. 2021) to 28 % (Weiss et al. 2008); both heat pumps

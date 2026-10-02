@@ -17,23 +17,30 @@
 # investment subsidy), PHASE_OUT (as CURRENT until a technology's stock share reaches
 # -Dht.subsidyPhaseOutShare, default 0.20, then none for that technology).
 #
-scen_id,scen_name,social_learning_factor,economic_learning_factor,grid_reinforcement_rate,energy_prices,DH_construction_time,DH_expansion_strategy,SHA_strategy,DH_connection_obligation,Grid_congestion_HP_ban,subsidy_policy,status
-1,baseline,MEDIUM,MEDIUM,MEDIUM,CENTRAL,5,COST_BASED,COST_BASED,FALSE,FALSE,CURRENT,active
-2,social_learning_factor_low,LOW,MEDIUM,MEDIUM,CENTRAL,5,COST_BASED,COST_BASED,FALSE,FALSE,CURRENT,active
-3,social_learning_factor_high,HIGH,MEDIUM,MEDIUM,CENTRAL,5,COST_BASED,COST_BASED,FALSE,FALSE,CURRENT,active
-4,economic_learning_factor_low,MEDIUM,LOW,MEDIUM,CENTRAL,5,COST_BASED,COST_BASED,FALSE,FALSE,CURRENT,active
-5,economic_learning_factor_high,MEDIUM,HIGH,MEDIUM,CENTRAL,5,COST_BASED,COST_BASED,FALSE,FALSE,CURRENT,active
-6,econ_low_social_high,HIGH,LOW,MEDIUM,CENTRAL,5,COST_BASED,COST_BASED,FALSE,FALSE,CURRENT,active
-7,econ_high_social_low,LOW,HIGH,MEDIUM,CENTRAL,5,COST_BASED,COST_BASED,FALSE,FALSE,CURRENT,active
-8,gas_low_elec_high,MEDIUM,MEDIUM,MEDIUM,GAS_LOW_ELEC_HIGH,5,COST_BASED,COST_BASED,FALSE,FALSE,CURRENT,active
-9,gas_high_elec_low,MEDIUM,MEDIUM,MEDIUM,GAS_HIGH_ELEC_LOW,5,COST_BASED,COST_BASED,FALSE,FALSE,CURRENT,active
-10,transition_fast,LOW,HIGH,MEDIUM,GAS_HIGH_ELEC_LOW,5,COST_BASED,COST_BASED,FALSE,FALSE,CURRENT,active
-11,transition_slow,HIGH,LOW,MEDIUM,GAS_LOW_ELEC_HIGH,5,COST_BASED,COST_BASED,FALSE,FALSE,CURRENT,active
-12,dh_connection_obligation,MEDIUM,MEDIUM,MEDIUM,CENTRAL,5,COST_BASED,COST_BASED,TRUE,FALSE,CURRENT,active
-13,dh_policy_based_connection_obligation,MEDIUM,MEDIUM,MEDIUM,CENTRAL,5,POLICY_BASED,COST_BASED,TRUE,FALSE,CURRENT,active
-14,grid_congestion_HP_ban,MEDIUM,MEDIUM,MEDIUM,CENTRAL,5,COST_BASED,COST_BASED,FALSE,TRUE,CURRENT,active
-15,policy_driven_dh_strategy,MEDIUM,MEDIUM,MEDIUM,CENTRAL,5,POLICY_BASED,COST_BASED,FALSE,FALSE,CURRENT,active
-16,policy_driven_sha_strategy,MEDIUM,MEDIUM,MEDIUM,CENTRAL,5,COST_BASED,POLICY_BASED,FALSE,FALSE,CURRENT,active
-17,actor_allignment_strategy,MEDIUM,MEDIUM,MEDIUM,CENTRAL,5,POLICY_BASED,POLICY_BASED,FALSE,FALSE,CURRENT,active
-18,no_subsidy,MEDIUM,MEDIUM,MEDIUM,CENTRAL,5,COST_BASED,COST_BASED,FALSE,FALSE,NONE,active
-19,subsidy_phase_out,MEDIUM,MEDIUM,MEDIUM,CENTRAL,5,COST_BASED,COST_BASED,FALSE,FALSE,PHASE_OUT,active
+# DH_review_years: how often (years since connecting) a dwelling or block on district heating
+# reviews its heating and may leave if another option wins on cost/utility. 0 = never: connected
+# dwellings stay, as observed (leaving is rare) and as in the calibration. dh_exit_allowed is the
+# baseline with leaving allowed, to show what that assumption is worth. -Dht.dhReviewYears>=0
+# overrides the column (the Morris screen does).
+#
+scen_id,scen_name,social_learning_factor,economic_learning_factor,grid_reinforcement_rate,energy_prices,DH_construction_time,DH_expansion_strategy,SHA_strategy,DH_connection_obligation,Grid_congestion_HP_ban,subsidy_policy,DH_review_years,status
+1,baseline,MEDIUM,MEDIUM,MEDIUM,CENTRAL,5,COST_BASED,COST_BASED,FALSE,FALSE,CURRENT,0,active
+2,social_learning_factor_low,LOW,MEDIUM,MEDIUM,CENTRAL,5,COST_BASED,COST_BASED,FALSE,FALSE,CURRENT,0,active
+3,social_learning_factor_high,HIGH,MEDIUM,MEDIUM,CENTRAL,5,COST_BASED,COST_BASED,FALSE,FALSE,CURRENT,0,active
+4,economic_learning_factor_low,MEDIUM,LOW,MEDIUM,CENTRAL,5,COST_BASED,COST_BASED,FALSE,FALSE,CURRENT,0,active
+5,economic_learning_factor_high,MEDIUM,HIGH,MEDIUM,CENTRAL,5,COST_BASED,COST_BASED,FALSE,FALSE,CURRENT,0,active
+6,econ_low_social_high,HIGH,LOW,MEDIUM,CENTRAL,5,COST_BASED,COST_BASED,FALSE,FALSE,CURRENT,0,active
+7,econ_high_social_low,LOW,HIGH,MEDIUM,CENTRAL,5,COST_BASED,COST_BASED,FALSE,FALSE,CURRENT,0,active
+8,gas_low_elec_high,MEDIUM,MEDIUM,MEDIUM,GAS_LOW_ELEC_HIGH,5,COST_BASED,COST_BASED,FALSE,FALSE,CURRENT,0,active
+9,gas_high_elec_low,MEDIUM,MEDIUM,MEDIUM,GAS_HIGH_ELEC_LOW,5,COST_BASED,COST_BASED,FALSE,FALSE,CURRENT,0,active
+10,transition_fast,LOW,HIGH,MEDIUM,GAS_HIGH_ELEC_LOW,5,COST_BASED,COST_BASED,FALSE,FALSE,CURRENT,0,active
+11,transition_slow,HIGH,LOW,MEDIUM,GAS_LOW_ELEC_HIGH,5,COST_BASED,COST_BASED,FALSE,FALSE,CURRENT,0,active
+12,dh_connection_obligation,MEDIUM,MEDIUM,MEDIUM,CENTRAL,5,COST_BASED,COST_BASED,TRUE,FALSE,CURRENT,0,active
+13,dh_policy_based_connection_obligation,MEDIUM,MEDIUM,MEDIUM,CENTRAL,5,POLICY_BASED,COST_BASED,TRUE,FALSE,CURRENT,0,active
+14,grid_congestion_HP_ban,MEDIUM,MEDIUM,MEDIUM,CENTRAL,5,COST_BASED,COST_BASED,FALSE,TRUE,CURRENT,0,active
+15,policy_driven_dh_strategy,MEDIUM,MEDIUM,MEDIUM,CENTRAL,5,POLICY_BASED,COST_BASED,FALSE,FALSE,CURRENT,0,active
+16,policy_driven_sha_strategy,MEDIUM,MEDIUM,MEDIUM,CENTRAL,5,COST_BASED,POLICY_BASED,FALSE,FALSE,CURRENT,0,active
+17,actor_allignment_strategy,MEDIUM,MEDIUM,MEDIUM,CENTRAL,5,POLICY_BASED,POLICY_BASED,FALSE,FALSE,CURRENT,0,active
+18,no_subsidy,MEDIUM,MEDIUM,MEDIUM,CENTRAL,5,COST_BASED,COST_BASED,FALSE,FALSE,NONE,0,active
+19,subsidy_phase_out,MEDIUM,MEDIUM,MEDIUM,CENTRAL,5,COST_BASED,COST_BASED,FALSE,FALSE,PHASE_OUT,0,active
+20,dh_exit_allowed,MEDIUM,MEDIUM,MEDIUM,CENTRAL,5,COST_BASED,COST_BASED,FALSE,FALSE,CURRENT,5,active

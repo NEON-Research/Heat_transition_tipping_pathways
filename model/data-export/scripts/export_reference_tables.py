@@ -118,7 +118,8 @@ BOOL = {"TRUE", "FALSE", "0", "1"}
 PRICE_ARM = {"GAS_LOW_ELEC_HIGH", "CENTRAL", "GAS_HIGH_ELEC_LOW"}
 SCEN_COLS = ["scen_id", "scen_name", "social_learning_factor", "economic_learning_factor",
              "grid_reinforcement_rate", "energy_prices", "DH_construction_time", "DH_expansion_strategy",
-             "SHA_strategy", "DH_connection_obligation", "Grid_congestion_HP_ban", "subsidy_policy", "status"]
+             "SHA_strategy", "DH_connection_obligation", "Grid_congestion_HP_ban", "subsidy_policy",
+             "DH_review_years", "status"]
 SUBSIDY_POLICY = {"CURRENT", "NONE", "PHASE_OUT"}
 
 
@@ -159,6 +160,8 @@ def export_scenarios():
             if r[c].strip().upper() not in STRATEGY: bad(f"{c} must be COST_BASED/POLICY_BASED, got {r[c]!r}")
         for c in ("DH_connection_obligation", "Grid_congestion_HP_ban"):
             if r[c].strip().upper() not in BOOL: bad(f"{c} must be TRUE/FALSE, got {r[c]!r}")
+        if not str(r["DH_review_years"]).strip().isdigit():
+            bad(f"DH_review_years must be an integer >= 0 (0 = never leave), got {r['DH_review_years']!r}")
         if r["subsidy_policy"].strip().upper() not in SUBSIDY_POLICY:
             bad(f"subsidy_policy must be one of {sorted(SUBSIDY_POLICY)}, got {r['subsidy_policy']!r}")
         st = r["status"].strip().lower()

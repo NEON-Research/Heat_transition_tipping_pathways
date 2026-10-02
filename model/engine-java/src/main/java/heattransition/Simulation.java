@@ -74,6 +74,8 @@ public final class Simulation {
     private final int startYear, endYear;
     private final Rng rng;
     private final boolean legacyTrigger;
+    /** DH review interval of this run: the -Dht.dhReviewYears override, else the scenario's. */
+    private final int dhReviewYears;
     private final double slf, elf;
     private final List<Dwelling> homeowners, landlords, all;
     private final Scenario scen;
@@ -124,6 +126,7 @@ public final class Simulation {
                           List<Neighbourhood> neighbourhoods) {
         this.startYear = startYear; this.endYear = endYear; this.rng = rng;
         this.legacyTrigger = legacyTrigger;
+        this.dhReviewYears = Constants.DH_REVIEW_YEARS >= 0 ? Constants.DH_REVIEW_YEARS : scen.dhReviewYears;
         this.slf = Constants.SOCIAL_LEARNING_MULT >= 0 ? Constants.SOCIAL_LEARNING_MULT
                 : Constants.LEARNING_MULTIPLIER.getOrDefault(scen.socialLearningFactor, 1.0);
         this.elf = Constants.LEARNING_MULTIPLIER.getOrDefault(scen.economicLearningFactor, 1.0);
@@ -471,6 +474,30 @@ public final class Simulation {
                         e.getKey(), e.getValue()[0], e.getValue()[1], (double) e.getValue()[1] / Math.max(1, e.getValue()[0]));
         }));
     }
+    // HT_TRIGGERS=1: per year, how many decisions each trigger produced and how many of them changed
+    // technology, per agent type. Slots: homeowner eol/eolSwitch/opp/oppSwitch/dhReview/dhLeave,
+    // landlord eol/eolSwitch/dhReview/dhLeave, block households eol/eolSwitch/dhReview/dhLeave.
+    // Printed at exit; draws no random numbers, so results are identical with and without it.
+    // Counts accumulate over every scenario and iteration in the JVM: run one at a time.
+    private static final boolean TRIG = System.getenv("HT_TRIGGERS") != null;
+    private static final Map<Integer, long[]> TRIG_COUNT = new java.util.concurrent.ConcurrentSkipListMap<>();
+    private static final String[] TRIG_NAMES = {"hoEol", "hoEolSwitch", "hoOpp", "hoOppSwitch", "hoDhReview",
+            "hoDhLeave", "llEol", "llEolSwitch", "llDhReview", "llDhLeave", "blkEol", "blkEolSwitch",
+            "blkDhReview", "blkDhLeave"};
+    private static void trig(int year, int slot, long n) {
+        if (!TRIG) return;
+        long[] c = TRIG_COUNT.computeIfAbsent(year, y -> new long[TRIG_NAMES.length]);
+        synchronized (c) { c[slot] += n; }
+    }
+    static {
+        if (TRIG) Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            for (Map.Entry<Integer, long[]> e : TRIG_COUNT.entrySet()) {
+                StringBuilder sb = new StringBuilder("TRIGGERS ").append(e.getKey());
+                for (int i = 0; i < TRIG_NAMES.length; i++) sb.append(' ').append(TRIG_NAMES[i]).append('=').append(e.getValue()[i]);
+                System.out.println(sb);
+            }
+        }));
+    }
     /** A triggered homeowner whose EACs were computed in pass 1, carried into pass 2. */
     private static final class PendingHomeowner {
         final Dwelling dwelling; final boolean endOfLife; final Map<HeatingSystem, long[]> opts;
@@ -665,7 +692,7 @@ public final class Simulation {
         //    heating instead reviews every DH_REVIEW_YEARS and stays unless another option wins)
         for (HousingBlock b : blocks) {
             boolean dhReview = b.currentType == HeatingSystem.DISTRICT_HEATING;
-            if (dhReview ? !Decision.hasDhReviewTrigger(b.age, Constants.DH_REVIEW_YEARS)
+            if (dhReview ? !Decision.hasDhReviewTrigger(b.age, dhReviewYears)
                          : !Decision.hasEndOfLifeTrigger(b.age, b.lifeDraw)) continue;
             Map<HeatingSystem, Double> avg = new EnumMap<>(HeatingSystem.class);
             Map<HeatingSystem, Boolean> poss = new EnumMap<>(HeatingSystem.class);
@@ -711,6 +738,11 @@ public final class Simulation {
                 if (hEac < gEac) st[3]++;
             }
             if (dhReview && chosen == HeatingSystem.DISTRICT_HEATING) chosen = null;   // stays connected
+            if (TRIG) {
+                int nh0 = b.households.size();
+                trig(year, dhReview ? 12 : 10, nh0);
+                if (chosen != null && chosen != b.currentType) trig(year, dhReview ? 13 : 11, nh0);
+            }
             if (chosen != null) {
                 b.hasLowTemp = hs.get(chosen).requiresLowTemp;   // installNewHeatingMethodInHouseholds
                 for (Dwelling d : b.households) {
@@ -739,7 +771,7 @@ public final class Simulation {
         // 2. Landlords (individual, end-of-life, cost; district heating: periodic review)
         for (Dwelling d : landlords) {
             boolean dhReview = d.currentType == HeatingSystem.DISTRICT_HEATING;
-            if (dhReview ? !Decision.hasDhReviewTrigger(d.age, Constants.DH_REVIEW_YEARS)
+            if (dhReview ? !Decision.hasDhReviewTrigger(d.age, dhReviewYears)
                          : !Decision.hasEndOfLifeTrigger(d.age, d.lifeDraw)) continue;
             r.considered++;
             Map<HeatingSystem, long[]> e = eac(d);
@@ -750,6 +782,10 @@ public final class Simulation {
                 r.eacSum.get("PRIVATELY_RENTED")[t.ordinal()] += e.get(t)[0]; r.eacN.get("PRIVATELY_RENTED")[t.ordinal()]++; }
             HeatingSystem chosen = chooseByEAC(eacByType);
             if (dhReview && chosen == HeatingSystem.DISTRICT_HEATING) chosen = null;   // stays connected
+            if (TRIG) {
+                trig(year, dhReview ? 8 : 6, 1);
+                if (chosen != null && chosen != d.currentType) trig(year, dhReview ? 9 : 7, 1);
+            }
             if (chosen != null) { r.removed.merge(d.currentType, 1, Integer::sum); r.installed.merge(chosen, 1, Integer::sum);
                 cumInstalled.merge(chosen, 1, Integer::sum);
                 if (!d.hasLowTemp) d.hasLowTemp = hs.get(chosen).requiresLowTemp;
@@ -771,7 +807,7 @@ public final class Simulation {
             // opportunity trigger, so the dwelling only changes if another option wins.
             boolean onDH = d.currentType == HeatingSystem.DISTRICT_HEATING;
             boolean eol = !onDH && Decision.hasEndOfLifeTrigger(d.age, lifetime);
-            boolean opp = onDH ? Decision.hasDhReviewTrigger(d.age, Constants.DH_REVIEW_YEARS)
+            boolean opp = onDH ? Decision.hasDhReviewTrigger(d.age, dhReviewYears)
                                : Decision.hasOpportunityTrigger(d.age, lifetime, legacyTrigger);
             if (!eol && !opp) continue;
             hoPending.add(new PendingHomeowner(d, eol, eac(d)));  // PASS 1: populate window only
@@ -785,6 +821,12 @@ public final class Simulation {
             Map<HeatingSystem, long[]> opts = p.opts;
             r.considered++;
             HeatingSystem chosen = chooseByUtility(d, opts, r);
+            if (TRIG) {
+                boolean onDH = d.currentType == HeatingSystem.DISTRICT_HEATING;
+                int base = onDH ? 4 : eol ? 0 : 2;
+                trig(year, base, 1);
+                if (chosen != null && chosen != d.currentType) trig(year, base + 1, 1);
+            }
             if (chosen == null) continue;
             if (COSTPROBE != null) {
                 HeatingSystem cheap = cheapestPossible(opts);
