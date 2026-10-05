@@ -245,11 +245,13 @@ def main():
         run([sys.executable, LOOP_EFFECTS, "--scope", a.scope],
             os.path.join(resdir, "log_loop_effects.txt"))
 
-    print(f"\n[batch] done in {(time.time()-t0)/3600:.2f} h.\n"
-          f"  band      -> {resdir}/calib/\n"
-          f"  prices    -> {resdir}/price_low|price_high/\n"
-          f"  knock-out -> {resdir}/knockout_*/ + mechanism report in {resdir}/mechanism/\n"
-          f"  figures   -> {resdir}/figures/ (per-scenario bands in figures/scenarios/)")
+    # list only the steps this job actually ran
+    done = [f"\n[batch] done in {(time.time()-t0)/3600:.2f} h."]
+    if not a.no_band:     done.append(f"  band      -> {resdir}/calib/")
+    if not a.no_price:    done.append(f"  prices    -> {resdir}/price_low|price_high/")
+    if not a.no_knockout: done.append(f"  knock-out -> {resdir}/knockout_*/ + mechanism report in {resdir}/mechanism/")
+    done.append(f"  figures   -> {resdir}/figures/ (per-scenario bands in figures/scenarios/)")
+    print("\n".join(done))
 
 if __name__ == "__main__":
     main()
