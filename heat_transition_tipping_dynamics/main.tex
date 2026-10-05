@@ -866,7 +866,7 @@ higher on attitude, the incumbent on subjective norm and effort) and largely off
 options of a household typically differ by a few hundredths in utility. It is
 sampled log-uniformly between 0.005 and 0.05 on the 0--1 utility scale, as a scale
 parameter, around the 0.02 used before, and each retained set carries its own value into the
-scenarios. The subsample described below spreads over it as a fourth dimension.
+scenarios, including the subsample described below.
 The observations do not pin the scale down: every part of its range is retained (9--17\,\% of the
 sampled sets per range, with a mild preference for larger values), because the weights compensate
 for it, and the trade-off between the cost and attitude weights widens accordingly
@@ -893,9 +893,12 @@ boilers, hybrid and electric heat pumps, which move materially over the window, 
 heating. Collective gas heating is not scored, as it is decided by housing blocks rather than by
 the calibrated weights. During calibration, dwellings on district heating stay connected: over
 2022--2024 housing associations kept their district-heating stock connected, often in agreement
-with municipalities, and the observed district-heating share is stable. This is a policy rather
-than a cost decision, so it is excluded from the baseline, where connected dwellings reconsider
-their heating periodically and may leave, and represented in the policy scenarios.
+with municipalities, and the observed district-heating share is stable. Leaving a heat network is
+rare in practice: the network and the delivery set belong to the operator, and collective systems
+require a joint decision. Connected dwellings therefore stay connected in the scenarios too, with
+one exception: in the scenario \texttt{dh\_exit\_allowed} they reconsider their heating every five
+years and leave when another option wins on cost and utility, which shows what the assumption is
+worth.
 
 A weight set is judged by the implausibility of each scored output $k$ (technology and year),
 the standard measure in history matching \citep{vernonGalaxyFormationBayesian2010,
@@ -946,24 +949,28 @@ standard deviation between iterations (0.028 percentage points) is much smaller 
 deviation the criterion admits (Appendix~\ref{app:replication}).
 
 Running every retained set through every scenario at national scale is not feasible, so the
-scenario analysis uses a subsample of 25 retained sets. The subsample is chosen in the space of
-the effective weights that the retained sets differ in (Section~\ref{sec:res-ensemble}): the
-effective weight of attitude, which gives the position on the cost--attitude line of
-Equation~\ref{eq:ridge}, the effective weight of the subjective norm, which the observation window
-leaves largely open but which drives adoption once heat pumps become common, and the effective
-weight of effort, each standardized over the retained sets. The subsample starts from three
-anchors, the best-fitting set and the two ends of the cost--attitude line, and is then grown by a
-space-filling pick, also known as greedy maximin selection: at each step the retained set is added
-whose distance to the nearest set already chosen is largest. The subsample thereby spreads evenly
-over the retained sets, reaches the edges of their range and never contains two near-identical
-sets, which a random draw of the same size does not guarantee. The chosen sets count equally.
-History matching only establishes that a set is not ruled out by the observations; it does not make
-the retained sets a probability sample, so how densely they populate a region reflects the
-sampling design rather than evidence, and reweighting the subsample to that density would add no
-information. Results are therefore reported as bands over the chosen sets, with the median as a
-descriptive centre. To check that the subsample stands in for the full ensemble, the baseline
-scenario is run for all retained sets in Noord-Brabant: the subsample covers the 5--95\,\% range
-of the full ensemble for every technology in 2030 and 2050.
+scenario analysis uses a subsample of 25 retained sets. Because the results are reported as the
+median and percentiles across the sets, the subsample is chosen so that these statistics are those
+of the full retained ensemble, the outcome of the calibration. To this end the baseline scenario is
+run for every retained set in Noord-Brabant, and the subsample is the combination of 25 sets whose
+5, 25, 50, 75 and 95\,\% percentiles of the share of each technology in 2030, 2040 and 2050 come
+closest to those of all retained sets (the smallest sum of squared differences, standardized by the
+spread over the retained sets, found by a local search with random restarts). The four sets of the
+Morris screening and the central set (below) are always included, and the chosen sets count
+equally. In Noord-Brabant the subsample reproduces the medians of the full ensemble within 1.1 and
+the 5 and 95\,\% percentiles within 1.3 percentage points in these years. In 2035 and 2045, which
+are not used in the selection, the medians agree within 0.7 percentage points and the percentiles
+within 1.3 points, except the upper end of the electric heat pump in 2045 (3.8 points). Selecting
+on outcomes is needed because the retained sets do not populate the weight space evenly: a
+selection that spreads the sets evenly over the effective weights covers the same range, but
+places relatively many sets in thinly populated parts of the ensemble, and in Noord-Brabant raised
+the median 2050 gas share by about 3.5 percentage points. Its percentiles would then describe the
+selection method rather than the calibrated ensemble, and would depend on which effective weights
+were chosen to spread over. History matching only establishes that a set is not ruled out by the
+observations, so the full ensemble is not a probability sample either: its density reflects the
+ranges from which the weights were drawn. The bands are therefore the spread across the plausible
+weight sets under that sampling, with the median as a descriptive centre, and not probability
+intervals.
 
 The sensitivity analysis (Section~\ref{sec:sensitivity}) takes its weight sets from the same
 subsample. The Morris screening is repeated at four sets, the minimum that spans the two ways the
@@ -1169,7 +1176,7 @@ reveal.
 \label{sec:results}
 %% ===========================================================================
 The Netherlands is simulated over 2024--2050 for each of the 25 weight sets selected from the
-161 retained sets (Section~\ref{sec:calibrating}) across sixteen scenarios, except for the
+124 retained sets (Section~\ref{sec:calibrating}) across twenty scenarios, except for the
 sensitivity analysis which is done for the province of Noord-Brabant. Pathways are reported as
 ensemble bands rather than as single lines and scenario effects as the median across the
 ensemble.
@@ -1255,7 +1262,7 @@ all through the discrepancy allowance (Table~\ref{tab:retention_sensitivity}).
 
 Taken one at a time, the decision weights are hardly narrowed by the observations
 (Table~\ref{tab:ensemble}). Only the extremes are ruled out: very high subjective-norm weights
-(no set above 0.60) and, less sharply, low attitude weights. This does not mean the observations
+(no set above 0.64) and, less sharply, low attitude weights. This does not mean the observations
 carry little information. Two thirds of the gas boilers removed in 2022--2024 are replaced by
 housing associations and landlords, who decide on cost alone, so the weights only govern the
 remaining third. Within that third, the observations constrain a combination of the weights
@@ -1265,20 +1272,23 @@ Because the decision function is a chain of normalized weighted averages, the ef
 each driver in the final decision is a product of the sampled shares. The effective weight of cost
 is the affordability share times the total weight of perceived behavioral control, and the
 effective weight of attitude is the attitude share times the intention share. In the retained sets
-these two are almost perfectly opposed (correlation $-0.98$, against $-0.39$ across all sampled
-sets): the retained sets lie on the line
+these two are strongly opposed (correlation $-0.95$, against $-0.33$ across all sampled sets): the
+retained sets lie along the line
 \begin{equation}
-  w_{\mathrm{cost}} \approx 0.85 - 2.3\, w_{\mathrm{att}},
+  w_{\mathrm{cost}} \approx 0.79 - 2.0\, w_{\mathrm{att}},
   \label{eq:ridge}
 \end{equation}
-with a residual spread of 0.04. The distance to this line almost fully determines whether a set
-is retained: 94\,\% of the sets within 0.03 of it are retained, and 0.1\,\% of those further than
-0.10 away. While the retained range of each individual weight spans 79--102\,\% of its sampled
-range, the combination in Equation~\ref{eq:ridge} spans 15\,\%.
+with a residual spread of 0.07. Most of that spread is the noise scale of the choice
+(Section~\ref{sec:calibrating}): each value of the scale has its own, parallel line, which lies at a
+lower cost weight the more random the choice is, and among the retained sets with a scale between
+0.015 and 0.025 the spread around the line is 0.03. Lying close to the line is therefore necessary
+but not sufficient for retention: about half of the sampled sets within 0.06 of it are retained,
+against 2\,\% of those further than 0.10 away. While the retained range of each individual weight
+spans 81--95\,\% of its sampled range, the combination in Equation~\ref{eq:ridge} spans 27\,\%.
 
 The interpretation is that the observation window fixes how strongly homeowners are pushed
 towards a new heating method in total, not where that push comes from. Cost and attitude substitute
-for each other: one unit of effective attitude weight does the same as about 2.3 units of effective
+for each other: one unit of effective attitude weight does the same as about 2.0 units of effective
 cost weight, and too much of both produces too many heat pumps, too little of both too few. The
 subjective norm hardly contributes over this window, as the peer signal is weak while heat pumps
 are still rare, which is why it is only bounded from above. The retained ensemble therefore spans
@@ -1299,12 +1309,12 @@ the scenario analysis.
     \toprule
     \textbf{Weight} & \textbf{Sampled} & \textbf{Retained} & \textbf{Retained width}\\
     \midrule
-    Attitude (of intention)        & 0.10--0.79 & 0.11--0.71 & 91\,\%\\
-    Subjective norm (of intention) & 0.10--0.78 & 0.10--0.60 & 79\,\%\\
-    Affordability (of PBC)         & 0.10--0.90 & 0.10--0.90 & 90\,\%\\
-    Intention (of behavior)        & 0.10--0.90 & 0.10--0.88 & 102\,\%\\
+    Attitude (of intention)        & 0.10--0.77 & 0.10--0.72 & 87\,\%\\
+    Subjective norm (of intention) & 0.10--0.76 & 0.10--0.64 & 81\,\%\\
+    Affordability (of PBC)         & 0.10--0.90 & 0.12--0.90 & 84\,\%\\
+    Intention (of behavior)        & 0.10--0.90 & 0.10--0.88 & 95\,\%\\
     \midrule
-    $w_{\mathrm{cost}} + 2.3\,w_{\mathrm{att}}$ (effective) & & & 15\,\%\\
+    $w_{\mathrm{cost}} + 2.0\,w_{\mathrm{att}}$ (effective) & & & 27\,\%\\
     \bottomrule
   \end{tabular}
 \end{table}
@@ -1312,10 +1322,11 @@ the scenario analysis.
 \begin{figure}[htbp]\centering
   \includegraphics[width=0.7\linewidth]{figures/fig_ensemble_structure.png}
   \caption{Effective weight of cost against effective weight of attitude in the final decision, for
-  all 1000 sampled weight sets. The retained sets (colour) lie on one line
+  all 1000 sampled weight sets. The retained sets (colour) lie along one line
   (Equation~\ref{eq:ridge}): the observations constrain the trade-off between the two weights rather
-  than either weight on its own. The line is a least-squares fit through the retained sets; of the
-  sampled sets within 0.03 of it, 94\,\% are retained.}
+  than either weight on its own. The line is a least-squares fit through the retained sets; its width
+  comes mostly from the noise scale of the choice, which shifts the line. Ringed: the 25 sets used in
+  the scenario analysis (Section~\ref{sec:calibrating}).}
   \label{fig:ensemble_structure}
 \end{figure}
  

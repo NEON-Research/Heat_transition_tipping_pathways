@@ -124,6 +124,9 @@ def main():
                          "13 GB peak; the 8g run.py default is too small, 48g is more than this laptop has)")
     ap.add_argument("--price-scenario", default="all", help="--scenario for the price runs (all | baseline)")
     ap.add_argument("--no-band", action="store_true")
+    ap.add_argument("--resume", action="store_true",
+                    help="band: skip weight sets whose results already exist with the same weights\n"
+                         "(weights.json beside them), e.g. after a new subsample that keeps some sets")
     # The price arms and the loop knock-outs are OFF by default: the price arms are scenarios in the
     # matrix now (gas_low_elec_high / gas_high_elec_low, across the whole ensemble), and the
     # knock-outs were dropped from the analysis. --price / --knockout still run them on request.
@@ -174,7 +177,7 @@ def main():
     if not a.no_band:
         run([sys.executable, RUNPY, "--scope", a.scope, "--scenario", "all",
              "--iterations", a.iterations, "--analyze", "--weights", a.ensemble_weights,
-             "--weights-file", SEARCH] + XMX,
+             "--weights-file", SEARCH] + XMX + (["--skip-existing"] if a.resume else []),
             os.path.join(resdir, "log_band.txt"))
 
     # 2. coupled price bracket at the calibrated central weights (weights via --prop so --out is free)

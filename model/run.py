@@ -188,6 +188,9 @@ def main():
     ap.add_argument("--prop", action="append", default=[], metavar="KEY=VALUE",
                     help="inject a JVM system property, e.g. --prop ht.priceT=0.25 "
                          "(repeatable). Use for the energy-price arm and other -Dht.* overrides.")
+    ap.add_argument("--skip-existing", action="store_true",
+                    help="with --weights: skip a set whose results file exists and whose weights.json\n"
+                         "matches its weights (resume an interrupted batch, or reuse earlier runs)")
     args, engine_args = ap.parse_known_args()
 
     tag = scope_tag(args.scope)
@@ -239,6 +242,15 @@ def main():
     for idx, (label, weights) in enumerate(weight_sets):
         results_csv = results_path_for(label)
         os.makedirs(os.path.dirname(results_csv), exist_ok=True)
+        # weights.json beside the results records which weights produced them, so --skip-existing can
+        # refuse to reuse a folder whose name matches but whose weights do not
+        sig_path = os.path.join(os.path.dirname(results_csv), "weights.json")
+        if args.skip_existing and label is not None and os.path.exists(results_csv):
+            sig = json.load(open(sig_path, encoding="utf-8")) if os.path.exists(sig_path) else None
+            if sig == weights:
+                print(f"[run] weight set {idx+1}/{len(weight_sets)}: {label} -- results exist, skipped")
+                continue
+            print(f"[run] {label}: existing results {'have other weights' if sig else 'have no weights.json'}; rerunning")
         dflags = [f"-Dht.{k}={v}" for k, v in (weights or {}).items()]
         dflags += [f"-D{p}" for p in args.prop]   # generic JVM property passthrough (e.g. price paths)
         if label is not None:
@@ -247,6 +259,8 @@ def main():
                "--real", stock_csv, "--out", results_csv] + engine_args
         print("[run] " + " ".join(cmd))
         rc = subprocess.run(cmd).returncode
+        if rc == 0 and label is not None and weights is not None:
+            json.dump(weights, open(sig_path, "w", encoding="utf-8"), indent=1)
         # 4. optional analysis — only on a clean run; never fails an otherwise-valid simulation
         if rc == 0 and args.analyze:
             run_analysis(results_csv)

@@ -103,6 +103,16 @@ def main():
     ax.scatter(x[~keep], y[~keep], s=9, color=DROP, lw=0, zorder=1)
     ax.scatter(x[keep], y[keep], s=16, color=KEEP, edgecolor="white", lw=0.5, zorder=3)
     ax.plot(xs, c0 + c1 * xs, color=INK, lw=1.4, zorder=2)
+    # the scenario subsample, if one sits beside the search file: ringed
+    sub_path = os.path.join(a.calib, "calibration_subsample.json")
+    n_sub = 0
+    if os.path.exists(sub_path):
+        sub = json.load(open(sub_path, encoding="utf-8"))
+        key = lambda s: tuple(sorted((k, round(v, 9)) for k, v in s.items()))
+        pos = {key(s["sampled"]): i for i, s in enumerate(S)}
+        sel = [pos[key(e["sampled"])] for e in sub["retained"] if key(e["sampled"]) in pos]
+        n_sub = len(sel)
+        ax.scatter(x[sel], y[sel], s=58, facecolor="none", edgecolor=INK, lw=1.1, zorder=4)
     ax.set_xlim(0, xs[-1]); ax.set_ylim(0, 1.0)
     ax.set_xlabel("effective weight of attitude in the decision", fontsize=10)
     ax.set_ylabel("effective weight of cost in the decision", fontsize=10)
@@ -113,9 +123,11 @@ def main():
                        Line2D([], [], marker="o", ls="", color=DROP, markersize=5,
                               label=f"ruled out ({(~keep).sum()})"),
                        Line2D([], [], color=INK, lw=1.4,
-                              label=f"fitted line: cost = {c0:.2f} − {-c1:.1f} × attitude")],
-              loc="upper center", bbox_to_anchor=(0.5, -0.14), ncol=3, frameon=False, fontsize=8.5,
-              handletextpad=0.4, columnspacing=1.2)
+                              label=f"fitted line: cost = {c0:.2f} − {-c1:.1f} × attitude")]
+                      + ([Line2D([], [], marker="o", ls="", markerfacecolor="none", markeredgecolor=INK,
+                                 markersize=8, label=f"scenario subsample ({n_sub})")] if n_sub else []),
+              loc="upper center", bbox_to_anchor=(0.5, -0.14), ncol=2 if n_sub else 3, frameon=False,
+              fontsize=8.5, handletextpad=0.4, columnspacing=1.2)
     ax.grid(alpha=.2); ax.set_axisbelow(True)
     for sp in ("top", "right"): ax.spines[sp].set_visible(False)
     fig.tight_layout()
