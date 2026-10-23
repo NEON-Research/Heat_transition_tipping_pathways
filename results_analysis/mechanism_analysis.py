@@ -183,6 +183,7 @@ def main():
     PANELS = [("HYBRID_HEAT_PUMP", "Hybrid heat pump"),
               ("ELECTRIC_HEAT_PUMP", "Electric heat pump"),
               ("DISTRICT_HEATING", "District heating")]
+    # each panel its own y-scale: a shared one flattens hybrid and district heating next to electric
     fig, axes = plt.subplots(1, len(PANELS), figsize=(6*len(PANELS), 4.6), sharey=False)
     order_ok = []
     for i, (tech, title) in enumerate(PANELS):
@@ -190,9 +191,18 @@ def main():
             yrs = sorted(segS[s])
             v = [100*segS[s][y].get(tech, 0)/(sum(segS[s][y].values()) or 1) for y in yrs]
             axes[i].plot(yrs, v, label=seglabel(s))
-        axes[i].set_title(f"{title} — share of own segment")
-        axes[i].set_xlabel("year"); axes[i].set_ylabel("% of segment")
-        axes[i].grid(alpha=.3); axes[i].legend(fontsize=7)
+        axes[i].set_title(title)
+        axes[i].set_xlabel("year")
+        axes[i].grid(alpha=.3); axes[i].set_ylabel("% of segment"); axes[i].set_ylim(bottom=0)
+    fig.suptitle("Adoption per heating method in share of own segment", fontsize=15)
+    # one shared legend below the panels (the segments are the same in every panel). The figure is
+    # 18 in wide and shrunk to the text width, so the legend needs a large font to stay readable.
+    h, l = axes[0].get_legend_handles_labels()
+    fig.legend(h, [x.replace("_", " ").capitalize() for x in l], loc="lower center", ncol=len(l),
+               frameon=False, fontsize=16, handlelength=2.5, columnspacing=2.0,
+               bbox_to_anchor=(0.5, -0.04))
+    for ln in fig.legends[0].get_lines(): ln.set_linewidth(3)
+    fig.tight_layout(rect=(0, 0.09, 1, 0.95))
     # ordering test uses total heat-pump uptake (the diffusion signal), mid-horizon
     for s in segs:
         yrs = sorted(segS[s]); mid = yrs[len(yrs)//2]

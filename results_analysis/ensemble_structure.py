@@ -32,7 +32,7 @@ import matplotlib; matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 
-KEEP, DROP, INK = "#2c7fb8", "#c8c8c8", "#222222"
+KEEP, DROP, INK, SUB = "#2c7fb8", "#c8c8c8", "#222222", "#E69F00"
 SHARES = [("shareAttitude", "attitude (of intention)"),
           ("shareSocialnorm", "social norm (of intention)"),
           ("shareAffordability", "affordability (of PBC)"),
@@ -47,8 +47,8 @@ def paths(S):
             "effort": (1 - aff) * pbc_total}, {k: g(k) for k, _ in SHARES}
 
 
-def width_ratio(v, keep, q=(10, 90)):
-    """Width of the kept sets' central range as a share of the sampled one."""
+def width_ratio(v, keep, q=(0, 100)):
+    """Width of the kept sets' range (min-max by default) as a share of the sampled one."""
     a, k = np.percentile(v, q), np.percentile(v[keep], q)
     return float((k[1] - k[0]) / (a[1] - a[0]))
 
@@ -81,7 +81,7 @@ def main():
              "corr_cost_attitude_kept": float(np.corrcoef(x[keep], y[keep])[0, 1]),
              "corr_cost_attitude_all": float(np.corrcoef(x, y)[0, 1]),
              "retention_by_distance": by_dist,
-             "kept_width_share_P10_P90": dict(ratios),
+             "kept_width_share_min_max": dict(ratios),
              "effort_path_kept": [float(P["effort"][keep].min()), float(P["effort"][keep].max())],
              "effort_path_sampled": [float(P["effort"].min()), float(P["effort"].max())]}
 
@@ -91,7 +91,7 @@ def main():
           f"all sampled {stats['corr_cost_attitude_all']:+.2f}")
     for b in by_dist:
         print(f"  distance {b['from']:.2f}-{min(b['to'], 1):.2f} from the ridge: n={b['n']:4d}  kept {b['kept_pct']:5.1f}%")
-    print("width of the kept range as a share of the sampled range (P10-P90):")
+    print("width of the kept range as a share of the sampled range (min-max):")
     for lab, r in ratios:
         print(f"  {lab:32s} {100 * r:5.0f}%")
 
@@ -103,7 +103,7 @@ def main():
     ax.scatter(x[~keep], y[~keep], s=9, color=DROP, lw=0, zorder=1)
     ax.scatter(x[keep], y[keep], s=16, color=KEEP, edgecolor="white", lw=0.5, zorder=3)
     ax.plot(xs, c0 + c1 * xs, color=INK, lw=1.4, zorder=2)
-    # the scenario subsample, if one sits beside the search file: ringed
+    # the scenario subsample, if one sits beside the search file: filled orange on top
     sub_path = os.path.join(a.calib, "calibration_subsample.json")
     n_sub = 0
     if os.path.exists(sub_path):
@@ -112,7 +112,7 @@ def main():
         pos = {key(s["sampled"]): i for i, s in enumerate(S)}
         sel = [pos[key(e["sampled"])] for e in sub["retained"] if key(e["sampled"]) in pos]
         n_sub = len(sel)
-        ax.scatter(x[sel], y[sel], s=58, facecolor="none", edgecolor=INK, lw=1.1, zorder=4)
+        ax.scatter(x[sel], y[sel], s=24, color=SUB, edgecolor="white", lw=0.5, zorder=4)
     ax.set_xlim(0, xs[-1]); ax.set_ylim(0, 1.0)
     ax.set_xlabel("effective weight of attitude in the decision", fontsize=10)
     ax.set_ylabel("effective weight of cost in the decision", fontsize=10)
@@ -124,8 +124,8 @@ def main():
                               label=f"ruled out ({(~keep).sum()})"),
                        Line2D([], [], color=INK, lw=1.4,
                               label=f"fitted line: cost = {c0:.2f} − {-c1:.1f} × attitude")]
-                      + ([Line2D([], [], marker="o", ls="", markerfacecolor="none", markeredgecolor=INK,
-                                 markersize=8, label=f"scenario subsample ({n_sub})")] if n_sub else []),
+                      + ([Line2D([], [], marker="o", ls="", color=SUB, markersize=6.5,
+                                 label=f"retained, in scenario subsample ({n_sub})")] if n_sub else []),
               loc="upper center", bbox_to_anchor=(0.5, -0.14), ncol=2 if n_sub else 3, frameon=False,
               fontsize=8.5, handletextpad=0.4, columnspacing=1.2)
     ax.grid(alpha=.2); ax.set_axisbelow(True)

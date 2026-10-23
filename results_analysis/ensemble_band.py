@@ -147,10 +147,12 @@ def main():
 
     lines = []
     if a.panels:
-        fig, axes = plt.subplots(2, 2, figsize=(10, 6.4), sharex=True)
+        # one y-scale for all panels, so the sizes of the technologies compare by eye
+        fig, axes = plt.subplots(2, 2, figsize=(10, 6.4), sharex=True, sharey=True)
         for ax, t in zip(axes.flat, TECHS):
             draw(ax, t, lines); ax.set_title(NICE[t], fontsize=10)
             ax.set_xlim(min(years), max(years)); ax.set_ylim(bottom=0)
+        for ax in axes[:, 0]:
             ax.set_ylabel("million dwellings", fontsize=9)
     else:
         fig, ax = plt.subplots(figsize=(9, 5.6))
@@ -158,10 +160,10 @@ def main():
         ax.set_xlim(min(years), max(years)); ax.set_ylim(bottom=0)
         ax.set_ylabel("million dwellings"); ax.set_xlabel("year")
         ax.legend(handles=lines, fontsize=9.5, frameon=False, loc="upper right", ncol=2)
-    fig.suptitle(f"Dwellings per heating technology, {a.scenario} scenario\n"
-                 f"median across the {n_sets} retained weight sets; bands are the interquartile "
-                 + ("and full range" if not lo else f"and {lo:g}-{hi:g} % range"), fontsize=11.5)
-    fig.tight_layout(rect=(0, 0, 1, 0.94 if not a.panels else 0.93))
+    # one title line; what the line and bands are (median, interquartile, outer range) goes in the
+    # paper caption, so the figure cannot drift from it
+    fig.suptitle(f"Dwellings per heating technology, {a.scenario} scenario", fontsize=11.5)
+    fig.tight_layout(rect=(0, 0, 1, 0.97 if not a.panels else 0.96))
     f = os.path.join(outdir, f"fig_ensemble_band_{a.scenario}{a.tag}.png")
     fig.savefig(f, dpi=150, bbox_inches="tight"); plt.close(fig)
     if a.copy_to and os.path.isdir(a.copy_to):

@@ -43,6 +43,9 @@ def main():
     ap.add_argument("--lhs-weights", default="central", help="weight set for the LHS quantification "
                     "(default: the central retained set, the same set the pathway price runs use)")
     ap.add_argument("--no-lhs", action="store_true")
+    ap.add_argument("--factors", default=None,
+                    help="comma list of Morris factors (default: structural_sensitivity.py's default screen),\n"
+                         "e.g. to leave out the district-heating exit parameters")
     ap.add_argument("--search", "--weights-file", dest="search", default=None,
                     help="calibration_search.json holding the ensemble the weight vectors are read\n"
                          "from (default: results/calib/calibration_search.json). --outdir defaults to\n"
@@ -68,6 +71,7 @@ def main():
         cmd = [sys.executable, SCRIPT, "morris", "--scope", a.scope,
                "--trajectories", str(a.trajectories), "--iterations", str(a.morris_iters),
                "--weights", wv, "--weights-file", search, "--outdir", outdir]
+        if a.factors: cmd += ["--factors", a.factors]
         if i > 0: cmd.append("--skip-build")          # build once, on the first run
         rc = run(cmd, os.path.join(outdir, f"log_morris_{wv.replace(':','')}.txt"))
         jf = os.path.join(outdir, f"structural_morris_{wv.replace(':','')}.json")

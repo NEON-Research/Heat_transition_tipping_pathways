@@ -68,6 +68,9 @@ def standardised(R):
     cols = [[e[k] for k in ("attitude", "social", "effort")] for e in E]
     if all("gumbelScaleUtil" in r["sampled"] for r in R):
         cols = [c + [float(np.log(r["sampled"]["gumbelScaleUtil"]))] for c, r in zip(cols, R)]
+    if all("shareInvest" in r["sampled"] for r in R):     # split PBC: how the cost weight divides
+        cols = [c + [r["sampled"]["shareInvest"] / (r["sampled"]["shareInvest"] + r["sampled"]["shareRunning"])]
+                for c, r in zip(cols, R)]
     X = np.array(cols)
     return E, (X - X.mean(0)) / X.std(0)
 

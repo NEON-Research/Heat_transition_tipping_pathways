@@ -24,6 +24,28 @@ public final class Constants {
     public static final double WEIGHT_SOCIALNORM_TO_INTENTION = p("wSocialnormToIntention", 0.5);
     public static final double WEIGHT_INTENTION_TO_BEHAVIOR  = p("wIntentionToBehavior", 0.5);
     public static final double WEIGHT_PBC_TO_BEHAVIOR        = p("wPbcToBehavior", 0.5);
+    /** SPLIT PBC (alternative decision structure, homeowners only): the EAC term is replaced by its
+     *  two parts, the annual RUNNING cost and the net UPFRONT investment, each with its own weight:
+     *    PBC = [wRunning (1 - runNorm) + wInvest (1 - investNorm) + wEffort (1 - effort)] / sum
+     *  runNorm on the EAC's log min-max scale, investNorm on a LINEAR min-max scale (investment
+     *  can be 0: a dwelling that stays on district heating). Both windows are global over the
+     *  options of the year, as for the EAC. Switched on by setting wInvestToPbc (>= 0); the
+     *  calibrated weight sets of this structure carry it, so they cannot run on the old one.
+     *  wAffordabilityToPbc is then unused. Landlords and housing blocks keep choosing on EAC. */
+    public static final double WEIGHT_RUNNING_TO_PBC = p("wRunningToPbc", -1);
+    public static final double WEIGHT_INVEST_TO_PBC  = p("wInvestToPbc", -1);
+    public static final boolean PBC_SPLIT = WEIGHT_INVEST_TO_PBC >= 0;
+    /** Split PBC: the top of the LINEAR investment window is this percentile of the year's option
+     *  investments (100 = the maximum). The maximum is set by a handful of very large dwellings
+     *  needing deep insulation (NB 2025: max 119k against p95 28k, p99 41k, median 9.5k), which on
+     *  a plain min-max scale squeezes almost every real choice into the bottom tenth. At p95 an
+     *  electric heat pump (12k) sits at ~0.4 and a heat pump with a new distribution system mid-scale;
+     *  options above the percentile (deep renovations) score as the most expensive (normalised 1). */
+    public static final double INVEST_NORM_PCT = p("investNormPct", 95);
+    static {
+        if (PBC_SPLIT && WEIGHT_RUNNING_TO_PBC < 0)
+            throw new IllegalStateException("split PBC: wInvestToPbc is set but wRunningToPbc is not");
+    }
 
     // Startup_agent.f_initializeMain()
     public static final double GUMBEL_SCALE_UTIL = p("gumbelScaleUtil", 0.02);
@@ -142,6 +164,13 @@ public final class Constants {
     public static final double NETWORK_SHARE_SIMILAR = p("networkShareSimilar", 0.8);
     /** Drop the fixed connection charges from the EAC (isolates the price-path change on its own). */
     public static final boolean FIXED_COSTS_OFF = p("fixedCostsOff", 0.0) != 0.0;
+    /** Counterfactual: drop EVERY gas and district-heating connection cost. The annual charges (gas
+     *  transport + vastrecht; DH vastrecht + metering + delivery-set rental, as fixedCostsOff), the
+     *  DH connection fee and with it the ISDE warmtenet subsidy (which pays toward that fee), and
+     *  the DH disconnection fee. Left in: the per-kWh energy prices, the investment in the
+     *  household's own equipment (boiler, heat pumps, distribution system, insulation) and the
+     *  heat-pump subsidies. The non-monetary DH exit barrier (dhExitBarrier) is not a cost and stays. */
+    public static final boolean CONNECTION_COSTS_OFF = p("connectionCostsOff", 0.0) != 0.0;
 
     // Techno-economic sensitivity multipliers (default 1.0 = data as-is).
     //   capexMultHp  scales the investment cost of the heat pumps (hybrid + electric)

@@ -28,9 +28,10 @@ STOCK = os.path.join(MODEL, "data", "stock")
 ENGINE_CP = os.environ.get("HT_ENGINE_CP", os.path.join(MODEL, "engine-java", "build", "classes", "java", "main"))
 SYSTEMS = ["NATURAL_GAS_BOILER", "NATURAL_GAS_BLOCK", "HYBRID_HEAT_PUMP", "ELECTRIC_HEAT_PUMP", "DISTRICT_HEATING"]
 
-# Energy price is ONE coupled factor (gas & electricity move together — power price is gas-linked at
-# the margin). t in [0,1] selects the arm of model/data/reference/energy_prices_by_year.csv:
-# 0 = low, 0.5 = central, 1 = high, linearly interpolated in between. The engine reads the whole
+# Energy price is ONE factor: the gas-electricity price ratio. t in [0,1] selects the arm of
+# model/data/reference/energy_prices_by_year.csv: 0 = gas low / electricity high, 0.5 = central,
+# 1 = gas high / electricity low (opposite corners of the KEV bandwidths, as in the price scenarios),
+# linearly interpolated in between. The engine reads the whole
 # path from that table, so there is nothing to map here beyond passing t through.
 #
 # This replaces the earlier pair of constant growth rates. A single CAGR escalated the energy tax and
@@ -129,7 +130,7 @@ FACTOR_LABEL = {
     "learningRateMult":  "Economic learning rate",
     "socialLearningMult": "Social learning strength",
     "gumbelScaleUtil":   "Choice randomness (utility)",
-    "gumbelScaleEac":    "Choice randomness (cost)",
+    "gumbelScaleEac":    "Randomness in perceived costs",
     "salienceThreshold": "Salience: novelty threshold",
     "salienceK":         "Salience: novelty steepness",
     "salienceSteepness": "Salience: momentum steepness",
@@ -146,6 +147,25 @@ FACTOR_LABEL = {
     "capexMultEhp":      "Electric heat-pump capital cost",
     "learningRateHhp":   "Hybrid heat-pump learning rate",
     "learningRateEhp":   "Electric heat-pump learning rate",
+}
+
+# The part of the decision function each factor enters, for the reader (paper figure colours).
+# 'structural' = not one term of the decision: when a decision happens or what it may choose.
+# gumbelScaleEac is the noise in the cost-only choice of landlords and housing blocks
+# (Simulation.chooseByEAC); dhExitBarrier is added to the investment of leaving a heat network
+# (Economics), so both act on costs.
+DECISION_PART = {
+    "attitudeAlpha": "attitude", "sustainabilityHhp": "attitude",
+    "socialLearningMult": "subjective norm", "networkSize": "subjective norm",
+    "networkShareSimilar": "subjective norm", "salienceThreshold": "subjective norm",
+    "salienceK": "subjective norm", "salienceSteepness": "subjective norm",
+    "capexMultHp": "costs (affordability)", "capexMultDh": "costs (affordability)",
+    "capexMultHhp": "costs (affordability)", "capexMultEhp": "costs (affordability)",
+    "learningRateMult": "costs (affordability)", "learningRateHhp": "costs (affordability)",
+    "learningRateEhp": "costs (affordability)", "energyPrice": "costs (affordability)",
+    "gumbelScaleEac": "costs (affordability)", "dhExitBarrier": "costs (affordability)",
+    "effortSwitchMult": "effort",
+    "opportunityFraction": "structural", "lifetimeJitterSd": "structural", "dhReviewYears": "structural",
 }
 
 def scope_tag(scope):

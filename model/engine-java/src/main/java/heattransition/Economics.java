@@ -18,6 +18,23 @@ public final class Economics {
     }
 
     public static long computeEAC(HeatingSystemSpec hs, Dwelling d, InsulationCost insulationCost) {
+        double[] c = costParts(hs, d, insulationCost);
+        double r = hs.discountRate;
+        double tco = 0;
+        for (int t = 0; t < hs.lifetime; t++) {
+            if (t == 0) tco += c[0];
+            tco += c[1] / Math.pow(1 + r, t);
+        }
+        double annuityFactor = (1 - Math.pow(1 + r, -hs.lifetime)) / r;
+        return Math.round(tco / annuityFactor);
+    }
+
+    /** The two parts the EAC is built from: {net upfront investment (investment minus subsidy, EUR
+     *  one-off), annual running cost (energy + maintenance + fixed connection charges, EUR/yr)}.
+     *  The EAC annuitises the first over the lifetime and adds the second. The split PBC
+     *  (Constants.PBC_SPLIT) scores the two separately. For district heating the investment is the
+     *  connection fee minus the ISDE warmtenet for a dwelling not yet connected, 0 for one that is. */
+    public static double[] costParts(HeatingSystemSpec hs, Dwelling d, InsulationCost insulationCost) {
         // District heating has no equipment of the household's own: the delivery set is rented and
         // the network belongs to the operator. So its one-off costs are the ACM connection fee for a
         // dwelling that newly connects (minus the subsidy), nothing for a dwelling that is already
@@ -29,11 +46,13 @@ public final class Economics {
         // (Subsidies, from data/reference/subsidies.csv; the spreadsheet's subsidy column is unused)
         double investment, subsidy = Subsidies.amount(hs.type, d.ownership);
         if (hs.type == HeatingSystem.DISTRICT_HEATING) {
-            if (onDH) { investment = 0; subsidy = 0; }
+            // connectionCostsOff: no connection fee, so no ISDE warmtenet toward it either
+            if (onDH || Constants.CONNECTION_COSTS_OFF) { investment = 0; subsidy = 0; }
             else investment = Constants.CAPEX_MULT_DH * DistrictHeatingCosts.connectionFee();
         } else {
             investment = investmentCostsSupply(hs, d.heatDemandKWh);
-            if (onDH) investment += DistrictHeatingCosts.disconnectionFee() + Constants.DH_EXIT_BARRIER;
+            if (onDH) investment += (Constants.CONNECTION_COSTS_OFF ? 0 : DistrictHeatingCosts.disconnectionFee())
+                    + Constants.DH_EXIT_BARRIER;
         }
         if (hs.requiresLowTemp && !d.hasLowTemp) investment += hs.distributionSystemCost;
 
@@ -57,13 +76,6 @@ public final class Economics {
             energyPerYear += hs.secondaryCostPerKWh * d.heatDemandKWh * hs.fractionSecondary / hs.efficiencySecondary;
         }
 
-        double r = hs.discountRate;
-        double tco = 0;
-        for (int t = 0; t < hs.lifetime; t++) {
-            if (t == 0) tco += investment - subsidy;
-            tco += (hs.maintenance + hs.fixedAnnualCost + energyPerYear) / Math.pow(1 + r, t);
-        }
-        double annuityFactor = (1 - Math.pow(1 + r, -hs.lifetime)) / r;
-        return Math.round(tco / annuityFactor);
+        return new double[]{ investment - subsidy, hs.maintenance + hs.fixedAnnualCost + energyPerYear };
     }
 }

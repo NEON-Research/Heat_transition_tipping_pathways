@@ -92,7 +92,19 @@ public final class Simulation {
     private final long[] diagN = new long[2];
     private final double[] diagAtt = new double[2], diagSn = new double[2],
                            diagPbc = new double[2], diagEacN = new double[2], diagSal = new double[2];
+    /** HT_DIAG + split PBC: the investment / running-cost values that set this year's windows. */
+    private final List<Long> diagInv = new ArrayList<>(), diagRun = new ArrayList<>();
     private void diagReport(int year) {
+        if (DIAG && Constants.PBC_SPLIT && !diagInv.isEmpty()) {
+            for (Object[] w : new Object[][]{{"invest", diagInv}, {"running", diagRun}}) {
+                @SuppressWarnings("unchecked") List<Long> v = (List<Long>) w[1];
+                java.util.Collections.sort(v);
+                System.out.printf("DIAGSPLIT %d %-7s n=%d min=%d p5=%d p50=%d p95=%d p99=%d max=%d%n", year, w[0], v.size(),
+                        v.get(0), v.get(v.size() * 5 / 100), v.get(v.size() / 2), v.get(v.size() * 95 / 100),
+                        v.get(v.size() * 99 / 100), v.get(v.size() - 1));
+                v.clear();
+            }
+        }
         if (!DIAG || diagN[0] == 0) return;
         HeatingSystem[] wt = { HeatingSystem.NATURAL_GAS_BOILER, HeatingSystem.HYBRID_HEAT_PUMP };
         for (int k = 0; k < 2; k++) {
@@ -299,7 +311,7 @@ public final class Simulation {
             // the electricity connection is common to all of them and so is not charged. The heat
             // connection costs the ACM fixed charge + metering + delivery-set rental.
             double fixed = 0;
-            if (!Constants.FIXED_COSTS_OFF) {
+            if (!Constants.FIXED_COSTS_OFF && !Constants.CONNECTION_COSTS_OFF) {
                 if (h.gasConnection)  fixed += EnergyPrices.gasFixed(year, t);
                 if (h.heatConnection) fixed += DistrictHeatingCosts.annualFixed();
             }
@@ -347,9 +359,30 @@ public final class Simulation {
     }
     /** ONE cost scale shared by all technologies and all dwellings in the year (see eacNorm below). */
     private double globalMinEAC = Double.POSITIVE_INFINITY, globalMaxEAC = Double.NEGATIVE_INFINITY;
+    /** Split PBC (Constants.PBC_SPLIT): the same global windows for the two parts of the EAC. */
+    private double globalMinRun = Double.POSITIVE_INFINITY, globalMaxRun = Double.NEGATIVE_INFINITY;
+    private double globalMinInv = Double.POSITIVE_INFINITY, globalMaxInv = Double.NEGATIVE_INFINITY;
+    /** Every possible option's investment this year (primitive buffer), for the percentile top of
+     *  the linear investment window (Constants.INVEST_NORM_PCT); capInv is computed once per year,
+     *  after pass 1 has filled the window and before the first homeowner is scored. */
+    private long[] invBuf = new long[1 << 16]; private int invN = 0; private double capInv = Double.NaN;
+    private double investCap() {
+        if (Double.isNaN(capInv)) {
+            if (Constants.INVEST_NORM_PCT >= 100 || invN == 0) capInv = globalMaxInv;
+            else {
+                long[] v = java.util.Arrays.copyOf(invBuf, invN);
+                java.util.Arrays.sort(v);
+                capInv = v[(int) Math.min(invN - 1, Math.floor(Constants.INVEST_NORM_PCT / 100.0 * invN))];
+            }
+        }
+        return capInv;
+    }
 
     private void resetMinMax() {
         globalMinEAC = Double.POSITIVE_INFINITY; globalMaxEAC = Double.NEGATIVE_INFINITY;
+        globalMinRun = Double.POSITIVE_INFINITY; globalMaxRun = Double.NEGATIVE_INFINITY;
+        globalMinInv = Double.POSITIVE_INFINITY; globalMaxInv = Double.NEGATIVE_INFINITY;
+        invN = 0; capInv = Double.NaN;
         for (HeatingSystem t : HeatingSystem.values()) { hs.get(t).minEAC = Double.POSITIVE_INFINITY; hs.get(t).maxEAC = Double.NEGATIVE_INFINITY; }
     }
     // J_Dwelling.f_getHeatingMethodPossibility -- ORDER MATTERS (early returns). Mirrors JS _possible.
@@ -380,11 +413,24 @@ public final class Simulation {
         if (t == HeatingSystem.NATURAL_GAS_BOILER && d.currentType == HeatingSystem.NATURAL_GAS_BLOCK) return false;
         return true;
     }
+    /** Per option: {EAC, possible (1/0), net upfront investment, annual running cost} (EUR, rounded). */
     private Map<HeatingSystem, long[]> eac(Dwelling d) {
         Map<HeatingSystem, long[]> out = new EnumMap<>(HeatingSystem.class);
         for (HeatingSystem t : HeatingSystem.values()) {
             long e = Economics.computeEAC(hs.get(t), d, this::insulationCost);
-            out.put(t, new long[]{ e, possible(t, d) ? 1 : 0 });
+            long inv = 0, run = 0;
+            if (Constants.PBC_SPLIT) {
+                double[] c = Economics.costParts(hs.get(t), d, this::insulationCost);
+                inv = Math.round(c[0]); run = Math.round(c[1]);
+                if (possible(t, d)) {
+                    if (diagActive) { diagInv.add(inv); diagRun.add(run); }
+                    globalMinInv = Math.min(globalMinInv, inv); globalMaxInv = Math.max(globalMaxInv, inv);
+                    if (invN == invBuf.length) invBuf = java.util.Arrays.copyOf(invBuf, invN * 2);
+                    invBuf[invN++] = inv;
+                    globalMinRun = Math.min(globalMinRun, run); globalMaxRun = Math.max(globalMaxRun, run);
+                }
+            }
+            out.put(t, new long[]{ e, possible(t, d) ? 1 : 0, inv, run });
             if (e < hs.get(t).minEAC) hs.get(t).minEAC = e;      // per-type, retained for HT_DIAG only
             if (e > hs.get(t).maxEAC) hs.get(t).maxEAC = e;
             if (possible(t, d)) {                                  // global window over the options
@@ -432,7 +478,16 @@ public final class Simulation {
             // small and a large dwelling, and the expensive tail is compressed without clamping.
             double eacNorm = globalMaxEAC > globalMinEAC
                     ? Decision.normalizedLog(opts.get(t)[0], globalMinEAC, globalMaxEAC) : 0;
-            double pbc = Decision.pbc(eacNorm, eff);
+            double pbc;
+            if (Constants.PBC_SPLIT) {      // running cost on the EAC's log scale, investment linear
+                long[] o = opts.get(t);
+                double runNorm = globalMaxRun > globalMinRun
+                        ? Decision.normalizedLog(o[3], globalMinRun, globalMaxRun) : 0;
+                double cap = investCap();
+                double invNorm = cap > globalMinInv
+                        ? Math.min(1.0, Decision.normalizedValue(o[2], globalMinInv, cap)) : 0;
+                pbc = Decision.pbcSplit(runNorm, invNorm, eff);
+            } else pbc = Decision.pbc(eacNorm, eff);
             int peers = d.peerCounts.getOrDefault(t, 0);
             double sn = Decision.subjectiveNorm(peers, Math.max(1, d.network.size()), h.salienceFactor);
             if (diagActive && (t == HeatingSystem.NATURAL_GAS_BOILER || t == HeatingSystem.HYBRID_HEAT_PUMP)) {
@@ -448,6 +503,9 @@ public final class Simulation {
             r.hoAtt[o] += att; r.hoUtil[o] += pu; r.hoSn[o] += sn; r.hoPbc[o] += pbc; r.hoN[o]++;
             r.eacSum.get("PRIVATELY_OWNED")[o] += opts.get(t)[0]; r.eacN.get("PRIVATELY_OWNED")[o]++;
         }
+        lastTopUtility = null; double topUtil = Double.NEGATIVE_INFINITY;   // no RNG draw: probe only
+        for (Map.Entry<HeatingSystem, Double> e : util.entrySet())
+            if (e.getValue() > topUtil) { topUtil = e.getValue(); lastTopUtility = e.getKey(); }
         HeatingSystem best = null; double bestScore = Double.NEGATIVE_INFINITY;
         for (Map.Entry<HeatingSystem, Double> e : util.entrySet()) {
             double s = Decision.rumScore(e.getValue(), rng.gumbel());
@@ -563,6 +621,41 @@ public final class Simulation {
     // the full behavioural function, plus the annual cost premium accepted when they differ.
     // Off unless the variable is set; nothing else in the run changes.
     private static final String COSTPROBE = System.getenv("HT_COSTPROBE");
+    // HT_DECPROBE=<path.csv>: per year and decider group, every decision cross-tabulated as
+    // (cost-optimal option, highest-utility option, chosen option), weighted by households.
+    // Cost-optimal = cheapest possible option on EAC. Highest utility = the option with the highest
+    // modelled utility before the random term (homeowners); landlords and housing blocks choose on
+    // EAC, so for them it is the cost-optimal option. `installed` = 1 when the decision led to an
+    // installation (end of life, or a switch), 0 when the household kept its system (an owner-occupier
+    // past 75 % of the lifetime who stays, a DH dwelling that stays connected). Off unless set.
+    private static final String DECPROBE = System.getenv("HT_DECPROBE");
+    private boolean decProbeHeader = false;
+    private java.util.Map<String, long[]> decCount;
+    /** Highest-utility option of the last chooseByUtility call (before the Gumbel term). */
+    private HeatingSystem lastTopUtility;
+    private void decRecord(String decider, HeatingSystem cost, HeatingSystem top, HeatingSystem chosen,
+                           boolean installed, long n) {
+        if (decCount == null || cost == null || chosen == null) return;
+        decCount.computeIfAbsent(decider + "|" + cost + "|" + top + "|" + chosen + "|" + (installed ? 1 : 0),
+                k -> new long[1])[0] += n;
+    }
+    private void writeDecProbe(int year) {
+        if (DECPROBE == null || decCount == null) return;
+        try (java.io.PrintWriter w = new java.io.PrintWriter(new java.io.FileWriter(DECPROBE, true))) {
+            if (!decProbeHeader) {
+                if (new java.io.File(DECPROBE).length() == 0)
+                    w.println("year,scenario,decider,cost_optimal,top_utility,chosen,installed,households");
+                decProbeHeader = true;
+            }
+            for (java.util.Map.Entry<String, long[]> e : decCount.entrySet()) {
+                String[] k = e.getKey().split("\\|");
+                w.printf(java.util.Locale.ROOT, "%d,%s,%s,%s,%s,%s,%s,%d%n", year, scen.scenName,
+                        k[0], k[1], k[2], k[3], k[4], e.getValue()[0]);
+            }
+        } catch (java.io.IOException ex) {
+            System.err.println("[decprobe] " + ex.getMessage());
+        }
+    }
     private boolean costProbeHeader = false;
 
     /** Cheapest POSSIBLE option on EAC alone (no random-utility term, no behavioural weights). */
@@ -690,6 +783,7 @@ public final class Simulation {
         if (shaPolicy) for (Neighbourhood nb : neighbourhoods) if (nb.hasDH && !gridBefore.contains(nb.buurt)) gridNew.add(nb.buurt);
 
         YearRow r = new YearRow(year);
+        decCount = DECPROBE != null ? new java.util.LinkedHashMap<>() : null;
 
         // HT_BLOCK probe: per-year, per-block-type counts of what triggered blocks CHOOSE, plus how
         // often the Gumbel pick differs from the deterministic cheapest (mirrors AL's
@@ -772,6 +866,13 @@ public final class Simulation {
                 double[] ea = blkEac.get(bt); ea[0] += gEac; ea[1] += hEac;
                 if (hEac < gEac) st[3]++;
             }
+            if (decCount != null) {
+                HeatingSystem top = null; double best = Double.POSITIVE_INFINITY;
+                for (HeatingSystem t : HeatingSystem.values())
+                    if (eacByType.get(t)[1] == 1 && eacByType.get(t)[0] < best) { best = eacByType.get(t)[0]; top = t; }
+                decRecord(eacOwnKey, top, top, chosen == null ? b.currentType : chosen,
+                        chosen != null && !(dhReview && chosen == HeatingSystem.DISTRICT_HEATING), nh);
+            }
             if (dhReview && chosen == HeatingSystem.DISTRICT_HEATING) chosen = null;   // stays connected
             if (TRIG) {
                 int nh0 = b.households.size();
@@ -805,6 +906,11 @@ public final class Simulation {
             for (HeatingSystem t : HeatingSystem.values()) if (e.get(t)[1] != 0) {
                 r.eacSum.get("PRIVATELY_RENTED")[t.ordinal()] += e.get(t)[0]; r.eacN.get("PRIVATELY_RENTED")[t.ordinal()]++; }
             HeatingSystem chosen = chooseByEAC(eacByType);
+            if (decCount != null) {
+                HeatingSystem cheap = cheapestPossible(e);
+                decRecord("PRIVATELY_RENTED", cheap, cheap, chosen == null ? d.currentType : chosen,
+                        chosen != null && !(dhReview && chosen == HeatingSystem.DISTRICT_HEATING), 1);
+            }
             if (dhReview && chosen == HeatingSystem.DISTRICT_HEATING) chosen = null;   // stays connected
             if (TRIG) {
                 trig(year, dhReview ? 8 : 6, 1);
@@ -852,6 +958,8 @@ public final class Simulation {
                 if (chosen != null && chosen != d.currentType) trig(year, base + 1, 1);
             }
             if (chosen == null) continue;
+            if (decCount != null) decRecord("PRIVATELY_OWNED", cheapestPossible(opts), lastTopUtility, chosen,
+                    eol || chosen != d.currentType, 1);
             if (COSTPROBE != null) {
                 HeatingSystem cheap = cheapestPossible(opts);
                 if (cheap != null) {
@@ -889,6 +997,7 @@ public final class Simulation {
         }
 
         if (COSTPROBE != null) writeCostProbe(year, cpCount, cpPrem);
+        writeDecProbe(year);
 
         updateGrid(year);      // DSO reacts to this year's adoption before the next year's decisions
         updateSalience();

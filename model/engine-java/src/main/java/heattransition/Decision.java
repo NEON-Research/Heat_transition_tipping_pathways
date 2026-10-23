@@ -37,6 +37,16 @@ public final class Decision {
         return pbc(eacNorm, effortVal, Constants.WEIGHT_AFFORDABILITY_TO_PBC, Constants.WEIGHT_EFFORT_TO_PBC);
     }
 
+    /** Split PBC = weighted mean of (1-runNorm), (1-investNorm) and (1-effort); see Constants.PBC_SPLIT. */
+    public static double pbcSplit(double runNorm, double investNorm, double effortVal,
+                                  double wRun, double wInv, double wEffort) {
+        return ((1 - runNorm) * wRun + (1 - investNorm) * wInv + (1 - effortVal) * wEffort) / (wRun + wInv + wEffort);
+    }
+    public static double pbcSplit(double runNorm, double investNorm, double effortVal) {
+        return pbcSplit(runNorm, investNorm, effortVal, Constants.WEIGHT_RUNNING_TO_PBC,
+                Constants.WEIGHT_INVEST_TO_PBC, Constants.WEIGHT_EFFORT_TO_PBC);
+    }
+
     /** subjectiveNorm = min(1, peerShare * (1 + salience)) */
     public static double subjectiveNorm(int peerCount, int networkSize, double salience) {
         return Math.min(1.0, ((double) peerCount / networkSize) * (1 + salience));

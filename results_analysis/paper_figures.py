@@ -97,12 +97,13 @@ def main():
               f"first; skipping the parameter-sensitivity figure")
         print("wrote:"); [print("  ", f) for f in _written]; return
     _meantot={f_:np.mean([mor[v]["total"][f_] for v in mor]) for f_ in next(iter(mor.values()))["total"]}
-    # two blocks: factors that also act in the calibration window (upper bound, weights not refitted)
-    # first, then the 'clean' ones; each sorted by the plotted mean
-    from structural_sensitivity import IN_WINDOW
-    _win=sorted([f_ for f_ in _meantot if f_ in IN_WINDOW],key=lambda f_:-_meantot[f_])
-    _cln=sorted([f_ for f_ in _meantot if f_ not in IN_WINDOW],key=lambda f_:-_meantot[f_])
-    factors=_win+_cln
+    # one ranking of all factors by the plotted mean; colour shows the part of the decision
+    # function each factor enters (structural_sensitivity.DECISION_PART)
+    from structural_sensitivity import DECISION_PART
+    PART_COLOR={"attitude":"#009E73","subjective norm":"#0072B2","costs (affordability)":"#D55E00",
+                "effort":"#CC79A7","structural":"#666666"}
+    factors=sorted(_meantot,key=lambda f_:-_meantot[f_])
+    part=[DECISION_PART.get(f_,"structural") for f_ in factors]
     short={"NATURAL_GAS_BOILER":"gas","HYBRID_HEAT_PUMP":"hybrid","ELECTRIC_HEAT_PUMP":"electric","DISTRICT_HEATING":"dh"}
     M=np.array([[np.mean([mor[v]["mu_star"][f][te] for v in mor]) for te in TECHS] for f in factors])
     fig,(ax,axb)=plt.subplots(1,2,figsize=(11,5),gridspec_kw={"width_ratios":[3,1]})
@@ -112,27 +113,34 @@ def main():
     ax.set_xticks(range(4)); ax.set_xticklabels([short[te] for te in TECHS])
     ax.set_yticks(range(len(factors)))
     ax.set_yticklabels([FACTOR_LABEL.get(f_,f_) for f_ in factors],fontsize=9)
+    # a narrow colour strip between the labels and the heatmap marks the part of the decision
+    # function (text stays black for readability)
+    from matplotlib.patches import Rectangle
+    for i,p_ in enumerate(part):
+        ax.add_patch(Rectangle((-0.66,i-0.5),0.1,1,color=PART_COLOR[p_],clip_on=False,linewidth=0))
+    # left-aligned labels: pad = longest label + room for the strip, so no label runs onto it
+    fig.canvas.draw(); _r=fig.canvas.get_renderer()
+    _w=max(l_.get_window_extent(_r).width for l_ in ax.get_yticklabels())*72/fig.dpi
+    ax.tick_params(axis="y",length=0,pad=_w+16)
+    for l_ in ax.get_yticklabels(): l_.set_horizontalalignment("left")
     _hi=M.max() or 1.0
     for i in range(len(factors)):
         for j in range(4):
             ax.text(j,i,f"{M[i,j]:.1f}",ha="center",va="center",fontsize=8,
                     color=("white" if M[i,j] > 0.6*_hi else "#1a1a1a"))
     ax.set_title("Mean absolute elementary effect $\\mu^*$ per technology",fontsize=11)
-    fig.colorbar(im,ax=ax,shrink=.8,label="$\\mu^*$ (%pt per full-range move)")
+    fig.colorbar(im,ax=ax,shrink=.8,label="$\\mu^*$ (percentage points)")
     tot=[np.mean([mor[v]["total"][f] for v in mor]) for f in factors]
-    _w=[f in IN_WINDOW for f in factors]
-    axb.barh(range(len(factors)),tot,color=["#bbbbbb" if w else "#555" for w in _w],
-             hatch=None,edgecolor="#555",linewidth=0.6)
-    for i,w in enumerate(_w):
-        if w: axb.patches[i].set_hatch("///")
+    axb.barh(range(len(factors)),tot,color=[PART_COLOR[p_] for p_ in part],linewidth=0)
     axb.set_yticks([]); axb.invert_yaxis()
     axb.set_title("summed over technologies",fontsize=10); axb.grid(alpha=.3,axis="x")
-    if _win and _cln:                                 # divider + block labels
-        for a_ in (ax,axb): a_.axhline(len(_win)-0.5,color="#222",lw=1.2)
-        axb.text(1.02,(len(_win)-1)/2,"acts in calibration\nwindow: upper bound",transform=axb.get_yaxis_transform(),
-                 va="center",fontsize=8,rotation=90)
-        axb.text(1.02,len(_win)+(len(_cln)-1)/2,"not constrained\nby the window",transform=axb.get_yaxis_transform(),
-                 va="center",fontsize=8,rotation=90)
+    axb.set_axisbelow(True)
+    for sp in ("top","right"): axb.spines[sp].set_visible(False)
+    from matplotlib.patches import Patch
+    _parts=[p_ for p_ in PART_COLOR if p_ in part]
+    fig.legend(handles=[Patch(color=PART_COLOR[p_],label=p_) for p_ in _parts],
+               title="part of the decision function",loc="lower center",ncol=len(_parts),
+               frameon=False,fontsize=9,title_fontsize=9,bbox_to_anchor=(0.5,-0.06))
     f3=os.path.join(CALDIR,"fig_structural_morris.png"); fig.savefig(f3,dpi=130,bbox_inches="tight"); plt.close(fig)
 
     _written.append(f3)

@@ -115,6 +115,21 @@ WEIGHTS = {
 MIN_RESIDUAL = 0.10          # keep every implied share meaningfully positive
 FIXED = {}
 
+# SPLIT PBC (HT_PBC_SPLIT=1; engine Constants.PBC_SPLIT): the affordability term is replaced by the
+# annual running cost and the net upfront investment, so the PBC group has three members (running,
+# investment, effort = residual), sampled as a composition like the intention group. Every sample
+# also records the derived shareAffordability = running + investment (the total weight on cost), so
+# the scripts that place sets on the cost-attitude line (select_subsample, ensemble figures) keep
+# working unchanged. The engine weights then carry wRunningToPbc / wInvestToPbc, which switch the
+# engine to the split structure.
+PBC_SPLIT = bool(os.environ.get("HT_PBC_SPLIT"))
+if PBC_SPLIT:
+    del WEIGHTS["shareAffordability"]
+    WEIGHTS = {"shareAttitude": WEIGHTS["shareAttitude"], "shareSocialnorm": WEIGHTS["shareSocialnorm"],
+               "shareRunning": (0.25 / 0.7, 0.10, 0.80),   # pbc group; residual = shareEffort
+               "shareInvest":  (0.25 / 0.7, 0.10, 0.80),
+               "shareIntention": WEIGHTS["shareIntention"]}
+
 # Engine parameters calibrated JOINTLY with the weights: the ones the 2022-2024 window constrains
 # (see fit_screen.py). name -> (default, low, high), sampled LOG-uniformly (scale parameters).
 # gumbelScaleUtil = the scale lambda of the Gumbel term in the choice. In a logit choice only
@@ -154,9 +169,24 @@ def shares_to_weights(p):
         raise ValueError(f"infeasible intention group: attitude {a:.3f} + socialnorm {sn:.3f} "
                          f"exceeds {1.0 - MIN_RESIDUAL:.2f}")
     pbc = 1.0 - a - sn
-    aff = min(max(p["shareAffordability"], MIN_RESIDUAL), 1.0 - MIN_RESIDUAL)
     inten = min(max(p["shareIntention"], MIN_RESIDUAL), 1.0 - MIN_RESIDUAL)
     extra = {k: round(float(p[k]), 6) for k in EXTRA if k in p}   # jointly calibrated engine params
+    if PBC_SPLIT:
+        run, inv = p["shareRunning"], p["shareInvest"]
+        if run + inv > 1.0 - MIN_RESIDUAL + 1e-9:
+            raise ValueError(f"infeasible pbc group: running {run:.3f} + investment {inv:.3f} "
+                             f"exceeds {1.0 - MIN_RESIDUAL:.2f}")
+        return {**extra,
+            "wAttitudeToIntention": round(a, 6),
+            "wSocialnormToIntention": round(sn, 6),
+            "wPbcToIntention": round(pbc, 6),
+            "wRunningToPbc": round(run, 6),
+            "wInvestToPbc": round(inv, 6),
+            "wEffortToPbc": round(1.0 - run - inv, 6),
+            "wIntentionToBehavior": round(inten, 6),
+            "wPbcToBehavior": round(1.0 - inten, 6),
+        }
+    aff = min(max(p["shareAffordability"], MIN_RESIDUAL), 1.0 - MIN_RESIDUAL)
     return {**extra,
         "wAttitudeToIntention": round(a, 6),
         "wSocialnormToIntention": round(sn, 6),
@@ -558,7 +588,10 @@ def feasible(p):
     """Every group is a normalised weighted average, so a sampled set only means anything if each
     group sums to 1 with every member at or above MIN_RESIDUAL. The two-element groups satisfy
     that by construction; the three-element intention group needs the residual checked."""
-    return p["shareAttitude"] + p["shareSocialnorm"] <= 1.0 - MIN_RESIDUAL + 1e-9
+    ok = p["shareAttitude"] + p["shareSocialnorm"] <= 1.0 - MIN_RESIDUAL + 1e-9
+    if PBC_SPLIT:
+        ok &= p["shareRunning"] + p["shareInvest"] <= 1.0 - MIN_RESIDUAL + 1e-9
+    return ok
 
 
 def sample_lhs(rng, n):
@@ -570,10 +603,12 @@ def sample_lhs(rng, n):
     corners (0.10, 0.10, 0.80) are reachable, and nothing has to be rejected or rescaled.
     The two-element groups are sampled directly on [m, 1-m], where the partner follows.
     """
+    if PBC_SPLIT:
+        return sample_lhs_split(rng, n)
     m = MIN_RESIDUAL
     keys = list(WEIGHTS)
     extra = list(EXTRA)
-    dims = 4 + len(extra)                      # u1,u2 -> intention simplex; u3 -> pbc; u4 -> behaviour;
+    dims = 4 + len(extra)                    # u1,u2 -> intention simplex; u3 -> pbc; u4 -> behaviour;
                                                # then one per jointly calibrated engine parameter
     cut = (np.arange(n)[:, None] + rng.random((n, dims))) / n
     for j in range(dims):
@@ -593,6 +628,39 @@ def sample_lhs(rng, n):
         for j, k in enumerate(extra):          # log-uniform between low and high
             lo, hi = np.log(EXTRA[k][1]), np.log(EXTRA[k][2])
             p[k] = float(np.exp(lo + cut[i, 4 + j] * (hi - lo)))
+        assert feasible(p)
+        out.append(p)
+    return out
+
+
+def sample_lhs_split(rng, n):
+    """sample_lhs for the split PBC: both three-member groups (intention; running/investment/effort)
+    are points on a simplex, each mapped from two stratified uniforms by the sorted-gaps
+    construction floored at MIN_RESIDUAL; the behaviour group and the engine parameters as before."""
+    m = MIN_RESIDUAL
+    extra = list(EXTRA)
+    dims = 5 + len(extra)       # u1,u2 intention simplex; u3,u4 pbc simplex; u5 behaviour; then extras
+    cut = (np.arange(n)[:, None] + rng.random((n, dims))) / n
+    for j in range(dims):
+        rng.shuffle(cut[:, j])
+    span = 1.0 - 3.0 * m
+
+    def simplex(u, v):
+        u1, u2 = sorted((u, v))
+        return m + span * u1, m + span * (u2 - u1)
+
+    out = []
+    for i in range(n):
+        att, sn = simplex(cut[i, 0], cut[i, 1])
+        run, inv = simplex(cut[i, 2], cut[i, 3])
+        p = {"shareAttitude": att, "shareSocialnorm": sn,
+             "shareRunning": run, "shareInvest": inv,
+             "shareAffordability": run + inv,          # derived: total weight on cost (see PBC_SPLIT)
+             "shareIntention": WEIGHTS["shareIntention"][1] + cut[i, 4] *
+                 (WEIGHTS["shareIntention"][2] - WEIGHTS["shareIntention"][1])}
+        for j, k in enumerate(extra):
+            lo, hi = np.log(EXTRA[k][1]), np.log(EXTRA[k][2])
+            p[k] = float(np.exp(lo + cut[i, 5 + j] * (hi - lo)))
         assert feasible(p)
         out.append(p)
     return out
@@ -666,7 +734,7 @@ def do_search(a):
                    "tolerance": a.tolerance, "implaus_cut": a.implaus_cut,
                    "sd_mc": sd_mc, "sd_obs": {str(y): sd_obs[y] for y in ys}, "sd_disc": a.sd_disc,
                    "focus": list(FOCUS), "retention_sensitivity": table,
-                   "engine_fixed": CALIB_FIXED, "engine_calibrated": EXTRA,
+                   "engine_fixed": CALIB_FIXED, "engine_calibrated": EXTRA, "pbc_split": PBC_SPLIT,
                    "iterations": a.iterations, "seed": a.seed,
                    "default_mad": base, "default_mix": {str(y): base_mix[y] for y in ys},
                    "observed": {str(y): obs_by_year[y] for y in ys},
@@ -680,8 +748,7 @@ def do_search(a):
         return
 
     print(f"\nRetained ranges (effective shares):\n{'share':<22}{'min':>8}{'median':>9}{'max':>8}{'default':>9}")
-    for w in ("wAttitudeToIntention", "wSocialnormToIntention", "wPbcToIntention",
-              "wAffordabilityToPbc", "wEffortToPbc", "wIntentionToBehavior", "wPbcToBehavior"):
+    for w in [k for k in shares_to_weights({k: x[0] for k, x in WEIGHTS.items()}) if k not in EXTRA]:
         v = sorted(r["weights"][w] for r in keep)
         dflt = shares_to_weights({k: x[0] for k, x in WEIGHTS.items()})[w]
         print(f"{w:<22}{v[0]:>8.3f}{v[len(v)//2]:>9.3f}{v[-1]:>8.3f}{dflt:>9.3f}")

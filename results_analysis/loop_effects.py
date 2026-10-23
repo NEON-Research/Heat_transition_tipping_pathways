@@ -55,7 +55,7 @@ LEVERS = {
 }
 # Drawn top to bottom. Social first: it is the largest lever and the one the argument leads with,
 # and this matches the row order of fig_scenario_mix_loops_grid so the two figures read alike.
-ORDER = ["social", "economic", "price"]
+ORDER = ["social", "economic"]   # the two learning loops; "price" stays defined but is not drawn
 INK, MUTED = "#222222", "#666666"
 
 

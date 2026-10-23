@@ -51,11 +51,11 @@ SCEN_LABEL = {
     "social_learning_factor_high":               "Social learning HIGH",
     "economic_learning_factor_low":              "Economic learning LOW",
     "economic_learning_factor_high":             "Economic learning HIGH",
-    "econ_low_social_high":                      "Econ LOW + social HIGH",
-    "econ_high_social_low":                      "Econ HIGH + social LOW",
+    "econ_low_social_high":                      "Economic LOW + social HIGH",
+    "econ_high_social_low":                      "Economic HIGH + social LOW",
     # heat-network rollout
     "dh_connection_obligation":                  "Obligation, cost-based rollout",
-    "dh_policy_based_connection_obligation":     "Obligation, policy-based rollout",
+    "dh_policy_based_connection_obligation":     "Planned heat networks + obligation",
     # grid congestion
     "gas_low_elec_high":                         "Gas cheap, electricity dear",
     "gas_high_elec_low":                         "Gas dear, electricity cheap",
@@ -63,7 +63,7 @@ SCEN_LABEL = {
     "transition_slow":                           "All three levers, slow",
     "grid_congestion_HP_ban":                    "Congestion: HP ban",
     # coordination between collective actors
-    "policy_driven_dh_strategy":                 "Policy-driven DH strategy",
+    "policy_driven_dh_strategy":                 "Planned heat networks",
     "policy_driven_sha_strategy":                "Policy-driven SHA strategy",
     "actor_allignment_strategy":                 "Actor-alignment DH strategy",
     # investment subsidies
@@ -79,6 +79,9 @@ SCEN_LABEL = {
     "knockout_nosocial":                         "Social learning severed",
     "knockout_nosalience":                       "Salience amplifier frozen",
     "knockout_nocongest":                        "No grid congestion",
+    # cost counterfactuals: the baseline at every weight set with a -D flag, see BAND_EXTRA
+    "conn_costs_off":                            "No gas / DH connection costs",
+    "pbc_split":                                 "Split cost perception",
 }
 
 # Retired from the scenario matrix (Scenario.RETIRED) because each moved several switches at once
@@ -118,6 +121,17 @@ ENSEMBLE = ["baseline",
             "actor_allignment_strategy",
             "no_subsidy", "subsidy_phase_out",
             "dh_exit_allowed"]
+# Counterfactuals run as the BASELINE scenario at every weight set of the ensemble, into
+# results/<scope>/<folder>/<set name>/ (same set names as calib/). Their panel is an ensemble median
+# like the scenario matrix, so they compare directly with the baseline panel.
+#   conn_costs_off: -Dht.connectionCostsOff=1, every gas and DH connection cost removed
+#                   (results/nl_conn_costs_off_band.ps1)
+BAND_EXTRA = {"conn_costs_off": "conn_costs_off_band"}
+# Baselines of a DIFFERENT weight ensemble (another decision structure, calibrated on its own), so
+# not matched by set name: the panel is the median over every set in results/<scope>/<folder>/.
+#   pbc_split: owner-occupiers score running cost and upfront investment separately
+#              (HT_PBC_SPLIT, results/calib1000_pbcsplit, results/pbc_split_chain.ps1)
+BAND_OWN = {"pbc_split": "pbc_split_band"}
 PRICE    = ["price_low", "price_high"]
 KNOCKOUT = ["knockout_intact", "knockout_nolearn", "knockout_nosocial",
             "knockout_nosalience", "knockout_nocongest"]
@@ -160,12 +174,11 @@ VIEWS = {
                     "All three levers moved together: the slowest and fastest transition"),
     # Aligned extremes, available from the existing runs.
     # --- the three policy comparisons, one per results paragraph -----------------------------
-    # 1. Grid rollout. Under a connection obligation the mix is set by WHERE the network reaches,
-    #    not by how households learn: the four crossed learning combinations span 0.4 pp of DH
-    #    share, against ~20 pp between the two expansion rules.
-    "rollout": (["baseline", "dh_connection_obligation",
+    # 1. Grid rollout: building the planned heat networks is not enough by itself; households only
+    #    connect in large numbers under a connection obligation (same planned networks in both).
+    "rollout": (["baseline", "policy_driven_dh_strategy",
                  "dh_policy_based_connection_obligation"], 3,
-                "Heat-network rollout: a connection obligation under each expansion rule"),
+                "Heat-network rollout: planned networks without and with a connection obligation"),
     # 2. Grid congestion. The ban substitutes hybrids for electric heat pumps; it does not slow the
     #    exit from gas. The individual/collective variants are omitted deliberately -- their headline
     #    difference is the social-learning setting, which the loop figures already isolate.
@@ -185,6 +198,13 @@ VIEWS = {
     #    review every 5 years and leave on cost, to show what that assumption is worth.
     "dh_exit": (["baseline", "dh_exit_allowed"], 2,
                 "District heating: connected dwellings stay (reference) or may leave"),
+    # 6. Cost assumption: the baseline without any gas or district-heating connection cost
+    "connection_costs": (["baseline", "conn_costs_off"], 2,
+                         "Connection costs: baseline with and without the gas and heat-network charges"),
+    # 7. Decision structure: owner-occupiers' cost perception as one EAC term (baseline) or as
+    #    running cost and upfront investment scored separately, each recalibrated
+    "pbc_split": (["baseline", "pbc_split"], 2,
+                  "Cost perception: annualised cost (baseline) or running cost and investment separately"),
     # superseded by rollout / congestion / coordination_policy above, which take one lever at a
     # time; kept only so an archived cache can still be re-plotted.
     "policy_legacy": (["baseline", "dh_policy_based_connection_obligation",
@@ -211,7 +231,10 @@ GRID_VIEWS = {
          [None,
           "economic_learning_factor_low",  "economic_learning_factor_high"],
          [None,
-          "gas_low_elec_high",             "gas_high_elec_low"]],
+          "econ_low_social_high",          "econ_high_social_low"]],
+        # the two learning loops and their two crossed combinations (columns follow the economic
+        # arm); the gas-electricity price ratio is not a loop (it is varied in the sensitivity
+        # analysis and has its own scenarios)
         "Heating-system mix 2024\u20132050 under each lever, against the baseline pathway",
         "",
     ),
@@ -287,6 +310,37 @@ def extract(base, cache, search=None):
                 med = {te: float(np.median(d.get(te, [0.0]))) for te in TECHS}
                 tot = sum(med.values()) or 1.0        # medians do not sum to 100; renormalise
                 for te in TECHS: rows.append((s, y, te, 100.0 * med[te] / tot))
+    # baseline counterfactuals over the same weight sets (matched by set name)
+    for panel, folder in BAND_EXTRA.items():
+        ps = [os.path.join(base, folder, os.path.basename(os.path.dirname(p)), "simulation_results.csv")
+              for p in sets]
+        ps = [p for p in ps if os.path.exists(p)]
+        if not ps:
+            print(f"[grid] missing {folder} — panel {panel} skipped"); continue
+        if len(ps) < len(sets):
+            print(f"[grid] {panel}: {len(ps)} of {len(sets)} sets present — median provisional")
+        print(f"[grid] {panel}: {len(ps)} weight sets", flush=True)
+        pooled = defaultdict(lambda: defaultdict(list))
+        for p in ps:
+            for y, d in shares(p, want={"baseline"}).get("baseline", {}).items():
+                for te, v in d.items(): pooled[y][te].append(v)
+        for y, d in pooled.items():
+            med = {te: float(np.median(d.get(te, [0.0]))) for te in TECHS}
+            tot = sum(med.values()) or 1.0
+            for te in TECHS: rows.append((panel, y, te, 100.0 * med[te] / tot))
+    for panel, folder in BAND_OWN.items():
+        ps = sorted(glob.glob(os.path.join(base, folder, "set*", "simulation_results.csv")))
+        if not ps:
+            print(f"[grid] missing {folder} — panel {panel} skipped"); continue
+        print(f"[grid] {panel}: {len(ps)} weight sets (own ensemble)", flush=True)
+        pooled = defaultdict(lambda: defaultdict(list))
+        for p in ps:
+            for y, d in shares(p, want={"baseline"}).get("baseline", {}).items():
+                for te, v in d.items(): pooled[y][te].append(v)
+        for y, d in pooled.items():
+            med = {te: float(np.median(d.get(te, [0.0]))) for te in TECHS}
+            tot = sum(med.values()) or 1.0
+            for te in TECHS: rows.append((panel, y, te, 100.0 * med[te] / tot))
     for extra in PRICE + KNOCKOUT:
         p = os.path.join(base, extra, "simulation_results.csv")
         if not os.path.exists(p):
@@ -325,7 +379,8 @@ def load(cache):
     return data
 
 
-def draw(data, keys, nc, title, path, blocked=False, note=None, mark_single=True, grid=None):
+def draw(data, keys, nc, title, path, blocked=False, note=None, mark_single=True, grid=None,
+         ylabel="% of dwellings"):
     """One figure: `keys` laid out `nc` wide, or an explicit `grid` of rows (None = empty cell).
     blocked=True starts each design block on a new row."""
     if grid is not None:
@@ -371,7 +426,7 @@ def draw(data, keys, nc, title, path, blocked=False, note=None, mark_single=True
             # whole row without a scale. Label the leftmost VISIBLE cell of each row instead.
             first_vis = next((i for i, k in enumerate(grid[r]) if k is not None), 0)
             if c == first_vis:
-                ax.set_ylabel("% of dwellings", fontsize=9 if single else 8)
+                ax.set_ylabel(ylabel, fontsize=9 if single else 8)
                 ax.tick_params(labelleft=True)
             # sharex only labels the last ROW; with ragged grids that strands whole columns
             if r == nr - 1 or grid[r + 1][c] is None: ax.tick_params(labelbottom=True)

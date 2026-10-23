@@ -13,6 +13,15 @@
 \usepackage{url}
 \usepackage{hyperref}            % load last
 
+\usepackage{float}               % enables [H]: "exactly here"
+\usepackage[section]{placeins}   % figures never drift into the next section
+\renewcommand{\topfraction}{0.9}       % a figure may fill 90 % of the top of a page
+\renewcommand{\bottomfraction}{0.8}
+\renewcommand{\textfraction}{0.07}     % a page may have as little as 7 % text
+\renewcommand{\floatpagefraction}{0.8} % a page of only figures must be at least 80 % full
+\setcounter{topnumber}{3}
+\setcounter{totalnumber}{4}
+
 \graphicspath{{figures/}}        % so \includegraphics{fig1...} finds the PNGs
 
 % Convenience column type: left-aligned, ragged-right, fixed width
@@ -129,7 +138,7 @@ pathways and inherent uncertainty and complexity. While at the same time, the
 large-scale infrastructure investments require planning and alignment.
 
 The current heating regime in the Netherlands is based on individual natural gas
-boilers, which more than 82\% of households have. This is the most dominant
+boilers, which more than 82\,\% of households have. This is the most dominant
 residential heating regime in Europe. The United Kingdom and Italy are similarly
 gas-boiler dominated, while Eastern European and Scandinavian countries have much
 more district heating. Countries such as Greece, Ireland, and Portugal rely primarily
@@ -152,8 +161,8 @@ one solution, and with that disadvantaging another.
 
 In Dutch policies and transition scenarios these technological trade-offs are
 also apparent. The share of heat pumps in Dutch heat transition scenarios by grid
-operators varies from 60\% to 75\% of all dwellings, while the share of district
-heating varies from 10\% to 30\% \cite{netbeheernederlandHetEnergiesysteemVan2023}. However,
+operators varies from 60\,\% to 75\,\% of all dwellings, while the share of district
+heating varies from 10\,\% to 30\,\% \cite{netbeheernederlandHetEnergiesysteemVan2023}. However,
 municipal policy planning towards sustainable heating strategies shows a
 different perspective. For a third of all households, district heating is the
 preferred method, while heat pumps are just a quarter. For the remaining part
@@ -297,14 +306,16 @@ gas boilers.
 Learning has similar differences between these technologies. District heating
 systems have been deployed for over a century, making the current learning factor
 for traditional district heating systems low. Only if radical innovation towards
-new, small-scale, 5th generation district heating \citep{buffa5thGenerationDistrict2019,yaoStateoftheartAnalysisPerspectives2024} or towards `smart energy systems' \citep{lund4thGenerationDistrict2014} is achieved, or
+new, small-scale, 5th generation district heating 
+\citep{buffa5thGenerationDistrict2019,yaoStateoftheartAnalysisPerspectives2024} or towards 
+`smart energy systems' \citep{lund4thGenerationDistrict2014} is achieved, or
 with substantial subsidies or public investment, new techno-economic triggers and
 feedback loops are expected. On the other hand, (hybrid) heat pumps have seen a
 rapid increase in deployment in recent years. This has resulted in a rapid
 learning curve, where with a doubling in cumulative sales the price per unit dropped
 historically by 25--35\,\% \citep{weissLearningEnergyEfficiency2008,jakobChapter11Heating2020},
-while slower learning is expected ahead, with a 22\,\% decrease in investment costs between 2025
-and 2050 \citep{voltCETOHeatPumps2025}.
+while slower learning is expected ahead, with a 22\,\% decrease in investment costs between 
+2025 and 2050 \citep{voltCETOHeatPumps2025}.
 
 From a more theoretical perspective we can distinguish heat pumps as granular
 technologies, while district heating systems are `one-of-a-kind' systems. Where
@@ -361,6 +372,7 @@ or increasing returns, connecting a tipping trigger to an acceleration dynamic.
 
 %% ===========================================================================
 \section{Modelling transition dynamics}
+\label{method}
 %% ===========================================================================
 
 The transition dynamics described in the section above have been investigated in
@@ -517,17 +529,30 @@ initial costs and learning rate. As described in Section~\ref{sec:tipping}, the
 learning rate differs per technology. A more detailed description of the EAC and
 economic learning calculations can be found in Appendix~\ref{app:cost}.
 
-Two further elements shape the cost signal over time. First, equipment does not fail deterministically: each installed system's end-of-life age is drawn from a normal distribution around its nominal lifetime ($\pm 3$ years), so that replacements are spread out. Second, energy prices follow a year-by-year path in constant 2024 euros. Up to 2026 the gas and electricity retail prices are the observed consumer tariffs \citep{cbsEnergietarieven85592NED}, with the crisis years 2022--2024 held at the 2025 level, because the reported prices for new contracts were far above what most households paid. From there the commodity part moves linearly to its 2030 value in the Dutch national Climate and Energy Outlook \citep{pbl_kev_2025} and stays flat to 2050; the energy tax is held at its last observed level. Besides the central path, two arms take the opposite corners of the outlook's bandwidths for gas and electricity, so that they vary the ratio of the two prices that drives fuel switching. The district-heat price is the regulated maximum tariff \citep{acmTarievenWarmteKoude2025} and moves by the same percentage as the gas retail price, in line with the principle that district heat may not cost more than heating with gas.
+Two further elements shape the cost signal over time. First, equipment does not fail 
+deterministically: each installed system's end-of-life age is drawn from a normal distribution 
+around its nominal lifetime (standard deviation 1 year, limited to $\pm 3$ years), so that replacements are spread out. Second, 
+energy prices follow a year-by-year path in constant 2024 euros. Up to 2026 the gas and 
+electricity retail prices are the observed consumer tariffs 
+\citep{cbsEnergietarieven85592NED}, with the crisis years 2022--2024 held at the 2025 level, 
+because the reported prices for new contracts were far above what most households paid. From 
+there the commodity part moves linearly to its 2030 value in the Dutch national Climate and 
+Energy Outlook \citep{pbl_kev_2025} and stays flat to 2050; the energy tax is held at its last 
+observed level. Besides the central path, two arms take the opposite corners of the outlook's 
+bandwidths for gas and electricity, so that they vary the ratio of the two prices that drives 
+fuel switching. The district-heat price is the regulated maximum tariff 
+\citep{acmTarievenWarmteKoude2025} and moves by the same percentage as the gas retail price, 
+in line with the principle that district heat may not cost more than heating with gas.
 
 District heating is costed differently from the other options, because the network and the
 delivery set belong to the operator. A dwelling on district heating pays the regulated annual
 fixed charge, metering fee and delivery-set rental, and the variable heat price per kWh
 delivered \citep{acmTarievenWarmteKoude2025}. A dwelling that newly connects pays the one-off
 connection fee (minus the connection subsidy); a dwelling that is already connected pays no
-investment to stay; and a connected dwelling that leaves pays the permanent disconnection fee on
-top of the investment in its new system. For the same reason a district-heating connection has
-no end of life of its own: a connected dwelling or block reconsiders its heating every five years
-and leaves only when another option is preferred including the disconnection fee.
+investment to stay; and a connected dwelling that leaves pays the permanent disconnection fee 
+on top of the investment in its new system. For the same reason a district-heating connection 
+has no end of life of its own: a connected dwelling or block reconsiders its heating every 
+five years and leaves only when another option is preferred including the disconnection fee.
 
 Investment subsidies lower the up-front cost of heat pumps and heat-network connections. They
 follow the Dutch schemes year by year: for homeowners and owner associations the national
@@ -541,7 +566,7 @@ over 2022--2024, and the scenarios vary them (Appendix~\ref{app:scenario-input})
 
 \subsubsection{Homeowners (households)}
 
-Most dwellings in the Netherlands (57\%) are privately owned. This also means that investment-related decisions are made by the primary residents. All 4.6 million privately-owned dwellings are represented in the model as household agents, who make annual adoption decisions on heating methods. These households combine the technical characteristics of the dwelling with their social network, attitude, and financial preferences in an adoption function.
+Most dwellings in the Netherlands (57\,\%) are privately owned. This also means that investment-related decisions are made by the primary residents. All 4.6 million privately-owned dwellings are represented in the model as household agents, who make annual adoption decisions on heating methods. These households combine the technical characteristics of the dwelling with their social network, attitude, and financial preferences in an adoption function.
 
 \paragraph{Adoption function}
 Literature on household adoption models of sustainable heating methods is varied. The most used framework is the theory of planned behavior \citep{sophaAdoptionDiffusionHeating2013,okurAdoptionRenewableHeating2024,sophaExploringPolicyOptions2011}, however, many other models have a
@@ -614,26 +639,24 @@ exclude non-available options (e.g.\ no district heating if there is no heating
 grid in the neighborhood), and from the filtered set the option with the highest
 utility plus a random term is selected and adopted (Equation~\ref{eq:argmax}). The random term
 stands for everything the utility does not capture, so that a household does not always choose
-the option with the highest modelled utility.
+the option with the highest modeled utility.
 
 \begin{equation}\label{eq:intention}
   Intention_{hm} = \frac{Att_{hm,n}\cdot w_{Att}
     + SN_{hm,n}\cdot w_{SN}
-    + PBC_{hm,n}\cdot w_{PBC}}
-    {w_{Att} + w_{SN} + w_{PBC}}
+    + PBC_{hm,n}\cdot w_{PBC, int}}
+    {w_{Att} + w_{SN} + w_{PBC ,int}}
 \end{equation}
 
 \begin{equation}\label{eq:utility}
   Utility_{hm} = \frac{Intention_{hm,n}\cdot w_{intention}
-    + PBC_{hm,n}\cdot w_{PBC}}
-    {w_{intention} + w_{PBC}}
+    + PBC_{hm,n}\cdot w_{PBC, util}}
+    {w_{intention} + w_{PBC, util}}
 \end{equation}
 
 \begin{equation}\label{eq:argmax}
-  \text{Selected heating method} = \argmax_{hm \in HM} \left( Utility_{hm} + \lambda\,\varepsilon_{hm} \right)
+  \text{Selected heating method} = \argmax_{hm \in HM} U_{hm}
 \end{equation}
-where $\varepsilon_{hm}$ is an independent standard Gumbel draw per option and decision, and
-$\lambda$ its scale, so that the choice follows a multinomial logit in $Utility_{hm}/\lambda$.
 
 Note, this is a simplified adoption model. Many more elaborate approaches and
 different frameworks exist; however, in this study the focus is on evaluating
@@ -658,7 +681,7 @@ while also having some random connections throughout the population.
 \subsubsection{Social housing associations}
 
 Social housing associations can have a large impact on the optimal heating system
-in a neighborhood. As, depending on the neighborhood, they can own up to 90\% of
+in a neighborhood. As, depending on the neighborhood, they can own up to 90\,\% of
 the dwellings, their decision also has a large impact on individual homeowners.
 Furthermore, it enables district heating companies and grid operators to get into
 strategic decisions and plan on when to expand where. For example, neighborhoods
@@ -725,7 +748,7 @@ business case threshold (600 GJ/ha) and it will develop a heating grid. This is
 calculated by aggregating the heat demand of the dwellings for which district
 heating is the preferred heating method. In terms of tipping points, this
 resembles a threshold caused by increasing returns. The threshold represents about
-50--80\% of the dwellings in an area. Once the threshold is crossed and the
+50--80\,\% of the dwellings in an area. Once the threshold is crossed and the
 district heating system is built, it becomes possible for other households to
 connect to the system as well. Again, for modelling purposes this is a simplified
 approach to actual district heating expansion. In reality public acceptance,
@@ -748,47 +771,57 @@ adoption, and thus shape pathways. Alleviating this bottleneck can enable
 reinforcing learning feedback loops. Too slow action can result in investment
 decisions in district heating, and thus path dependency and lock-ins.
 
-
 \section{Analysis design}
 \label{sec:design}
 %% ===========================================================================
 The model is used to establish how the tipping mechanisms of
-Section~\ref{sec:tipping} influence transition pathways. Although these dynamics
-are well established in transition literature, data on them is scarce. 
+Section~\ref{sec:tipping} influence the transition pathways. Although these dynamics
+are well established in the transition literature, data on them is scarce. 
 This makes calibration and validation especially hard. Furthermore, calibrating to
 current data leads to an extrapolation of current trends, while we are interested 
 precisely in the deviations from those trends that non-linear dynamics produce.
-Therefore, we have setup an exploratory analysis design combining established components,
-based on analysis types as noted by \citet{leeComplexitiesAgentBasedModeling2015}.
-Starting with history matching to create an ensemble of plausible decision weights 
-\citep{beven_future_2006}. Then ranking the influence the uncertain parameters using 
-Morris elementary effects, and quantifying those using Latin-hypercube sampling. 
+Therefore, we have setup an exploratory analysis design in which we combine
+established components based on analysis types as noted by 
+\citet{leeComplexitiesAgentBasedModeling2015}.
 
-We use this ensemble and sensitivities in the scenario analysis, which is focussed 
-on examining tipping or non-linear dynamics. For every tipping mechanism, the 
-governing parameters are varied to bound its influence, its reinforcing loop is 
-disabled to establish causal necessity, and where a threshold is expected its driver 
-is swept continuously to locate it. Discrete policy measures enter as levers within 
-the mechanism on which they act. Also, we give in detail insights in how some of 
-these tipping dynamics can be triggered by specific agent groups. 
+We start by calibrating the weights in the decision-making algorithm using
+history matching per heating method using the limited historical data available 
+(2022-2024). From this we derive an ensemble of plausible decision weights, 
+this to reduce overfitting \citep{beven_future_2006}. 
+The resulting weight sets are then used in two types of exploration to identify
+non-linear behaviors. First, a general sensitivity analysis starts with ranking 
+the influence of uncertain parameters using elementary Morris effects. These
+effects are quantified using Latin-hypercube sampling. 
+Second, we build on the identified tipping dynamics in the heat transition in
+a scenario analysis. For every tipping mechanism, the 
+governing parameters are varied to bound its influence. Furthermore, discrete 
+policy measures enter as levers within the mechanism on which they act.
 
-The full design is summarized in the following five steps and 
-Figure~\ref{fig:method_flowchart}, each step is explained in more detail in this section.
+Lastly, to gain more insight into how these dynamics are triggered, the results are analyzed in 
+household segments. Every home-owner household is assigned an adopter category, and every 
+dwelling a technical segment. Adopter categories follow Rogers' diffusion framework
+\citep{rogersDiffusionInnovations2003a}, and dwelling segments cross archetype, floor area, 
+construction era, and insulation label, and are additionally crossed with type of ownership 
+and heat demand.
+
+The complete design is summarized in the following five steps, and 
+in Figure~\ref{fig:method_flowchart}, each step is explained in more detail in the results 
+section.
 
 \begin{enumerate}\itemsep2pt \parskip0pt
-  \item \textbf{Calibrate plausible decision weights.} A sample of candidate weight sets is
-        scored against historic data and the plausible ones retained as an ensemble,
+  \item \textbf{Calibrate plausible decision weights;} A sample of candidate weight sets is
+        scored against historic data, and the plausible ones are retained as an ensemble,
         using the Generalized Likelihood Uncertainty Estimation (GLUE) framework.
-  \item \textbf{Rank uncertain parameters.} Morris elementary effects establish which of
-        the process and techno-economic parameters most influence the 2050 mix.
+  \item \textbf{Rank the uncertain parameters;} the elementary Morris effects establish which of
+        the uncertain parameters most influence the mix of 2050.
   \item \textbf{Quantify key uncertain parameters;} Those that rank highest are sampled by
-        Latin-hypercube design, and their direction and magnitude are quantified using standardized
-        regression coefficients.
-  \item \textbf{Run  pathways and experiments.} The retained ensemble is
-        carried across the scenario matrix at national scale, with knock-out runs and driver
-        sweeps to isolate each mechanism.
-  \item \textbf{Report in separate household segments,} such as adopter and ownership segments, to show
-        which groups drive each dynamic.
+        Latin-hypercube design, and their direction and magnitude are quantified using 
+        standardized regression coefficients.
+  \item \textbf{Run pathways and experiments;} The retained ensemble is
+        carried across the scenario matrix at national scale focusing on feedback loops
+        and policy measures;
+  \item \textbf{Report in separate household segments;} such as adopter and ownership segments, 
+        to show which groups drive each dynamic.
 \end{enumerate}
 
 \begin{figure}[htbp]
@@ -801,368 +834,12 @@ Figure~\ref{fig:method_flowchart}, each step is explained in more detail in this
 \end{figure}
 
 %% ---------------------------------------------------------------------------
-\subsection{Dealing with uncertainty}
-\label{sec:uncertainty}
-We distinguish the standard categories, stochastic, parametric, and structural uncertainty. 
-\emph{Stochastic} variability arises from the model's random draws, which include: 
-household attitudes, network formation, heating method failure ages, and
-randomization in the adoption function. This stochastic variability is tested by calculating 
-the required number of replications per analysis (see Appendix~\ref{app:replication}). For the 
-calibration, morris and national scenario runs this is just one replication, for the LHS this is eight.
-So few replications are required because the stochastic variability occurs on individual household
-level, for which there are over 8 million in the national analysis, averaging out this uncertainty 
-within a single replication. Even though one is the minimum, the national scenarios are run with two
-replications.
-
-\emph{Structural} uncertainty concerns the form of the model itself: whether the
-theory of planned behavior is the right account of the adoption decision, or the S-curve the
-right description of social visibility. This uncertainty is not quantified, but addressed 
-through the model's grounding in the literature (Section~\ref{sec:model}) and its verification 
-(Section~\ref{sec:verification}).
-
-\emph{Parametric} uncertainty concerns the numerical assumptions of the model.
-Most parametric uncertainty occurs from process assumptions (e.g. salience factor),
-techno-economic assumptions (e.g. energy prices) and weights in the decision-making framework.
-Which of the two treatments a parameter receives depends on whether the observed 2022--2024
-adoption can constrain it \emph{together with} the decision weights. Parameters whose effect only
-appears once low-carbon systems become common, such as the salience of adoption, or which follow
-the future course of prices, do not act in the observation window: the fit is insensitive to them,
-so the calibrated weights remain valid when they are varied, and they are analyzed in the
-sensitivity analysis (Section~\ref{sec:sensitivity}). Parameters that do act in the window are a
-harder case. A screening of their effect on the calibration fit (Section~\ref{sec:sensitivity})
-shows that several of them change the simulated 2022--2024 shares by several percentage points
-at fixed weights. Most of them act on the same terms as the weights, however (the attitude
-distribution and the perceived sustainability of the hybrid on the attitude term, the effort of
-switching on the effort term), so when the weights are free they compensate, and calibrating the
-parameters jointly would widen the trade-offs between them rather than constrain them. Only the
-scale of the random term in the choice is calibrated with the weights, because it scales the
-whole utility rather than one term of it (Section~\ref{sec:calibrating}); the others are held at
-their defaults during the calibration and screened afterwards, where their influence is reported
-separately as an upper bound.
-
-%% ---------------------------------------------------------------------------
-\subsection{Calibrating to plausible decision weights}
-\label{sec:calibrating}
-Ideally, a model would be calibrated to the data that underlie these assumptions. However, the 
-only consistent data set on the adoption of heating methods in the Netherlands spans just three
-years (2022-2024). This short observation window cannot uniquely identify the decision weights:
-many combinations reproduce recent adoption equally well. Rather than forcing a best-fit and risking
-overfitting, we use history matching within the Generalized Likelihood Uncertainty Estimation
-(GLUE) framework \citep{beven_future_2006}. Each weight is bounded by a plausible range around the
-values reported by \citet{okurAdoptionRenewableHeating2024}. A Latin-hypercube sample of 1000 weight
-sets is drawn across this space and used as simulation input. Every set whose simulated 2023 and
-2024 heating mix is not implausible given the observations (defined below) is retained, the rest is
-discarded. To keep the sampling behaviorally interpretable, we vary normalized shares
-within each stage of the decision function rather than raw weights, which reduces the weights to
-four free parameters.
-
-The scale $\lambda$ of the random term in the choice (Equation~\ref{eq:argmax}) is calibrated together with the weights, as a fifth free parameter. In a random-utility choice
-only the ratio of the utility differences to the scale of the random term matters. Because the
-weights are normalized, their magnitude is fixed, and the scale is what sets how strongly
-households prefer the option with the highest utility over the others, and with that how many
-switch system in a given year: exactly what the observation window measures. Its effect is
-large because the terms of the utility pull in opposite directions (a low-carbon option scores
-higher on attitude, the incumbent on subjective norm and effort) and largely offset, so that the
-options of a household typically differ by a few hundredths in utility. It is
-sampled log-uniformly between 0.005 and 0.05 on the 0--1 utility scale, as a scale
-parameter, around the 0.02 used before, and each retained set carries its own value into the
-scenarios, including the subsample described below.
-The observations do not pin the scale down: every part of its range is retained (9--17\,\% of the
-sampled sets per range, with a mild preference for larger values), because the weights compensate
-for it, and the trade-off between the cost and attitude weights widens accordingly
-(Section~\ref{sec:res-ensemble}). Expressed as behavior, the retained sets have between 1 and
-15\,\% of the decisions in 2023--2024 fall on an option other than the one with the highest
-modelled utility; sets with more random choice do not reproduce the observations. The data thus
-cannot distinguish an almost deterministic choice from one with some randomness, so both are
-carried into the scenarios. The distinction matters for the pathway: across the retained sets,
-the scale explains a large part of the 2050 split between gas boilers and hybrid heat pumps that
-the weights leave unexplained (the explained variance of the 2050 gas share rises from 0.18 to
-0.67 when it is added), with more random choice leading to fewer gas boilers and more hybrids,
-while the electric heat pump and district heating are set by the weights. % TODO move these numbers to the results section if preferred
-The retained sets constitute a plausibility ensemble that is carried into 
-the scenario analysis, so that pathways are reported as a band across behaviorally plausible
-preferences rather than a single fitted line. The sensitivity analysis uses a small number of
-retained sets chosen to span the ensemble (described below). The ensemble is itself a result and
-is reported as such in Section~\ref{sec:res-ensemble}.
-
-Calibration is carried out on the province of Noord-Brabant over 2022--2024, the most recent
-window for which the Dutch statistics office reports a methodologically consistent
-per-neighborhood heating-mix series. The model is initialized from the observed 2022 mix and
-scored on the simulated 2023 and 2024 provincial shares of four technologies: natural gas
-boilers, hybrid and electric heat pumps, which move materially over the window, and district
-heating. Collective gas heating is not scored, as it is decided by housing blocks rather than by
-the calibrated weights. During calibration, dwellings on district heating stay connected: over
-2022--2024 housing associations kept their district-heating stock connected, often in agreement
-with municipalities, and the observed district-heating share is stable. Leaving a heat network is
-rare in practice: the network and the delivery set belong to the operator, and collective systems
-require a joint decision. Connected dwellings therefore stay connected in the scenarios too, with
-one exception: in the scenario \texttt{dh\_exit\_allowed} they reconsider their heating every five
-years and leave when another option wins on cost and utility, which shows what the assumption is
-worth.
-
-A weight set is judged by the implausibility of each scored output $k$ (technology and year),
-the standard measure in history matching \citep{vernonGalaxyFormationBayesian2010,
-andrianakisBayesianHistoryMatching2015}:
-\begin{equation}
-  I_k = \frac{\lvert s_k - o_k \rvert}{\sqrt{\sigma_{\mathrm{MC},k}^2 + \sigma_{\mathrm{obs},k}^2 + \sigma_{\mathrm{disc}}^2}},
-  \label{eq:implausibility}
-\end{equation}
-where $s_k$ is the simulated and $o_k$ the observed share in percentage points. The denominator
-collects the three reasons why a plausible weight set need not reproduce the observation exactly.
-$\sigma_{\mathrm{MC},k}$ is the stochastic variation of the model itself, measured as the
-standard deviation of $s_k$ over eight independent Monte-Carlo worlds at the default weights.
-$\sigma_{\mathrm{obs},k}$ is the uncertainty of the observation, derived from the data: the
-provincial share is a dwelling-weighted aggregate of neighborhood shares that CBS publishes as
-whole percentages, next to a share of dwellings whose heating type is unknown (about 2\,\%). We
-propagate both through the aggregate by Monte-Carlo simulation, drawing the rounding error
-independently per neighborhood and the allocation of the unknown share over the technologies
-once per replicate, because a classification issue affects all neighborhoods alike. This gives
-$\sigma_{\mathrm{obs},k} = 0.28$--$0.29$ percentage points for every scored technology and year,
-almost entirely from the unknown share. $\sigma_{\mathrm{disc}}$ is the model discrepancy: the
-allowance for the model being a simplified account of the heat transition. It cannot be
-estimated from the data and is set to 0.5 percentage points, about a tenth of the observed
-2022--2024 change in the natural-gas share. A set is retained when $\max_k I_k < 3$, the
-conventional cutoff that follows from the three-sigma rule for unimodal distributions
-\citep{pukelsheimThreeSigmaRule1994}; with the terms above, this admits a deviation of about
-1.7 percentage points on every scored output. Because $\sigma_{\mathrm{disc}}$ and the cutoff are
-judgements, Table~\ref{tab:retention_sensitivity} reports how many sets are retained when either
-is varied.
-
-\begin{table}[h]
-  \centering
-  \caption{Number of the 1000 sampled weight sets retained, by model-discrepancy allowance
-  $\sigma_{\mathrm{disc}}$ and implausibility cutoff. The central choice is in bold.}
-  \label{tab:retention_sensitivity}
-  \begin{tabular}{lrrr}
-    \toprule
-    $\sigma_{\mathrm{disc}}$ (pp) & $I < 2.5$ & $I < 3.0$ & $I < 3.5$ \\
-    \midrule
-    0.25 & 33 & 60 & 83 \\
-    0.50 & 87 & \textbf{124} & 157 \\
-    1.00 & 255 & 675 & 753 \\
-    \bottomrule
-  \end{tabular}
-\end{table}
-
-This calibration is done with two iterations per weight set. This is more than required, as the
-standard deviation between iterations (0.028 percentage points) is much smaller than the
-deviation the criterion admits (Appendix~\ref{app:replication}).
-
-Running every retained set through every scenario at national scale is not feasible, so the
-scenario analysis uses a subsample of 25 retained sets. Because the results are reported as the
-median and percentiles across the sets, the subsample is chosen so that these statistics are those
-of the full retained ensemble, the outcome of the calibration. To this end the baseline scenario is
-run for every retained set in Noord-Brabant, and the subsample is the combination of 25 sets whose
-5, 25, 50, 75 and 95\,\% percentiles of the share of each technology in 2030, 2040 and 2050 come
-closest to those of all retained sets (the smallest sum of squared differences, standardized by the
-spread over the retained sets, found by a local search with random restarts). The four sets of the
-Morris screening and the central set (below) are always included, and the chosen sets count
-equally. In Noord-Brabant the subsample reproduces the medians of the full ensemble within 1.1 and
-the 5 and 95\,\% percentiles within 1.3 percentage points in these years. In 2035 and 2045, which
-are not used in the selection, the medians agree within 0.7 percentage points and the percentiles
-within 1.3 points, except the upper end of the electric heat pump in 2045 (3.8 points). Selecting
-on outcomes is needed because the retained sets do not populate the weight space evenly: a
-selection that spreads the sets evenly over the effective weights covers the same range, but
-places relatively many sets in thinly populated parts of the ensemble, and in Noord-Brabant raised
-the median 2050 gas share by about 3.5 percentage points. Its percentiles would then describe the
-selection method rather than the calibrated ensemble, and would depend on which effective weights
-were chosen to spread over. History matching only establishes that a set is not ruled out by the
-observations, so the full ensemble is not a probability sample either: its density reflects the
-ranges from which the weights were drawn. The bands are therefore the spread across the plausible
-weight sets under that sampling, with the median as a descriptive centre, and not probability
-intervals.
-
-The sensitivity analysis (Section~\ref{sec:sensitivity}) takes its weight sets from the same
-subsample. The Morris screening is repeated at four sets, the minimum that spans the two ways the
-retained sets differ: the best-fitting set, the two ends of the cost--attitude line (the most
-cost-driven and the most attitude-driven retained set), and the set with the highest effective
-weight of the subjective norm. The influence of the cost and price parameters is expected to
-depend on the position on the line, and that of the salience parameters on the subjective norm,
-through which they act. The Latin-hypercube quantification is run at a single set, the central
-set: the retained set closest to the centre of the retained sets in the same standardized
-effective-weight space. Using an actual retained set rather than the median of each weight
-separately ensures that the combination is itself plausible, which the marginal medians do not
-guarantee given the trade-off of Equation~\ref{eq:ridge}. The experiments that are run at a
-single weight set, the energy-price arms and the feedback-loop knock-outs, use the same central
-set, so that all single-set results refer to one and the same point in the ensemble.
-
-%% ---------------------------------------------------------------------------
-\subsection{Sensitivity to process and techno-economic parameters}
-\label{sec:sensitivity}
-To rank the most relevant process and techno-economic assumptions made in the 
-model (step 2), the Morris elementary effect design 
-\citep{morris_factorial_1991, campolongoEffectiveScreeningDesign2007} was used. As the model 
-contains more uncertain assumptions than can be varied jointly, the Morris design is used to 
-rank these parameters and taking only the most relevant for a full sensitivity analysis. 
-Morris works by moving one factor at a time along a small number of random trajectories through 
-the parameter space. Each step changes a single factor and records the resulting change in the
-outcome, an elementary effect, and the mean absolute elementary effect, $\mu^{*}$, ranks the 
-factors by influence. The standard deviation of the elementary effects, $\sigma$, indicates 
-whether a factor acts on its own or only in combination with others. For this analysis the
-decision weights are held constant at each of the four screening sets described in
-Section~\ref{sec:calibrating}, and the elementary effects are compared on the full 2050
-technology mix.
-
-The highest-ranked parameters are then quantified by Latin-hypercube sampling 
-\citep{mckayComparisonThreeMethods1979} over those parameters alone (step 3), at the central
-screening set (Section~\ref{sec:calibrating}). In this we use
-standardised regression coefficients giving the direction and relative magnitude of each 
-effect, and the coefficient of determination indicating how much of the variation in each 
-technology's 2050 share they jointly explain \citep{saltelli_global_2008}. 
-
-The screened parameters include two that concern district heating: the interval at which a
-connected dwelling reviews its heating (1--10 years, default 5) and a non-monetary barrier to
-leaving the network (0--6\,500 EUR, default 0), which stands for contracts, collective networks
-and tenant consent that the cost model leaves out. The techno-economic ranges follow the sources
-of the cost data: the heat-pump capital cost is scaled between 0.8, a further fall of market prices by a
-fifth, and 1.3, about the midpoint of the \citet{cedelftUpdateKentallenInstallaties2023} range for
-the electric heat pump, and the learning rate between zero
-\citep{renaldiExperienceRatesLowcarbon2021} and 28\,\% per doubling
-\citep{weissLearningEnergyEfficiency2008}. Behavioral parameters outside the decision weights
-are screened as well: the perceived sustainability of the hybrid heat pump (2--4 on the 1--5
-scale, default 3), which sets its position between gas and the electric heat pump in the attitude
-term; the attitude distribution, Beta$(\alpha,2)$ with $\alpha$ from 3 to 7 (mean 0.60--0.78,
-default 5); the share of its lifetime after which a system triggers an opportunity decision
-(0.6--0.9, default 0.75); and the size (10--50, default 25) and homophily (0.5--0.95, default
-0.8) of the peer network.
-
-The weights are held at calibrated values during the screening, so for a parameter that also
-acts in the 2022--2024 observation window, part of its elementary effect reflects a model that no
-longer reproduces the observations rather than genuine uncertainty. Which parameters act in the
-window is established with a second Morris screening, run exactly as a calibration run (from the
-observed 2022 state to 2024) with the simulated 2023 and 2024 shares as outcome. A parameter is
-counted as acting in the window when it moves a scored share by at least 0.5 percentage points,
-the model-discrepancy allowance of Equation~\ref{eq:implausibility}. Salience, the peer network,
-the energy price path and the district-heating parameters do not (at most 0.4 percentage
-points), so their screening results are unaffected. The opportunity trigger, the attitude
-distribution and the perceived sustainability of the hybrid do (4.8--8.6 percentage points), as do
-the heat-pump capital cost, the economic learning rate and the social learning factor (1.2--6.1).
-They are not calibrated, because most act on the same terms as the weights
-(Section~\ref{sec:uncertainty}), and the last three are scenario levers with external ranges;
-their screening results are reported separately and read as an upper bound.
-The scale of the random term is calibrated instead (Section~\ref{sec:calibrating}) and not
-screened. The effort of switching to another system is not varied separately: it enters the
-decision only through its product with the calibrated effort weight, whose retained range already
-spans 0.10--0.88, so varying it at a fixed weight would count the same uncertainty twice. The same holds in part
-for the social learning factor, which scales the calibrated subjective-norm weight; it is
-nevertheless screened because it is also a scenario lever that represents how far an
-intervention could strengthen or weaken peer influence.
-
-Two special cases of parameters are treated separately. Three of the screened parameters govern
-the salience factor of the decision-making algorithm. This mechanism specifically affects the 
-peer-adoption share and, with that, the subjective norm. So in weight sets from the ensemble in
-which the subjective norm weight is low, these parameters may seem like they have little influence, 
-whereas they would have more influence in sets with a large weight for subjective norms. For this 
-reason, the analysis is repeated across the four screening sets, which include the set with the
-highest effective subjective-norm weight. Second, gas and electricity prices
-are treated as a coupled factor. The range of these are taken by extrapolating prices from the high 
-and low bounds in Dutch policy scenarios \citep{pbl_kev_2025}. These are coupled in high and low 
-combined gas and electricity prices, as in the current electricity system natural gas prices strongly 
-affect electricity prices. Similarly to the calibration set-up, the Morris analysis is run on the 
-province of Noord-Brabant because it requires several hundred additional model evaluations and 
-concerns parameter influence rather than national quantities.
-
-%% ---------------------------------------------------------------------------
-\subsection{Scenario pathways and mechanism experiments}
-\label{sec:mechdesign}
-The analysis is organized around the tipping mechanisms identified in
-Section~\ref{sec:tipping}. In a second stage, policy measures are introduced to investigate their
-effects on these mechanisms. Table~\ref{tab:scenarios} states the resulting
-setup: each row gives one mechanism's continuous parameters, its discrete levers, and the loop
-experiments run on it. 
-
-Two methods are used to identify tipping dynamics (step 4), ablation scenarios, and driver sweeps. 
-An \emph{ablation}, or knock-out, scenario tests what happens when one reinforcing loop is disabled
-while everything else is held identical, similar to an one-at-a-time (OAT) analysis {tenbroekeWhichSensitivityAnalysis2016}. 
-The difference between the intact and the knocked-out scenario is the causal contribution of that loop. 
-A \emph{driver sweep} varies a single driver continuously, so that the threshold at which the pathway 
-changes shape can be located. 
-
-The general exploration (row~0 of Table~\ref{tab:scenarios}) is run first and deliberately
-precedes the isolation of any single mechanism. It establishes which features of the pathway are
-robust across the full space of plausible weights and process and techno-economic assumptions,
-and which are not. Only outcomes that vary within that space are candidates for mechanism-level
-explanation; the mechanism sections that follow then attribute the variation to specific loops.
-
-Pathways are assessed as the share of dwellings per heating method over 2024--2050, with
-attention to the moments and rates of acceleration or deceleration that indicate a tipping point,
-and are reported as ensemble bands rather than single lines. Because the decision weights and the
-process and techno-economic parameters are separate kinds of uncertainty, results are reported separately: 
-the preference band, the parameter sensitivity, and the exogenous price and policy
-scenarios. Results are also reported per household segment to show which groups drive
-each dynamic. A policy-oriented synthesis of the levers across all mechanisms closes the results.
-
-\begin{table}[htbp]
-  \centering
-  \caption{Experimental design by tipping mechanism. Each row states the full design for one
-  mechanism: the continuous parameters varied, the discrete levers run as scenarios, and the loop
-  experiments used to establish causal necessity and to locate thresholds.}
-  \label{tab:scenarios}
-  \footnotesize
-  \setlength{\tabcolsep}{3pt}
-  \begin{tabular}{@{}p{0.4cm} L{2.1cm} L{3.1cm} L{3.3cm} L{3.3cm}@{}}
-    \toprule
-    \textbf{\#} & \textbf{Mechanism} & \textbf{Continuous parameters} &
-    \textbf{Discrete levers} & \textbf{Loop experiments}\\
-    \midrule
-    0 & \emph{General exploration} &
-      All four decision weights (retained ensemble); all structural parameters screened
-      jointly &
-      Baseline reference pathway &
-      ---\\
-    \addlinespace
-    1 & Economic learning and increasing returns &
-      Heat-pump learning rate; heat-pump capital cost; coupled gas and electricity price
-      path &
-      Economic learning factor (low/high); energy-price bracket (low/high) &
-      Knock-out: learning curve frozen at initial capital costs\\
-    \addlinespace
-    2 & Social learning and thresholds &
-      Salience threshold, novelty steepness and momentum steepness; choice
-      stochasticity &
-      Social learning factor (low/high) &
-      Knock-out: peer composition frozen; salience frozen (amplifier only). Sweep:
-      social-learning multiplier. Segmentation: household and dwelling segments\\
-    \addlinespace
-    3 & Rules, regulations and infrastructure &
-      Grid-reinforcement rate; district-heating construction time &
-      District-heating connection obligation; heat-pump ban under congestion;
-      policy- versus cost-based district-heating expansion; social-housing
-      strategy &
-      ---\\
-    \addlinespace
-    4 & Co-evolution and coordination &
-      --- &
-      Actor alignment (all collective actors follow policy plans); combined
-      individual- versus collective-technology scenarios &
-      ---\\
-    \bottomrule
-  \end{tabular}
-\end{table}
-
-\subsection{Household and dwelling segments}
-\label{segments}
-To gain more insight in how these dynamics are triggered, results are analyzed in household segments (step 5).
-\emph{Segmentation} attributes an aggregate outcome to a population: adoption is recorded per
-population segment per year, together with the decision terms of the option actually chosen, so
-that a segment's uptake can be attributed to attitude, subjective norm, or affordability.
-
-Every home-owner household is assigned an adopter category, and every dwelling a technical
-segment. Adopter categories follow Rogers' diffusion framework
-\citep{rogersDiffusionInnovations2003a}, assigned by percentile of an adoption-propensity index
-combining the household's sustainability attitude, the mean attitude of its peer network, and the
-technical readiness of its dwelling (weighted 0.5, 0.3 and 0.2 respectively), using the canonical
-shares (innovators 2.5\,\%, early adopters 13.5\,\%, early and late majority 34\,\% each,
-laggards 16\,\%). Dwelling segments cross archetype, floor area, construction era and insulation
-label, and are additionally crossed with type of ownership and heat demand.
-
-%% ---------------------------------------------------------------------------
 \subsection{Verification and validation}
 \label{sec:verification}
-The model is verified through unit tests on the decision functions. A consistency check for the start-year
- confirms that the initialized 2022 heating mix matches the observed mix, within 0.1
-percentage points per technology, before any dynamics are simulated. For transparency and
-reproducibility, the model is documented following the ODD protocol
+The model is verified through unit tests on the decision functions. 
+A consistency check for the start-year  confirms that the initialized 2022 heating mix matches 
+the observed mix, within 0.1 percentage points per technology, before any dynamics are simulated. 
+For transparency and reproducibility, the model is documented following the ODD protocol
 \citep{grimmODDProtocolReview2010} in the Appendix~\ref{app:model}.
 Consistent with its purpose, the model is treated as a tool to understand mechanisms and
 map plausible pathways rather than to predict them. Matching the observed 2022--2024 change
@@ -1171,359 +848,231 @@ projections, which are reported as ensemble bands and interpreted for the tippin
 reveal.
 
 
-%% ===========================================================================
-\section{Results}
-\label{sec:results}
-%% ===========================================================================
-The Netherlands is simulated over 2024--2050 for each of the 25 weight sets selected from the
-124 retained sets (Section~\ref{sec:calibrating}) across twenty scenarios, except for the
-sensitivity analysis which is done for the province of Noord-Brabant. Pathways are reported as
-ensemble bands rather than as single lines and scenario effects as the median across the
-ensemble.
+%% ---------------------------------------------------------------------------
+\section{Calibrating to plausible decision weights}
+\label{sec:calibrating}
+The created model contains many uncertain parameters, however, for calibration we are focusing
+just on the weights of the decision-making algorithm. This, as these weights are central
+to the adoption behavior, and thus feedback loops and non-linear behavior we are interested in.
+Also, because many of the other uncertain assumptions, such as future cost trends or attitudes 
+towards heating methods, are mitigated by the decision-making framework. In other words, 
+if the weight of costs in decision-making is low, so will the impact of uncertainty in costs.
+Including all these  parameters would essentially show trade-offs between correlated or connected
+assumptions, instead of bounding them by means of calibration.
 
-% Five findings organize what follows and are stated here before being substantiated.
+Ideally, a model would be calibrated to the data that underlie these assumptions. However, the 
+only consistent data set on the adoption of heating methods in the Netherlands spans just three
+years (2022-2024). This short observation window cannot uniquely identify the decision weights
+as many combinations reproduce recent adoption equally well. Rather than forcing a best-fit and 
+risking overfitting, we use history matching within the Generalized Likelihood Uncertainty 
+Estimation (GLUE) framework \citep{beven_future_2006}. Each weight is bounded by a plausible 
+range around the values reported by \citet{okurAdoptionRenewableHeating2024}. A Latin-hypercube 
+sample of 1000 weight sets is drawn across this space and used as simulation input and judged against the observations as described below.
 
-% \begin{enumerate}\itemsep2pt \parskip0pt
-%   \item \emph{In all scenarios and the decline of natural gas is strong} However, the substitution
-%         between electric heat pumps, hybrid heat pumps, and district heating strongly varies.
-% % Item on feedback loops required or clearly mention how the first results in feedback loops
-%   \item \emph{Economic learning is the only mechanism that can initiate a transition.}
-%         causally necessary, its parameters dominate the uncertainty analysis, and the price and
-%         capital-cost levers that act on it move the outcome beyond the entire preference band
-%         (Section~\ref{sec:res-economic}).
-%         % IS this still true?
-%   \item \emph{Social learning strengthens the status quo, prolonging natural gas dominance} 
-%         Because the incumbent holds the peer majority at the start of the simulation, amplifying
-%         social influence strengthens gas rather than accelerating its replacement
-%         (Section~\ref{sec:res-social}).
-%   \item \emph{A district-heating connection obligation is the strongest single lever, but it
-%         selects a route rather than accelerating decarbonisation.} Its effect falls
-%         predominantly on electrification, not on gas (Section~\ref{sec:res-rules}).
-%   \item \emph{Ownership is the binding structural divide.} Owner-occupied dwellings electrify;
-%         rented and social-housing dwellings take hybrids and retain almost all residual gas, and
-%         owner associations take heat networks, because all three minimise cost rather than weigh
-%         attitude
-%         (Sections~\ref{sec:res-social} and \ref{sec:res-coordination}).
-%         % See what I want to highlight here? next to ownership all subdivisions ar eimportant
-% \end{enumerate}
+Because each stage of the decision function is normalized by the sum of its weights, 
+only their ratios matter, and the weight space is fully covered by four free parameters (attitude 
+and subjective norm within intention, affordability within PBC, intention within behavior). The scale $\lambda$ of the random term in the choice (Equation~\ref{eq:argmax}) is calibrated
+together with the weights as a fifth parameter, because it sets how strongly households prefer
+the option with the highest utility and, with that, how many switch systems in a given year. It is sampled log-uniformly between 0.005 and 0.05.
+The retained sets constitute a plausibility ensemble that is carried into 
+the scenario analysis, so that pathways are reported as a band across behaviorally plausible 
+preferences rather than a single fitted line.
 
-\noindent Sections~\ref{sec:res-ensemble} and \ref{sec:res-general} report the general
-exploration, the calibrated ensemble and the space of pathways it spans, and
-Sections~\ref{sec:res-economic}--\ref{sec:res-coordination} attribute the variation within
-that space to individual mechanisms, in the order of influence established by the structural
-screen. Section~\ref{sec:res-synthesis} synthesizes the levers.
-
-The core conclusion shows that natural gas is displaced under every retained parameterisation,
-just the route is not determined. Across the scenario matrix, the ensemble gives a 
-consistent answer about the destination and an open one about the route. The natural-gas boiler 
-falls to between 9.1 and
-28.5\,\% of dwellings by 2050 (median 12.7\,\%). What replaces it is more uncertain,
-the hybrid heat pump spans 26.9--78.2\,\% (median 47.1), the electric heat pump 11.2--40.0\,\%
-(median 31.7) and district heating 1.6--21.0\,\% (median 9.7). The spread between these options
-is organised by affordability, the weight which could not be retained within small bounds.
-Ensemble with high weights for affordability heavily concentrate
-adoption to the cheaper hybrid heat pumps, while those weighting it less leave room for full
-electrification and district heating.
-
-% NOTE: the four band figures in this paragraph (9.1-28.5 etc.) are from the 21-set ensemble run.
-% Refresh from results/nl/ once the calib1000 pathway batch has finished.
-
-\begin{figure}[htbp]\centering
-  \includegraphics[width=0.62\linewidth]{figures/fig_ensemble_band_baseline.png}
-  \caption{Baseline composition of the national heating stock, 2024--2050, with the median, interquartile range and full ensemble band widths.}
-  \label{fig:mix_baseline}
-\end{figure}
+Calibration is carried out on the province of Noord-Brabant over 2022--2024, the most recent
+window for which the Dutch statistics office reports a methodologically consistent
+per-neighborhood heating-mix series. The model is initialized from the observed 2022 mix, and each
+weight set is scored on the simulated 2023 and 2024 shares of natural gas boilers, hybrid and
+electric heat pumps and district heating. Following the standard practice in history matching
+\citep{vernonGalaxyFormationBayesian2010}, as applied to agent-based models by
+\citet{mccullochCalibratingAgentBasedModels2022}, a set is retained unless one of these shares lies
+implausibly far from the observation defined as more than three times the combined uncertainty
+of the model's stochastic variation, the observation, and the model's simplification. This amounts
+to approximately 1.7 percentage points (~\ref{app:calibration}). This calibration is done with 
+two iterations per weight set, which is more than required. The standard deviation between 
+iterations (0.028 percentage points) is much smaller than the deviation that the criterion admits.
 
 \subsection{The calibrated weights set}
-\label{sec:res-ensemble}
-\label{sec:res-general}
+\label{sec:cal_weight_set}
 
-Matching the sampled weight sets to the observed 2022--2024 heating mix of Noord-Brabant
-retains 161 of the 1000 sets (Figure~\ref{fig:ensemble_fit}). A set is retained when none of its
-scored outputs (natural gas boilers, both heat pump types and district heating, in 2023 and 2024)
-is implausible, $\max_k I_k < 3$ (Equation~\ref{eq:implausibility}), which corresponds to a
-deviation of no more than about 1.7 percentage points from the observation. See
-Section~\ref{sec:calibrating} for how this threshold is determined and
-Table~\ref{tab:retention_sensitivity} for its sensitivity. The mean absolute deviation of the
-retained sets over both years and all scored technologies is 0.21--0.82 percentage points. The model
-at its default weights already lies within this range (0.55), with 7.6\,\% electric heat pumps in
-2024 against 8.2\,\% observed and 79.9\,\% gas boilers against 79.0\,\%. The retained sets are not
-separated from the rest by a gap: just above the cutoff the sample levels off at a worst deviation
-of about 2.4 percentage points, where the gas share in 2024 stays too high because homeowners
-switch too slowly. The number retained therefore depends on where the threshold is drawn, most of
-all through the discrepancy allowance (Table~\ref{tab:retention_sensitivity}).
+Matching of the sampled weight sets to the observed 2022--2024 heating mix of Noord-Brabant
+retains 124 of the 1000 sets (Figure~\ref{fig:ensemble_fit}), with a mean absolute deviation of
+0.22--0.86 percentage points, against a median of 1.27 in all sampled sets.
+
 
 \begin{figure}[htbp]\centering
   \includegraphics[width=0.75\linewidth]{figures/fig_ensemble_fit.png}
   \caption{Worst scored deviation from the observation of all 1000 sampled weight sets, ranked, with
-  the retained ensemble in colour.}
+  the retained ensemble in color.}
   \label{fig:ensemble_fit}
 \end{figure}
 
-Taken one at a time, the decision weights are hardly narrowed by the observations
-(Table~\ref{tab:ensemble}). Only the extremes are ruled out: very high subjective-norm weights
-(no set above 0.64) and, less sharply, low attitude weights. This does not mean the observations
-carry little information. Two thirds of the gas boilers removed in 2022--2024 are replaced by
-housing associations and landlords, who decide on cost alone, so the weights only govern the
-remaining third. Within that third, the observations constrain a combination of the weights
-rather than the weights themselves (Figure~\ref{fig:ensemble_structure}).
+
+The retained sets are a result themselves and thus can be analyzed. To start, Figure~\ref{fig:ensemble_fit} shows
+the deviation leveling-off at about 2.9 percentage points for around one-third of the sets. In nearly all of these sets the gas share stays too high as homeowners switch too slowly.
+
+Looking at the decision weights in more detail, they are hardly narrowed by the observations 
+when taking them one at a time (Table~\ref{tab:ensemble}). Only the extremes are ruled out with 
+very high subjective-norm (no set above 0.64) or attitude (no set above 0.72) weights. This does 
+not mean that the observations contain little information. The observations constrain 
+a combination of the weights rather than the weights themselves (see Figure~\ref{fig:ensemble_structure}).
 
 Because the decision function is a chain of normalized weighted averages, the effective weight of
 each driver in the final decision is a product of the sampled shares. The effective weight of cost
 is the affordability share times the total weight of perceived behavioral control, and the
-effective weight of attitude is the attitude share times the intention share. In the retained sets
-these two are strongly opposed (correlation $-0.95$, against $-0.33$ across all sampled sets): the
-retained sets lie along the line
-\begin{equation}
-  w_{\mathrm{cost}} \approx 0.79 - 2.0\, w_{\mathrm{att}},
-  \label{eq:ridge}
-\end{equation}
-with a residual spread of 0.07. Most of that spread is the noise scale of the choice
-(Section~\ref{sec:calibrating}): each value of the scale has its own, parallel line, which lies at a
-lower cost weight the more random the choice is, and among the retained sets with a scale between
-0.015 and 0.025 the spread around the line is 0.03. Lying close to the line is therefore necessary
-but not sufficient for retention: about half of the sampled sets within 0.06 of it are retained,
-against 2\,\% of those further than 0.10 away. While the retained range of each individual weight
-spans 81--95\,\% of its sampled range, the combination in Equation~\ref{eq:ridge} spans 27\,\%.
+effective weight of attitude is the attitude share times the intention share. 
+In the retained sets, these two are strongly opposed. The retained sets lie along the line 
+$w_{\mathrm{cost}} \approx 0.79 - 2.0\,w_{\mathrm{att}}$. The residual spread of 0.07 from this line 
+is in large part due to the noise scale of the choice.
+Although the retained range of each individual weight spans 82--98\,\% of its sampled range,
+the combination of cost and attitude weight along this line spans only 21\,\%.
 
-The interpretation is that the observation window fixes how strongly homeowners are pushed
-towards a new heating method in total, not where that push comes from. Cost and attitude substitute
-for each other: one unit of effective attitude weight does the same as about 2.0 units of effective
-cost weight, and too much of both produces too many heat pumps, too little of both too few. The
-subjective norm hardly contributes over this window, as the peer signal is weak while heat pumps
-are still rare, which is why it is only bounded from above. The retained ensemble therefore spans
-a range of behaviorally distinct households, from cost-driven to attitude-driven, that reproduce
-the same recent history. They are expected to respond differently to price and subsidy changes,
-which is what opens the pathway band in the scenario analysis. These sets are carried through to
-the scenario analysis.
+\begin{figure}[htbp]\centering
+  \includegraphics[width=0.7\linewidth]{figures/fig_ensemble_structure.png}
+  \caption{Effective weight of cost against effective weight of attitude in the final decision, for
+  all 1000 sampled weight sets. The retained sets in blue lie along the cost-attitude line.
+  The observations constrain the trade-off between the two weights rather
+  than either weight on its own. The line is a least-squares fit through the retained sets. 
+  The 25 sets used in the scenario analysis are displayed in orange.} 
+  \label{fig:ensemble_structure}
+\end{figure}
 
 \begin{table}[htbp]
   \centering
   \caption{Range of each decision weight in the retained ensemble against the range it was sampled
   from, as normalized shares within their stage of the decision function, and the same for the
-  combination that the observations constrain (Equation~\ref{eq:ridge}). The last column gives the
-  width of the retained range as a share of the sampled one (10th--90th percentile).}
+  combination that the observations constrain along the cost--attitude line. The last column gives
+  the width of the retained range as a share of the sampled range.}
   \label{tab:ensemble}
   \small
   \begin{tabular}{@{}lccc@{}}
     \toprule
     \textbf{Weight} & \textbf{Sampled} & \textbf{Retained} & \textbf{Retained width}\\
     \midrule
-    Attitude (of intention)        & 0.10--0.77 & 0.10--0.72 & 87\,\%\\
-    Subjective norm (of intention) & 0.10--0.76 & 0.10--0.64 & 81\,\%\\
-    Affordability (of PBC)         & 0.10--0.90 & 0.12--0.90 & 84\,\%\\
-    Intention (of behavior)        & 0.10--0.90 & 0.10--0.88 & 95\,\%\\
+    Attitude (of intention)        & 0.10--0.77 & 0.10--0.72 & 92\,\%\\
+    Subjective norm (of intention) & 0.10--0.76 & 0.10--0.64 & 82\,\%\\
+    Affordability (of PBC)         & 0.10--0.90 & 0.12--0.90 & 98\,\%\\
+    Intention (of behavior)        & 0.10--0.90 & 0.10--0.88 & 98\,\%\\
+    Noise scale $\lambda$ (log scale) & 0.005--0.050 & 0.005--0.049 & 97\,\%\\
     \midrule
-    $w_{\mathrm{cost}} + 2.0\,w_{\mathrm{att}}$ (effective) & & & 27\,\%\\
+    $w_{\mathrm{cost}} + 2.0\,w_{\mathrm{att}}$ (effective) & & & 21\,\%\\
     \bottomrule
   \end{tabular}
 \end{table}
 
-\begin{figure}[htbp]\centering
-  \includegraphics[width=0.7\linewidth]{figures/fig_ensemble_structure.png}
-  \caption{Effective weight of cost against effective weight of attitude in the final decision, for
-  all 1000 sampled weight sets. The retained sets (colour) lie along one line
-  (Equation~\ref{eq:ridge}): the observations constrain the trade-off between the two weights rather
-  than either weight on its own. The line is a least-squares fit through the retained sets; its width
-  comes mostly from the noise scale of the choice, which shifts the line. Ringed: the 25 sets used in
-  the scenario analysis (Section~\ref{sec:calibrating}).}
-  \label{fig:ensemble_structure}
-\end{figure}
- 
+The interpretation is that the observation window fixes how strongly homeowners are pushed
+towards a new heating method in total, not where that push comes from. Cost and attitude substitute
+for each other. One unit of attitude weight does the same as about two units of 
+cost weight, and too much of both produces too many heat pumps, too little of both, too few. The
+subjective norm hardly contributes to this window, as the peer signal is weak while heat pumps
+are still rare, which is why it is only bounded from above. The retained ensemble therefore spans
+a range of behaviorally distinct decision-making weight sets, from cost-driven to attitude-driven.
+They are expected to respond differently to price and subsidy changes,
+which is what opens the pathway band in the scenario analysis.
 
-\subsection{Feedback loops}
-\label{sec:res-economic}
+The observations do not pin the noise scale down. Expressed as behavior, in the retained sets between about 1 and
+16\,\% (median 5.5\,\%) of the homeowner decisions in 2023--2024 fall on an option other than the one with the
+highest modeled utility. To test whether this matters for the pathway, we simulated all 124
+retained sets for Noord-Brabant until 2050. The noise scale mainly affects hybrid
+heat pumps, where more random choices lead to more hybrid heat pumps. Possibly,
+hybrids are often the second choice closely behind natural gas boilers or 
+electric heat pumps, making them more sensitive as a switching or alternative
+technology.
 
-Building on the Morris screen we know the feedback loops in economic and social learning have the
-strongest effect on model results. This was tested by investigating scenarios with a half- and double-
-learning rates. Furthermore, the economic learning is tested in combination with the high and low
-bound in energy prices, as both connect to the affordability trigger in the decision-making process
-they will amplify each other (see Figure~\ref{fig:loop_scenarios}). The differences between loops
-are also visualized in Figure~\ref{fig:loop_divergence}, showing how far each mechanism diverges from
-the baseline scenario.
+\subsection{Selecting a subsample}
+\label{sec:subsample}
+Running all 124 retained sets through every scenario at national scale is not feasible, so the
+scenario analysis uses a subsample of 25 sets, chosen so that the median and the 5--95\,\% range of
+the baseline pathway in Noord-Brabant match those of all retained sets (~\ref{app:calibration}). 
+The resulting bands describe the spread across plausible weight sets, not probability intervals. 
+The sensitivity analysis also draws its sets from this
+subsample. Because the influence of a parameter can depend on the weights, for instance cost
+parameters matter more for cost-driven households, the Morris screening is repeated at four sets
+that span the ensemble: The best-fitting set, the most cost-driven and the most attitude-driven
+set, and the set with the strongest subjective norm. The Latin-hypercube sampling uses the
+best-fitting set, which also lies close to the center of the ensemble.
 
-Social learning is by far the strongest lever implemented, with [x]\% of remaining natural gas boilers
-in 2050 in the low scenario, and [x]\% in the high scenario, compared to a baseline value of [x]\%
-In terms of timing we see much slower adoption of both heat pump technologies in all cases, where electric
-heat pumps plateau in the late 2030s in the low scenario, they eventually reach a similar value at 2050.
-Hybrid heat pumps on the other hand don't increase nearly as rapid and also end up with a much smaller
-share in 2050. The effects here are most clearly driven by the dominant subjective norm of natural gas
-boilers, highlighting the inertia in technological adoption away from dominant technologies. The 
-smaller groups of environmentally minded households who do adopt are not large enough to break this
-larger trend by rapid learning within the implemented learning methods.
+%% ===========================================================================
+\section{Results}
+\label{sec:results}
+%% ===========================================================================
+The Netherlands is simulated over 2024--2050 for each of the 25 weight sets selected from the
+124 retained sets (Section~\ref{sec:subsample}) across twenty scenarios, except for the
+sensitivity analysis which is done for the province of Noord-Brabant. Pathways are reported as
+ensemble bands rather than as single lines and scenario effects as the median across the
+ensemble.
 
-Looking at just the social learning scenarios does not tell the full story, as social learning amplifies
-norms, once the natural gas norm is overtaken, it will amplify the new dominant technologies. So, although
-strong social learning in itself reduces overall transition speed, strong social learning when
-sustainable methods have reached a dominant position increases transition speed. This is one of the
-dynamics leading to the non-linear behavior in later stages of the transition.
-
-Economic learning, especially combined with higher energy prices , leads to non-linear behavior. Stronger
-economic learning mainly favors electric heat pumps, which are initially costly and have strong
-learning curves. The non-linear behavior is caused by differences in dwelling and adopter segments.
-Initial enthusiast adopt rapidly and kickstart this learning loop. The trend then somewhat slows down
-until after 2040 price levels start further favoring electricity (especially in scenarios with high
-gas prices). This behavior could also imply the more often suggested role of hybrids as a 'bridge'
-technology before full electrification. The favorable position of electric heat pumps in this scenario
-does not just substitute natural gas, they also start to eat into the position of hybrid heat pumps in
-the later stages of the simulation.
-
-Combined the two loops are asymetric, cost decline starts the transition, whereas social 
-influence only amplifies whichever technology is dominant.
-TODO: add combined scenarios
-
-None of the feedback loops in itself have a strong impact on district heating. This indicates DH grids
-will not take off without policy action, which is often acknowledge in current heating policy.
+Natural gas declines in every scenario and weight set, but how far it declines differs widely, and
+no scenario removes it fully by 2050. In the baseline (Figure~\ref{fig:baseline_band}), natural gas
+falls from 86\,\% of dwellings in 2024 to a median of 15\,\% in 2050 (5--95\,\% range 7--27\,\%).
+Electric heat pumps become dominant (median 57\,\%, 47--70\,\%), while hybrid heat pumps (16\,\%,
+7--26\,\%) and district heating (11\,\%, 7--19\,\%) take smaller shares. The spread comes mainly
+from the trade-off between the cost and attitude weights and from the noise scale
+(Section~\ref{sec:cal_weight_set}).
 
 \begin{figure}[htbp]\centering
-  \includegraphics[width=1\linewidth]{figures/fig_scenario_mix_loops_grid.png}
-  \caption{Heating mix pathways for feedback loop scenarios. Stronger social learing favours the status quo, and stronger economic learning enhances all-electric heat pumps. District heating without policy is not strongly affected by these feedback loops.}
-  \label{fig:loop_scenarios}
+  \includegraphics[width=\linewidth]{figures/fig_ensemble_band_baseline.png}
+  \caption{Number of dwellings per heating technology in the baseline scenario. The line is the median across the 25 weight sets, the dark band the 25--75\,\% range and the light band the 5--95\,\% range. Natural gas includes individual and collective gas boilers.}
+  \label{fig:baseline_with_bands}
 \end{figure}
 
-\begin{figure}[htbp]\centering
-  \includegraphics[width=1\linewidth]{figures/fig_loop_divergence.png}
-  \caption{Divergence of heating mix pathways for feedback loop scenarios compared to the baseline scenario with high bound in continuous line and low bound in dotted line.}
-  \label{fig:loop_divergence}
-\end{figure}
 
-\subsection{Loops per adopter and dwelling category}
-\label{sec:loops_per_cat}
-Diving deeper into what drives the transition we investigate if there are any specific dwelling segments 
-or ownership types who trigger these loops. See Figure~\ref{fig:segments_2050} for an overview of
-different segments and their 2050 heating mix in the baseline scenario.
+%% ---------------------------------------------------------------------------
+\subsection{Sensitivity analysis}
+\label{sec:sensitivity}
+Before diving deeper into the scenarios, we explore key sensitivities. These can
+be used to pinpoint relevant scenario exploring where non-linear behavior occurs,
+what triggers it, and how it is amplified.
 
-Ownership type of course shows a clear distinction in resulting heating mixes, which was expected 
-based on the differences in decision-making. The clearest distinction shows almost all resulting
-electric heat pumps are installed by home-owners. Where home-owners involve attitudes and norms, the
-other ownership types are cost based, opting for large shares of hybrid heat pumps and remaining 
-natural gas boilers, which are the least cost alternatives for most dwelling types. Especially 
-privately rented and social housing lag in the adoption of sustainable technologies. Note, although
-this does not adequately reflect current behaviour in which social housing associations are actively
-investing in sustainability measures, it does show a no-policy cost based type of behaviour. In reality
-social housing associations are bounded by rules and regulations regarding the sustainability of their
-dwelling stock, and also landlords have additional rules or incentives to invest in sustainable heating.
-The same holds for district heating, whereas owner-occupied and owner-association households
-maintain a fair share of district heating, especially in places with existing district heating grids,
-the cost-based investments of SHAs and landlords leads to the diminishment of district heating in
-these segments. Again, in reality often district heating companies and SHAs cooperate, these policies 
-are further explored in the next section.
+\subsubsection{Identifying relevant parameters using Morris elementary effects}
+\label{sec:morris}
+The senstivity analysis starts by ranking the most relevant assumptions made in
+the model. For this, the Morris elementary effect design 
+\citep{morris_factorial_1991, campolongoEffectiveScreeningDesign2007} is used. 
+The Morris design can be used to identify the most relevant parameters before 
+varying their assumptions jointly in a full  sensitivity analysis. 
 
-When we focus on owner-occupied adoption and distinguish households based on adopter category (see
-Figure~\ref{fig:segments_2050} panel b.), the effect of subjective norms and attitudes becomes clear.
-Among the innovators and early adopters electric heat pumps are extremely dominant, while they are
-completely absent in the laggards category. The early and late majorities show a clear split, highlighting
-middle-of-the-road consumers actively decide between multiple suitable solutions.
+Morris works by moving one factor at a time along a small number of random 
+trajectories through the parameter space. Each step changes a single factor and 
+records the resulting change in the outcome, an elementary effect. The mean 
+absolute elementary effect, $\mu^{*}$, ranks the factors according to influence. 
+The standard deviation of the elementary effects, $\sigma$, indicates whether a 
+factor acts on its own or only in combination with others. For this analysis, the 
+decision weights are kept constant in each of the four screening sets described in
+Section~\ref{sec:subsample}, and the elementary effects are compared to the full 
+2050 technology mix.
 
-Looking at energy demand and dwelling type, the trade-off between investment costs and energy costs
-is highlighted. These sections show a clear shift from hybrid heat pumps to district heating, where
-households with lower demands (also reflected in high-rise and apartment buildings) favor the lower 
-household investments related to district heating, households with higher demands favor hybrid heat 
-pumps. The share of electric heat pumps is less affected, although they are also slightly less common
-in low demand households.
+In the Morris screen, a wide range of assumptions is tested (see 
+Figure~\ref{fig:morris}). The assumptions are ranked on the sum of the absolute
+elementary effects, and per technology effects are displayed as well.
+Furthermore, the assumptions are colored based on which section of the decision-
+making framework they belong to, or if they are structural assumptions or only
+relevant to cost-optimizing agents who do not use the decision-making framework.
+The results depict the average effect over the four tested weights, which is
+important as the previously shown cost-attitude interdependency is again reflected.
+Uncertain parameters which influence costs are, of course, amplified in scenarios
+with high weights for costs, the same holds for attitudes and norms.
+Also, the results depict the effects over the chosen ranges; for assumptions such
+as learning rates, energy prices, and capital costs, these are based on uncertainty
+in sources. For many of the norm- and attitude related assumptions, these are
+modeling choices due to a lack of sources.
 
-TODO: Er lijkt nog wel iets mis te gaan bij de adoptie van warmtenetten voor SHA en voor HOA. Hoe die
-blokken beslissingne maken als geheel lijkt het patroon gek te versterken.
-
-\begin{figure}[htbp]\centering
-  \includegraphics[width=0.85\linewidth]{seg_clusters_context_2050.png}
-  \caption{2050 heating mix by ownership, archetype and heat-demand tier. Tenure separates the
-  segments far more sharply than dwelling characteristics: owner-occupied dwellings electrify, rented
-  and social-housing dwellings take hybrids and retain the residual gas.}
-  \label{fig:segments_2050}
-\end{figure}
-
-The adoption process is by no means finished in 2050. When taking the owner-occupied adoption clusters
-and plotting their adoption behavior in time (Figure~\ref{fig:segments}) especially electric heat-
-pumps adopt rapidly in the first decade and some plateauing afterwards. However, from 2045 on there is
-again a slight increase, which indicates further development and substitution from hybrid to all-electric
-heat pumps after 2050. These are the households who opted an hybrid heat pump in the first halve of the
-simulation, and after learning and insulation has occurred would chose differently at a next substitution.
+Based on the mean elementary effects, strong sensitivities occur for each section
+of the decision-making framework. The social learning rate is the strongest 
+assumption, especially in natural gas boilers, related
+to the strength of perceived norms that promote the current dominant technology.
+This effect and the cost sensitivities are explored in more detail in the
+scenario analysis, which focuses on these types of learning in feedback loops.
+Other key sensitivities include the attitude distribution and perceived attitude
+towards hybrid heat pumps. If hybrids are seen as a relevant middle-of-the-road
+technology, they are well adopted, if not, the all-electric variant is commonly 
+preferred. Other parameters, such as those describing how novelty is modeled based 
+on salience, network size, and such, are much less significant. Lastly, 
+district heating, in general, is not sensitive to any of the assumptions tested.
+It moves little and cannot be expected to be triggered by any rapid 
+changes in any of these.
 
 \begin{figure}[htbp]\centering
-  \includegraphics[width=\linewidth]{mech_segment_scurves.png}
-  \caption{Adoption by adopter category, per technology, as a share of each segment's own stock. The
-  hybrid and electric heat pumps follow opposite gradients---electric concentrating in the leading
-  segments, hybrid in the trailing ones---while district heating follows the hybrid gradient. A
-  combined heat-pump curve is nearly flat across segments because these gradients cancel.}
-  \label{fig:segments}
-\end{figure}
-
-\subsection{Rules, regulation and infrastructure}
-\label{sec:res-rules}
-The loops described in the previous section show strong potential to shape the transition. In this
-section we check if loops can be triggered or halted by rules and regulations, and investigate
-a broader context such as infrastructural constraints. 
-
-Starting with infrastructure, the first test is to check how adoption is influenced by grid 
-congestion.
-We test what happens if households would not be allowed to install an electric heat pump when a
-neighborhood reaches grid congestion, which in itself is a combination of grid capacity, 
-heat pump adoption, and ev adoption (see Figure~\ref{fig:scenario_congestion}. The ban 
-results in just a substitution from all-electric to hybrid heat pumps, having little effect
-on the speed of the transitition or share of natural gas boilers and district heating 
-connections. This makes sense based on the earlier analysis per segment, households who
-cannot adopt an electric heat pump shift to its closest alternative, not just in costs but also
-in attitude and norm, which are hybrid heat pumps.
-
-\begin{figure}[htbp]\centering
-  \includegraphics[width=\linewidth]{figures/fig_scenario_mix_congestion.png}
-  \caption{The congestion heat pump ban scenario next to the baseline scenario. A ban just
-  substitutes all-electric heat pumps for hybrid heat-pumps, having little effect on overall
-  speed or remaining number of gas boilers or district heating connections}
-  \label{fig:scenario_congestion}
-\end{figure}
-
-District heating, as we have seen throughout the analysis, is not much competitve outside
-areas which currently have district heating, and requires stronger regulations such as
-connection obligations in areas where district heating is build. These connection obligations
-take out similar shares of both hybrid and all-electric heat pumps (see 
-Figure~\ref{fig:scenario_district_heating_rollout}. Note, this obligation could of course
-also be another type of policy measure, in future research with this model we could for 
-example analyze which level of subsidies would be required to attain results in which district
-heating grids become economically viable.
-
-\begin{figure}[htbp]\centering
-  \includegraphics[width=\linewidth]{figures/fig_scenario_mix_rollout.png}
-  \caption{Policy scenarios}
-  \label{fig:scenario_district_heating_rollout}
-\end{figure}
-
-Lastly, we investigate how actors can cooperate towards envisioned scenarios.
-In this we combine the roll-out of district heating based on policy plans, with the 
-cooperation of SHAs who would connect their dwellings to these heating grids (see 
-Figure~\ref{fig:scenario_coordination}. Just adding policy-driven district heating makes
-little difference, and adding the social housing strategy does lead to higher adoption
-shares of these district heating grids, however, it is unsufficient to actually trigger
-any adoption outside of the SHA segment as well. 
-//NOTE: how could i expect this, as there is little econ learning in this and SHA inhabitants
-are not included in the social networks??
-
-\begin{figure}[htbp]\centering
-  \includegraphics[width=\linewidth]{figures/fig_scenario_mix_coordination_policy.png}
-  \caption{Actor alignment or coordination scenario}
-  \label{fig:scenario_coordination}
-\end{figure}
-
-\subsection{Sensitivity results}
-\label{sec:sens_results}
-Note to Floor and Lisanne, WIP: in the end both drivers are strong they are just taken into account differently in the sensitivity analysis. I will exclude costs later as I focus 
-on it already in the scenarios.
-
-Where attitude and subjective norms are key to match behavior with historic trends as we have
-explored in the calibration section, 
-costs are key to determining future pathways. In the Morris screen, performed on three weight
-sets that span the entire 27 weight set ensemble, energy prices rank first, and are strong
-across natural gas boilers and both heat pump types (Figure~\ref{fig:morris}). Choice randomness 
-ranks second and economic
-learning rate third. More interestingly, this differs strongly per technology. District
-Heat pump technologies are relatively sensitive to leaning rates, which makes
-sense as these both have stronger learning rates and require more cost reduction to become
-competitive. The factors related to the salience curve, in other words, how novelty and momentum are modeled, are not sensitive at all. 
-This analysis shows the importance of the multiple cost parameters, however, in the
-
-\begin{figure}[htbp]\centering
-  \includegraphics[width=0.9\linewidth]{figures/fig_structural_morris.png}
+  \includegraphics[width=1  \linewidth]{figures/fig_structural_morris.png}
   \caption{Sensitivity of the 2050 heating mix to the screened parameters (Morris $\mu^*$,
   Noord-Brabant, averaged over the four screening sets of the retained ensemble). Upper block:
   parameters that also act in the 2022--2024 calibration window, whose $\mu^*$ is an upper bound
@@ -1531,209 +1080,445 @@ This analysis shows the importance of the multiple cost parameters, however, in 
   \label{fig:morris}
 \end{figure}
 
+\subsubsection{Joint variations of key parameters}
+The highest-ranked parameters on the Morris screen are tested for interaction
+effects and joint variations. This is done by Latin-hypercube sampling 
+\citep{mckayComparisonThreeMethods1979} over these parameters alone, at the 
+best-fitting weight set (Section~\ref{sec:subsample}). In this we use
+standardized regression coefficients that give the direction and relative 
+magnitude of each effect, and the coefficient of determination that indicates how 
+much of the variation in each technology's 2050 share they jointly explain 
+\citep{saltelli_global_2008}. 
 
-TODO: I am thinking of still changing this section. In want to exclude the financial parameters
-from this analyses, fixing just on 'structural' parameters. The financial parameters
-can be included in the scenario analysis defining a high cost low learning vs a low cost 
-high learning scenario. This hopefully makes the structure easier to understand. 
-Therefor the figure now represented here is preliminary. 
-
-TODO2: Apart from removing cost related params from the senstivity, I also still want to update
-the bounds and assumptions on consumer natural gas and electricity prices from now untill 2050.
-
-Lastly in terms of sensitivity, the six highest-ranked parameters were varied jointly over an
-100-point LHS, this way also interaction effects and direction can be added to the analysis.
-Note to Floor and Lisanne: This is still indicative, most spread is caused by too wide range in
-cost parameters.
+Varying the six highest-ranked parameters jointly (80 combinations, eight 
+iterations each) spreads the 2050 share of hybrid heat pumps over 7.5--49\,\% and 
+that of electric heat pumps over 38--79\,\% (5--95\,\% range, 
+Figure~\ref{fig:lhs_uncertainty}). This is a first indication of potential
+tipping, highlighting strong dynamics if some of the parameters change.
+The split between the two heat pumps is set mainly by the perceived sustainability 
+of the hybrid, which across its range shifts about 40 percentage points from 
+electric to hybrid heat pumps, and by the attitude distribution. The gas share 
+depends on several parameters of similar size. Stronger
+social learning keeps more gas boilers in place, while greener attitudes, faster 
+learning and higher energy prices reduce them. 
 
 \begin{figure}[htbp]\centering
   \includegraphics[width=0.9\linewidth]{figures/fig_lhs_uncertainty.png}
-  \caption{Uncertainty per technology in resulting 2050 mix from the 100 sampled scenarios within the uncertainty range}
-  \label{fig:morris}
+  \caption{Spread of the 2050 heating mix in Noord-Brabant across 80 combinations 
+  of the six
+  highest-ranked parameters (Latin-hypercube sample, eight iterations each), at 
+  the best-fitting weight set. The graph shows the full range, 5--95\,\% and
+  25--75\,\% ranges, and median.}
+  \label{fig:lhs_uncertainty}
+\end{figure}
+
+\subsection{Feedback loops}
+\label{sec:res-feedback-loops}
+The sensitivity analysis clearly indicates the parameters and assumptions driving
+the economic learning and social learning feedback loops are key to model results, in line 
+with the tipping dynamics of Section~\ref{sec:tipping}. To understand when and by whom these 
+dynamics are triggered, we vary
+the strength of each loop in the scenario analysis (Figure~\ref{fig:loop_scenarios}).
+
+\begin{figure}[htbp]\centering
+  \includegraphics[width=1\linewidth]{figures/fig_scenario_mix_loops_grid.png}
+  \caption{Heating mix pathways for feedback loop scenarios. Stronger social learing favours the status quo, and stronger economic learning enhances all-electric heat pumps. District heating without policy is not strongly affected by these feedback loops.}
+  \label{fig:loop_scenarios}
+\end{figure}
+
+Social learning is by far the strongest lever implemented, which corresponds to the 
+sensitivity results. It favors the status quo, so  scenarios with high social
+learning strongly slow the transition. Strong social learning has 26\,\% of dwellings still 
+heating with natural gas in 2050, against
+10\,\% with weak social learning and 15\,\% in the baseline scenario.
+The 2050 shares for electric heat pumps differ only by half a percentage point, so the 
+difference in gas is mainly taken up by hybrid heat pumps (8\,\% against 21\,\%) and 
+partly by district heating (8\,\% against 12\,\%).
+However, most of the effect lies in the pathway rather than in the 2050 shares
+(Figure~\ref{fig:loop_divergence}.) With strong social learning, electric heat pumps fall up
+to 8 percentage points behind the baseline around 2036, but this gap has closed nearly 
+entirely by 2050. The gas share, in contrast, keeps diverging until the early 2040s and 
+remains 11 percentage points above the baseline in 2050. This follows from the social 
+dynamics as peer influence first favors the dominant technology, but as electric heat pumps 
+spread, the norm shifts towards them.
+
+The economic learning loop has no threshold of its own, as every installed unit slightly 
+reduces the costs. Because households differ widely in energy demand and required insulation 
+costs, the resulting adoption curves are smooth. Strong economic learning reduces the 2050 
+share of natural gas to 8\,\%, against 19\,\% with weak learning. Economic learning interacts
+with other cost drivers. With low gas and high electricity prices, 21\,\% of dwellings 
+still use natural gas in 2050, against 7\,\% with high gas and low electricity prices. In the 
+scenario most favorable to natural gas, with strong social learning, weak economic learning 
+and cheap gas, 41\,\% of dwellings still heat with gas in 2050, against 2\,\% in the scenario 
+most favorable to heat pumps.
+
+Combining the two loops does not reinforce each other as the the effects roughly add up.
+With weak economic and strong social learning, 31\,\% of dwellings still use natural gas in 
+2050; in the opposite combination, 5\,\%. Even in the most favorable scenario, natural gas 
+does not disappear. The remaining gas boilers are mostly in owner-occupied homes (83\,\% in 
+the most favorable scenario), where the attitudes and costs of the household do not favor 
+switching.
+
+None of the feedback loops has a strong effect on district heating, whose 2050 share remains 
+between 8 and 12\,\% in these scenarios. This indicates that heat networks will not 
+expand without policy action, as is widely acknowledged in current heating policy.
+
+\begin{figure}[htbp]\centering
+  \includegraphics[width=1\linewidth]{figures/fig_loop_divergence.png}
+  \caption{Deviation of the heating mix from the baseline in the feedback-loop scenarios, in
+  percentage points (median across the 25 weight sets). Solid lines: strong loop; dashed lines:
+  weak loop.}
+  \label{fig:loop_divergence}
+\end{figure}
+
+\subsection{Adoption per adopter and dwelling category}
+\label{sec:adoption_per_cat}
+To see which groups drive these dynamics, we analyze the 2050 heating mix per segment in the
+baseline scenario (Figure~\ref{fig:segments_2050}). Adopter categories follow Rogers' diffusion
+framework \citep{rogersDiffusionInnovations2003a}, assigned by percentile of an adoption
+index combining the household's sustainability attitude, the mean attitude of its peer network, and
+the technical readiness of its dwelling (weighted 0.5, 0.3 and 0.2 respectively), using the
+standard shares (innovators 2.5\,\%, early adopters 13.5\,\%, early and late majority 34\,\% each,
+laggards 16\,\%). Dwelling segments cross archetype, floor area, construction era and insulation
+label, and are additionally crossed with ownership and heat demand. The figures in this section
+show the best-fitting weight set. However, how the outcome splits between ownership types differs between
+weight sets.
+
+Ownership determines which decision rule applies (Figure~\ref{fig:segments_2050}a). Owner-occupiers,
+who weigh attitudes and norms as well as costs, end with the largest share of hybrid heat pumps
+(34\,\%) and almost no natural gas (3\,\%). Housing associations and private landlords, who decide
+on cost alone, electrify at least as much (60 and 58\,\% electric heat pumps, against 51\,\% for
+owner-occupiers), but where the electric heat pump is not the cheapest option they keep their gas
+boilers, 12 and 10\,\% of their dwellings still use natural gas in 2050. This cost-based behavior
+does not fully reflect current practice, in which housing associations are bound by sustainability
+requirements for their stock and landlords face additional rules and incentives. Instead it shows how these
+actors would act without such policy measures. District heating reaches 12--13\,\% of owner-occupied and
+social-housing dwellings, but only 8\,\% of privately rented dwellings and none of the dwellings in
+owner associations.
+
+Within the owner-occupied stock, the adopter category separates the outcome far more than any
+dwelling characteristic (Figure~\ref{fig:segments_2050}b). Innovators, early adopters and the early
+majority choose the electric heat pump almost exclusively (83--92\,\%). The late majority turns mainly to hybrid heat pumps (60\,\%, against
+24\,\% electric), and the laggards almost entirely so (67\,\% hybrid, 1\,\% electric), while 17\,\%
+of the laggards still heat with natural gas in 2050. The lagging half of the homeowners thus
+does take part in the transition, but by choosing the hybrid heat pump.
+
+Heat demand and dwelling type mainly shift the choice between hybrid heat pumps and district heating,
+reflecting the trade-off between investment and energy costs (Figure~\ref{fig:segments_2050}c--d).
+Owner-occupied dwellings with a low heat demand, often apartments and high-rise, connect more often
+to district heating, whereas dwellings with a high demand take more hybrids (36\,\% against
+28\,\%). The share of electric heat pumps hardly changes with demand or dwelling type (48--53\,\%).
+The insulation label separates the outcome more strongly (Figure~\ref{fig:segments_2050}e): across
+all ownership types, 65\,\% of dwellings with label A or B in 2024 have an electric heat pump in
+2050, against 37\,\% of those with label E to G, of which 18\,\% still use natural gas.
+
+\begin{figure}[htbp]\centering
+  \includegraphics[width=\linewidth]{figures/fig_segments_ownership_dwelling.png}
+  \caption{2050 heating mix by segment in the baseline scenario, best-fitting weight set: (a)
+  ownership, (b) adopter category of owner-occupiers, (c--d) heat demand and dwelling type of
+  owner-occupied dwellings, (e) insulation label in 2024. Ownership sets the decision rule:
+  owner-occupiers keep more hybrid heat pumps, while landlords and housing associations, deciding on
+  cost, electrify where possible and otherwise keep gas. Among owner-occupiers, the adopter category
+  separates the outcome far more than the dwelling does.}
+  \label{fig:segments_2050}
+\end{figure}
+
+The adoption process is not finished in 2050 (Figure~\ref{fig:segments}). Electric heat pumps
+spread rapidly among the innovators and early adopters and level off around 2040 at about 90\,\%;
+the early majority follows with a delay of a few years. In the late majority, electric heat pumps
+reach about a quarter of the dwellings around 2045 and then stagnate, while hybrid heat pumps keep
+rising. In the late majority and the laggards, hybrid adoption is still increasing steeply in 2050,
+and district heating grows from about 4 to 15\,\%. The diffusion of the hybrid heat pump through
+the lagging segments thus continues beyond the simulated period.
+
+\begin{figure}[htbp]\centering
+  \includegraphics[width=\linewidth]{figures/mech_segment_scurves.png}
+  \caption{Adoption by adopter category, per technology, as a share of each segment's own stock, in
+  the baseline scenario for the best-fitting weight set. Electric heat pumps concentrate in the
+  leading segments and saturate around 2040; hybrid heat pumps and district heating concentrate in
+  the trailing segments, where hybrid adoption is still rising in 2050.}
+  \label{fig:segments}
+\end{figure}
+
+Another view of how these decisions are made is to compare the optimal cost option
+with the option with the highest  utility and the option that is finally chosen 
+(Figure~\ref{fig:decision_mix}). The figure shows a familiar transition dynamic.
+Electric and hybrid heat pumps are already the cost-optimal option for 
+three-quarters  of installations in 2030, yet natural gas has the highest utility 
+in more than half of them. Through attitude, social norm, and effort, 
+owner-occupiers stay with the incumbent system even when an alternative is 
+cheaper. The gap closes as the attitude and social norm towards heat pumps grow. 
+Because the random term enters the choice, a dwelling whose highest-utility option 
+leads only narrowly may pick the runner-up. Natural gas is chosen in most of these 
+close decisions and is therefore mostly affected by the difference between the 
+highest utility and the chosen heating method. This effect is stronger in an early 
+point in the simulation period.
+
+\begin{figure}[htbp]\centering
+  \includegraphics[width=\linewidth]{figures/dec_mix_all.png}
+  \caption{Cost-optimal (lowest equivalent annual cost), highest-utility (before 
+  the random term) and chosen heating system in the baseline scenario, as a share 
+  of the dwellings that install a heating system in that year; median across the 
+  25 weight sets. Owner-occupiers who reconsider before the end of their system's 
+  lifetime but do not adopt are not included.}
+  \label{fig:decision_mix}
+\end{figure}
+
+\subsection{Policy and infrastructure}
+\label{sec:res-rules}
+The feedback loops show strong potential to shape the transition. In this section, 
+we test whether policy measures and infrastructure can trigger or stop them.
+
+Starting with infrastructure, we test a ban on electric heat pumps in 
+neighborhoods with grid congestion, which arises from the combined load of heat 
+pumps and electric vehicles on the local grid capacity 
+(Figure~\ref{fig:scenario_congestion}). The ban does not slow the transition away
+from gas and does not change the share of district heating. Instead, it shifts 
+adoption from electric to hybrid heat pumps, roughly halving the share of electric 
+heat pumps in 2050, while that of hybrids almost triples. This matches the segment 
+analysis in which households that cannot install an electric heat pump turn to 
+their closest alternative, not only in cost but also in attitude and norm, which 
+is the hybrid heat pump. In the model, congestion becomes significant after 2035, 
+which does not reflect the current situation in which congestion is an immediate 
+issue. However, the explained dynamics are expected to be similar, making hybrid 
+heat pumps a potential transition technology that substitutes all-electric heat 
+pumps if required for grid purposes.
+
+\begin{figure}[htbp]\centering
+  \includegraphics[width=\linewidth]{figures/fig_scenario_mix_congestion.png}
+  \caption{Heating mix 2024--2050 with and without a ban on electric heat pumps in congested
+  neighborhoods (median across the 25 weight sets). The ban replaces electric by hybrid heat pumps,
+  with little effect on the speed of the transition or on gas and district heating.}
+  \label{fig:scenario_congestion}
+\end{figure}
+
+District heating, as seen throughout the analysis, hardly expands on cost alone.
+For district heating expansion, we tested two additional scenarios. In the first, in areas currently
+selected by municipalities for district heating, the networks are built independently of
+the households' wishes. Once they are built, households can include these in their decision-making.
+In the second, there is a connection obligation (see Figure~\ref{fig:scenario_district_heating_rollout}).
+The results show that when connecting remains voluntary, few households choose to connect, 
+and district heating ends at about the same share as in the baseline.
+Only when dwellings within reach of the planned networks are obliged to connect does district heating
+expand, to about four in ten dwellings by 2050, mainly at the expense of the electric heat pump and
+to a lesser extent of hybrid heat pumps and gas. Putting the infrastructure in place is therefore not
+enough. An addition obligation or  stronger incentives are required to connect. Other
+instruments, for instance, subsidies that make connecting economically attractive, could be explored
+with the same model.
+
+\begin{figure}[htbp]\centering
+  \includegraphics[width=\linewidth]{figures/fig_scenario_mix_rollout.png}
+  \caption{Heating mix 2024--2050 in the baseline, with the heat networks planned by municipalities,
+  and with the same networks combined with a connection obligation (median across the 25 weight
+  sets). Building the networks alone hardly changes the mix; the obligation makes district heating
+  one of the two largest technologies.}
+  \label{fig:scenario_district_heating_rollout}
+\end{figure}
+
+Next, we examine who pays for the energy networks. Every heating option depends on a network,
+and how the cost of these networks is passed on to households is a policy choice.
+Under current Dutch tariffs, grids are paid for in fixed costs by whomever is connected.
+So, district heating grids are paid for just by their users, while these users also pay for their
+electricity (and sometimes even natural gas) connections. 
+Households with electric heating pay the same electricity tariffs as those
+with district heating or natural gas based heating, without having the costs of these other networks.
+Although this is expected to change due to new electricity grid tariff schemes in 2029, 
+where tariffs will become partially consumption based \citep{marktACMPubliceertVoorstel2026}.
+This allocation is part of an ongoing political debate \citep{rondeSocialiserenVanKosten2025,
+MaakHetWarmtenet}. The imbalance could be reduced on either side: through the proposed electricity tariffs 
+that charge consumers with a high peak demand more \citep{marktACMPubliceertVoorstel2026,
+EindrapporttijdsEnvolumeafhankelijkenettarievenenwarmtepompenVWP1}, or by spreading the cost of
+heat networks across all households.
+
+We explore the far end of this debate with a scenario in which all gas and district-heating
+connection costs are removed. This includes the annual charges, the one-off connection fee (and with it the
+subsidy towards it), and the disconnection fee. This is equivalent to evenly spreading
+these costs across all households. 
+The investment in a household's own equipment and the price per unit of energy
+are unchanged. The result is a substantially different heating system
+(Figure~\ref{fig:scenario_connection_costs}). By 2050 the share of electric heat pumps falls from
+57 to 17\,\%, while hybrid heat pumps increase from 16 to 33\,\% and district heating from 11 to
+40\,\% (median across the 25 weight sets). Without the gas charge, the hybrid heat pump, with its
+lower investment, becomes cheaper than the electric heat pump. Without its connection charges,
+district heating becomes the cheapest option for many dwellings where a heat network is
+available. The shift is carried mainly by the actors who decide on costs (social housing and landlords).
+Owner-occupiers respond less, although the hybrid becomes the cheapest option in many decisions by 2050, 
+yet attitudes and peers keep about half of these decisions with the electric heat pump. 
+
+\begin{figure}[htbp]\centering
+  \includegraphics[width=\linewidth]{figures/fig_scenario_mix_connection_costs.png}
+  \caption{Heating mix 2024--2050 in the baseline (left) and without gas and district-heating
+  connection costs (right), median across the 25 weight sets. The removed costs are the annual gas
+  connection charge (transport and fixed charge), the annual district-heating charges (fixed
+  charge, metering and delivery-set rental) and the one-off district-heating connection and
+  disconnection fees.}
+  \label{fig:scenario_connection_costs}
+\end{figure}
+
+\subsection{Split investment and running costs in decision-making}
+Lastly, we explore structural uncertainty in the decision-making algorithm itself,
+which is, like its weights, uncertain and simplified. An often mentioned barrier 
+is the high upfront investment in heat pumps, certainly when a renovation is 
+required. Even when their equivalent annual costs are lower, households may be 
+unable or unwilling to pay the investment. We test this by splitting the cost term 
+in the PBC (Eq.~\ref{eq:pbc}) into the annual running costs and the net upfront 
+investment, each with its own weight, and recalibrating the weights on the same 
+observations. The split structure fits the observations as well as the original 
+one, and the cost-attitude trade-off reappears, now carried by the
+running-cost weight alone.
+
+The decline in natural gas is nearly unchanged, but the remaining stock is divided 
+differently between all-electric heat pumps (50 instead of 57\,\%) and district 
+heating (18 instead of 11\,\% Figure~\ref{fig:scenario_pbc_split}). District 
+heating has low upfront costs, with its subsidized connection fee, but relatively 
+high running costs. So, it benefits wherever households weigh the investment 
+separately. 
+
+Methodologically, a change in the structure of the decision model changes results
+only in a limited and well-explainable way. This illustrates how a seemingly big
+difference in decision-making leads to small and understandable changes. This 
+can be used to further guide research towards key decision-making factors and 
+policies to shape transition pathways. 
+
+\begin{figure}[htbp]\centering
+  \includegraphics[width=\linewidth]{figures/fig_scenario_mix_pbc_split.png}
+  \caption{Baseline heating mix with owner-occupiers' cost perception as one annualized 
+  cost (left) or as annual running cost and net upfront investment scored separately 
+  (right). Median across each recalibrated decision-making weight sets.}
+  \label{fig:scenario_pbc_split}
 \end{figure}
 
 
+
 %% ===========================================================================
-\section{Discussion}
-%% ===========================================================================
-
-% NOTE: this section was in bullet-point/outline form in the source draft.
-% Retained as bullets; convert to prose when ready.
-\begin{itemize}
-  \item In this paper we show how bottom-up modelling can be done to explore large,
-    real-world systems and transition pathways.
-  \item Including individual agent decision-making in heterogeneous populations.
-  \item This leads to non-linear adoption behaviour.
-  \item Giving the potential to explore the solution space.
-  \item And the potential to add all kinds of tipping dynamics such as economies of
-    scale in the case of district heating, and coevolution leading to
-    infrastructure bottlenecks such as grid congestion.
-  \item However, these models should be used with caution. Decision-making
-    strategies of all actors involved are much more elaborate and context specific.
-    People use different decision-making strategies \citep{michelsenMotivationalFactorsInfluencing2013}
-    with extreme heterogeneity \citep{melesHeterogeneityPreferencesRenewable2022}. This will evolve throughout
-    different contexts and could evolve over time. Especially difficult and
-    impactful decisions such as a dwelling heating method would usually be a
-    multi-stage decision process in which the decision-makers' thought process
-    evolves over time and through social discourse and investigation.
-  \item The inherent uncertainty of such decision-making processes has resulted in
-    omitting them in most energy transition pathways. We argue it is better to
-    include them and explore the potential impact of these drivers throughout a vast
-    range of scenarios.
-\end{itemize}
-
-% ===========================================================================
-% DRAFT Discussion + Conclusion. Replaces \section{Discussion} and
-% \section{Conclusion}. Written from the national ensemble results.
-% Marked [CHECK] where a claim should be verified against the literature
-% before submission.
-% ===========================================================================
-
 \section{Discussion}
 \label{sec:discussion}
+%% ===========================================================================
+In this paper, we show how bottom-up modeling can be done to explore large,
+real-world systems and transition pathways. This while keeping dynamics based in individual
+decision-making in heterogeneous population. This leads to non-linear adoption behavior
+which can be studied in detail for different population groups, ownership types, and 
+dwelling segments. Furthermore, it gives the potential to explore the solution space. In
+this paper, we have explored different kinds of scenario and uncertainties, which can be
+further expanded by exploring different measures such as subsidies or more in-depth modeling
+of different actors such as district heating operators. 
 
-\subsection{Social reinforcement favours the incumbent}
+However, although the solution space can be explored, these models should be used with caution.
+Decision-making strategies of all actors involved are much more elaborate and context specific.
+People use different decision-making strategies \citep{michelsenMotivationalFactorsInfluencing2013}
+with extreme heterogeneity \citep{melesHeterogeneityPreferencesRenewable2022}. This will evolve 
+throughout different contexts and could evolve over time. Especially difficult and
+impactful decisions such as a dwelling heating method would usually be a
+multi-stage decision process in which the decision-makers' thought process
+evolves over time and through social discourse and investigation.
+The inherent uncertainty of such decision-making processes has resulted in
+the omission of them in most energy transition pathways. We argue that it is better to
+include them and explore the potential impact of these drivers throughout a wide
+range of scenarios. This has resulted in the following key points:
 
-The result with the widest implications is that strengthening social learning slows the transition
-rather than accelerating it, raising the 2050 gas share from 12.7 to 30.6\,\%. This runs against the
-common framing of social influence as a lever for accelerating low-carbon adoption, in which peer
-effects and social norms are treated as mechanisms to be amplified
+\emph{Social reinforcement favors the incumbent}
+A key result is that strengthening social learning slows the transition rather than accelerating it.
+This runs against the common framing of social influence as a lever for accelerating low-carbon
+adoption, in which peer effects and social norms are mechanisms to be amplified
 \citep{wiedermannNetworkbasedMicrofoundationGranovetters2020,lentonOperationalisingPositiveTipping2022/ed}.
+The contradiction dissolves once the direction of the mechanism is made explicit. Social influence
+reflects what peers currently do, which at the start of the transition is the incumbent system. However,
+once heat pumps have gained ground, the norm turns in their favor and the delay is largely made up by 2050. 
+The literature on social tipping often describes niches growing towards a majority. In our model, although 
+norms form within local, small-world networks, the net effect is still driven by the majority. This would
+only differ if social influence were asymmetric, with adopters of a new technology weighing more heavily
+as peers than users of the incumbent, which can be explored with the same model in future work.
 
-The apparent contradiction dissolves once the direction of the mechanism is made explicit. Social
-influence is a function of what peers currently do, and at the start of a transition what peers
-currently do is overwhelmingly the incumbent practice. Amplifying conformity therefore amplifies the
-incumbent's advantage first. The literature on social tipping generally analyses the regime
-\emph{after} a critical mass has formed, where reinforcement does accelerate adoption; our results
-concern the regime before it, where the same mechanism operates in reverse. Social influence is better
-characterised as conservative than as progressive: it entrenches whatever is already majority
-practice, and becomes an accelerant only once the peer base has been built by some other mechanism.
+\emph{The two loops work differently}
+The two reinforcing loops are not interchangeable. Economic learning acts in the same direction from the
+start. Every installed heat pump lowers the cost of the next, and adoption follows smoothly, without a
+threshold. Social learning follows the current majority and therefore changes direction during the
+transition. Combined, the two loops add up rather than amplify each other. 
+Social learning matters most where attitudes are less green, and faster learning
+matters most where heat pumps are expensive.
 
-This has a practical consequence. Interventions designed to strengthen social signals---visibility
-campaigns, neighbourhood demonstration effects, peer comparison---should be expected to help only where
-low-carbon adoption already has local majority status, and to be counterproductive where it does not.
-The implication is not that such interventions are useless but that their timing and spatial targeting
-matter more than their strength. [CHECK: position against the social-tipping literature, which
-typically assumes the post-critical-mass regime; \citet{milkoreitSocialTippingPoints2023} may be the
-right anchor.]
+\emph{Pinning down social and psychological parameters remains a challenge}
+The parameters that most widen the range of pathways describe
+social influence, perceived sustainability, and attitudes, which are also the parameters with the least
+empirical support. Better data on how households perceive and discuss heating options would narrow the
+uncertainty more than better cost data.
 
-\subsection{Two loops, and only one of them can start a transition}
+\emph{Scenarios and weights shape the route.} 
+Natural gas declines in every scenario and weight set but disappears in none, and under current rules
+the electric heat pump becomes the dominant alternative across all plausible decision weights. The exact
+pace and direction strongly differ between the chosen weight sets and scenarios. This also gives policy 
+makers the potential to shape the transition to whichever solution fits their local context best.
 
-The two reinforcing loops are not interchangeable. Economic learning is causally necessary: disabling
-it leaves roughly a third more dwellings on gas, its parameters dominate the structural screen at every
-point of the preference space we tested, and the levers acting on it---capital cost, learning rate and
-the gas-to-electricity price ratio---move the 2050 outcome beyond the entire band produced by
-preference uncertainty. Social learning, by contrast, can amplify but not initiate.
-
-This asymmetry suggests a sequencing argument. Cost-side intervention is a precondition; social-side
-intervention is a multiplier that only pays once the cost-side work has produced a local majority. A
-policy programme that leads with the social instruments risks reinforcing the incumbent, whereas one
-that leads with cost and follows with social instruments compounds. The tipping-point framing that
-motivates this paper is therefore incomplete if it treats reinforcing loops as equivalent: the question
-is not only whether a loop exists but whether it can act on a minority technology.
-
-\subsection{The route is uncertain even where the destination is not}
-
-Across the ensemble, gas is displaced in every parameterisation, but the low-carbon mix ranges from
-hybrid-dominated to electric-dominated to district-heating-dominated. Because these routes differ in
-their infrastructure requirements, their residual gas consumption and the households they reach, this
-is not a second-order uncertainty. A hybrid-dominated pathway retains a gas connection and a
-gas-consuming appliance in a majority of dwellings; a district-heating-dominated pathway requires
-network investment concentrated in dense areas; a fully electrified pathway loads the distribution
-grid. Planning that assumes a single route risks stranding the infrastructure built for it.
-[CHECK: quantify residual gas demand per route---the model records it and it would strengthen this
-paragraph considerably.]
-
-The practical reading is that the near-term policy question is less "how fast" than "toward what". The
-connection obligation illustrates this sharply: it is the strongest lever we tested, but it works by
-displacing electrification rather than by displacing gas, moving the system between low-carbon routes
-rather than further from the incumbent.
-
-\subsection{Tenure is the binding structural divide}
-
-Full electrification is concentrated almost entirely in owner-occupied dwellings (50.8\,\% versus
-0.7--1.2\,\% elsewhere), and the residual gas in 2050 is concentrated almost entirely in rented and
-social housing (29.9 and 38.3\,\% versus 3.2\,\%). This follows from the decision rules---owner-occupiers
-weigh attitude alongside cost, whereas landlords and associations minimise cost---and it reproduces the
-split-incentive problem familiar from the energy-efficiency literature
-\citep{jakobChapterOverviewSector2020}. [CHECK: connect explicitly to the split-incentive/landlord-tenant
-literature.]
-
-The policy implication is that instruments aimed at households are aimed at the segment that is already
-transitioning. The segments that retain gas respond to cost, not to attitude or social signal, so the
-instruments that reach them are those that change the landlord's or association's cost calculus:
-standards, subsidy conditionality, or obligation. This also qualifies the adopter-category result: the
-Rogers ordering that the model reproduces is, to a substantial degree, a tenure ordering in disguise.
 
 \subsection{Limitations}
 
-Several limitations bear on how far these results should be read.
+Several limitations hold on how these results should be read.
 
-\emph{The calibration window is short and atypical.} Three years of observed adoption cannot identify
-the decision weights uniquely, which is why we report an ensemble rather than a fitted parameterisation;
-the window also coincides with unusually strong subsidies and a gas-price shock, so weights fitted to it
-may absorb transient drivers.
-
-\emph{Structural uncertainty is not quantified.} We vary parameters, not model form. Whether the theory
-of planned behavior is the right account of the adoption decision, or the S-curve the right description
-of social visibility, is not tested here, and the sensitivity results are conditional on those choices.
+\emph{The calibration window is short and atypical.} Two years of observed change only to some extend
+bounds the decision weights, which is why we report a set rather than a fitted parameterization.
+The window coincides with the gas-price crisis and strong subsidies.
 
 \emph{Matching the recent past does not validate the projections.} The calibration filters out
-behaviourally implausible parameterisations; it does not establish that the 2050 pathways are correct.
-They are interpreted for the mechanisms they reveal, not as forecasts.
+behaviorally implausible parameterizations. However, it does not establish that the 2050 pathways 
+are correct. They are interpreted for the mechanisms they reveal, not as projections or forecasts.
 
-\emph{Some mechanisms are represented schematically.} Grid congestion constrains choice only where
-policy makes it binding; district-heating expansion uses a single density threshold; and roughly a
-quarter of neighbourhoods lack observed heating data and are initialised as gas-heated. Heat demand
-responds to insulation but not to occupant behaviour, and the salience knock-out bounds only the
-amplifier term rather than the full social feedback.
+\emph{Structural uncertainty is not quantified.} We vary parameters, not model form. Whether the
+theory of planned behavior is the right account of the adoption decision, or the S-curve the right
+description of social visibility, is not tested, and the sensitivity results are conditional on these
+choices and on parameter ranges that are partly modeling choices.
+
+\emph{Some mechanisms are represented schematically.} Peer networks include homeowners only,
+district heating has no economic learning and a regulated tariff, dwellings connected to district
+heating stay connected, grid congestion constrains choice only with an electric heat pump ban, and
+neighborhoods without published heating data are initialized as gas-heated. The segment analysis
+reports a single weight set, and the sensitivity analysis is performed for one province.
+
 
 \section{Conclusion}
 \label{sec:conclusion}
 
 We set out to identify where path dependency and tipping dynamics arise in the Dutch residential heat
 transition, and which mechanisms govern them. Using an agent-based model calibrated by history matching
-against observed 2022--2024 adoption and run across a 25-member weight ensemble drawn from the
-161 retained weight sets, three
-conclusions hold across the plausible parameter space.
+against observed 2022--2024 adoption, and run across 25 weight sets selected from the 124 plausible
+ones, four conclusions hold across the plausible parameter space.
 
-First, \textbf{the displacement of gas heating is robust but the route is not}. In every
-parameterisation the gas boiler falls to roughly a tenth of the stock by 2050, yet the low-carbon mix
-ranges from hybrid-dominated to electric-dominated to district-heating-dominated. The uncertainty that
-matters for planning is not whether the incumbent is displaced but what replaces it, because the routes
-differ in infrastructure, residual gas use and the households they reach.
+First, \textbf{gas heating declines in all scenarios, but it does not disappear}. 
+Under current rules, the electric heat pump becomes the dominant alternative across
+all plausible decision weights, while a share of dwellings still heats with gas in 2050 in every
+scenario. Decision weights, rules and infrastructure can determine the route. More weight to costs
+strengthen the economic learning feedback and cost parameters resulting in a more rapid transition, 
+substituting some of the last natural gas heating systems for hybrid heat pumps. High attitude weight
+sets amplify the strong social learning feedback loop. A ban on electric heat pumps in congested
+neighborhoods redirects adoption to hybrid heat pumps, and a connection obligation shifts it to
+district heating.
 
-Second, \textbf{the two reinforcing loops are asymmetric, and only economic learning can initiate a
-transition}. Disabling the learning curve leaves substantially more dwellings on gas, and the
-cost-side parameters dominate the structural sensitivity at every point of the preference space tested.
-Strengthening social learning, by contrast, \emph{raises} the 2050 gas share by eighteen percentage
-points, because social influence amplifies whatever is currently majority practice and the incumbent
-begins with that majority. Social reinforcement is a multiplier on an existing direction, not a source
-of one.
+Second, \textbf{the two reinforcing loops work differently}. Economic learning pushes towards heat
+pumps from the start. Social learning amplifies the current majority practice and, therefore, favors gas
+early in the transition. Strengthening it raises the 2050 gas share and delays electrification by
+about a decade. Social reinforcement multiplies an existing direction rather than creating one. The
+two loops add up rather than amplify each other, while parameters within a loop do interact.
 
-Third, \textbf{the transition is segmented by technology and by tenure rather than merely paced}. Full
-electrification is an owner-occupier phenomenon that saturates the leading adopter segments and then
-stops; hybrids and district heating are the routes by which the late majority, and particularly rented
-and social housing, leave gas at all. The residual gas in 2050 sits almost entirely in the rented stock.
+Third, \textbf{the transition is segmented by adopter category and by decision rule}. Among
+owner-occupiers, the leading half electrifies almost completely, while the late majority and the
+laggards turn mainly to hybrid heat pumps and are still adopting them in 2050. Landlords and housing
+associations, deciding on cost, electrify where the electric heat pump is cheapest, and otherwise keep
+gas. Who holds the remaining gas in 2050 depends on the decision weights.
+
+Fourth, \textbf{infrastructure alone does not trigger adoption}. Building planned heat networks
+hardly changes the heating mix as long as the connection is voluntary. Only an obligation makes district
+heating a major route. Likewise, housing associations that connect their stock raise district heating
+within social housing only, without spilling over to other households.
 
 For policy, these results suggest that sequencing matters as much as instrument choice. Cost-side
-measures are a precondition rather than one option among several; social instruments repay investment
-only where low-carbon adoption already holds a local majority; and the strongest single lever we
-tested---a district-heating connection obligation---selects a route rather than accelerating
-decarbonisation in general. Because the segments retaining gas respond to cost rather than to attitude
-or social signal, instruments directed at landlords and housing associations are likely to determine
-whether the majority of the stock electrifies, hybridises, or remains on gas.
+measures move households away from gas regardless of the stage of the transition. Social instruments
+are worthwhile where sustainable heating methods can be reinforced. Infrastructure
+needs to be accompanied by obligations or incentives to be used.
 
-Further work should extend the analysis in three directions: quantifying structural as well as
-parametric uncertainty by testing alternative decision-model forms; representing the grid constraint
-physically rather than as a policy-activated rule; and resolving the spatial dimension of the threshold
-mechanisms, since both district-heating viability and congestion are defined per neighbourhood and are here reported only in aggregate.
-
-%% ===========================================================================
-\section{Conclusion}
-%% ===========================================================================
-
-% TODO: conclusion to be written.
+Further work should extend the analysis in three directions. First, alternative decision-model forms
+to quantify structural uncertainty should be tested, including heterogeneous and evolving frameworks. 
+Second, more data on social influence, perceived sustainability, and attitudes should be collected.
+And third, the spill-over mechanisms of different ownership groups and decision making for non-homeowners
+should be investigated.
 
 %% ===========================================================================
 %% Bibliography
@@ -1748,6 +1533,8 @@ mechanisms, since both district-heating viability and congestion are defined per
 %% ===========================================================================
 \clearpage
 \appendix
+
+
 %% ===========================================================================
 
 \section{Model documentation}
@@ -2039,7 +1826,7 @@ assumptions as listed in Appendix~\ref{app:cost}.
  
 \paragraph{Submodels}
 \emph{Triggering.} A decision is triggered when a system reaches the end of its (drawn)
-life (problem-based) or, for homeowners only, once its age exceeds 75\% of its life
+life (problem-based) or, for homeowners only, once its age exceeds 75\,\% of its life
 (opportunity-based); the trigger type governs whether an agent evaluates options, not
 the option costs directly. A dwelling on district heating has no end of life; it is reviewed
 every five years since connecting and only changes if another option is chosen (in the
@@ -2139,7 +1926,7 @@ Where:
   \item $D_i$ = Fuel demand for fuel type $i$
   \item $C_i$ = Costs per unit of fuel type $i$
 \end{itemize}
- 
+
 For district heating the terms differ (Table~\ref{tab:dh-costs}): $IC_{heat}$ is the connection
 fee for a dwelling that newly connects and zero for one that is already connected, and the fixed
 charge, metering fee and delivery-set rental are annual costs. A dwelling that leaves district
@@ -2334,42 +2121,297 @@ Table~\ref{tab:scenario-input}.
     \textbf{Owner network attitude} & \textbf{Network size} &
     \textbf{Same category \%}\\
     \midrule
-    0  & 0.687 & 4 & 0.660 & 19 & 79\%\\
-    1  & 0.923 & 2 & 0.877 & 22 & 86\%\\
-    2  & 0.686 & 4 & 0.655 & 25 & 96\%\\
-    3  & 0.933 & 2 & 0.882 & 29 & 90\%\\
-    4  & 0.763 & 3 & 0.769 & 28 & 89\%\\
-    5  & 0.665 & 4 & 0.655 & 23 & 91\%\\
-    6  & 0.506 & 5 & 0.569 & 25 & 76\%\\
-    7  & 0.829 & 3 & 0.777 & 24 & 83\%\\
-    8  & 0.587 & 4 & 0.684 & 24 & 75\%\\
-    9  & 0.480 & 5 & 0.518 & 24 & 92\%\\
-    10 & 0.516 & 5 & 0.556 & 26 & 81\%\\
-    11 & 0.211 & 6 & 0.343 & 25 & 96\%\\
-    12 & 0.757 & 3 & 0.792 & 27 & 89\%\\
-    13 & 0.687 & 4 & 0.642 & 30 & 83\%\\
-    14 & 0.712 & 4 & 0.681 & 27 & 78\%\\
-    15 & 0.984 & 2 & 0.882 & 26 & 89\%\\
-    16 & 0.746 & 3 & 0.779 & 32 & 88\%\\
-    17 & 0.683 & 4 & 0.664 & 31 & 71\%\\
-    18 & 0.859 & 3 & 0.801 & 22 & 91\%\\
-    19 & 0.861 & 3 & 0.794 & 24 & 92\%\\
+    0  & 0.687 & 4 & 0.660 & 19 & 79\,\%\\
+    1  & 0.923 & 2 & 0.877 & 22 & 86\,\%\\
+    2  & 0.686 & 4 & 0.655 & 25 & 96\,\%\\
+    3  & 0.933 & 2 & 0.882 & 29 & 90\,\%\\
+    4  & 0.763 & 3 & 0.769 & 28 & 89\,\%\\
+    5  & 0.665 & 4 & 0.655 & 23 & 91\,\%\\
+    6  & 0.506 & 5 & 0.569 & 25 & 76\,\%\\
+    7  & 0.829 & 3 & 0.777 & 24 & 83\,\%\\
+    8  & 0.587 & 4 & 0.684 & 24 & 75\,\%\\
+    9  & 0.480 & 5 & 0.518 & 24 & 92\,\%\\
+    10 & 0.516 & 5 & 0.556 & 26 & 81\,\%\\
+    11 & 0.211 & 6 & 0.343 & 25 & 96\,\%\\
+    12 & 0.757 & 3 & 0.792 & 27 & 89\,\%\\
+    13 & 0.687 & 4 & 0.642 & 30 & 83\,\%\\
+    14 & 0.712 & 4 & 0.681 & 27 & 78\,\%\\
+    15 & 0.984 & 2 & 0.882 & 26 & 89\,\%\\
+    16 & 0.746 & 3 & 0.779 & 32 & 88\,\%\\
+    17 & 0.683 & 4 & 0.664 & 31 & 71\,\%\\
+    18 & 0.859 & 3 & 0.801 & 22 & 91\,\%\\
+    19 & 0.861 & 3 & 0.794 & 24 & 92\,\%\\
     \bottomrule
   \end{tabular}
 \end{table}
  
-\section{Morris}
-\begin{figure}[htbp]\centering
-  \includegraphics[width=\linewidth]{figures/fig_ensemble_fit.png}
-  \caption{Fit of tested and retained ensemble}
-  \label{fig:ensemble_fit}
-\end{figure}
+\section{Calibration details}
 
+\subsection{Calibration criterion}
+\label{app:calibration}
+A weight set is judged by the implausibility of each scored output $k$ (technology and year),
+the standard measure in history matching
+\citep{vernonGalaxyFormationBayesian2010,andrianakisBayesianHistoryMatching2015}:
+\begin{equation}
+  I_k = \frac{\lvert s_k - o_k \rvert}{\sqrt{\sigma_{\mathrm{MC},k}^2 + \sigma_{\mathrm{obs},k}^2 + \sigma_{\mathrm{disc}}^2}},
+  \label{eq:implausibility}
+\end{equation}
+where $s_k$ is the simulated share and $o_k$ the observed share in percentage points. The denominator
+collects the three reasons why a plausible weight set would not match the observation exactly:
+the stochastic variation of the model ($\sigma_{\mathrm{MC}}$, at most 0.06 percentage points),
+the uncertainty of the observation ($\sigma_{\mathrm{obs}} \approx 0.29$ percentage points, from
+the rounding of the published neighborhood shares and the share of dwellings with an unknown
+heating type), and the model discrepancy ($\sigma_{\mathrm{disc}}$), an allowance for the model
+being a simplified account of the heat transition, set to 0.5 percentage points. A set is retained
+when $\max_k I_k < 3$, the conventional cutoff that follows from the three-sigma rule
+\citep{pukelsheimThreeSigmaRule1994}; this admits a deviation of about 1.7 percentage points on
+every scored output. Because $\sigma_{\mathrm{disc}}$ and the cutoff are judgments,
+Table~\ref{tab:retention_sensitivity} reports how many sets are retained when either is varied.
 
-\section{Reference dwellings}
-\label{app:reference-dwellings}
- 
-% TODO: content for Appendix B (reference dwellings) was not present in the source.
+The calibration is done with two iterations per weight set, which is more than required: the
+standard deviation between iterations (0.028 percentage points) is much smaller than the
+deviation the criterion admits.
+
+\begin{table}[htbp]
+  \centering
+  \caption{Number of the 1000 sampled weight sets retained, by model-discrepancy allowance
+  $\sigma_{\mathrm{disc}}$ and implausibility cutoff. The central choice is in bold.}
+  \label{tab:retention_sensitivity}
+  \begin{tabular}{lrrr}
+    \toprule
+    $\sigma_{\mathrm{disc}}$ (pp) & $I < 2.5$ & $I < 3.0$ & $I < 3.5$ \\
+    \midrule
+    0.25 & 33 & 60 & 83 \\
+    0.50 & 87 & \textbf{124} & 157 \\
+    1.00 & 255 & 675 & 753 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\subsection{ensemble weight set selection}
+Running every retained set through every scenario on a national scale is not feasible, so the
+scenario analysis uses a subsample of 25 of the 124 retained sets. Because the results are reported
+as the median and percentiles across the sets, the subsample is chosen so that these statistics
+reproduce those of the full retained ensemble. To this end, the baseline is run for every retained
+set in Noord-Brabant, and the subsample is the combination of 25 sets whose 5, 25, 50, 75 and
+95\,\% percentiles of the share of each technology in 2030, 2040 and 2050 come closest to those of
+all retained sets (the smallest sum of squared differences, standardized by the spread over the
+retained sets, found by a local search with random restarts). The chosen sets count equally. In
+the selection years, the subsample reproduces the medians of the full ensemble within 1.1 and the
+5 and 95\,\% percentiles within 1.3 percentage points. In 2035 and 2045, which were not used in the
+selection, the medians agree within 0.7 percentage points and the percentiles within 1.3 points,
+except the upper end of the electric heat pump in 2045 (3.8 points). The bands in the scenario
+analysis are therefore the spread across the plausible weight sets, with the median as a
+descriptive center, and not probability intervals: history matching only establishes that a set
+is not ruled out by the observations.
+
+The sensitivity analysis takes its weight sets from the same subsample. The Morris screening is
+repeated at four sets that span the two ways the retained sets differ: the best-fitting set, the
+two ends of the cost--attitude line (the most cost-driven and the most attitude-driven retained
+set), and the set with the highest effective weight of the subjective norm. The Latin-hypercube
+quantification is run at the single best-fitting set, which also lies close to the center of the 
+retained ensemble, so that all single-set results refer to one and the same point in the ensemble.
+
+\section{Sensitivity assumptions}
+
+\subsection{Parameters of the sensitivity analysis}
+\label{app:sensitivity}
+Table~\ref{tab:sens_params} lists the parameters screened with the Morris method, with the range
+over which each is varied, its default value in the scenario runs, and the basis of the range.
+The ranges of the cost parameters are taken from the literature; most behavioral and structural
+ranges are modelling choices, because data on these aspects of the decision are lacking. Two
+parameters that also shape the decision are not screened. The noise scale of the choice $\lambda$
+is calibrated together with the decision weights (Section~\ref{sec:calibrating}), and the effort of
+switching enters the decision only through its product with the calibrated effort weight, so that
+varying it would count the same uncertainty twice. The review interval and exit barrier of
+district heating are not screened either: in the scenarios, connected dwellings stay connected, and
+leaving the network is explored as a separate scenario (\texttt{dh\_exit\_allowed}).
+
+The Morris screening uses eight trajectories on a four-level grid for each of the four screening
+weight sets (Section~\ref{sec:subsample}), in the baseline scenario for Noord-Brabant over
+2024--2050, with one iteration per run. Each parameter is scaled to its range, so that $\mu^*$ is
+the change in a technology's 2050 share, in percentage points, for a move across the full range.
+
+The seven highest-ranked parameters (marked $\dagger$) are then varied jointly in a Latin-hypercube
+sample of 80 combinations, each drawn uniformly over the ranges in Table~\ref{tab:sens_params} and
+run with eight iterations, at the best-fitting weight set, in the same scenario, region and period.
+All other parameters are held at their defaults. For each technology's 2050 share we report the
+spread across the 80 combinations, the standardized regression coefficients of the parameters, and
+the share of the variation explained by a linear model with and without squared and pairwise
+interaction terms (leave-one-out $R^2$), which indicates how far the parameters act independently
+of each other.
+
+\begin{table}[htbp]
+  \centering
+  \caption{Parameters of the sensitivity analysis, grouped by the part of the decision function they
+  enter. Range: low--high (default in the scenario runs). $\dagger$: also varied in the
+  Latin-hypercube sample.}
+  \label{tab:sens_params}
+  \footnotesize
+  \begin{tabular}{@{}p{3.6cm}p{2.3cm}p{4.6cm}p{3.6cm}@{}}
+    \toprule
+    \textbf{Parameter} & \textbf{Range (default)} & \textbf{Meaning} & \textbf{Basis}\\
+    \midrule
+    \multicolumn{4}{@{}l}{\emph{Attitude}}\\
+    Attitude distribution$^\dagger$ & $\alpha$ 3--7 (5) & Households' attitudes drawn from
+      Beta$(\alpha,2)$; mean attitude 0.60--0.78 (0.71) & Modelling choice\\
+    Perceived sustainability of the hybrid heat pump$^\dagger$ & 2--4 (3) & Position of the hybrid
+      on the 1--5 sustainability scale (gas 1, electric heat pump 5) & Modelling choice around the
+      data value\\
+    \addlinespace
+    \multicolumn{4}{@{}l}{\emph{Subjective norm}}\\
+    Social learning strength$^\dagger$ & 0.5--2 (1) & Multiplier on the weight of the subjective
+      norm & Scenario low/high values\\
+    Peer network size & 10--50 (25) & Number of peers per household & Modelling choice\\
+    Peer network homophily & 0.5--0.95 (0.8) & Share of peers similar to the household & Modelling
+      choice\\
+    Salience: novelty threshold & 0.15--0.45 (0.3) & Population share below which a method counts as
+      novel & Modelling choice\\
+    Salience: novelty steepness & 5--20 (10) & Steepness of the novelty term & Modelling choice\\
+    Salience: momentum steepness & 10--50 (30) & Steepness of the momentum term & Modelling choice\\
+    \addlinespace
+    \multicolumn{4}{@{}l}{\emph{Costs (affordability)}}\\
+    Economic learning rate$^\dagger$ & 0--28\,\% (10\,\%) & Fall in heat-pump investment per
+      doubling of cumulative installations & 0\,\% \citep{renaldiExperienceRatesLowcarbon2021};
+      28\,\% \citep{weissLearningEnergyEfficiency2008}\\
+    Heat-pump capital cost$^\dagger$ & 0.8--1.3 (1) & Multiplier on heat-pump investment & 0.8:
+      market prices a fifth lower; 1.3: midpoint of \citet{cedelftUpdateKentallenInstallaties2023}\\
+    Energy price path$^\dagger$ & low--high (central) & Gas and electricity prices, interpolated
+      between the low, central and high arm & \citet{pbl_kev_2025}\\
+    District-heating connection cost & 0.85--1.15 (1) & Multiplier on the regulated connection fee &
+      Assumed $\pm$15\,\% around \citet{marktTarievenWarmteKoude}\\
+    Randomness in perceived costs & 5--50 (20) EUR & Scale of the random term in the cost-only
+      choice of landlords and housing associations & Modelling choice\\
+    \addlinespace
+    \multicolumn{4}{@{}l}{\emph{Structural}}\\
+    Opportunity trigger$^\dagger$ & 0.6--0.9 (0.75) & Share of a system's lifetime after which
+      its owner may replace it before failure & Modelling choice\\
+    Equipment lifetime spread & 0--3 (1) years & Standard deviation of the end-of-life age around the nominal lifetime (limited to $\pm$3 years)
+     & Modelling choice\\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\section{oud of moet nog plek krijgen}
+
+\subsection{Dealing with uncertainty}
+\label{sec:uncertainty}
+We distinguish the standard categories, stochastic, parametric, and structural uncertainty. 
+\emph{Stochastic} variability arises from the model's random draws, which include: 
+household attitudes, network formation, heating method failure ages, and
+randomization in the adoption function. This stochastic variability is tested by calculating 
+the required number of replications per analysis (see Appendix~\ref{app:replication}). For the 
+calibration, morris and national scenario runs this is just one replication, for the LHS this is eight.
+So few replications are required because the stochastic variability occurs on individual household
+level, for which there are over 8 million in the national analysis, averaging out this uncertainty 
+within a single replication. Even though one is the minimum, the national scenarios are run with two
+replications.
+
+\emph{Structural} uncertainty concerns the form of the model itself: whether the
+theory of planned behavior is the right account of the adoption decision, or the S-curve the
+right description of social visibility. This uncertainty is not quantified, but addressed 
+through the model's grounding in the literature (Section~\ref{sec:model}) and its verification 
+(Section~\ref{sec:verification}).
+
+\emph{Parametric} uncertainty concerns the numerical assumptions of the model.
+Most parametric uncertainty occurs from process assumptions (e.g. salience factor),
+techno-economic assumptions (e.g. energy prices) and weights in the decision-making framework.
+Which of the two treatments a parameter receives depends on whether the observed 2022--2024
+adoption can constrain it \emph{together with} the decision weights. Parameters whose effect
+only appears once low-carbon systems become common, such as the salience of adoption, or which 
+follow the future course of prices, do not act in the observation window: the fit is 
+insensitive to them, so the calibrated weights remain valid when they are varied, and they are 
+analyzed in the sensitivity analysis (Section~\ref{sec:sensitivity}). Parameters that do act 
+in the window are a harder case. A screening of their effect on the calibration fit 
+(Section~\ref{sec:sensitivity})
+shows that several of them change the simulated 2022--2024 shares by several percentage points
+at fixed weights. Most of them act on the same terms as the weights, for example, the attitude
+distribution and the perceived sustainability per heating method on the attitude term. So when
+the weights are free they compensate, and calibrating the parameters jointly would widen the 
+trade-offs between them rather than constrain them. They are therefore held at their defaults 
+in the calibration and screened afterwards in the sensitivity analysis. Only the scale of the 
+random term in the choice is calibrated with the weights, because it scales the whole utility 
+rather than one term of it (Section~\ref{sec:calibrating}).
+
+ %% ---------------------------------------------------------------------------
+\subsection{Scenario pathways and mechanism experiments}
+\label{sec:mechdesign}
+The analysis is organized around the tipping mechanisms identified in
+Section~\ref{sec:tipping}. In a second stage, policy measures are introduced to investigate their
+effects on these mechanisms. Table~\ref{tab:scenarios} states the resulting
+setup: each row gives one mechanism's continuous parameters, its discrete levers, and the loop
+experiments run on it. 
+
+Two methods are used to identify tipping dynamics (step 4), ablation scenarios, and driver sweeps. 
+An \emph{ablation}, or knock-out, scenario tests what happens when one reinforcing loop is disabled
+while everything else is held identical, similar to an one-at-a-time (OAT) analysis 
+{tenbroekeWhichSensitivityAnalysis2016}. 
+The difference between the intact and the knocked-out scenario is the causal contribution of that loop. 
+A \emph{driver sweep} varies a single driver continuously, so that the threshold at which the pathway 
+changes shape can be located. 
+
+The general exploration (row~0 of Table~\ref{tab:scenarios}) is run first and deliberately
+precedes the isolation of any single mechanism. It establishes which features of the pathway are
+robust across the full space of plausible weights and process and techno-economic assumptions,
+and which are not. Only outcomes that vary within that space are candidates for mechanism-level
+explanation; the mechanism sections that follow then attribute the variation to specific loops.
+
+Pathways are assessed as the share of dwellings per heating method over 2024--2050, with
+attention to the moments and rates of acceleration or deceleration that indicate a tipping point,
+and are reported as ensemble bands rather than single lines. Because the decision weights and the
+process and techno-economic parameters are separate kinds of uncertainty, results are reported separately: 
+the preference band, the parameter sensitivity, and the exogenous price and policy
+scenarios. Results are also reported per household segment to show which groups drive
+each dynamic. A policy-oriented synthesis of the levers across all mechanisms closes the results.
+
+\begin{table}[htbp]
+  \centering
+  \caption{Experimental design by tipping mechanism. Each row states the full design for one
+  mechanism: the continuous parameters varied, the discrete levers run as scenarios, and the loop
+  experiments used to establish causal necessity and to locate thresholds.}
+  \label{tab:scenarios}
+  \footnotesize
+  \setlength{\tabcolsep}{3pt}
+  \begin{tabular}{@{}p{0.4cm} L{2.1cm} L{3.1cm} L{3.3cm} L{3.3cm}@{}}
+    \toprule
+    \textbf{\#} & \textbf{Mechanism} & \textbf{Continuous parameters} &
+    \textbf{Discrete levers} & \textbf{Loop experiments}\\
+    \midrule
+    0 & \emph{General exploration} &
+      All four decision weights (retained ensemble); all structural parameters screened
+      jointly &
+      Baseline reference pathway &
+      ---\\
+    \addlinespace
+    1 & Economic learning and increasing returns &
+      Heat-pump learning rate; heat-pump capital cost; gas and electricity price
+      paths &
+      Economic learning factor (low/high); energy-price bracket (low/high) &
+      Knock-out: learning curve frozen at initial capital costs\\
+    \addlinespace
+    2 & Social learning and thresholds &
+      Salience threshold, novelty steepness and momentum steepness; choice
+      stochasticity &
+      Social learning factor (low/high) &
+      Knock-out: peer composition frozen; salience frozen (amplifier only). Sweep:
+      social-learning multiplier. Segmentation: household and dwelling segments\\
+    \addlinespace
+    3 & Rules, regulations and infrastructure &
+      Grid-reinforcement rate; district-heating construction time &
+      District-heating connection obligation; heat-pump ban under congestion;
+      policy- versus cost-based district-heating expansion; social-housing
+      strategy &
+      ---\\
+    \addlinespace
+    4 & Co-evolution and coordination &
+      --- &
+      Actor alignment (all collective actors follow policy plans); combined
+      individual- versus collective-technology scenarios &
+      ---\\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
 
 
 \end{document}
