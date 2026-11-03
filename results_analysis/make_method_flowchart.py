@@ -2,64 +2,96 @@
 """Horizontal five-step flowchart for the analysis-design section (wide aspect, sits inline at \\linewidth).
 
 The five boxes mirror the five numbered steps in Section 'Analysis design'.
+
+Drawn at the printed size (paper_style.TEXT_W wide) so its text is the same size as in the other
+figures; positions are in inches on a single full-figure axis.
+
+    python results_analysis/make_method_flowchart.py
+
+Writes results/calib/fig_method_flowchart.png and copies it to the manuscript figures folder.
 """
 import os
+import shutil
 import matplotlib; matplotlib.use("Agg")
-import matplotlib.pyplot as plt
 from matplotlib.patches import FancyBboxPatch, FancyArrowPatch
+
+import paper_style as ps
 
 HERE = os.path.dirname(os.path.abspath(__file__)); ROOT = os.path.normpath(os.path.join(HERE, ".."))
 OUT = os.path.join(ROOT, "results", "calib", "fig_method_flowchart.png")
+PAPER = os.path.join(ROOT, "heat_transition_tipping_dynamics", "figures")
 
 BLUE="#cfe0ef"; ORANGE="#f7e0bd"; YELLOW="#f3ecc4"; TEAL="#c7e2e4"; PINK="#ecd3e0"; GREY="#e6e6e6"
 
-fig, ax = plt.subplots(figsize=(12.6, 3.30)); ax.set_xlim(0, 1); ax.set_ylim(0.095, 1.005); ax.axis("off")
+FIG_W, FIG_H = ps.TEXT_W, 2.62          # inches; the axis spans the figure, so data units are inches
+ps.apply()
+fig = ps.figure(frac=1.0, height=FIG_H, layout="none")   # one hand-placed axis: nothing to lay out
+ax = fig.add_axes([0, 0, 1, 1]); ax.set_xlim(0, FIG_W); ax.set_ylim(0, FIG_H); ax.axis("off")
 
-W, H, Y = 0.166, 0.34, 0.36
-XS = [0.035, 0.227, 0.419, 0.611, 0.803]
-NUM_Y   = Y + H - 0.085
-TITLE_Y = Y + 0.105
-SUB_Y   = Y - 0.055
-LBL_Y   = Y + H + 0.045
+PITCH = 1.22                            # distance between box centres
+W, H = 1.06, 0.80                       # stage box
+CX = [0.74 + i * PITCH for i in range(5)]
+XS = [c - W / 2 for c in CX]
+Y = 0.88                                # bottom of the stage boxes
+NUM_Y   = Y + H - 0.15
+TITLE_Y = Y + 0.30
+SUB_Y   = Y - 0.08
+LBL_Y   = Y + H + 0.05
+OBS_Y, OBS_H, OBS_W = Y + H + 0.50, 0.36, 1.40   # observed-data box (wider than a stage box)
+LINE = ps.FS * 1.2 / 72                 # inches between two lines of a note
+ITEM_GAP = 0.045                        # inches between two items of a note
+ROUND = "round,pad=0.02,rounding_size=0.08"
 
-def stage(x, num, title, sub, fc):
-    ax.add_patch(FancyBboxPatch((x, Y), W, H, boxstyle="round,pad=0.006,rounding_size=0.03",
-                                fc=fc, ec="#666", lw=1.0))
-    ax.text(x+W/2, NUM_Y,   num,   ha="center", va="center", fontsize=13, fontweight="bold", color="#555")
-    ax.text(x+W/2, TITLE_Y, title, ha="center", va="center", fontsize=9.6, linespacing=1.3)
-    ax.text(x+W/2, SUB_Y,   sub,   ha="center", va="top", fontsize=7.4, style="italic",
-            color="#555", linespacing=1.45)
+def stage(x, num, title, items, fc):
+    """items: the lines of the italic note under the box; an item that wraps keeps its lines
+    closer together than the gap between items."""
+    ax.add_patch(FancyBboxPatch((x, Y), W, H, boxstyle=ROUND, fc=fc, ec="#666", lw=0.8))
+    ax.text(x+W/2, NUM_Y,   num,   ha="center", va="center", fontsize=ps.FS_PANEL, fontweight="bold",
+            color="#555")
+    ax.text(x+W/2, TITLE_Y, title, ha="center", va="center", linespacing=1.25)
+    y = SUB_Y - LINE * 0.8                 # baseline of the first line
+    for it in items:                       # fixed line pitch, so every column lines up the same
+        for line in it.split("\n"):
+            ax.text(x+W/2, y, line, ha="center", va="baseline", style="italic", color="#555")
+            y -= LINE
+        y -= ITEM_GAP
 
 def arrow(x1, x2, label=None):
-    ax.add_patch(FancyArrowPatch((x1, Y+H/2), (x2, Y+H/2), arrowstyle="-|>", mutation_scale=13,
-                                 lw=1.3, color="#555"))
+    ax.add_patch(FancyArrowPatch((x1+0.02, Y+H/2), (x2-0.02, Y+H/2), arrowstyle="-|>", mutation_scale=7,
+                                 lw=1.0, color="#555", shrinkA=0, shrinkB=0))
     if label:
-        ax.text((x1+x2)/2, LBL_Y, label, ha="center", va="bottom",
-                fontsize=7.6, style="italic", color="#444", linespacing=1.35)
+        ax.text((x1+x2)/2, LBL_Y, label, ha="center", va="bottom", style="italic", color="#444",
+                linespacing=1.15)
 
+# the notes are broken into shorter lines so five columns fit the text width; the numbers follow
+# Sections 5-6 of main.tex (calibration v3, 25-set national subsample, 20 scenarios)
 stage(XS[0], "1", "Calibration of\nplausible decision\nweights",
-      "history matching (GLUE)\nNoord-Brabant\n100 sets \u2192 21 retained", BLUE)
+      ["history matching\n(GLUE)", "Noord-Brabant", "1000 sets \u2192\n124 retained"], BLUE)
 stage(XS[1], "2", "Rank uncertain\nparameters",
-      "Morris elementary effects\nweights at ensemble median\nNoord-Brabant", ORANGE)
+      ["Morris elementary\neffects", "four weight sets", "Noord-Brabant"], ORANGE)
 stage(XS[2], "3", "Quantify key\nparameters",
-      "Latin-hypercube sampling\nregression coefficients", YELLOW)
-stage(XS[3], "4", "Run pathways and\nexperiments",
-      "Netherlands\n21 sets \u00d7 16 scenarios\nknock-outs \u00b7 driver sweeps", TEAL)
-stage(XS[4], "5", "Report in household\nsegments",
-      "band \u00b7 sensitivity \u00b7 scenarios", PINK)
+      ["Latin-hypercube\nsampling", "regression\ncoefficients"], YELLOW)
+stage(XS[3], "4", "Run pathways\nand experiments",
+      ["Netherlands", "25 sets \u00d7\n20 scenarios", "connection-cost and\nsplit-PBC runs"], TEAL)
+stage(XS[4], "5", "Report in\nhousehold\nsegments",
+      ["band \u00b7 sensitivity\n\u00b7 scenarios"], PINK)
 
-arrow(XS[0]+W, XS[1], "retained ensemble")
-arrow(XS[1]+W, XS[2], "influential parameters")
+arrow(XS[0]+W, XS[1], "retained\nensemble")
+arrow(XS[1]+W, XS[2], "influential\nparameters")
 arrow(XS[2]+W, XS[3])
 arrow(XS[3]+W, XS[4])
 
 # observed data feeding step 1
-ax.add_patch(FancyBboxPatch((XS[0], 0.855), W, 0.115, boxstyle="round,pad=0.006,rounding_size=0.03",
-                            fc=GREY, ec="#777", lw=1.0, ls="--"))
-ax.text(XS[0]+W/2, 0.9125, "Observed heating mix\n2022–2024", ha="center", va="center",
-        fontsize=8.4, linespacing=1.3)
-ax.add_patch(FancyArrowPatch((XS[0]+W/2, 0.855), (XS[0]+W/2, Y+H), arrowstyle="-|>",
-                             mutation_scale=12, lw=1.2, color="#555"))
+ax.add_patch(FancyBboxPatch((XS[0], OBS_Y), OBS_W, OBS_H, boxstyle=ROUND,
+                            fc=GREY, ec="#777", lw=0.8, ls="--"))
+ax.text(XS[0]+OBS_W/2, OBS_Y+OBS_H/2, "Observed heating mix\n2022–2024", ha="center", va="center",
+        linespacing=1.25)
+ax.add_patch(FancyArrowPatch((CX[0], OBS_Y-0.02), (CX[0], Y+H+0.02), arrowstyle="-|>",
+                             mutation_scale=7, lw=1.0, color="#555", shrinkA=0, shrinkB=0))
 
 os.makedirs(os.path.dirname(OUT), exist_ok=True)
-fig.savefig(OUT, dpi=190, bbox_inches="tight"); print("wrote", OUT)
+ps.save(fig, OUT); print("wrote", OUT)
+try:                       # copy to the manuscript (fails while the file is open in a viewer)
+    shutil.copy2(OUT, os.path.join(PAPER, os.path.basename(OUT))); print("copied to", PAPER)
+except OSError as e:
+    print("could not copy to the manuscript folder (file open?):", e)

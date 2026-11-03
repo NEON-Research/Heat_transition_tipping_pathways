@@ -31,6 +31,7 @@ import numpy as np
 import matplotlib; matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
+import paper_style as ps
 
 KEEP, DROP, INK, SUB = "#2c7fb8", "#c8c8c8", "#222222", "#E69F00"
 SHARES = [("shareAttitude", "attitude (of intention)"),
@@ -98,7 +99,8 @@ def main():
     # ------------------------------------------------------------------ figure
     # One panel for the paper: the retained sets against the rest, and the fitted line. The widths
     # (panel b in an earlier version) are printed above and stored in ensemble_structure.json.
-    fig, ax = plt.subplots(figsize=(6.4, 5.0))
+    ps.apply()
+    fig, ax = ps.subplots(1, 1, frac=0.7, height=3.4)
     xs = np.linspace(0, max(1.03 * x.max(), 0.45), 50)
     ax.scatter(x[~keep], y[~keep], s=9, color=DROP, lw=0, zorder=1)
     ax.scatter(x[keep], y[keep], s=16, color=KEEP, edgecolor="white", lw=0.5, zorder=3)
@@ -114,11 +116,11 @@ def main():
         n_sub = len(sel)
         ax.scatter(x[sel], y[sel], s=24, color=SUB, edgecolor="white", lw=0.5, zorder=4)
     ax.set_xlim(0, xs[-1]); ax.set_ylim(0, 1.0)
-    ax.set_xlabel("effective weight of attitude in the decision", fontsize=10)
-    ax.set_ylabel("effective weight of cost in the decision", fontsize=10)
-    ax.set_title("Cost against attitude weight in the sampled weight sets", fontsize=11, loc="left",
+    ax.set_xlabel("effective weight of attitude in the decision")
+    ax.set_ylabel("effective weight of cost in the decision")
+    ax.set_title("Cost against attitude weight in the sampled weight sets", loc="left",
                  color=INK)
-    ax.legend(handles=[Line2D([], [], marker="o", ls="", color=KEEP, markersize=6,
+    ps.legend_below(fig, handles=[Line2D([], [], marker="o", ls="", color=KEEP, markersize=6,
                               label=f"retained ({keep.sum()})"),
                        Line2D([], [], marker="o", ls="", color=DROP, markersize=5,
                               label=f"ruled out ({(~keep).sum()})"),
@@ -126,13 +128,11 @@ def main():
                               label=f"fitted line: cost = {c0:.2f} − {-c1:.1f} × attitude")]
                       + ([Line2D([], [], marker="o", ls="", color=SUB, markersize=6.5,
                                  label=f"retained, in scenario subsample ({n_sub})")] if n_sub else []),
-              loc="upper center", bbox_to_anchor=(0.5, -0.14), ncol=2 if n_sub else 3, frameon=False,
-              fontsize=8.5, handletextpad=0.4, columnspacing=1.2)
+                    ncol=2 if n_sub else 3, handletextpad=0.4, columnspacing=1.2)
     ax.grid(alpha=.2); ax.set_axisbelow(True)
     for sp in ("top", "right"): ax.spines[sp].set_visible(False)
-    fig.tight_layout()
     out = os.path.join(a.calib, "fig_ensemble_structure.png")
-    fig.savefig(out, dpi=170, bbox_inches="tight"); plt.close(fig)
+    ps.save(fig, out)
     with open(os.path.join(a.calib, "ensemble_structure.json"), "w", encoding="utf-8") as f:
         json.dump(stats, f, indent=1)
     print(f"\nwrote {out}\nwrote {os.path.join(a.calib, 'ensemble_structure.json')}")

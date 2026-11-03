@@ -14,6 +14,7 @@ move? Produces:
 import argparse, csv, os, re
 from collections import defaultdict
 import numpy as np, matplotlib; matplotlib.use("Agg"); import matplotlib.pyplot as plt
+import paper_style as ps
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.normpath(os.path.join(HERE, ".."))
@@ -183,8 +184,11 @@ def main():
     PANELS = [("HYBRID_HEAT_PUMP", "Hybrid heat pump"),
               ("ELECTRIC_HEAT_PUMP", "Electric heat pump"),
               ("DISTRICT_HEATING", "District heating")]
-    # each panel its own y-scale: a shared one flattens hybrid and district heating next to electric
-    fig, axes = plt.subplots(1, len(PANELS), figsize=(6*len(PANELS), 4.6), sharey=False)
+    # one y-scale for all panels, as in the manuscript, so the levels compare across technologies
+    # drawn at its printed size (\linewidth in main.tex) with the shared manuscript style
+    _rc = matplotlib.rcParams.copy()
+    ps.apply()
+    fig, axes = ps.subplots(1, len(PANELS), frac=1.0, height=2.5, sharey=True)
     order_ok = []
     for i, (tech, title) in enumerate(PANELS):
         for s in segs:
@@ -192,22 +196,20 @@ def main():
             v = [100*segS[s][y].get(tech, 0)/(sum(segS[s][y].values()) or 1) for y in yrs]
             axes[i].plot(yrs, v, label=seglabel(s))
         axes[i].set_title(title)
-        axes[i].set_xlabel("year")
-        axes[i].grid(alpha=.3); axes[i].set_ylabel("% of segment"); axes[i].set_ylim(bottom=0)
-    fig.suptitle("Adoption per heating method in share of own segment", fontsize=15)
-    # one shared legend below the panels (the segments are the same in every panel). The figure is
-    # 18 in wide and shrunk to the text width, so the legend needs a large font to stay readable.
+        axes[i].set_xlabel("year"); axes[i].set_xticks([2030, 2040, 2050])
+        axes[i].grid(alpha=.3)
+    axes[0].set_ylim(0, 100); axes[0].set_yticks([0, 25, 50, 75, 100])   # shared by all panels
+    axes[0].set_ylabel("% of segment")      # same quantity and scale in every panel
+    ps.title(fig, "Adoption per heating method in share of own segment")
+    # one shared legend below the panels (the segments are the same in every panel)
     h, l = axes[0].get_legend_handles_labels()
-    fig.legend(h, [x.replace("_", " ").capitalize() for x in l], loc="lower center", ncol=len(l),
-               frameon=False, fontsize=16, handlelength=2.5, columnspacing=2.0,
-               bbox_to_anchor=(0.5, -0.04))
-    for ln in fig.legends[0].get_lines(): ln.set_linewidth(3)
-    fig.tight_layout(rect=(0, 0.09, 1, 0.95))
+    ps.legend_below(fig, h, [x.replace("_", " ").capitalize() for x in l], ncol=len(l))
     # ordering test uses total heat-pump uptake (the diffusion signal), mid-horizon
     for s in segs:
         yrs = sorted(segS[s]); mid = yrs[len(yrs)//2]
         order_ok.append(100*sum(segS[s][mid].get(t, 0) for t in HP)/(sum(segS[s][mid].values()) or 1))
-    f2 = os.path.join(outdir, ("mech_segment_scurves.png" if a.segment_type=="rogers" else "mech_segment_scurves_"+a.segment_type+".png")); fig.savefig(f2, dpi=130, bbox_inches="tight"); plt.close(fig)
+    f2 = os.path.join(outdir, ("mech_segment_scurves.png" if a.segment_type=="rogers" else "mech_segment_scurves_"+a.segment_type+".png")); ps.save(fig, f2)
+    matplotlib.rcParams.update(_rc)    # the working figures below keep their own sizing
     monotone = all(order_ok[i] >= order_ok[i+1] for i in range(len(order_ok)-1))
 
     # ---- 3. driver decomposition per segment ---------------------------------------------------

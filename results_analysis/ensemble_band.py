@@ -19,6 +19,7 @@ import numpy as np
 import matplotlib; matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib.ticker import FuncFormatter
+import paper_style as ps
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.normpath(os.path.join(HERE, ".."))
@@ -140,32 +141,34 @@ def main():
         c = COLOR[t]
         ax.fill_between(years, stats[t][0], stats[t][100], color=c, alpha=0.15, linewidth=0)
         ax.fill_between(years, stats[t][25], stats[t][75], color=c, alpha=0.35, linewidth=0)
-        ln, = ax.plot(years, stats[t][50], color=c, lw=2.2, label=NICE[t])
+        ln, = ax.plot(years, stats[t][50], color=c, lw=1.6, label=NICE[t])
         legend_lines.append(ln)
         ax.yaxis.set_major_formatter(mil); ax.grid(alpha=.25)
         for sp in ("top", "right"): ax.spines[sp].set_visible(False)
 
     lines = []
+    ps.apply()
     if a.panels:
         # one y-scale for all panels, so the sizes of the technologies compare by eye
-        fig, axes = plt.subplots(2, 2, figsize=(10, 6.4), sharex=True, sharey=True)
+        fig, axes = ps.subplots(2, 2, frac=1.0, height=4.4, sharex=True, sharey=True)
         for ax, t in zip(axes.flat, TECHS):
-            draw(ax, t, lines); ax.set_title(NICE[t], fontsize=10)
+            draw(ax, t, lines); ax.set_title(NICE[t])
             ax.set_xlim(min(years), max(years)); ax.set_ylim(bottom=0)
+            # every ten years: at the printed width the 5-year ticks of neighbouring panels touch
+            ax.set_xticks([y for y in range(2030, max(years) + 1, 10)])
         for ax in axes[:, 0]:
-            ax.set_ylabel("million dwellings", fontsize=9)
+            ax.set_ylabel("million dwellings")
     else:
-        fig, ax = plt.subplots(figsize=(9, 5.6))
+        fig, ax = ps.subplots(1, 1, frac=1.0, height=3.6)
         for t in TECHS: draw(ax, t, lines)
         ax.set_xlim(min(years), max(years)); ax.set_ylim(bottom=0)
         ax.set_ylabel("million dwellings"); ax.set_xlabel("year")
-        ax.legend(handles=lines, fontsize=9.5, frameon=False, loc="upper right", ncol=2)
+        ax.legend(handles=lines, frameon=False, loc="upper right", ncol=2)
     # one title line; what the line and bands are (median, interquartile, outer range) goes in the
     # paper caption, so the figure cannot drift from it
-    fig.suptitle(f"Dwellings per heating technology, {a.scenario} scenario", fontsize=11.5)
-    fig.tight_layout(rect=(0, 0, 1, 0.97 if not a.panels else 0.96))
+    ps.title(fig, f"Dwellings per heating technology, {a.scenario} scenario")
     f = os.path.join(outdir, f"fig_ensemble_band_{a.scenario}{a.tag}.png")
-    fig.savefig(f, dpi=150, bbox_inches="tight"); plt.close(fig)
+    ps.save(fig, f)
     if a.copy_to and os.path.isdir(a.copy_to):
         import shutil; shutil.copy2(f, a.copy_to)
 

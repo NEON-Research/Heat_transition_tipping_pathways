@@ -17,6 +17,7 @@ import matplotlib; matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib import cm
 from matplotlib.colors import Normalize
+import paper_style as ps
 
 HERE = os.path.dirname(os.path.abspath(__file__)); ROOT = os.path.normpath(os.path.join(HERE, ".."))
 CAL  = sys.argv[1] if len(sys.argv) > 1 else os.path.join(ROOT, "results", "calib")
@@ -113,31 +114,34 @@ else:
 S["kept"] = (S["imax"] <= cal.get("implaus_cut", 3.0)) if HAS_I else (S[SCORE] <= CUT)
 KEEP, DROP = "#2c7fb8", "#cccccc"
 
-fig, axA = plt.subplots(1, 1, figsize=(6.6, 4.2))
-s_ = S.sort_values(SCORE).reset_index(drop=True)
+# paper figure (0.75\linewidth): drawn at its printed size with the shared style; rc_context keeps
+# that style from leaking into the other figures this script writes
+with matplotlib.rc_context():
+    ps.apply()
+    fig, axA = ps.subplots(1, 1, frac=0.75, height=3.0)
+    s_ = S.sort_values(SCORE).reset_index(drop=True)
 
-axA.bar(s_.index, s_[SCORE], width=1.0, zorder=2,
-        color=[KEEP if k else DROP for k in s_.kept], linewidth=0)
-axA.axhline(CUT, color="#b2182b", lw=1.4, ls="--", zorder=3)
-axA.text(len(s_) - 1, CUT - 0.03 * axA.get_ylim()[1], CUTLAB,
-         ha="right", va="top", fontsize=8.5, color="#b2182b")
-if not HAS_I:
-    axA.axhline(dflt, color=MUTED, lw=1.2, ls=":")
-    axA.text(len(s_) - 1, dflt + 0.03 * axA.get_ylim()[1],
-             f"uncalibrated default {dflt:.2f}", ha="right", va="bottom",
-             fontsize=8.5, color=MUTED)
-axA.set_xlabel("sampled weight set, ranked by fit", fontsize=9.5, color=INK)
-axA.set_ylabel(YLAB, fontsize=9.5, color=INK)
-axA.set_title(f"{s_.kept.sum()} of {len(s_)} sets are not ruled out",
-              fontsize=11, color=INK, loc="left")
-axA.set_xlim(-1, len(s_)); axA.grid(axis="y", alpha=0.25, lw=0.6)
-axA.tick_params(labelsize=9, colors=MUTED)
-for sp in ("top", "right"): axA.spines[sp].set_visible(False)
-for sp in ("left", "bottom"): axA.spines[sp].set_color("#bbbbbb")
+    axA.bar(s_.index, s_[SCORE], width=1.0, zorder=2,
+            color=[KEEP if k else DROP for k in s_.kept], linewidth=0)
+    axA.axhline(CUT, color="#b2182b", lw=1.4, ls="--", zorder=3)
+    axA.text(len(s_) - 1, CUT - 0.03 * axA.get_ylim()[1], CUTLAB,
+             ha="right", va="top", color="#b2182b")
+    if not HAS_I:
+        axA.axhline(dflt, color=MUTED, lw=1.2, ls=":")
+        axA.text(len(s_) - 1, dflt + 0.03 * axA.get_ylim()[1],
+                 f"uncalibrated default {dflt:.2f}", ha="right", va="bottom",
+                 color=MUTED)
+    axA.set_xlabel("sampled weight set, ranked by fit", color=INK)
+    axA.set_ylabel(YLAB, color=INK)
+    axA.set_title(f"{s_.kept.sum()} of {len(s_)} sets are not ruled out",
+                  color=INK, loc="left")
+    axA.set_xlim(-1, len(s_)); axA.grid(axis="y", alpha=0.25, lw=0.6)
+    axA.tick_params(colors=MUTED)
+    for sp in ("top", "right"): axA.spines[sp].set_visible(False)
+    for sp in ("left", "bottom"): axA.spines[sp].set_color("#bbbbbb")
 
-fig.tight_layout()
-f2 = os.path.join(OUT, "fig_ensemble_fit.png")
-fig.savefig(f2, dpi=190, bbox_inches="tight"); plt.close(fig); print("wrote", f2)
+    f2 = os.path.join(OUT, "fig_ensemble_fit.png")
+    ps.save(fig, f2); print("wrote", f2)
 
 # ---------------------------------------------------------------- Figure 3: weight distributions
 import matplotlib.patches as mp

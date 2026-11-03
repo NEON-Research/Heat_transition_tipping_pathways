@@ -14,11 +14,12 @@ archetype x demand tier, 'dwelling' = archetype x size x era x label).
 
     python segment_analysis.py --scope nl
 """
-import argparse, csv, os, re, sys
+import argparse, csv, os, re, sys, textwrap
 from collections import defaultdict
 import numpy as np
 import matplotlib; matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+import paper_style as ps
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.normpath(os.path.join(HERE, ".."))
@@ -92,10 +93,10 @@ def bar_panel(ax, labels, data, title, sizes=None):
         v = np.array([data[l][te] for l in labels])
         ax.barh(y, v, left=left, color=COLOR[te], height=0.75); left += v
     ax.set_yticks(y)
-    tick = [f"{l}  ({sizes[l]/1e3:,.0f}k)" if sizes else l for l in labels]
-    ax.set_yticklabels(tick, fontsize=8)
-    ax.invert_yaxis(); ax.set_xlim(0, 100); ax.set_xlabel("% of segment stock, 2050", fontsize=8)
-    ax.set_title(title, fontsize=9.5); ax.tick_params(labelsize=8)
+    tick = [f"{l}\n({sizes[l]/1e3:,.0f}k)" if sizes else l for l in labels]
+    ax.set_yticklabels(tick)
+    ax.invert_yaxis(); ax.set_xlim(0, 100)
+    ax.set_title(textwrap.fill(title, 34, break_on_hyphens=False))
     for sp in ("top", "right"): ax.spines[sp].set_visible(False)
 
 
@@ -188,7 +189,10 @@ def main():
         print(f"{k + ' (all ownerships)':34s} {v:6.1f}")
 
     # ---- figure: five cuts, ordered by how much they separate the outcome
-    fig, axes = plt.subplots(3, 2, figsize=(12.5, 10.2))
+    ps.apply()
+    # middle row taller: panel d has six two-line category labels; e has only three
+    fig, axes = ps.subplots(3, 2, frac=1.0, height=7.0,
+                            gridspec_kw={"height_ratios": [1.0, 1.25, 0.75]})
     bar_panel(axes[0, 0],
               [OWN_NICE.get(k, k) for k in sorted(own, key=lambda k: -own[k]["ELECTRIC_HEAT_PUMP"])],
               {OWN_NICE.get(k, k): v for k, v in own.items()},
@@ -220,12 +224,14 @@ def main():
         axes[2, 0].set_visible(False)
     axes[2, 1].set_visible(False)
     handles = [plt.Rectangle((0, 0), 1, 1, color=COLOR[t]) for t in TECHS]
-    fig.legend(handles, [NICE[t] for t in TECHS], ncol=4, loc="lower center", frameon=False,
-               fontsize=9.5, bbox_to_anchor=(0.5, 0.005))
-    fig.suptitle(f"{a.year} heating mix by segment, {a.scenario} scenario", fontsize=13)
-    fig.tight_layout(rect=(0, 0.035, 1, 0.955))
+    # same 0-100 axis in every panel: label it once, under the lowest panel of each column (a
+    # figure-level supxlabel would sit on top of the legend below)
+    for ax in (axes[2, 0], axes[1, 1]):
+        ax.set_xlabel("% of segment stock, 2050")
+    ps.legend_below(fig, handles, [NICE[t] for t in TECHS], ncol=4)
+    ps.title(fig, f"{a.year} heating mix by segment, {a.scenario} scenario")
     f = os.path.join(outdir, "fig_segments_ownership_dwelling.png")
-    fig.savefig(f, dpi=150, bbox_inches="tight"); plt.close(fig)
+    ps.save(fig, f)
     if a.copy_to and os.path.isdir(a.copy_to):
         import shutil; shutil.copy2(f, a.copy_to)
     print("\nwrote:", f)

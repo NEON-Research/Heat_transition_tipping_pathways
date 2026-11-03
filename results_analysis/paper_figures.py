@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 from matplotlib import cm
 from matplotlib.colors import Normalize
 from structural_sensitivity import FACTOR_LABEL
+import paper_style as ps
 
 HERE=os.path.dirname(os.path.abspath(__file__))
 ROOT=os.path.normpath(os.path.join(HERE,".."))
@@ -106,13 +107,14 @@ def main():
     part=[DECISION_PART.get(f_,"structural") for f_ in factors]
     short={"NATURAL_GAS_BOILER":"gas","HYBRID_HEAT_PUMP":"hybrid","ELECTRIC_HEAT_PUMP":"electric","DISTRICT_HEATING":"dh"}
     M=np.array([[np.mean([mor[v]["mu_star"][f][te] for v in mor]) for te in TECHS] for f in factors])
-    fig,(ax,axb)=plt.subplots(1,2,figsize=(11,5),gridspec_kw={"width_ratios":[3,1]})
+    ps.apply()
+    fig,(ax,axb)=ps.subplots(1,2,frac=1.0,height=3.6,gridspec_kw={"width_ratios":[2.3,1]})
     # single-hue sequential ramp, light -> dark; annotation ink flips on cell luminance so the
     # numbers stay readable at both ends (magma with white text was illegible on its bright end).
     im=ax.imshow(M,cmap="Blues",aspect="auto",vmin=0)
     ax.set_xticks(range(4)); ax.set_xticklabels([short[te] for te in TECHS])
     ax.set_yticks(range(len(factors)))
-    ax.set_yticklabels([FACTOR_LABEL.get(f_,f_) for f_ in factors],fontsize=9)
+    ax.set_yticklabels([FACTOR_LABEL.get(f_,f_) for f_ in factors])
     # a narrow colour strip between the labels and the heatmap marks the part of the decision
     # function (text stays black for readability)
     from matplotlib.patches import Rectangle
@@ -126,22 +128,24 @@ def main():
     _hi=M.max() or 1.0
     for i in range(len(factors)):
         for j in range(4):
-            ax.text(j,i,f"{M[i,j]:.1f}",ha="center",va="center",fontsize=8,
+            ax.text(j,i,f"{M[i,j]:.1f}",ha="center",va="center",
                     color=("white" if M[i,j] > 0.6*_hi else "#1a1a1a"))
-    ax.set_title("Mean absolute elementary effect $\\mu^*$ per technology",fontsize=11)
-    fig.colorbar(im,ax=ax,shrink=.8,label="$\\mu^*$ (percentage points)")
+    ax.set_title("Mean absolute elementary effect $\\mu^*$\nper technology")
+    fig.colorbar(im,ax=ax,shrink=.8,aspect=30,label="$\\mu^*$ (percentage points)")
     tot=[np.mean([mor[v]["total"][f] for v in mor]) for f in factors]
     axb.barh(range(len(factors)),tot,color=[PART_COLOR[p_] for p_ in part],linewidth=0)
-    axb.set_yticks([]); axb.invert_yaxis()
-    axb.set_title("summed over technologies",fontsize=10); axb.grid(alpha=.3,axis="x")
+    # same row positions as the heatmap, so each bar sits level with its row
+    axb.set_yticks([]); axb.set_ylim(len(factors)-0.5,-0.5)
+    axb.set_title("summed over\ntechnologies"); axb.grid(alpha=.3,axis="x")
+    from matplotlib.ticker import MaxNLocator
+    axb.xaxis.set_major_locator(MaxNLocator(nbins=4,steps=[1,2,5,10]))
     axb.set_axisbelow(True)
     for sp in ("top","right"): axb.spines[sp].set_visible(False)
     from matplotlib.patches import Patch
     _parts=[p_ for p_ in PART_COLOR if p_ in part]
-    fig.legend(handles=[Patch(color=PART_COLOR[p_],label=p_) for p_ in _parts],
-               title="part of the decision function",loc="lower center",ncol=len(_parts),
-               frameon=False,fontsize=9,title_fontsize=9,bbox_to_anchor=(0.5,-0.06))
-    f3=os.path.join(CALDIR,"fig_structural_morris.png"); fig.savefig(f3,dpi=130,bbox_inches="tight"); plt.close(fig)
+    ps.legend_below(fig,[Patch(color=PART_COLOR[p_],label=p_) for p_ in _parts],
+                    ncol=len(_parts),title="part of the decision function")
+    f3=os.path.join(CALDIR,"fig_structural_morris.png"); ps.save(fig,f3)
 
     _written.append(f3)
     print("wrote:")

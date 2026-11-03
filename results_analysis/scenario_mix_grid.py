@@ -28,6 +28,8 @@ import matplotlib; matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, HERE)
+import paper_style as ps
 ROOT = os.path.normpath(os.path.join(HERE, ".."))
 PAPER_FIGS_DIR = os.path.join(ROOT, "heat_transition_tipping_dynamics", "figures")
 
@@ -380,9 +382,10 @@ def load(cache):
 
 
 def draw(data, keys, nc, title, path, blocked=False, note=None, mark_single=True, grid=None,
-         ylabel="% of dwellings"):
+         ylabel="% of dwellings", frac=1.0, height=None):
     """One figure: `keys` laid out `nc` wide, or an explicit `grid` of rows (None = empty cell).
-    blocked=True starts each design block on a new row."""
+    blocked=True starts each design block on a new row. frac = the \\linewidth fraction the figure
+    is included at in main.tex; height in inches (None: from the number of rows)."""
     if grid is not None:
         grid = [[(k if k in data else None) for k in row] for row in grid]
         nc = max(len(row) for row in grid)
@@ -401,10 +404,15 @@ def draw(data, keys, nc, title, path, blocked=False, note=None, mark_single=True
         blocks, row_block = [], []
     if not any(k for row in grid for k in row): return None
     nr = len(grid)
-    single = nr == 1 and nc == 1
-    fig, axes = plt.subplots(nr, nc, figsize=(3.05 * nc + (2.0 if single else 0),
-                                             2.45 * nr + (1.0 if single else 0)),
-                             sharex=True, sharey=True, squeeze=False)
+    # drawn at the printed size (frac * text width), see paper_style.py; one row of panels gets
+    # 2.4 in in total, every further row ~1.8 in
+    ps.apply()
+    if height is None:
+        height = 2.4 if nr == 1 else 0.6 + 1.8 * nr
+    fig, axes = ps.subplots(nr, nc, frac=frac, height=height,
+                            sharex=True, sharey=True, squeeze=False)
+    fig_w = ps.TEXT_W * frac
+    panel_w = fig_w / nc - 0.25            # a panel's width less its y tick labels, inches
     for ax in axes.flat: ax.set_visible(False)
     for r in range(nr):
         for c in range(nc):
@@ -417,36 +425,75 @@ def draw(data, keys, nc, title, path, blocked=False, note=None, mark_single=True
             ax.set_ylim(0, 100); ax.set_xlim(min(years), max(years))
             lab = SCEN_LABEL.get(key, key)
             if key in SINGLE and not blocked and mark_single: lab += "*"
-            ax.set_title(lab, fontsize=9.5 if single else 8.5, pad=3)
-            ax.tick_params(labelsize=8 if single else 7.5)
-            ax.set_xticks([y for y in (2024, 2030, 2040, 2050) if min(years) <= y <= max(years)])
+            ax.set_title(_wrap(lab, ps.FS_PANEL, panel_w))
+            ax.set_xticks([y for y in (2030, 2040, 2050) if min(years) <= y <= max(years)])
             ax.set_yticks([0, 25, 50, 75, 100])
             for sp in ("top", "right"): ax.spines[sp].set_visible(False)
             # sharey only labels column 0; in a ragged grid that column can be empty, stranding the
             # whole row without a scale. Label the leftmost VISIBLE cell of each row instead.
             first_vis = next((i for i, k in enumerate(grid[r]) if k is not None), 0)
             if c == first_vis:
-                ax.set_ylabel(ylabel, fontsize=9 if single else 8)
+                # wrapped to the panel height (figure height less title and legend, per row, less
+                # the panel title and the year labels)
+                ax.set_ylabel(_wrap(ylabel, ps.FS, 0.9 * ((height - 0.65) / nr - 0.4)))
                 ax.tick_params(labelleft=True)
             # sharex only labels the last ROW; with ragged grids that strands whole columns
             if r == nr - 1 or grid[r + 1][c] is None: ax.tick_params(labelbottom=True)
 
     handles = [plt.Rectangle((0, 0), 1, 1, color=COLOR[te]) for te in TECHS]
-    fig.legend(handles, [NICE[te] for te in TECHS], ncol=4, loc="lower center",
-               frameon=False, fontsize=9.5, bbox_to_anchor=(0.5, -0.004))
-    fig.suptitle(title, fontsize=12.5)
-    fig.tight_layout(rect=(0.035 if blocked else 0.0, 0.055 if nr < 3 else 0.035, 1,
-                           0.93 if nr < 3 else 0.955))
+    ps.legend_below(fig, handles, [NICE[te] for te in TECHS], ncol=4)
+    if note:   # footnote under the panels; constrained layout keeps space for it
+        fig.supxlabel(_wrap(note, ps.FS, 0.95 * fig_w), color="#555")
+    ps.title(fig, _wrap(title, ps.FS_TITLE, 0.97 * fig_w))
+    # panel titles: wrap to the width each panel actually got (a ragged grid narrows some columns)
+    fig.draw_without_rendering()
+    for ax in axes.flat:
+        if ax.get_visible() and ax.get_title():
+            w = ax.get_position().width * fig_w + 0.08
+            ax.set_title(_wrap(ax.get_title().replace("\n", " "), ps.FS_PANEL, w))
     if blocked:
+        # block names in a left margin: fix the layout first, then write beside the rows
+        fig.get_layout_engine().set(rect=(0.035, 0, 0.965, 1))
+        fig.draw_without_rendering()
+        fig.set_layout_engine("none")
         for bi, (name, _) in enumerate(blocks):
             rows = [r for r in range(nr) if row_block[r] == bi]
             pos = [axes[r, 0].get_position() for r in rows]
             ymid = (max(p_.y1 for p_ in pos) + min(p_.y0 for p_ in pos)) / 2
-            fig.text(0.004, ymid, name, rotation=90, va="center", ha="left", fontsize=9.5, color="#333")
-    if note:   # sits below the legend; bbox_inches="tight" pulls it back into the canvas
-        fig.text(0.5, -0.035, note, ha="center", fontsize=8, color="#555")
-    fig.savefig(path, dpi=150, bbox_inches="tight"); plt.close(fig)
-    return path
+            fig.text(0.004, ymid, name, rotation=90, va="center", ha="left", color="#333")
+    return ps.save(fig, path)
+
+
+def _wrap(text, size, width_in):
+    """Break `text` at spaces so that no line is wider than width_in inches at `size` pt."""
+    from matplotlib.font_manager import FontProperties
+    from matplotlib.textpath import TextToPath
+    prop, t2p = FontProperties(size=size), TextToPath()
+    width = lambda s: t2p.get_text_width_height_descent(s, prop, ismath=False)[0] / 72.0
+
+    def greedy(para, w):
+        lines, line = [], ""
+        for word in para.split(" "):
+            trial = f"{line} {word}" if line else word
+            if line and width(trial) > w:
+                lines.append(line); line = word
+            else:
+                line = trial
+        return lines + [line]
+
+    out = []
+    for para in text.split("\n"):
+        lines = greedy(para, width_in)
+        if len(lines) > 1:
+            # same number of lines, but as even as possible (no single orphaned word)
+            lo, hi = 0.0, width_in
+            for _ in range(20):
+                mid = (lo + hi) / 2
+                if len(greedy(para, mid)) <= len(lines): hi = mid
+                else: lo = mid
+            lines = greedy(para, hi)
+        out += lines
+    return "\n".join(out)
 
 
 def main():

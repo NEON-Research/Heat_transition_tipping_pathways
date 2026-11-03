@@ -28,6 +28,7 @@ import numpy as np
 import matplotlib; matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
+import paper_style as ps
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.normpath(os.path.join(HERE, ".."))
@@ -125,7 +126,8 @@ def fig_levers(data, out, end):
 
 
 def fig_divergence(data, out, start, end):
-    fig, axes = plt.subplots(1, 4, figsize=(13.0, 3.4), sharey=True, sharex=True)
+    ps.apply()
+    fig, axes = ps.subplots(1, 4, frac=1.0, height=2.3, sharey=True, sharex=True)
     for ax, tech in zip(axes, TECHS):
         for lv in ORDER:
             ref, lo, hi = LEVERS[lv]
@@ -135,24 +137,20 @@ def fig_divergence(data, out, start, end):
             # HIGH arm = the end that favours heat pumps; for price that is gas dear / elec cheap
             for panel, ls in ((hi, "-"), (lo, "--")):
                 d = [data[panel][y][tech] - data[ref][y][tech] for y in yrs]
-                ax.plot(yrs, d, color=c, ls=ls, lw=2.0 if ls == "-" else 1.6,
+                ax.plot(yrs, d, color=c, ls=ls, lw=1.5 if ls == "-" else 1.2,
                         solid_capstyle="round", zorder=2)
-        ax.axhline(0, color=MUTED, lw=1.0, zorder=1)
-        ax.set_title(NICE[tech], fontsize=10.5, loc="left", color=INK)
-        ax.set_xlabel("year", fontsize=9.5)
+        ax.axhline(0, color=MUTED, lw=0.8, zorder=1)
+        ax.set_title(NICE[tech], loc="left", color=INK)
+        ax.set_xticks([2030, 2040, 2050])
         ax.grid(alpha=.22); ax.set_axisbelow(True)
         for sp in ("top", "right"): ax.spines[sp].set_visible(False)
-    axes[0].set_ylabel("deviation from the reference\n(percentage points)", fontsize=9.5)
-    handles = [Line2D([], [], color=LEVER_COLOR[lv], lw=2.4, label=LEVER_LABEL[lv]) for lv in ORDER]
-    handles += [Line2D([], [], color=INK, lw=2.0, ls="-", label="HIGH arm"),
-                Line2D([], [], color=INK, lw=1.6, ls="--", label="LOW arm")]
-    fig.legend(handles=handles, loc="lower center", ncol=5, frameon=False, fontsize=9.5,
-               bbox_to_anchor=(0.5, -0.04))
-    fig.suptitle("When the pathways separate: deviation from the reference over time",
-                 fontsize=12, y=1.0)
-    fig.tight_layout(rect=(0, 0.08, 1, 0.94))
-    fig.savefig(out, dpi=170, bbox_inches="tight"); plt.close(fig)
-    return out
+    axes[0].set_ylabel("deviation from the baseline\n(percentage points)")
+    handles = [Line2D([], [], color=LEVER_COLOR[lv], lw=1.8, label=LEVER_LABEL[lv]) for lv in ORDER]
+    handles += [Line2D([], [], color=INK, lw=1.5, ls="-", label="Strong loop"),
+                Line2D([], [], color=INK, lw=1.2, ls="--", label="Weak loop")]
+    ps.legend_below(fig, handles, ncol=4)
+    ps.title(fig, "When the pathways separate: deviation from the baseline over time")
+    return ps.save(fig, out)
 
 
 def main():

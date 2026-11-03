@@ -6,6 +6,9 @@ WHY ONLY 2022-2024: CBS changed method before 2022, so this is the only internal
 window. It is therefore used as a **broad plausibility range**, not a precise fit target: we keep
 weight sets that reproduce the observed direction+magnitude of change within a tolerance, rather
 than optimising to a single "best" point (weights are non-identifiable from 3 years of data).
+2025 is available too (CBS PR004609): --end 2025 scores 2023-2025 on the buurten complete in 2022
+and 2025. Its district-heating share is NOT method-consistent with 2022-2024 (see
+export_observed_heating.py).
 
 Setup: initialise the engine in 2022 from the OBSERVED 2022 state (-Dht.heatingYear=2022, reading the
 gasCV_2022..dh_2022 columns of the combined neighborhoods.csv), run to 2024, and score the simulated
@@ -100,6 +103,7 @@ OBS_KEY = {"NATURAL_GAS_BOILER": "gasCV", "NATURAL_GAS_BLOCK": "gasBlock",
 # ---------------------------------------------------------------------------------------------
 SHARE_MODE = not os.environ.get("HT_RAW_WEIGHTS")
 SEED_OFFSET = [0]        # set from --seed-offset in main(); engine world-seed shift
+WINDOW = [2022, 2024]    # set from --start/--end in main(); buurten must be CBS-complete in both
 
 # sampled share -> (default, low, high)
 # Bounds follow from MIN_RESIDUAL alone, so every group is explored over its whole feasible
@@ -228,8 +232,9 @@ def stock_path(scope, calib=False):
     return os.path.join(STOCK, f"{tag}_dwellings.csv")
 
 
-def complete_buurten(years=(2022, 2024)):
-    """buurtcodes whose CBS data is complete in ALL given years."""
+def complete_buurten(years=None):
+    """buurtcodes whose CBS data is complete in ALL given years (default: the calibration window)."""
+    years = tuple(years or WINDOW)
     path = os.path.join(REF, "observed_heating_by_year.csv")
     if not os.path.exists(path):
         sys.exit("observed_heating_by_year.csv missing -> run model/data-export/scripts/export_observed_heating.py")
@@ -241,13 +246,17 @@ def complete_buurten(years=(2022, 2024)):
     return {b for b, ys in seen.items() if ys >= set(years)}
 
 
-def ensure_buurt_filter(years=(2022, 2024)):
+def ensure_buurt_filter(years=None):
     """Write (once) the list of buurten with complete CBS data in all `years`. The ENGINE reads this
     via -Dht.buurtFilter and simulates only those neighbourhoods, so it covers exactly the buurten the
     observed aggregate is computed over. (Doing it engine-side avoids duplicating the stock CSV --
     the NL stock is ~790 MB.) Without this, the ~30 % of buurten with suppressed CBS cells would be
-    simulated but absent from the observed average: an apples-to-oranges comparison."""
-    path = os.path.join(REF, "calibration_buurten.txt")
+    simulated but absent from the observed average: an apples-to-oranges comparison.
+    One file per window, so a 2022-2025 search never overwrites the 2022-2024 filter."""
+    years = tuple(years or WINDOW)
+    name = ("calibration_buurten.txt" if years == (2022, 2024)
+            else f"calibration_buurten_{'_'.join(map(str, years))}.txt")
+    path = os.path.join(REF, name)
     keep = sorted(complete_buurten(years))
     if not (os.path.exists(path) and len(open(path).read().splitlines()) - 1 == len(keep)):
         with open(path, "w", encoding="utf-8") as f:
@@ -881,6 +890,7 @@ def main():
     ap.add_argument("--json", default=None, help="reanalyse: path to an existing calibration_search.json")
     a = ap.parse_args()
     SEED_OFFSET[0] = a.seed_offset
+    WINDOW[:] = [a.start, a.end]
     if a.mode == "reanalyse" and not a.json:
         ap.error("reanalyse needs --json")
     if a.mode not in ("sdobs", "reanalyse"):          # these two run no model

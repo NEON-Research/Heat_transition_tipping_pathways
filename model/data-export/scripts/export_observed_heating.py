@@ -1,11 +1,15 @@
-"""Extract observed heating-method shares per neighbourhood (buurt) for 2022, 2023, 2024 from the
-CBS maatwerk table, for CALIBRATION of the TPB weights.
+"""Extract observed heating-method shares per neighbourhood (buurt) for 2022-2025 from the CBS
+maatwerk tables, for CALIBRATION of the TPB weights.
 
-Source (top-level data/):
-    Hoofdverwarmingsinstallaties_woningen_2022_2024.xlsx, sheet 'Tabel 2'
+Sources (top-level data/), both sheet 'Tabel 2':
+    Hoofdverwarmingsinstallaties_woningen_2022_2024.xlsx   2022, 2023, 2024
     https://www.cbs.nl/nl-nl/maatwerk/2025/34/hoofdverwarmingsinstallaties-woningen-2022-2024
+    Hoofdverwarmingsinstallaties_woningen_2025.xlsx        2025 (optional; skipped if absent)
+    CBS PR004609, July 2026. Same method as 2022-2024, EXCEPT district heating: from 2025 CBS has
+    address-level heat deliveries, so the 2024 -> 2025 change in dh is partly a method change.
+    Other layout: no year column, codes in column 0, shares stored as text.
 
-CBS changed method before 2022, so ONLY 2022-2024 is a consistent series -- see ANALYSIS/MODEL_TODOS:
+CBS changed method before 2022, so ONLY 2022 onwards is a consistent series -- see ANALYSIS/MODEL_TODOS:
 use it as a broad plausibility range, not a precise fit target.
 
 Mapping to the model's 5 systems (same rule as export_nbh_heating.py / AL
@@ -29,23 +33,25 @@ import openpyxl
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.normpath(os.path.join(HERE, "..", "..", ".."))
-SRC = os.path.join(os.environ.get("HT_DATA_DIR", os.path.join(ROOT, "data")),
-                   "Hoofdverwarmingsinstallaties_woningen_2022_2024.xlsx")
+DATA = os.environ.get("HT_DATA_DIR", os.path.join(ROOT, "data"))
 OUT = os.path.normpath(os.path.join(HERE, "..", "..", "data", "reference"))
 os.makedirs(OUT, exist_ok=True)
 
-# 0-based column indices in 'Tabel 2' (header on row 4, data from row 5)
-C_CODE, C_YEAR, C_KIND = 1, 2, 3
-C_ICV, C_BLOK = 6, 7
-C_SV = (8, 9, 10)          # stadsverwarming hoog / laag / zonder
-C_EL_H, C_EL_L, C_EL_Z = 11, 12, 13
+# 0-based column indices in 'Tabel 2' (header on row 4, data from row 5), per source file.
+# year: column index, or the fixed year of a single-year table. sv = stadsverwarming hoog/laag/zonder.
+SOURCES = [
+    ("Hoofdverwarmingsinstallaties_woningen_2022_2024.xlsx", True,
+     dict(code=1, year=2, kind=3, icv=6, blok=7, sv=(8, 9, 10), el_h=11, el_l=12, el_z=13)),
+    ("Hoofdverwarmingsinstallaties_woningen_2025.xlsx", False,
+     dict(code=0, year="2025", kind=1, icv=4, blok=5, sv=(6, 7, 8), el_h=9, el_l=10, el_z=11)),
+]
 
 
 def val(v):
-    """CBS suppression '.' / blank -> None; else float."""
+    """CBS suppression '.' / blank -> None; else float (the 2025 table stores text, '75,6')."""
     if v is None:
         return None
-    s = str(v).strip()
+    s = str(v).strip().replace(",", ".")
     if s in (".", "", "x", ".."):
         return None
     try:
@@ -54,21 +60,20 @@ def val(v):
         return None
 
 
-def main():
-    if not os.path.exists(SRC):
-        sys.exit(f"source not found: {SRC}")
-    wb = openpyxl.load_workbook(SRC, read_only=True, data_only=True)
+def read_source(path, c):
+    wb = openpyxl.load_workbook(path, read_only=True, data_only=True)
     ws = wb["Tabel 2"]
     recs = []
     for r in ws.iter_rows(min_row=5, values_only=True):
-        if str(r[C_KIND]).strip() != "Buurt":
+        if len(r) <= c["el_z"] or str(r[c["kind"]]).strip() != "Buurt":
             continue
-        code, year = r[C_CODE], str(r[C_YEAR]).strip()
+        code = r[c["code"]]
+        year = c["year"] if isinstance(c["year"], str) else str(r[c["year"]]).strip()
         if not code:
             continue
-        icv, blok = val(r[C_ICV]), val(r[C_BLOK])
-        sv = [val(r[i]) for i in C_SV]
-        elh, ell, elz = val(r[C_EL_H]), val(r[C_EL_L]), val(r[C_EL_Z])
+        icv, blok = val(r[c["icv"]]), val(r[c["blok"]])
+        sv = [val(r[i]) for i in c["sv"]]
+        elh, ell, elz = val(r[c["el_h"]]), val(r[c["el_l"]]), val(r[c["el_z"]])
         # 'complete' = the individually-modelled shares are present. Stadsverwarming is suppressed
         # ('.') in most buurten precisely BECAUSE there is no district heating there, so a missing
         # sv value is treated as 0 and does not make the row incomplete.
@@ -82,6 +87,19 @@ def main():
             "dh": dh / 100, "complete": int(bool(complete)),
         })
     wb.close()
+    return recs
+
+
+def main():
+    recs = []
+    for name, required, cols in SOURCES:
+        path = os.path.join(DATA, name)
+        if not os.path.exists(path):
+            if required:
+                sys.exit(f"source not found: {path}")
+            print(f"skipping {name}: not found")
+            continue
+        recs += read_source(path, cols)
 
     p1 = os.path.join(OUT, "observed_heating_by_year.csv")
     with open(p1, "w", newline="", encoding="utf-8") as f:

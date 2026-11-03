@@ -17,6 +17,7 @@ import numpy as np
 import matplotlib; matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import matplotlib.patheffects as pe
+import paper_style as ps
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.normpath(os.path.join(HERE, ".."))
@@ -54,7 +55,8 @@ def main():
         tot = sum(acc.values()) or 1
         base = {t: 100 * acc.get(t, 0.0) / tot for t in TECHS}
 
-    fig, ax = plt.subplots(figsize=(9, 4.4))
+    ps.apply()
+    fig, ax = ps.subplots(1, 1, frac=0.9, height=2.5)    # printed at 0.9\linewidth
     ys = np.arange(len(TECHS))[::-1]
     print(f"{'technology':22s}{'min':>7s}{'p5':>7s}{'p25':>7s}{'med':>7s}{'p75':>7s}{'p95':>7s}{'max':>7s}")
     for y, t in zip(ys, TECHS):
@@ -71,8 +73,8 @@ def main():
         if base:
             ax.plot(base[t], y, marker="D", ms=6, mfc="white", mec="#222", mew=1.3, zorder=5)
         print(f"{NICE[t]:22s}{v.min():7.1f}{q[5]:7.1f}{q[25]:7.1f}{q[50]:7.1f}{q[75]:7.1f}{q[95]:7.1f}{v.max():7.1f}")
-    ax.set_yticks(ys); ax.set_yticklabels([NICE[t] for t in TECHS], fontsize=10)
-    ax.set_xlabel("share of dwellings in 2050 (%)", fontsize=10)
+    ax.set_yticks(ys); ax.set_yticklabels([NICE[t] for t in TECHS])
+    ax.set_xlabel("share of dwellings in 2050 (%)")
     ax.set_xlim(0, max(max(float(r[t]) for r in rows) for t in TECHS) * 1.06)
     ax.grid(axis="x", alpha=.25); ax.set_ylim(-.6, len(TECHS) - .4)
     for sp in ("top", "right", "left"): ax.spines[sp].set_visible(False)
@@ -86,13 +88,10 @@ def main():
     if base:
         handles.append(plt.Line2D([0], [0], marker="D", ms=6, mfc="white", mec="#222", mew=1.3, ls=""))
         labs.append("baseline (static prices)")
-    ax.legend(handles, labs, ncol=5, fontsize=8.5, frameon=False,
-              loc="lower center", bbox_to_anchor=(.5, -.30))
-    ax.set_title(f"Spread of the 2050 mix across the {n} sampled parameter combinations",
-                 fontsize=11.5, loc="left")
-    fig.tight_layout()
+    ps.legend_below(fig, handles, labs, ncol=len(labs))
+    ax.set_title(f"Spread of the 2050 mix across the {n} sampled parameter combinations", loc="left")
     out = a.out or os.path.join(os.path.dirname(a.lhs), "fig_lhs_uncertainty.png")
-    fig.savefig(out, dpi=150, bbox_inches="tight"); plt.close(fig)
+    ps.save(fig, out)
     if a.copy_to and os.path.isdir(a.copy_to):
         import shutil; shutil.copy2(out, a.copy_to)
     print("\nwrote:", out)
